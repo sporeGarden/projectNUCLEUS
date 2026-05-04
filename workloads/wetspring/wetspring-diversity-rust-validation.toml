@@ -1,0 +1,20 @@
+# wetSpring diversity metrics Rust validation
+# Shannon, Simpson, Bray-Curtis, beta diversity — vs R/Python baselines
+
+[metadata]
+name = "wetspring-diversity-rust-validation"
+description = "Diversity indices (Shannon, Simpson, Bray-Curtis, beta) parity check vs R baselines"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set WETSPRING_DIR to your springs/wetSpring checkout before running
+command = "${WETSPRING_DIR}/target/release/validate_diversity"
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 1073741824
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "None"

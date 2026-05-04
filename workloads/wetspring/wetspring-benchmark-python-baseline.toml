@@ -1,0 +1,23 @@
+# wetSpring Python benchmark baseline — timing reference for Python vs Rust
+# Generates performance comparison data across multiple domains
+
+[metadata]
+name = "wetspring-benchmark-python-baseline"
+description = "Python performance baseline for cross-domain Rust speedup comparison"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set these to your local paths before running:
+#   PYTHON_BIN: path to Python with numpy/scipy
+#   WETSPRING_DIR: path to springs/wetSpring checkout
+command = "${PYTHON_BIN:-/usr/bin/python3}"
+args = ["${WETSPRING_DIR}/scripts/benchmark_python_baseline.py"]
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

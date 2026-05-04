@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Node Atomic — Tower + ToadStool + barraCuda + coralReef (Proton)
+#
+# The compute substrate. ToadStool dispatches workloads, barraCuda
+# executes 826+ WGSL compute shaders (matmul, attention, FFT, df64,
+# Perlin, WFC, diversity, Anderson spectral, ...), and coralReef
+# compiles WGSL programs for the target GPU/CPU.
+#
+# Node = Proton: defines what the gate IS (compute identity).
+# A TFLOP is a TFLOP — Node primals are fungible across hardware.
+#
+# gen3 ECOSYSTEM_ARCHITECTURE §3.2: "Node Atomic — Compute Layer"
+# Particle model: Node = Proton
+#
+# This is the unifying compute pattern across all science springs:
+#   neuralSpring composes this for ML inference
+#   hotSpring composes this for Lattice QCD
+#   wetSpring composes this for biology
+#   ludoSpring composes this for game math
+#
+# Paper 23: same shaders compose into ML, QCD, biology, and games.
+
+[fragment]
+name = "node_atomic"
+description = "Tower + ToadStool (dispatch) + barraCuda (execute) + coralReef (compile) — the proton"
+version = "2.0.0"
+particle = "proton"
+node_count = 5
+includes = ["tower_atomic"]
+
+[[fragment.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
+
+[[fragment.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
+
+[[fragment.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "compute.status"]
+
+[[fragment.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = [
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "noise.perlin2d", "compute.dispatch",
+]
+
+[[fragment.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities", "shader.compile.wgsl.multi"]

@@ -1,0 +1,133 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: NUCLEUS — Tower + Node + Nest (the Atom)
+#
+# The full NUCLEUS composition: all three atomics bound together.
+# Tower (electron) provides the trust boundary that mediates bonding.
+# Node (proton) provides the compute substrate.
+# Nest (neutron) provides storage and provenance.
+#
+# NUCLEUS = Tower + Node + Nest = BearDog + Songbird + ToadStool +
+#           barraCuda + coralReef + NestGate + rhizoCrypt +
+#           loamSpine + sweetGrass (9 domain primals)
+#
+# Meta-tier primals (biomeOS, Squirrel, petalTongue) layer on top
+# of NUCLEUS at any level. nucleus_complete.toml is NUCLEUS + meta.
+#
+# gen3 ECOSYSTEM_ARCHITECTURE §3.4: "Full NUCLEUS"
+# gen4 GUIDESTONE: Deployment class axis NUCLEUS → Niche → fieldMouse
+
+[fragment]
+name = "nucleus"
+description = "Tower (electron) + Node (proton) + Nest (neutron) — the full atom"
+version = "2.0.0"
+node_count = 9
+includes = ["tower_atomic", "node_atomic", "nest_atomic"]
+
+[[fragment.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
+
+[[fragment.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
+
+[[fragment.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "compute.status"]
+
+[[fragment.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = [
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "noise.perlin2d", "compute.dispatch",
+]
+
+[[fragment.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities", "shader.compile.wgsl.multi"]
+
+[[fragment.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 6
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists", "storage.delete", "storage.fetch_external"]
+
+[[fragment.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = [
+    "dag.session.create", "dag.event.append",
+    "dag.dehydration.trigger", "dag.merkle.root",
+    "dag.merkle.proof", "dag.merkle.verify",
+]
+
+[[fragment.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 8
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "entry.get", "certificate.mint"]
+
+[[fragment.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 9
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = [
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
+]

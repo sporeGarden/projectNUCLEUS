@@ -1,0 +1,30 @@
+# Template: Native binary workload for toadStool dispatch
+#
+# Copy this file, fill in the fields, and run:
+#   toadstool execute --timeout 120 --format text your-workload.toml
+#
+# For Python scripts, set command to your Python interpreter path
+# (e.g., /home/user/miniforge3/envs/bioinfo/bin/python3)
+# and put the script path in args.
+#
+# NOTE: Use absolute paths. The toadStool sandbox may override working_dir
+# to /tmp under Standard isolation. Set [security] isolation_level = "None"
+# for local development.
+
+[metadata]
+name = "your-workload-name"
+description = "What this workload does"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "/absolute/path/to/binary-or-interpreter"
+args = ["/absolute/path/to/script-or-args"]
+working_dir = "/absolute/path/to/working/directory"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

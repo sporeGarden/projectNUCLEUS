@@ -1,0 +1,23 @@
+# wetSpring Exp001 Python baseline — Galaxy + QIIME2 reference pipeline
+# Full 16S pipeline bootstrap validation against published Galaxy workflow
+
+[metadata]
+name = "wetspring-exp001-python-baseline"
+description = "Exp001 Galaxy/QIIME2 bootstrap validation — ground truth 16S pipeline"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set these to your local paths before running:
+#   PYTHON_BIN: path to Python with numpy/scipy
+#   WETSPRING_DIR: path to springs/wetSpring checkout
+command = "${PYTHON_BIN:-/usr/bin/python3}"
+args = ["${WETSPRING_DIR}/scripts/validate_exp001.py"]
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "None"

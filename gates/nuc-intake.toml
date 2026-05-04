@@ -1,0 +1,38 @@
+# Gate: NUC Intake — External-Facing Tunnel Termination
+#
+# Phase 2 concept: expendable Intel NUC acts as the tunnel termination
+# and reverse proxy, isolating the internal compute mesh from external
+# traffic. Tower Atomic only — no compute or storage.
+#
+# Status: Planned (Phase 2)
+
+[gate]
+name = "nuc-intake"
+role = "Tunnel termination, reverse proxy, external-facing intake"
+location = "Sovereign cluster — LAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "Intel NUC (TBD model)"
+ram_gb = 16
+storage_type = "NVMe"
+network = "Cat6e ethernet (LAN), WAN-facing"
+os = "Linux (minimal)"
+
+[composition]
+atomic = "tower"
+primals = ["beardog", "songbird"]
+fragment = "tower_atomic"
+
+[ports]
+beardog = 9100
+songbird = 9200
+
+[identity]
+family_name = "my-sovereign"
+node_id = "nuc-intake"
+
+[phase]
+target = 2
+status = "planned"
+purpose = "Isolate internal compute mesh from external tunnel traffic"

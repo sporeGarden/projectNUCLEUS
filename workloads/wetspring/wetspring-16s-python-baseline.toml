@@ -1,0 +1,24 @@
+# wetSpring 16S Python baseline — ground truth for Rust parity
+# Runs pure-Python 16S pipeline on public BioProject FASTQ data
+# Requires: numpy, scipy (available in bioinfo conda env)
+
+[metadata]
+name = "wetspring-16s-python-baseline"
+description = "16S Python baseline on PRJNA488170/PRJNA382322 public data — ground truth for Rust comparison"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set these to your local paths before running:
+#   PYTHON_BIN: path to Python with numpy/scipy (e.g., conda bioinfo env)
+#   WETSPRING_DIR: path to springs/wetSpring checkout
+command = "${PYTHON_BIN:-/usr/bin/python3}"
+args = ["${WETSPRING_DIR}/scripts/validate_public_16s_python.py"]
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "None"

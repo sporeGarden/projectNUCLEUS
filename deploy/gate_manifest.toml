@@ -1,0 +1,24 @@
+# Gate Manifest — projectNUCLEUS
+#
+# Maps gates to their atomic compositions and roles.
+# deploy.sh reads this to determine what to start on each gate.
+#
+# Add a gate: create a gates/<name>.toml and add an entry here.
+
+[manifest]
+version = "0.1.0"
+bonding_default = "covalent"
+
+# Add your gates below. Each gate needs a gates/<name>.toml config file.
+#
+# [[gates]]
+# name = "workstation"
+# atomic = "node"
+# config = "../gates/workstation.toml"
+# status = "active"
+#
+# [[gates]]
+# name = "intake"
+# atomic = "tower"
+# config = "../gates/intake.toml"
+# status = "planned"

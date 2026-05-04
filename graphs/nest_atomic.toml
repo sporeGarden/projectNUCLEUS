@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Nest Atomic — Tower + NestGate + Provenance Trio (Neutron)
+#
+# The storage and provenance layer. NestGate provides content-addressed
+# storage. The provenance trio (rhizoCrypt, loamSpine, sweetGrass)
+# provides DAG lineage, permanent ledger, and semantic attribution.
+#
+# Nest = Neutron: data at rest. Non-fungible — content-addressed by
+# BLAKE3 hash. The "isotope" is the data/storage profile of the gate.
+#
+# gen3 ECOSYSTEM_ARCHITECTURE §3.3: "Nest Atomic — Storage Layer"
+# Particle model: Nest = Neutron
+#
+# The provenance trio is integral to Nest — any stored data should
+# carry its lineage. healthSpring's dual-tower enclave is two Nests
+# with an ionic bridge for data isolation.
+
+[fragment]
+name = "nest_atomic"
+description = "Tower + NestGate (storage) + provenance trio (rhizoCrypt + loamSpine + sweetGrass) — the neutron"
+version = "2.0.0"
+particle = "neutron"
+node_count = 6
+includes = ["tower_atomic", "provenance_trio"]
+
+[[fragment.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
+
+[[fragment.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
+
+[[fragment.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists", "storage.delete", "storage.fetch_external"]
+
+[[fragment.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 4
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = [
+    "dag.session.create", "dag.event.append",
+    "dag.dehydration.trigger", "dag.merkle.root",
+    "dag.merkle.proof", "dag.merkle.verify",
+]
+
+[[fragment.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 5
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "entry.get", "certificate.mint"]
+
+[[fragment.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 6
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = [
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
+]

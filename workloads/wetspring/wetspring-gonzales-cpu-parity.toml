@@ -1,0 +1,20 @@
+# wetSpring Gonzales PK/dose-response CPU parity validation
+# Immunological modeling (IC50, IL-31, PK) — Paper 12 Anderson lineage
+
+[metadata]
+name = "wetspring-gonzales-cpu-parity"
+description = "Gonzales CPU parity — PK/dose-response immunological modeling against Python baselines"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set WETSPRING_DIR to your springs/wetSpring checkout before running
+command = "${WETSPRING_DIR}/target/release/validate_gonzales_cpu_parity"
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 1073741824
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

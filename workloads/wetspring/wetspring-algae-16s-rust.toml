@@ -1,0 +1,20 @@
+# wetSpring algae 16S Rust validation — extended algae community analysis
+# Covers AlgaeParc 16S community profiling
+
+[metadata]
+name = "wetspring-algae-16s-rust"
+description = "Algae pond 16S community validation (Wageningen/AlgaeParc datasets)"
+version = "0.1.0"
+
+[execution]
+type = "native"
+# Set WETSPRING_DIR to your springs/wetSpring checkout before running
+command = "${WETSPRING_DIR}/target/release/validate_algae_16s"
+working_dir = "${WETSPRING_DIR}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

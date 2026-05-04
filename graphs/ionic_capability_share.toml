@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Ionic Capability Share — two organizations with different family seeds
+# exchanging capabilities across a contract boundary.
+#
+# Lab Alpha has compute (ToadStool). University Beta has neural analysis.
+# Neither can decrypt the other's BirdSong beacons. Capability sharing
+# requires explicit contract (API key, mTLS, metered billing).
+#
+# Usage:
+#   biomeos deploy --graph graphs/bonding/ionic_capability_share.toml
+
+[graph]
+name = "ionic_capability_share"
+description = "Cross-organization capability sharing (metered) — two family seeds, ionic contract boundary"
+version = "1.0.0"
+coordination = "parallel"
+bond_type = "ionic"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_atomic"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ── Family Alpha: Lab Tower ────────────────────────────────────────────
+[[graph.nodes]]
+name = "beardog_alpha"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+family = "alpha"
+
+[[graph.nodes]]
+name = "songbird_alpha"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog_alpha"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+family = "alpha"
+
+[[graph.nodes]]
+name = "toadstool_alpha"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog_alpha", "songbird_alpha"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+family = "alpha"
+
+# ── Family Beta: University Tower ──────────────────────────────────────
+[[graph.nodes]]
+name = "beardog_beta"
+binary = "beardog"
+order = 4
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+family = "beta"
+
+[[graph.nodes]]
+name = "songbird_beta"
+binary = "songbird"
+order = 5
+required = true
+depends_on = ["beardog_beta"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+family = "beta"
+
+[[graph.nodes]]
+name = "neuralspring_beta"
+binary = "neuralspring_primal"
+order = 6
+required = true
+depends_on = ["beardog_beta", "songbird_beta"]
+health_method = "neural.health"
+by_capability = "neural"
+capabilities = ["neural.spectral", "neural.eigensolve", "neural.evoformer"]
+family = "beta"
+
+# ── Ionic bridge (contract layer) ──────────────────────────────────────
+[[graph.nodes]]
+name = "biomeos_bridge"
+binary = "biomeos"
+order = 7
+required = true
+depends_on = ["toadstool_alpha", "neuralspring_beta"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["route.register", "capability.call", "ionic.meter"]
+bond_role = "ionic_bridge"

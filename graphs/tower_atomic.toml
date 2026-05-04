@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Tower Atomic — BearDog + Songbird (Electron)
+#
+# The trust boundary. BearDog provides all cryptography (TLS, signing,
+# identity, BTSP enforcement). Songbird provides discovery, mesh
+# networking, and HTTP via BearDog's TLS.
+#
+# Tower mediates ALL inter-atomic bonding — no cross-gate communication
+# happens without passing through the electron shell.
+#
+# gen3 ECOSYSTEM_ARCHITECTURE §3.1: "Tower Atomic — The Foundation"
+# Particle model: Tower = Electron
+#
+# Appears in: every deploy graph, every proto-nucleate, every sketch.
+# Node Atomic and Nest Atomic both include Tower as their base.
+
+[fragment]
+name = "tower_atomic"
+description = "BearDog (crypto) + Songbird (network) — the electron shell"
+version = "2.0.0"
+particle = "electron"
+node_count = 2
+
+[[fragment.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
+
+[[fragment.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]

@@ -1,0 +1,318 @@
+# Friend/Family Remote Covalent Join — NAT Traversal
+# =============================================================================
+#
+# Enrolls a remote machine (friend's house, family member's PC) into the
+# covalent mesh using shared .family.seed with NAT traversal escalation.
+#
+# Bond Type: Covalent (shared family seed, full trust)
+# Trust Model: GeneticLineage
+# Discovery: STUN tier escalation (sovereignty-first)
+#   Tier 1: Lineage relay (family members relay for each other)
+#   Tier 2: Self-hosted STUN (tower.nestgate.io)
+#   Tier 3: Public STUN (community servers, address discovery only)
+#   Tier 4: Rendezvous (future — gaming platforms)
+#
+# Prerequisites:
+#   - Friend has received .family.seed (out-of-band, encrypted transfer)
+#   - Friend has biomeOS + genomeBin installed
+#   - Friend runs: biomeos enroll --family-seed /path/to/.family.seed --node-id friendgate
+#
+# Idle Compute Policy (optional):
+#   The bonding_policy section allows the friend to scope what they share.
+#   Default: compute.* only, no storage, active 22:00-06:00, 100 Mbps cap.
+#
+# Usage:
+#   biomeos atomic deploy graphs/multi_node/friend_remote_covalent.toml \
+#     --env FAMILY_ID=cf7e8729 \
+#     --env NODE_ID=friendgate \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "friend-remote-covalent"
+name = "friend_remote_covalent"
+version = "1.0.0"
+description = "Remote covalent join for friend/family idle compute with NAT traversal"
+coordination = "Sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+federation_transport = "songbird_tcp"
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+composition_model = "nucleated"
+fragments = ["tower_atomic", "node_atomic"]
+atomic_layout = { friend = "tower+node_partial" }
+
+[graph.bonding_policy]
+bond_type = "Covalent"
+trust_model = "GeneticLineage"
+label = "friend-idle-compute"
+offer_relay = false
+active_windows = ["22:00-06:00"]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+cross_node = "covalent"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_node = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+[graph.bonding_policy.constraints]
+capability_allow = ["compute.*"]
+capability_deny = ["storage.*", "ai.*"]
+bandwidth_limit_mbps = 100
+max_concurrent_requests = 4
+
+# =============================================================================
+# PHASE 1: TOWER ATOMIC (Crypto + Network)
+# =============================================================================
+
+[[graph.nodes]]
+id = "friend_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto", "tls_crypto", "genetic", "security", "beacon"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "friend_songbird"
+depends_on = ["friend_beardog"]
+output = "songbird_genesis"
+capabilities = ["http", "discovery", "secure_http", "mesh", "stun", "punch", "relay"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+CRYPTO_PROVIDER_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "true"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 2: NAT TRAVERSAL ESCALATION (sovereignty-first)
+# =============================================================================
+
+# 2.1: Initialize mesh
+[[graph.nodes]]
+id = "mesh_init"
+depends_on = ["friend_songbird"]
+output = "mesh_state"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.init"
+params = { node_id = "${NODE_ID}" }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# 2.2: Discover public address via STUN
+[[graph.nodes]]
+id = "stun_discover"
+depends_on = ["mesh_init"]
+output = "public_address"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "stun.discover"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+
+# 2.3: Detect NAT type for hole-punch feasibility
+[[graph.nodes]]
+id = "nat_detect"
+depends_on = ["stun_discover"]
+output = "nat_type"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "stun.detect_nat_type"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+
+# 2.4: Attempt hole punch to known Tower endpoint
+[[graph.nodes]]
+id = "punch_tower"
+depends_on = ["nat_detect"]
+output = "punch_result"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "punch.request"
+params = { target = "${TOWER_ENDPOINT}" }
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+allow_failure = true
+
+# 2.5: Fallback — request lineage relay from family
+[[graph.nodes]]
+id = "relay_fallback"
+depends_on = ["punch_tower"]
+output = "relay_result"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "relay.allocate"
+params = { family_id = "${FAMILY_ID}" }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+on_condition = "punch_result.connected == false"
+
+# 2.6: Auto-discover family peers via mesh
+[[graph.nodes]]
+id = "discover_family"
+depends_on = ["punch_tower", "relay_fallback"]
+output = "peers_discovered"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.auto_discover"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 3: COMPUTE (the shared capability)
+# =============================================================================
+
+[[graph.nodes]]
+id = "friend_toadstool"
+depends_on = ["friend_beardog", "friend_songbird"]
+output = "toadstool_genesis"
+capabilities = ["compute", "workload"]
+
+[graph.nodes.primal]
+by_capability = "compute"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
+TOADSTOOL_NODE_ID = "${NODE_ID}"
+TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
+SONGBIRD_ENDPOINT = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "toadstool=info"
+
+[graph.nodes.constraints]
+timeout_ms = 45000
+
+# =============================================================================
+# PHASE 4: VALIDATE + ANNOUNCE (compute only per policy)
+# =============================================================================
+
+[[graph.nodes]]
+id = "friend_validate"
+depends_on = ["friend_toadstool", "discover_family"]
+output = "friend_validated"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_beardog = true
+check_songbird = true
+check_toadstool = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "announce_compute"
+depends_on = ["friend_validate"]
+output = "announced"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.announce"
+params = { as_relay = false, capabilities = ["compute"] }
+
+[graph.nodes.constraints]
+timeout_ms = 5000
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# NAT Traversal Escalation Order:
+#   1. STUN discover (learn public address)
+#   2. NAT type detection (full cone / symmetric / etc.)
+#   3. Hole punch to Tower (direct P2P if NAT allows)
+#   4. Lineage relay fallback (family relays, encrypted)
+#   5. Onion fallback (not in this graph — add onion.connect for symmetric NAT)
+#
+# After joining:
+#   Friend's Toadstool is visible to Plasmodium for compute.* routing.
+#   storage.* and ai.* are NOT exposed (per bonding policy).
+#   Active only during configured windows (22:00-06:00 by default).
+#
+# =============================================================================

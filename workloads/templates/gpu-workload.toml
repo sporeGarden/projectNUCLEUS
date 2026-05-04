@@ -1,0 +1,25 @@
+# Template: GPU workload for toadStool dispatch via barraCuda
+#
+# GPU workloads use the "gpu" execution type and specify a WGSL kernel.
+# barraCuda executes the shader on available GPU hardware.
+# coralReef compiles the WGSL to target-specific instructions.
+#
+# Prerequisites: Node Atomic running (toadstool + barracuda + coralreef)
+
+[metadata]
+name = "your-gpu-workload"
+description = "GPU compute workload via barraCuda"
+version = "0.1.0"
+
+[execution]
+type = "gpu"
+kernel = "your_kernel_function"
+shader_path = "/path/to/shader.wgsl"
+dispatch_size = [256, 1, 1]
+
+[resources]
+max_memory_bytes = 1073741824
+max_gpu_percent = 80.0
+
+[security]
+isolation_level = "None"

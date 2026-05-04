@@ -1,0 +1,100 @@
+# Source of truth: primalSpring/graphs/ (validation/structural format with metadata/fragments/bonding)
+# Runtime execution variant: biomeOS/graphs/node_atomic_compute.toml
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Node Atomic Compute — toadStool + barraCuda + coralReef
+#
+# The compute triangle behind Tower Atomic.
+# toadStool dispatches, barraCuda runs GPU/CPU tensor ops,
+# coralReef compiles shaders.
+#
+# Usage:
+#   biomeos deploy --graph graphs/node_atomic_compute.toml
+
+[graph]
+name = "node_atomic_compute"
+description = "Node Atomic: toadStool dispatch + barraCuda tensor + coralReef shader"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_preferred"
+tcp_fallback = "tower_routed"
+composition_model = "nucleated"
+fragments = ["tower_atomic", "node_atomic"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.keygen"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["discovery.find_primals", "discovery.announce"]
+
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.dispatch.result", "compute.execute"]
+
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = false
+depends_on = ["beardog", "songbird", "toadstool"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = [
+    "tensor.matmul", "tensor.add", "tensor.scale",
+    "tensor.batch.submit",
+    "stats.mean", "stats.variance", "stats.median",
+]
+
+[[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = false
+depends_on = ["beardog", "songbird", "toadstool"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.validate"]

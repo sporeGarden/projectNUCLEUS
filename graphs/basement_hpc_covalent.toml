@@ -1,0 +1,309 @@
+# Basement HPC Covalent Mesh — N-Gate Deployment
+# =============================================================================
+#
+# Deploys additional NUCLEUS instances on basement machines and bonds them
+# covalently to the Tower via shared .family.seed and BirdSong mesh discovery.
+#
+# Architecture:
+#   All gates share the same FAMILY_ID (derived from .family.seed genesis bytes).
+#   Each gate runs a full NUCLEUS: BearDog + Songbird + Toadstool + NestGate + Squirrel.
+#   Songbird mesh.auto_discover finds peers on the LAN via BirdSong UDP multicast.
+#   Plasmodium aggregates capabilities across gates for unified routing.
+#
+# Bond Type: Covalent (shared family seed, full trust, mutual discovery)
+# Trust Model: GeneticLineage (BearDog verifies lineage via family seed)
+# Discovery: BirdSong UDP multicast (239.255.0.1:4200) + mesh.auto_discover
+#
+# Parameterized:
+#   FAMILY_ID  — hex(genesis_seed[0..8]) from .family.seed (canonical: 8ff3b864a4bc589a)
+#   NODE_ID    — unique per gate, matching HARDWARE.md inventory:
+#     eastgate    — i9-12900, RTX 4070, Akida NPU, 32GB DDR5 (dev host)
+#     northgate   — i9-14900K, RTX 5090, 192GB DDR5 (flagship AI/LLM)
+#     southgate   — 5800X3D, RTX 4060, 128GB DDR4 (gaming + compute)
+#     strandgate  — dual EPYC 64c, RTX 3090+RX 6950 XT, 256GB ECC (bio)
+#     biomegate   — TR 3970X, Titan V x2, MI50 x2, 256GB (HBM2 bench)
+#     westgate    — i7-4771, RTX 2070S, 76TB ZFS, 32GB DDR3 (cold storage)
+#     swiftgate   — 5800X, RTX 3070 FE, 64GB (mobile compact)
+#     kingate     — i7-6700K, RTX 3070, 32GB (staging)
+#     flockgate   — i9-13900K, RTX 3070 Ti, 64GB DDR5 (brother's, remote)
+#   XDG_RUNTIME_DIR — socket directory (e.g. /run/user/1000)
+#
+# Usage:
+#   biomeos atomic deploy graphs/multi_node/basement_hpc_covalent.toml \
+#     --env FAMILY_ID=cf7e8729 \
+#     --env NODE_ID=gate2 \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# Repeat for each additional gate with a unique NODE_ID.
+# Tower (first gate) should already be running nucleus_complete.toml.
+#
+# =============================================================================
+
+[graph]
+id = "basement-hpc-covalent"
+name = "basement_hpc_covalent"
+version = "1.0.0"
+description = "Covalent Tower + partial Node (Toadstool) + NestGate + Squirrel gate for basement HPC mesh"
+coordination = "Sequential"
+
+# =============================================================================
+# PHASE 1: TOWER ATOMIC (Crypto + Network)
+# =============================================================================
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+federation_transport = "songbird_tcp"
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+composition_model = "nucleated"
+fragments = ["tower_atomic"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+cross_node = "covalent"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_node = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+[[graph.nodes]]
+id = "gate_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash", "crypto.encrypt", "crypto.decrypt", "crypto.keygen"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "gate_songbird"
+depends_on = ["gate_beardog"]
+output = "songbird_genesis"
+capabilities = ["http.request", "http.get", "http.post", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers", "stun.get_public_address"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+CRYPTO_PROVIDER_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "true"
+BIOMEOS_BIND_ALL = "true"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 2: MESH DISCOVERY (find existing gates on LAN)
+# =============================================================================
+
+[[graph.nodes]]
+id = "mesh_init"
+depends_on = ["gate_songbird"]
+output = "mesh_state"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.init"
+params = { node_id = "${NODE_ID}", bootstrap_onions = [] }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+[[graph.nodes]]
+id = "discover_peers"
+depends_on = ["mesh_init"]
+output = "peers_discovered"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.auto_discover"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 3: COMPUTE + STORAGE + AI
+# =============================================================================
+
+[[graph.nodes]]
+id = "gate_toadstool"
+depends_on = ["gate_beardog", "gate_songbird"]
+output = "toadstool_genesis"
+capabilities = ["compute.submit", "compute.status", "compute.health"]
+
+[graph.nodes.primal]
+by_capability = "compute"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
+TOADSTOOL_NODE_ID = "${NODE_ID}"
+TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
+SONGBIRD_ENDPOINT = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "toadstool=info"
+
+[graph.nodes.constraints]
+timeout_ms = 45000
+
+[[graph.nodes]]
+id = "gate_nestgate"
+depends_on = ["gate_beardog", "gate_songbird"]
+output = "nestgate_genesis"
+capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists", "storage.fetch_external"]
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+provenance_enabled = true
+
+[graph.nodes.operation.environment]
+NESTGATE_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/nestgate-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
+RUST_LOG = "nestgate=info"
+
+[graph.nodes.constraints]
+timeout_ms = 60000
+
+[[graph.nodes]]
+id = "gate_squirrel"
+depends_on = ["gate_beardog", "gate_songbird"]
+output = "squirrel_genesis"
+capabilities = ["ai.query", "ai.chat", "ai.list_providers", "tool.execute", "tool.list", "context.create"]
+
+[graph.nodes.primal]
+by_capability = "ai"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+CAPABILITY_REGISTRY_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
+RUST_LOG = "squirrel=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 4: VALIDATE + HTTPS + ANNOUNCE
+# =============================================================================
+
+[[graph.nodes]]
+id = "gate_validate"
+depends_on = ["gate_toadstool", "gate_nestgate", "gate_squirrel", "discover_peers"]
+output = "gate_validated"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_beardog = true
+check_songbird = true
+check_toadstool = true
+check_nestgate = true
+check_squirrel = true
+check_capability_routing = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "gate_https_validate"
+depends_on = ["gate_validate"]
+output = "https_validated"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "http.get"
+params = { url = "https://ifconfig.me/ip" }
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+[[graph.nodes]]
+id = "announce_capabilities"
+depends_on = ["gate_https_validate"]
+output = "announced"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.announce"
+params = { as_relay = true, capabilities = ["compute.submit", "storage.fetch_external", "ai.query"] }
+
+[graph.nodes.constraints]
+timeout_ms = 5000
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# After deployment, Plasmodium aggregates this gate + all other family gates:
+#   capability.call routes to the best gate for each request.
+#   compute.* -> gate with most GPU capacity
+#   storage.* -> gate with most disk/ZFS
+#   ai.*      -> any gate (load balanced)
+#
+# To add another gate: re-run with a new NODE_ID.
+# No configuration changes needed on existing gates — BirdSong auto-discovers.
+#
+# =============================================================================

@@ -1,0 +1,89 @@
+{"timestamp":"2026-05-04T18:04:05.054455Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-diversity-rust-validation.toml"}}
+{"timestamp":"2026-05-04T18:04:05.054565Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-diversity-rust-validation.toml"}}
+{"timestamp":"2026-05-04T18:04:05.054979Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-diversity-rust-validation"}}
+{"timestamp":"2026-05-04T18:04:05.054997Z","level":"INFO","fields":{"message":"   Description: Diversity indices (Shannon, Simpson, Bray-Curtis, beta) parity check vs R baselines"}}
+{"timestamp":"2026-05-04T18:04:05.055009Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:04:05.055127Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:04:05.055157Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:04:05.055168Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:04:05.055180Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:04:05.055196Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:04:05.055216Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:04:05.055228Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:04:05.055239Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:04:05.055256Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-diversity-rust-validation"}}
+{"timestamp":"2026-05-04T18:04:05.055267Z","level":"INFO","fields":{"message":"Starting execution: 7779b165-3f10-4102-a12b-6bab2055afe2"}}
+{"timestamp":"2026-05-04T18:04:05.055294Z","level":"INFO","fields":{"message":"Executing native workload: 7779b165-3f10-4102-a12b-6bab2055afe2"}}
+{"timestamp":"2026-05-04T18:04:05.059491Z","level":"INFO","fields":{"message":"Execution 7779b165-3f10-4102-a12b-6bab2055afe2 completed successfully in 4.124295ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-diversity-rust-validation
+Execution ID:  7779b165-3f10-4102-a12b-6bab2055afe2
+Status:        Success
+Duration:      0.004s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  wetSpring Diversity Metrics Validation
+═══════════════════════════════════════════════════════════
+
+
+── Analytical unit tests ──
+  [OK]  Shannon(uniform, S=4): 1.386294 (expected 1.386294, tol 0.000000)
+  [OK]  Shannon(uniform, S=100): 4.605170 (expected 4.605170, tol 0.000000)
+  [OK]  Simpson(uniform, S=10): 0.900000 (expected 0.900000, tol 0.000000)
+  [OK]  Bray-Curtis symmetry: 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  Bray-Curtis in [0,1]: 0.250000 (expected 0.300000, tol 0.300000)
+
+── Simulated marine microbiome community ──
+  Observed: 330, Shannon: 5.1733, Simpson: 0.9928, Chao1: 344.8
+  [OK]  Observed features: 330.000000 (expected 330.000000, tol 1.000000)
+  [OK]  Shannon in marine range: 5.173327 (expected 4.900000, tol 0.300000)
+  [OK]  Simpson > 0.9: 0.992815 (expected 0.950000, tol 0.050000)
+  [OK]  Chao1 >= observed: 14.772727 (expected 50.000000, tol 100.000000)
+
+── Bray-Curtis distance matrix ──
+  BC(A,B) = 0.0897, BC(A,C) = 0.4977, BC(B,C) = 0.5280
+  [OK]  BC(A,B) < BC(A,C): 0.089686 (expected 0.248842, tol 0.497685)
+  [OK]  BC(A,A) = 0: 0.000000 (expected 0.000000, tol 0.000000)
+
+── K-mer counting validation ──
+  k=4, seq=ACGTACGTACGT: 3 unique, 9 total
+  [OK]  Total 4-mers: 9 (expected 9)
+  [OK]  Unique canonical 4-mers: 3 (expected 3)
+  k=8, 40bp seq: 3 unique, 33 total
+  [OK]  Total 8-mers: 33 (expected 33)
+
+── Evenness + Rarefaction ──
+  [OK]  Pielou(uniform S=4) = 1.0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Pielou(uneven) in [0,1): 0.080793 (expected 0.500000, tol 0.500000)
+  [OK]  Rarefaction at full depth = S_obs: 8.000000 (expected 8.000000, tol 0.000000)
+  [OK]  Rarefaction monotonic: 1.000000 (expected 1.000000, tol 0.000000)
+
+── Exp002 `QIIME2` `Galaxy` Baseline ──
+  Low-diversity sample: Obs=91, Shannon=3.4803, Simpson=0.9583
+  [OK]  Exp002 low: observed = 91: 91.000000 (expected 91.000000, tol 0.000000)
+  [OK]  Exp002 low: Shannon in Galaxy range: 3.480264 (expected 2.930000, tol 1.500000)
+  [OK]  Exp002 low: Simpson in Galaxy range: 0.958291 (expected 0.860000, tol 0.250000)
+  High-diversity sample: Obs=856, Shannon=4.1682, Simpson=0.9251
+  [OK]  Exp002 high: observed = 856: 856.000000 (expected 856.000000, tol 0.000000)
+  [OK]  Exp002 high: Shannon in Galaxy range: 4.168192 (expected 3.850000, tol 1.500000)
+  [OK]  Exp002 high: Simpson > 0.85: 1.000000 (expected 1.000000, tol 0.000000)
+  BC(low, high) = 0.5869
+  [OK]  Exp002: BC(low,high) in Galaxy range [0.05, 0.95]: 0.586868 (expected 0.500000, tol 0.500000)
+  PCoA eigenvalues: [0.42276224789629585, 0.16331372678210931], total=0.5861
+  [OK]  Exp002: PCoA eigenvalues non-negative: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Exp002: PCoA axis 0 dominant: 0.721344 (expected 0.500000, tol 0.500000)
+
+═══════════════════════════════════════════════════════════
+  wetSpring Diversity Metrics Validation: 27/27 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

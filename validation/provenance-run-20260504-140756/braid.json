@@ -1,0 +1,51 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "@context": {
+            "@base": "https://ecoprimals.io/",
+            "@version": 1.1,
+            "ecop": "https://ecoprimals.io/vocab#",
+            "prov": "http://www.w3.org/ns/prov#",
+            "schema": "http://schema.org/",
+            "xsd": "http://www.w3.org/2001/XMLSchema#"
+        },
+        "@id": "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e",
+        "@type": {
+            "type": "Entity"
+        },
+        "data_hash": "292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e",
+        "ecop": {
+            "certificate": null,
+            "compression": null,
+            "ledger_commit": null,
+            "niche": null,
+            "session_ref": null,
+            "source_primal": "sweetgrass",
+            "witnesses": []
+        },
+        "generated_at_time": 1777918318227967440,
+        "loam_anchor": null,
+        "metadata": {
+            "custom": {},
+            "description": null,
+            "tags": [],
+            "title": null
+        },
+        "mime_type": "application/x-provenance-pipeline",
+        "size": 24,
+        "was_attributed_to": "did:primal:026ad68d-c0b2-4b84-957a-baf94d89b326",
+        "was_derived_from": [],
+        "was_generated_by": null,
+        "witness": {
+            "agent": "did:key:z6MkQOXw_ZknlVNOL7iNEkxq5tTyBTSrJ4YBWRx8bGEqwS8",
+            "algorithm": "ed25519",
+            "context": null,
+            "encoding": "base64",
+            "evidence": "2tIkgvdZgJLCiz7cmoneFFvc6xiVSHivMRjAM/ky5HZhPZIllO6eoqjS/BAjHY4XnAZAj6B6yrdyM8OH2rosCg==",
+            "kind": "signature",
+            "tier": "tower",
+            "witnessed_at": 1777918318228160935
+        }
+    },
+    "id": 902
+}

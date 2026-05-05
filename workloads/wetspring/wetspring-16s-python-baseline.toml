@@ -9,12 +9,9 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-# Set these to your local paths before running:
-#   PYTHON_BIN: path to Python with numpy/scipy (e.g., conda bioinfo env)
-#   WETSPRING_DIR: path to springs/wetSpring checkout
-command = "${PYTHON_BIN:-/usr/bin/python3}"
-args = ["${WETSPRING_DIR}/scripts/validate_public_16s_python.py"]
-working_dir = "${WETSPRING_DIR}"
+command = "/home/irongate/miniforge3/envs/bioinfo/bin/python3"
+args = ["/home/irongate/Development/ecoPrimals/springs/wetSpring/scripts/validate_public_16s_python.py"]
+working_dir = "/home/irongate/Development/ecoPrimals/springs/wetSpring"
 
 [resources]
 max_memory_bytes = 2147483648

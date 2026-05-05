@@ -7,43 +7,59 @@ bonding remains the foundation even when Phase 4 metallic federation is live.
 
 ## Phase 1: Covalent LAN HPC
 
-**Status**: Validated (2026-05-04)
+**Status**: Validated (2026-05-04), elevated with provenance (2026-05-04)
 **Bonding**: Covalent (shared family seed, full trust)
-**Composition**: Node Atomic (BearDog + Songbird + ToadStool + barraCuda + coralReef)
+**Composition**: Nest Atomic + ToadStool (9 primals)
+- Tower: BearDog + SongBird
+- Compute: ToadStool + BarraCuda + CoralReef
+- Storage: NestGate
+- Provenance: rhizoCrypt + loamSpine + sweetGrass
 
 ### What Works
 
-- Node Atomic deployed via plasmidBin bootstrap + deploy.sh
+- Nest Atomic + ToadStool (9 primals) deployed via plasmidBin bootstrap
 - toadStool dispatches workloads from TOML specs (native runtime)
-- wetSpring science validated through composition dispatch:
+- wetSpring science validated through composition dispatch (235+ checks):
   - 16S Pipeline: 37/37 checks PASS
   - Diversity Metrics: 27/27 checks PASS
   - Gonzales CPU Parity: 43/43 checks PASS
-  - Algae 16S: 26/26 checks PASS
+  - Algae 16S: 34/34 checks PASS (real NCBI data — 11.9M reads)
+  - R Industry Parity: 53/53 checks PASS
+  - Fajgenbaum Pathway: 8/8 checks PASS
+  - Cold Seep Pipeline: 8/8 checks PASS
+  - Real NCBI Pipeline: 25/25 checks PASS
+  - Python 16S baseline: SUCCESS (real NCBI data — 50K reads)
   - Python benchmark baseline: SUCCESS (4.15s, all domains)
+- Full provenance pipeline operational:
+  - BLAKE3 content hashes for all NCBI FASTQs and outputs
+  - rhizoCrypt DAG session with 24 events
+  - loamSpine permanent ledger commit (SessionCommit with Merkle root)
+  - sweetGrass attribution braid with ed25519 witness
 - JupyterHub running for notebook-style access
 - Cat6e ethernet between cluster machines
 
 ### What projectNUCLEUS Provides
 
 - `deploy.sh`: Automates seed creation, primal startup, health verification
+- `provenance_pipeline.sh`: Wraps workload execution with full provenance chain
 - Gate manifest: Hardware inventory with atomic assignment
 - Workload catalog: Validated TOML specs + templates for new workloads
 - Validation logs: Reproducible evidence of composition correctness
+- Provenance manifests: BLAKE3 hashes, Merkle roots, braid IDs
 
 ### Known Gaps (from COMPOSITION_GAPS.md)
 
 - Sandbox overrides working_dir to /tmp (absolute paths required)
 - GPU build breakage (wgpu submit_and_poll → submit_and_map API drift)
 - biomeOS not in live composition (single-gate dispatch only)
-- No automatic results archival to nestGate
+- toadStool does not expand environment variables in workload TOMLs
 - Python runs as native subprocess (no toadStool introspection)
 
 ---
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Designed (deploy graphs exist)
+**Status**: Designed (deploy graphs exist, Nest Atomic now operational)
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 2 auth
 
@@ -81,9 +97,9 @@ From primalSpring/graphs/:
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Conceptual (petalTongue + songBird required)
+**Status**: Conceptual (petalTongue + songBird required; NestGate already operational from Phase 1)
 **Bonding**: Covalent core + public weak endpoint
-**New Primals**: petalTongue (UI), NestGate (content storage), BTSP Phase 3
+**New Primals**: petalTongue (UI), BTSP Phase 3
 
 ### Architecture
 

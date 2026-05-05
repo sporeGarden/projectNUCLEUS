@@ -1,0 +1,119 @@
+{"timestamp":"2026-05-04T18:03:34.681391Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-r-industry-parity.toml"}}
+{"timestamp":"2026-05-04T18:03:34.681502Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-r-industry-parity.toml"}}
+{"timestamp":"2026-05-04T18:03:34.681957Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-r-industry-parity"}}
+{"timestamp":"2026-05-04T18:03:34.681975Z","level":"INFO","fields":{"message":"   Description: R vegan/DADA2/phyloseq gold-standard parity validation"}}
+{"timestamp":"2026-05-04T18:03:34.681987Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:03:34.682131Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:03:34.682162Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:03:34.682173Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:03:34.682184Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:03:34.682200Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:03:34.682221Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:03:34.682232Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:03:34.682242Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:03:34.682258Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-r-industry-parity"}}
+{"timestamp":"2026-05-04T18:03:34.682270Z","level":"INFO","fields":{"message":"Starting execution: ceef6c77-d893-445f-a499-1a8c219ab412"}}
+{"timestamp":"2026-05-04T18:03:34.682295Z","level":"INFO","fields":{"message":"Executing native workload: ceef6c77-d893-445f-a499-1a8c219ab412"}}
+{"timestamp":"2026-05-04T18:03:34.685061Z","level":"INFO","fields":{"message":"Execution ceef6c77-d893-445f-a499-1a8c219ab412 completed successfully in 2.693168ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-r-industry-parity
+Execution ID:  ceef6c77-d893-445f-a499-1a8c219ab412
+Status:        Success
+Duration:      0.003s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  R Industry Parity — vegan 2.7.3 / dada2 1.22.0 / phyloseq 1.38.0
+═══════════════════════════════════════════════════════════
+
+
+§1  vegan: Shannon & Simpson
+  [OK]  Shannon(uniform,S=10) vs R/vegan: 2.302585 (expected 2.302585, tol 0.000000)
+  [OK]  Simpson(uniform,S=10) vs R/vegan: 0.900000 (expected 0.900000, tol 0.000000)
+  [OK]  Shannon(skewed) vs R/vegan: 0.540842 (expected 0.540842, tol 0.000000)
+  [OK]  Simpson(skewed) vs R/vegan: 0.187286 (expected 0.187286, tol 0.000000)
+  [OK]  Shannon(5sp) vs R/vegan: 1.489750 (expected 1.489750, tol 0.000000)
+  [OK]  Simpson(5sp) vs R/vegan: 0.755556 (expected 0.755556, tol 0.000000)
+
+§2  vegan: Bray-Curtis distance
+  [OK]  BC(a,b) vs R/vegan: 0.400000 (expected 0.400000, tol 0.000000)
+  [OK]  BC(a,c) self-distance vs R/vegan: 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  BC symmetry |BC(a,b)-BC(b,a)|: 0.000000 (expected 0.000000, tol 0.000000)
+
+§3  vegan: Rarefaction (rarefy)
+  [OK]  Rarefaction(n=10) vs R/vegan: 4.722447 (expected 4.722447, tol 0.000001)
+  [OK]  Rarefaction(n=50) vs R/vegan: 7.637127 (expected 7.637127, tol 0.000001)
+  [OK]  Rarefaction(n=100) vs R/vegan: 9.027739 (expected 9.027739, tol 0.000001)
+  [OK]  Rarefaction(n=150) vs R/vegan: 9.846474 (expected 9.846474, tol 0.000001)
+  [OK]  Rarefaction monotonicity: 1.000000 (expected 1.000000, tol 0.000000)
+
+§4  vegan: Chao1 richness estimator
+  [OK]  Chao1 S.obs vs R/vegan: 10.000000 (expected 10.000000, tol 0.000000)
+  [OK]  Chao1 estimate vs R/vegan: 20.000000 (expected 20.000000, tol 0.500000)
+
+§5  vegan: Pielou evenness
+  [OK]  Pielou J(uniform) vs R/vegan: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Pielou J(skewed) vs R/vegan: 0.234885 (expected 0.234885, tol 0.000000)
+
+§6  DADA2: Algorithmic constants (Callahan et al. 2016)
+  [OK]  OMEGA_A vs R/dada2: 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  MAX_ITERATIONS vs R/dada2 MAX_CONSIST: 10 (expected 10)
+  [OK]  MAX_ERR_ITERATIONS vs R/dada2 learnErrors: 6 (expected 6)
+
+§7  DADA2: Error model (init_error_model)
+  [OK]  err[A→A][Q10] vs R/dada2: 0.900000 (expected 0.900000, tol 0.000000)
+  [OK]  err[A→C][Q10] vs R/dada2: 0.033333 (expected 0.033333, tol 0.000000)
+  [OK]  err[A→A][Q20] vs R/dada2: 0.990000 (expected 0.990000, tol 0.000000)
+  [OK]  err[A→C][Q20] vs R/dada2: 0.003333 (expected 0.003333, tol 0.000000)
+  [OK]  err[A→A][Q30] vs R/dada2: 0.999000 (expected 0.999000, tol 0.000000)
+  [OK]  err[G→T][Q30] vs R/dada2: 0.000333 (expected 0.000333, tol 0.000000)
+  [OK]  err symmetry: P(A→C)==P(G→T) at Q20: 0.003333 (expected 0.003333, tol 0.000000)
+
+§8  DADA2: Phred quality → error probability
+  [OK]  phred_to_error_prob(Q0) vs R/dada2: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  phred_to_error_prob(Q2) vs R/dada2: 0.630957 (expected 0.630957, tol 0.000000)
+  [OK]  phred_to_error_prob(Q10) vs R/dada2: 0.100000 (expected 0.100000, tol 0.000000)
+  [OK]  phred_to_error_prob(Q15) vs R/dada2: 0.031623 (expected 0.031623, tol 0.000000)
+  [OK]  phred_to_error_prob(Q20) vs R/dada2: 0.010000 (expected 0.010000, tol 0.000000)
+  [OK]  phred_to_error_prob(Q25) vs R/dada2: 0.003162 (expected 0.003162, tol 0.000000)
+  [OK]  phred_to_error_prob(Q30) vs R/dada2: 0.001000 (expected 0.001000, tol 0.000000)
+  [OK]  phred_to_error_prob(Q35) vs R/dada2: 0.000316 (expected 0.000316, tol 0.000000)
+  [OK]  phred_to_error_prob(Q40) vs R/dada2: 0.000100 (expected 0.000100, tol 0.000000)
+  [OK]  Phred roundtrip Q10: 10.000000 (expected 10.000000, tol 0.000000)
+  [OK]  Phred roundtrip Q20: 20.000000 (expected 20.000000, tol 0.000000)
+  [OK]  Phred roundtrip Q30: 30.000000 (expected 30.000000, tol 0.000000)
+
+§9  DADA2: Consensus quality aggregation
+  [OK]  Mean P(error) vs R/dada2: 0.000906 (expected 0.000906, tol 0.000000)
+  [OK]  Consensus Q vs R/dada2: 30.426726 (expected 30.426726, tol 0.000000)
+
+§10 phyloseq: UniFrac structural properties
+  [OK]  WUF(S1,S2) in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  WUF(S1,S3) in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  WUF(S2,S3) in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  WUF symmetry |WUF(1,2)-WUF(2,1)|: 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  WUF self-distance WUF(S1,S1): 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  WUF ordering: WUF(S1,S2) > WUF(S1,S3): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  WUF ordering: WUF(S1,S2) > WUF(S2,S3): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  UF_unweighted(S1,S2) vs R/phyloseq (all OTUs shared → 0): 0.000000 (expected 0.000000, tol 0.000000)
+
+§11 phyloseq/ape: Cophenetic distances
+  [OK]  d(A,B) vs R/ape cophenetic: 0.300000 (expected 0.300000, tol 0.000000)
+  [OK]  d(A,C) vs R/ape cophenetic: 1.400000 (expected 1.400000, tol 0.000000)
+  [OK]  d(C,D) vs R/ape cophenetic: 0.900000 (expected 0.900000, tol 0.000000)
+
+  Total time: 0.4ms
+
+═══════════════════════════════════════════════════════════
+  R Industry Parity — vegan 2.7.3 / dada2 1.22.0 / phyloseq 1.38.0: 53/53 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

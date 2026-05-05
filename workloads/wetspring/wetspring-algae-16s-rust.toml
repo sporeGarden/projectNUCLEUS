@@ -8,9 +8,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-# Set WETSPRING_DIR to your springs/wetSpring checkout before running
-command = "${WETSPRING_DIR}/target/release/validate_algae_16s"
-working_dir = "${WETSPRING_DIR}"
+command = "/home/irongate/Development/ecoPrimals/springs/wetSpring/target/release/validate_algae_16s"
+working_dir = "/home/irongate/Development/ecoPrimals/springs/wetSpring"
 
 [resources]
 max_memory_bytes = 2147483648

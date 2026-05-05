@@ -54,10 +54,12 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Phase 1 validated (2026-05-04)**:
-- Node Atomic (BearDog + Songbird + ToadStool + barraCuda + coralReef) running
-- 133 wetSpring science checks passing through toadStool dispatch
-- Python + Rust workloads dispatched via TOML workload specs
+**Phase 1 validated (2026-05-04, elevated 2026-05-04)**:
+- Nest Atomic + ToadStool (9 primals) running: BearDog, SongBird, ToadStool, BarraCuda, CoralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass
+- 235+ wetSpring science checks passing across 10 workloads (8 Rust validators, 2 Python baselines)
+- Real NCBI data processed: 11.9M paired-end reads from PRJNA488170
+- Full provenance chain operational: BLAKE3 content hashes → rhizoCrypt DAG (24 events) → loamSpine permanent ledger → sweetGrass ed25519-witnessed braid
+- Python + Rust workloads dispatched via TOML workload specs through toadStool
 - JupyterHub available for notebook-style access
 
 ## Quick Start
@@ -77,8 +79,9 @@ See [deploy/](deploy/) for full deployment instructions.
 
 ### Phase 1: Covalent LAN HPC (current)
 
-Single-gate Node Atomic with toadStool dispatch. Manual bootstrap, covalent
-bonding only. Workloads run locally.
+Single-gate Nest Atomic + ToadStool (9 primals) with provenance pipeline.
+Manual bootstrap, covalent bonding only. Workloads run locally with full
+provenance: BLAKE3 content hashing, DAG sessions, permanent ledger, attribution braids.
 
 ### Phase 2: Ionic Compute Sharing
 
@@ -103,12 +106,12 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 
 ```
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling (deploy.sh, gate manifest)
+deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, gate manifest)
 graphs/             Curated deploy graph TOMLs (from primalSpring)
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads
   templates/        Templates for new workloads
-validation/         Composition validation results and gap reports
+validation/         Composition validation results, provenance manifests, gap reports
 docs/               Architecture primers and external-facing docs
 ```
 

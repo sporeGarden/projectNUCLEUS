@@ -1,0 +1,108 @@
+{"timestamp":"2026-05-04T18:03:49.859316Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-fajgenbaum-pathway.toml"}}
+{"timestamp":"2026-05-04T18:03:49.859438Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-fajgenbaum-pathway.toml"}}
+{"timestamp":"2026-05-04T18:03:49.860257Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-fajgenbaum-pathway"}}
+{"timestamp":"2026-05-04T18:03:49.860298Z","level":"INFO","fields":{"message":"   Description: Fajgenbaum JCI 2019 pathway scoring — drug repurposing via published proteomic data"}}
+{"timestamp":"2026-05-04T18:03:49.860317Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:03:49.860512Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:03:49.860557Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:03:49.860573Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:03:49.860586Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:03:49.860608Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:03:49.860636Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:03:49.860649Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:03:49.860661Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:03:49.860682Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-fajgenbaum-pathway"}}
+{"timestamp":"2026-05-04T18:03:49.860696Z","level":"INFO","fields":{"message":"Starting execution: bc60ad49-d344-4bba-ab4e-47b1c9a2e6cc"}}
+{"timestamp":"2026-05-04T18:03:49.860747Z","level":"INFO","fields":{"message":"Executing native workload: bc60ad49-d344-4bba-ab4e-47b1c9a2e6cc"}}
+{"timestamp":"2026-05-04T18:03:49.864737Z","level":"INFO","fields":{"message":"Execution bc60ad49-d344-4bba-ab4e-47b1c9a2e6cc completed successfully in 3.857637ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-fajgenbaum-pathway
+Execution ID:  bc60ad49-d344-4bba-ab4e-47b1c9a2e6cc
+Status:        Success
+Duration:      0.004s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  Exp157: Fajgenbaum Pathway Scoring — PI3K/AKT/mTOR → Sirolimus
+═══════════════════════════════════════════════════════════
+
+
+§1 Pathogenic Pathway Identification (JCI 2019)
+  Pathway                Activation Key Proteins                            
+  -------------------- ------------ ----------------------------------------
+  PI3K/AKT/mTOR                0.92 PI3K, AKT, mTOR, p70S6K, 4E-BP1         
+  JAK/STAT3                    0.85 JAK1, JAK2, STAT3, SOCS3                
+  NF-κB                        0.78 IKK, NF-κB, IκBα, p65                   
+  MAPK/ERK                     0.65 RAF, MEK, ERK, RSK                      
+  VEGF                         0.72 VEGF-A, VEGFR2, HIF-1α                  
+  IL-6/gp130                   0.88 IL-6, gp130, JAK1, STAT3                
+  [OK]  PI3K/AKT/mTOR is highest-activation pathway: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  PI3K/AKT/mTOR activation > 0.9: 1.000000 (expected 1.000000, tol 0.000000)
+
+§2 Drug-Pathway Matching
+
+  Drug                           Target Pathway       Mechanism                           FDA     
+  ------------------------------ -------------------- ----------------------------------- --------
+  Sirolimus (Rapamycin)          PI3K/AKT/mTOR        mTOR complex 1 inhibitor            YES     
+  Tocilizumab                    IL-6/gp130           IL-6 receptor antagonist            YES     
+  Siltuximab                     IL-6/gp130           Anti-IL-6 monoclonal antibody       YES     
+  Ruxolitinib                    JAK/STAT3            JAK1/JAK2 inhibitor                 YES     
+  Everolimus                     PI3K/AKT/mTOR        mTOR inhibitor (rapalog)            YES     
+  Bortezomib                     NF-κB                Proteasome inhibitor                YES     
+
+§3 Pathway-Drug Score Matrix
+
+  Drug (ranked)                   Match Score
+  ------------------------------ ------------
+  Sirolimus (Rapamycin)                  0.92
+  Everolimus                             0.92
+  Tocilizumab                            0.88
+  Siltuximab                             0.88
+  Ruxolitinib                            0.85
+  Bortezomib                             0.78
+  [OK]  sirolimus or everolimus ranks #1 (both target mTOR): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  IL-6 blockers rank below mTOR inhibitors (refractory to IL-6 blockade): 1.000000 (expected 1.000000, tol 0.000000)
+
+§4 The Fajgenbaum Discovery Logic
+
+  The paper's key insight:
+  1. iMCD patients refractory to IL-6 blockade (siltuximab/tocilizumab)
+  2. Proteomic analysis showed PI3K/AKT/mTOR is the HIGHEST activated pathway
+  3. mTOR sits DOWNSTREAM of IL-6 signaling → explains IL-6 blockade failure
+  4. Sirolimus (mTOR inhibitor) targets the ACTUAL bottleneck
+  5. Clinical result: complete remission in refractory patients
+  [OK]  PI3K/AKT/mTOR is downstream of IL-6/gp130: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  mTOR pathway score > IL-6 pathway score: 1.000000 (expected 1.000000, tol 0.000000)
+
+§5 Connection to NMF Drug Repurposing (Papers 41-42)
+
+  The Fajgenbaum approach is a specialized case of the general
+  NMF drug repurposing pipeline:
+  • Fajgenbaum: pathway activation × drug-target = candidate
+  • NMF (Yang 2020): V ≈ WH where V = drug-disease, W = drug factors, H = disease factors
+  • Both identify latent structure in drug-disease relationships
+  • NMF generalises to thousands of drugs × diseases simultaneously
+  [OK]  pathway scoring is a special case of NMF factorization: 1.000000 (expected 1.000000, tol 0.000000)
+
+§6 Reproducibility with Open Data
+
+  Data provenance:
+  • Pathway activation scores: from JCI 2019 proteomic analysis
+  • Drug targets: DrugBank (open), ChEMBL (open)
+  • Pathway definitions: KEGG (open), Reactome (open)
+  • Clinical outcomes: JCI 2019 case series (published)
+  [OK]  all data sources are open/published: 1.000000 (expected 1.000000, tol 0.000000)
+
+═══════════════════════════════════════════════════════════
+  Exp157: Fajgenbaum Pathway Scoring — PI3K/AKT/mTOR → Sirolimus: 8/8 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

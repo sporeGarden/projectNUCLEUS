@@ -1,0 +1,100 @@
+{"timestamp":"2026-05-04T18:09:58.625944Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-algae-16s-rust.toml"}}
+{"timestamp":"2026-05-04T18:09:58.626069Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-algae-16s-rust.toml"}}
+{"timestamp":"2026-05-04T18:09:58.626674Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-algae-16s-rust"}}
+{"timestamp":"2026-05-04T18:09:58.626699Z","level":"INFO","fields":{"message":"   Description: Algae pond 16S community validation (Wageningen/AlgaeParc datasets)"}}
+{"timestamp":"2026-05-04T18:09:58.626715Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:09:58.626921Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:09:58.626967Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:09:58.626983Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:09:58.626997Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:09:58.627020Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:09:58.627048Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:09:58.627063Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:09:58.627076Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:09:58.627098Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-algae-16s-rust"}}
+{"timestamp":"2026-05-04T18:09:58.627113Z","level":"INFO","fields":{"message":"Starting execution: aea57bd9-fd8f-468d-b34f-7821eaeb034e"}}
+{"timestamp":"2026-05-04T18:09:58.627148Z","level":"INFO","fields":{"message":"Executing native workload: aea57bd9-fd8f-468d-b34f-7821eaeb034e"}}
+{"timestamp":"2026-05-04T18:10:21.668212Z","level":"INFO","fields":{"message":"Execution aea57bd9-fd8f-468d-b34f-7821eaeb034e completed successfully in 23.041002089s"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-algae-16s-rust
+Execution ID:  aea57bd9-fd8f-468d-b34f-7821eaeb034e
+Status:        Success
+Duration:      23.041s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  wetSpring Algae Pond 16S Validation (Exp012)
+═══════════════════════════════════════════════════════════
+
+
+Synthetic Algae-Pond Pipeline
+  [OK]  Synthetic reads generated: 500 (expected 500)
+  [OK]  Derep: 5 unique sequences: 5 (expected 5)
+  [OK]  Derep: input count: 500 (expected 500)
+  [OK]  DADA2: 5 ASVs: 5 (expected 5)
+  [OK]  DADA2: reads conserved = 500: 500 (expected 500)
+  [OK]  Chimera: all 5 ASVs pass: 5 (expected 5)
+  [OK]  Chimera: 0 chimeras: 0 (expected 0)
+  [OK]  Observed features = 5: 5.000000 (expected 5.000000, tol 0.000000)
+  [OK]  Shannon > 0 (diverse community): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Simpson in (0,1): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Shannon analytical match: 1.329894 (expected 1.329894, tol 0.000000)
+  [OK]  Taxonomy: 5 reference taxa trained: 5 (expected 5)
+  [OK]  Taxonomy: dominant ASV → Thalassospira: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Taxonomy: pathogen ASV → Bacillus: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  UniFrac: tree has 5 leaves: 5 (expected 5)
+  [OK]  UniFrac: self-distance = 0: 0.000000 (expected 0.000000, tol 0.000000)
+  [OK]  UniFrac: healthy vs pathogen-dominated > 0: 1.000000 (expected 1.000000, tol 0.000000)
+
+Humphrey 2023 Reference Points
+  [OK]  Humphrey: observed = 18 OTUs: 18.000000 (expected 18.000000, tol 0.000000)
+  [OK]  Humphrey: Shannon in plausible range [1.0, 3.5]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Humphrey: Simpson > 0.5 (moderately diverse): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Humphrey: core genera >50% of reads: 1.000000 (expected 1.000000, tol 0.000000)
+
+Python Control Parity (PRJNA488170)
+  [OK]  Python/Rust Shannon agree on analytical input: 1.876353 (expected 1.876353, tol 0.000000)
+  [OK]  Python/Rust Simpson agree on analytical input: 0.802799 (expected 0.802799, tol 0.000000)
+  [OK]  Python baseline Shannon > 5.0 (high-diversity marine): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Python baseline Simpson > 0.99 (very even community): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Python baseline QC retention > 95%: 1.000000 (expected 1.000000, tol 0.000000)
+
+Real FASTQ Data (SRR7760408)
+  Parsing R1: /home/irongate/Development/ecoPrimals/springs/wetSpring/barracuda/../data/paper_proxy/nannochloropsis_16s/SRR7760408/SRR7760408_1.fastq.gz
+  Parsed 11891123 reads from R1
+  [OK]  R1 read count > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  R1 read count > 10000 (MiSeq expected millions): 1.000000 (expected 1.000000, tol 0.000000)
+  Quality filter: 11809603/11891123 retained (99.3%)
+  [OK]  Quality retention > 50%: 1.000000 (expected 1.000000, tol 0.000000)
+  Mean read length: 268 bp
+  [OK]  Mean read length > 100 bp: 1.000000 (expected 1.000000, tol 0.000000)
+  Dereplication: 3 unique sequences from 1000 reads
+  [OK]  Derep: >1 unique sequence: 1.000000 (expected 1.000000, tol 0.000000)
+  DADA2: 3 ASVs from 3 uniques
+  [OK]  DADA2: >1 ASV from real data: 1.000000 (expected 1.000000, tol 0.000000)
+  Real diversity: observed=3, Shannon=1.099
+  [OK]  Real data Shannon > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  R2 present: /home/irongate/Development/ecoPrimals/springs/wetSpring/barracuda/../data/paper_proxy/nannochloropsis_16s/SRR7760408/SRR7760408_2.fastq.gz
+  [OK]  R2 file exists: 1.000000 (expected 1.000000, tol 0.000000)
+
+═══════════════════════════════════════════════════════════
+  wetSpring Algae Pond 16S Validation (Exp012): 34/34 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+
+
+✅ Operation completed successfully!
+
+📊 Operation Summary
+────────────────────────────────────────
+Operation: Command execution
+Duration:  23.04s
+

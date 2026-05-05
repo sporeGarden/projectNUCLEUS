@@ -1,0 +1,90 @@
+{"timestamp":"2026-05-04T18:06:15.794920Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-benchmark-python-baseline.toml"}}
+{"timestamp":"2026-05-04T18:06:15.795029Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-benchmark-python-baseline.toml"}}
+{"timestamp":"2026-05-04T18:06:15.795568Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-benchmark-python-baseline"}}
+{"timestamp":"2026-05-04T18:06:15.795582Z","level":"INFO","fields":{"message":"   Description: Python performance baseline for cross-domain Rust speedup comparison"}}
+{"timestamp":"2026-05-04T18:06:15.795594Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:06:15.795759Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:06:15.795794Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:06:15.795805Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:06:15.795816Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:06:15.795832Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:06:15.795852Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:06:15.795864Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:06:15.795874Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:06:15.795890Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-benchmark-python-baseline"}}
+{"timestamp":"2026-05-04T18:06:15.795902Z","level":"INFO","fields":{"message":"Starting execution: 8a64d27e-775d-4d45-88de-7b4001468b21"}}
+{"timestamp":"2026-05-04T18:06:15.795930Z","level":"INFO","fields":{"message":"Executing native workload: 8a64d27e-775d-4d45-88de-7b4001468b21"}}
+{"timestamp":"2026-05-04T18:06:20.004172Z","level":"INFO","fields":{"message":"Execution 8a64d27e-775d-4d45-88de-7b4001468b21 completed successfully in 4.208201533s"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-benchmark-python-baseline
+Execution ID:  8a64d27e-775d-4d45-88de-7b4001468b21
+Status:        Success
+Duration:      4.208s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════╗
+║  Python Baseline Benchmark (numpy/scipy + RAPL)   ║
+║  CPU: Intel(R) Core(TM) i9-14900K                  ║
+╚════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────┐
+│ SINGLE-VECTOR REDUCTIONS                          │
+├──────────────────────────────────────────────────┤
+│ Workload                          N      Python│
+├──────────────────────────────────────────────────┤
+│ Shannon entropy                1000       7.5µs│
+│ Shannon entropy               10000      38.9µs│
+│ Shannon entropy              100000     589.4µs│
+│ Shannon entropy             1000000      5.60ms│
+│ Simpson diversity              1000       3.0µs│
+│ Simpson diversity             10000       9.2µs│
+│ Simpson diversity            100000      79.7µs│
+│ Simpson diversity           1000000     936.0µs│
+│ Variance                       1000       4.4µs│
+│ Variance                      10000       8.3µs│
+│ Variance                     100000      52.6µs│
+│ Variance                    1000000     662.2µs│
+│ Dot product                    1000     368.3ns│
+│ Dot product                   10000       1.2µs│
+│ Dot product                  100000       3.2µs│
+│ Dot product                 1000000      13.2µs│
+
+┌──────────────────────────────────────────────────┐
+│ PAIRWISE N×N WORKLOADS                            │
+├──────────────────────────────────────────────────┤
+│ Bray-Curtis 10x10                45     117.4µs│
+│ Bray-Curtis 20x20               190     485.2µs│
+│ Bray-Curtis 50x50              1225      3.09ms│
+│ Bray-Curtis 100x100            4950     12.53ms│
+│ Cosine 10x10                     45      23.9µs│
+│ Cosine 50x50                   1225     487.9µs│
+│ Cosine 100x100                 4950      1.89ms│
+│ Cosine 200x200                19900      7.51ms│
+
+┌──────────────────────────────────────────────────┐
+│ MATRIX ALGEBRA                                    │
+├──────────────────────────────────────────────────┤
+│ PCoA 10x10                       10      18.7µs│
+│ PCoA 20x20                       20      43.8µs│
+│ PCoA 30x30                       30     142.4µs│
+
+══════════════════════════════════════════════════
+
+JSON results saved to /home/irongate/Development/ecoPrimals/springs/wetSpring/benchmarks/results/python_baseline_2026-05-04T18-06-19.json
+
+────────────────────────────────────────────────────────────
+
+
+✅ Operation completed successfully!
+
+📊 Operation Summary
+────────────────────────────────────────
+Operation: Command execution
+Duration:  4.21s
+

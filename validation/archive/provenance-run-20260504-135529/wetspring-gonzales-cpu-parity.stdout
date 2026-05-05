@@ -1,0 +1,125 @@
+{"timestamp":"2026-05-04T17:57:15.975560Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-gonzales-cpu-parity.toml"}}
+{"timestamp":"2026-05-04T17:57:15.975643Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-gonzales-cpu-parity.toml"}}
+{"timestamp":"2026-05-04T17:57:15.976077Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-gonzales-cpu-parity"}}
+{"timestamp":"2026-05-04T17:57:15.976093Z","level":"INFO","fields":{"message":"   Description: Gonzales CPU parity — PK/dose-response immunological modeling against Python baselines"}}
+{"timestamp":"2026-05-04T17:57:15.976103Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T17:57:15.976219Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T17:57:15.976245Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T17:57:15.976255Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T17:57:15.976265Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T17:57:15.976279Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T17:57:15.976297Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T17:57:15.976307Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T17:57:15.976316Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T17:57:15.976330Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-gonzales-cpu-parity"}}
+{"timestamp":"2026-05-04T17:57:15.976340Z","level":"INFO","fields":{"message":"Starting execution: 0b565e17-c2d1-436c-a73a-a3547758ff58"}}
+{"timestamp":"2026-05-04T17:57:15.976363Z","level":"INFO","fields":{"message":"Executing native workload: 0b565e17-c2d1-436c-a73a-a3547758ff58"}}
+{"timestamp":"2026-05-04T17:57:16.041171Z","level":"INFO","fields":{"message":"Execution 0b565e17-c2d1-436c-a73a-a3547758ff58 completed successfully in 64.769208ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-gonzales-cpu-parity
+Execution ID:  0b565e17-c2d1-436c-a73a-a3547758ff58
+Status:        Success
+Duration:      0.065s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  Exp283: CPU Parity — Gonzales Reproductions
+═══════════════════════════════════════════════════════════
+
+
+═══ D01: Hill Equation — barracuda vs. Manual ═══
+  [OK]  hill(10, 10, 1): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(100, 10, 1): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(1, 10, 1): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(50, 50, 2): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(0.1, 0.8, 1.2): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(5, 0.8, 1.2): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(0, 10, 1): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(1000000, 10, 1): diff=0.00e0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  hill(IC50, IC50, 1) = exactly 0.5: 1.000000 (expected 1.000000, tol 0.000000)
+
+═══ D02: Mean & R² — barracuda vs. Manual ═══
+  [OK]  mean parity: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  R² parity: 1.000000 (expected 1.000000, tol 0.000000)
+  barracuda mean = 5.5000000000, manual = 5.5000000000
+  barracuda R² = 0.9702551020, manual = 0.9702551020
+
+═══ D03: Exponential Regression Parity ═══
+  [OK]  fit.params[0] ≈ a_true (2.5): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  fit.params[1] ≈ b_true (0.3): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  fit R² ≈ 1.0 on clean data: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  predict_one(1) ≈ y[0]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  predict_one(2) ≈ y[1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  predict_one(3) ≈ y[2]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  predict_one(4) ≈ y[3]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  predict_one(5) ≈ y[4]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  PK fit R² > 0.95: 1.000000 (expected 1.000000, tol 0.000000)
+  Clean data: a=2.5000 (true=2.5), b=0.3000 (true=0.3), R²=1.000000
+  PK dose-duration: R²=0.971216
+
+═══ D04: Diversity — barracuda vs. Textbook ═══
+  [OK]  Shannon parity: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Simpson parity: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Pielou parity: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Chao1 parity: 1.000000 (expected 1.000000, tol 0.000000)
+  Shannon: barracuda=1.679227, manual=1.679227
+  Simpson: barracuda=0.776730, manual=0.776730
+  Pielou:  barracuda=0.862952, manual=0.862952
+  Chao1:   barracuda=7.000000, manual=7.000000
+
+═══ D05: Anderson Spectral — Deterministic Seed Parity ═══
+  [OK]  2D W=16 seed=42: r identical across runs: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  2D W=16 seed=42: r in valid range: 1.000000 (expected 1.000000, tol 0.000000)
+  2D (8×8×1, W=16, seed=42): r1=0.417032, r2=0.417032
+  [OK]  3D W=4 seed=42: r identical across runs: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  3D W=4 seed=42: r in valid range: 1.000000 (expected 1.000000, tol 0.000000)
+  3D (6×6×6, W=4, seed=42): r1=0.546606, r2=0.546606
+  [OK]  2D W=20 seed=42: r identical across runs: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  2D W=20 seed=42: r in valid range: 1.000000 (expected 1.000000, tol 0.000000)
+  2D (8×8×1, W=20, seed=42): r1=0.450771, r2=0.450771
+  [OK]  2D W=16 seed=99: r identical across runs: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  2D W=16 seed=99: r in valid range: 1.000000 (expected 1.000000, tol 0.000000)
+  2D (8×8×1, W=16, seed=99): r1=0.418531, r2=0.418531
+  [OK]  Different seeds → different r values: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  2D W=16 → localized (r < midpoint): 1.000000 (expected 1.000000, tol 0.000000)
+
+═══ D06: IC50 → Anderson Barrier Consistency ═══
+  [OK]  Barriers are monotonically increasing: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  All barrier gaps positive: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Barrier range > 10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=10: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=36: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=71: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=80: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=150: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Round-trip IC50=249: |recovered - original| < 1e-10: 1.000000 (expected 1.000000, tol 0.000000)
+
+╔═══════════════════════════════════════════════════════════════╗
+║  Exp283: CPU Parity — Gonzales Reproductions                 ║
+╠═════════════════════════╦════════════╦═══════════════════════╣
+║ Domain                  ║   CPU (µs) ║ Checks               ║
+╠═════════════════════════╬════════════╬═══════════════════════╣
+║ Hill equation           ║         68 ║   9                   ║
+║ Mean & R²               ║         15 ║   2                   ║
+║ Exponential regression  ║         67 ║   9                   ║
+║ Diversity metrics       ║         25 ║   4                   ║
+║ Anderson spectral       ║      62476 ║  10                   ║
+║ IC50→barrier map        ║          8 ║   9                   ║
+╠═════════════════════════╬════════════╬═══════════════════════╣
+║ TOTAL                   ║      62659 ║  43                   ║
+╚═════════════════════════╩════════════╩═══════════════════════╝
+
+
+═══════════════════════════════════════════════════════════
+  Exp283: CPU Parity — Gonzales Reproductions: 43/43 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

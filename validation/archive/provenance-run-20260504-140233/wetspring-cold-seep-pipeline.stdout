@@ -1,0 +1,80 @@
+{"timestamp":"2026-05-04T18:05:28.871420Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-cold-seep-pipeline.toml"}}
+{"timestamp":"2026-05-04T18:05:28.871492Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-cold-seep-pipeline.toml"}}
+{"timestamp":"2026-05-04T18:05:28.871792Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-cold-seep-pipeline"}}
+{"timestamp":"2026-05-04T18:05:28.871804Z","level":"INFO","fields":{"message":"   Description: Cold seep metagenomics pipeline — QS gene catalog and diversity analysis"}}
+{"timestamp":"2026-05-04T18:05:28.871812Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T18:05:28.871895Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T18:05:28.871916Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:05:28.871923Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T18:05:28.871930Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T18:05:28.871941Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T18:05:28.871955Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T18:05:28.871963Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T18:05:28.871970Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T18:05:28.871980Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-cold-seep-pipeline"}}
+{"timestamp":"2026-05-04T18:05:28.871988Z","level":"INFO","fields":{"message":"Starting execution: 9026af07-3524-4467-8401-3c0f1ada6492"}}
+{"timestamp":"2026-05-04T18:05:28.872004Z","level":"INFO","fields":{"message":"Executing native workload: 9026af07-3524-4467-8401-3c0f1ada6492"}}
+{"timestamp":"2026-05-04T18:05:28.875316Z","level":"INFO","fields":{"message":"Execution 9026af07-3524-4467-8401-3c0f1ada6492 completed successfully in 3.284901ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-cold-seep-pipeline
+Execution ID:  9026af07-3524-4467-8401-3c0f1ada6492
+Status:        Success
+Duration:      0.003s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  Exp185: Cold Seep Metagenomes Through Sovereign Pipeline
+═══════════════════════════════════════════════════════════
+
+
+── S1: Data preparation ──
+  Generating 50 synthetic cold seep communities
+  (Calibrated to Ruff et al. published diversity ranges)
+  [OK]  50 communities generated: 1.000000 (expected 1.000000, tol 0.000000)
+
+── S2: Diversity metrics ──
+  Sample    Shannon    Simpson    S_obs   Pielou
+       0     4.8779     0.9915      150   0.9735
+       1     4.8918     0.9917      151   0.9750
+       2     4.8882     0.9915      152   0.9730
+       3     4.9109     0.9918      153   0.9762
+       4     4.9058     0.9918      154   0.9740
+     ...
+      49     5.1993     0.9940      199   0.9822
+
+  Mean Shannon H': 5.0472
+  Mean Simpson D:  0.9929
+  Mean S_obs:      174.5
+  [OK]  all Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  mean Shannon in [2, 6]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  all Simpson D >= 0.7: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  all S_obs >= 50: 1.000000 (expected 1.000000, tol 0.000000)
+
+── S3: Bray-Curtis distance matrix ──
+  [OK]  Bray-Curtis condensed pairs: 1225 (expected 1225)
+  [OK]  all Bray-Curtis distances in [0, 1]: 1.000000 (expected 1.000000, tol 0.000000)
+  Condensed Bray-Curtis: 1225 pairs
+  Mean distance: 0.1816
+
+── S4: Anderson spectral classification ──
+  Anderson spectral analysis requires --features gpu
+  [OK]  spectral deferred (no GPU): 1.000000 (expected 1.000000, tol 0.000000)
+
+── S5: Summary ──
+  Samples: 50 cold seep communities
+  Diversity: all Shannon > 0, Simpson > 0.7, S_obs > 50
+  Prediction: 3D sediment → extended QS regime
+
+═══════════════════════════════════════════════════════════
+  Exp185: Cold Seep Metagenomes Through Sovereign Pipeline: 8/8 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

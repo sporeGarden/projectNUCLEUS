@@ -1,0 +1,104 @@
+{"timestamp":"2026-05-04T17:58:39.791313Z","level":"INFO","fields":{"message":"🚀 Executing workload: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-real-ncbi-pipeline.toml"}}
+{"timestamp":"2026-05-04T17:58:39.791413Z","level":"INFO","fields":{"message":"📖 Loading workload specification: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/workloads/wetspring/wetspring-real-ncbi-pipeline.toml"}}
+{"timestamp":"2026-05-04T17:58:39.791860Z","level":"INFO","fields":{"message":"✅ Loaded workload: wetspring-real-ncbi-pipeline"}}
+{"timestamp":"2026-05-04T17:58:39.791879Z","level":"INFO","fields":{"message":"   Description: Real NCBI 16S through sovereign diversity + Anderson spectral pipeline (Exp184)"}}
+{"timestamp":"2026-05-04T17:58:39.791891Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-04T17:58:39.792032Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-04T17:58:39.792062Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T17:58:39.792073Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-04T17:58:39.792084Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-04T17:58:39.792101Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-04T17:58:39.792121Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-04T17:58:39.792132Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-04T17:58:39.792143Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-04T17:58:39.792159Z","level":"INFO","fields":{"message":"🚀 Executing workload: wetspring-real-ncbi-pipeline"}}
+{"timestamp":"2026-05-04T17:58:39.792170Z","level":"INFO","fields":{"message":"Starting execution: ecacb0eb-db50-438d-9caf-726256d25ef6"}}
+{"timestamp":"2026-05-04T17:58:39.792195Z","level":"INFO","fields":{"message":"Executing native workload: ecacb0eb-db50-438d-9caf-726256d25ef6"}}
+{"timestamp":"2026-05-04T17:58:39.796461Z","level":"INFO","fields":{"message":"Execution ecacb0eb-db50-438d-9caf-726256d25ef6 completed successfully in 4.209795ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wetspring-real-ncbi-pipeline
+Execution ID:  ecacb0eb-db50-438d-9caf-726256d25ef6
+Status:        Success
+Duration:      0.004s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+═══════════════════════════════════════════════════════════
+  Exp184: Real NCBI 16S Through Sovereign Pipeline
+═══════════════════════════════════════════════════════════
+
+
+── S1: Data acquisition ──
+  NCBI API key: NOT FOUND (synthetic fallback)
+  Using synthetic communities (offline mode)
+  [OK]  5 samples loaded: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  synthetic fallback active (offline OK): 1.000000 (expected 1.000000, tol 0.000000)
+
+── S2: Diversity pipeline ──
+  Sample                  Shannon    Simpson    S_obs   Pielou
+  -------------------- ---------- ---------- -------- --------
+  SYNTH_cold_seep_1        5.2084     0.9941      200   0.9830
+  SYNTH_cold_seep_2        5.1005     0.9934      180   0.9822
+  SYNTH_cold_seep_3        5.3141     0.9947      220   0.9853
+  SYNTH_vent_1             4.6808     0.9898      120   0.9777
+  SYNTH_vent_2             4.4803     0.9874      100   0.9729
+  [OK]  sample SYNTH_cold_seep_1 Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_2 Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_3 Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_1 Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_2 Shannon H' > 0: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_1 Simpson D in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_2 Simpson D in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_3 Simpson D in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_1 Simpson D in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_2 Simpson D in [0,1]: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_1 observed features > 10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_2 observed features > 10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_cold_seep_3 observed features > 10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_1 observed features > 10: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  sample SYNTH_vent_2 observed features > 10: 1.000000 (expected 1.000000, tol 0.000000)
+
+── S3: Bray-Curtis distance matrix ──
+  [OK]  Bray-Curtis matrix is symmetric: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Bray-Curtis diagonal is zero: 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  Bray-Curtis values in [0, 1]: 1.000000 (expected 1.000000, tol 0.000000)
+  Bray-Curtis distance matrix (5×5):
+     0.000  0.149  0.148  0.326  0.395 
+     0.149  0.000  0.171  0.276  0.366 
+     0.148  0.171  0.000  0.360  0.447 
+     0.326  0.276  0.360  0.000  0.161 
+     0.395  0.366  0.447  0.161  0.000 
+
+── S4: Anderson spectral analysis ──
+  Anderson spectral analysis requires --features gpu
+  Diversity pipeline validated; spectral overlay deferred to GPU run
+  [OK]  spectral deferred (no GPU): 1.000000 (expected 1.000000, tol 0.000000)
+
+── S5: Cross-reference with published values ──
+  Mean Shannon H':       4.9568
+  Mean Simpson D:        0.9919
+  Mean observed species: 164.0
+  [OK]  mean Shannon H' > 1 (expected for marine sediment/vent): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  mean Simpson D > 0.5 (moderate to high evenness): 1.000000 (expected 1.000000, tol 0.000000)
+  [OK]  mean observed features > 30: 1.000000 (expected 1.000000, tol 0.000000)
+
+── S6: Pipeline summary ──
+  Data mode: SYNTHETIC
+  Samples processed: 5
+  Diversity metrics: Shannon, Simpson, S_obs, Pielou J
+  Distance matrix:   Bray-Curtis (5×5)
+  Spectral overlay:  deferred (requires --features gpu)
+  [OK]  pipeline complete: 1.000000 (expected 1.000000, tol 0.000000)
+
+═══════════════════════════════════════════════════════════
+  Exp184: Real NCBI 16S Through Sovereign Pipeline: 25/25 checks passed
+  RESULT: PASS
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+

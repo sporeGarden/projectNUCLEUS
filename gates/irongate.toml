@@ -1,7 +1,8 @@
 # Gate: ironGate — Agentic Development + Composition Validation
 #
 # First gate bootstrapped from zero via plasmidBin.
-# Node Atomic validated 2026-05-04 with 133 wetSpring checks passing.
+# Nest Atomic + ToadStool validated 2026-05-04 with 235+ checks passing.
+# Provenance pipeline elevated same day — full DAG/ledger/braid chain.
 
 [gate]
 name = "irongate"
@@ -23,16 +24,25 @@ network = "Cat6e ethernet (LAN), 1G WAN"
 os = "Pop!_OS 22.04"
 
 [composition]
-atomic = "node"
-primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef"]
-fragment = "node_atomic"
+atomic = "nest+toadstool"
+primals = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate",
+    "rhizocrypt", "loamspine", "sweetgrass",
+]
+fragment = "nest_atomic + node_atomic_compute"
 
 [ports]
 beardog = 9100
 songbird = 9200
 toadstool = 9400
-barracuda = 9500
+nestgate = 9500
+rhizocrypt_jsonrpc = 9601
+loamspine = 9700
+barracuda = 9740
 coralreef = 9730
+sweetgrass_http = 39085
 
 [identity]
 family_name = "irongate-sovereign"
@@ -42,7 +52,9 @@ family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 
 [validation]
 date = "2026-05-04"
-rust_checks_passed = 133
+rust_checks_passed = 235
 rust_checks_failed = 0
 python_benchmark = true
-workloads_dispatched = 7
+workloads_dispatched = 10
+provenance_events = 24
+provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"

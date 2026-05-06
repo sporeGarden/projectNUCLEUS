@@ -8,15 +8,19 @@
 #   abg-observer  — read-only notebooks, view results, no workload submission
 #   abg-compute   — run workloads via ToadStool, submit jobs, view provenance
 #   abg-admin     — full access, can manage other users, access raw primal APIs
+#   abg-reviewer  — external PI/HPC admin, showcase/ read-only, no execute
 #
 # Usage:
 #   sudo bash abg_accounts.sh add <username> <tier>
 #   sudo bash abg_accounts.sh list
 #   sudo bash abg_accounts.sh remove <username>
+#   sudo bash abg_accounts.sh create-project <name>
 #
 # Example:
 #   sudo bash abg_accounts.sh add jdoe compute
 #   sudo bash abg_accounts.sh add msmith observer
+#   sudo bash abg_accounts.sh add pi-garcia reviewer
+#   sudo bash abg_accounts.sh create-project scrna-castleman
 
 set -euo pipefail
 
@@ -27,12 +31,19 @@ JUPYTERHUB_CONFIG="/home/irongate/jupyterhub/jupyterhub_config.py"
 SHARED_NOTEBOOKS="/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/notebooks"
 SHARED_DATA="/home/irongate/Development/ecoPrimals/springs/wetSpring/data"
 PLASMIDBIN="/home/irongate/Development/ecoPrimals/infra/plasmidBin"
+ABG_SHARED="/home/irongate/shared/abg"
 
 ensure_groups() {
-    for grp in abg-observer abg-compute abg-admin; do
+    for grp in abg-observer abg-compute abg-admin abg-reviewer; do
         getent group "$grp" > /dev/null 2>&1 || groupadd "$grp"
     done
-    echo "Groups: abg-observer, abg-compute, abg-admin"
+    echo "Groups: abg-observer, abg-compute, abg-admin, abg-reviewer"
+}
+
+ensure_shared_workspace() {
+    mkdir -p "$ABG_SHARED"/{commons,projects,data,templates,showcase}
+    chmod 2775 "$ABG_SHARED" "$ABG_SHARED"/{commons,projects,data,templates,showcase}
+    echo "Shared workspace: $ABG_SHARED"
 }
 
 setup_shared_dirs() {
@@ -45,8 +56,14 @@ setup_shared_dirs() {
     # Symlink shared notebooks so users see them but can't modify originals
     ln -sf "$SHARED_NOTEBOOKS/abg-wetspring-validation.ipynb" "$user_home/notebooks/" 2>/dev/null || true
 
+    # Shared workspace — all tiers see it, reviewers only see showcase/
+    if [[ "$tier" == "reviewer" ]]; then
+        ln -sf "$ABG_SHARED/showcase" "$user_home/notebooks/shared" 2>/dev/null || true
+    else
+        ln -sf "$ABG_SHARED" "$user_home/notebooks/shared" 2>/dev/null || true
+    fi
+
     if [[ "$tier" == "compute" || "$tier" == "admin" ]]; then
-        # Compute users get symlinks to data and workload definitions
         ln -sf "$PROJECT_ROOT/workloads" "$user_home/workloads" 2>/dev/null || true
         ln -sf "$SHARED_DATA" "$user_home/data" 2>/dev/null || true
     fi
@@ -85,8 +102,8 @@ add_user() {
     local tier="$2"
 
     case "$tier" in
-        observer|compute|admin) ;;
-        *) echo "ERROR: Invalid tier '$tier'. Use: observer, compute, admin" >&2; exit 1 ;;
+        observer|compute|admin|reviewer) ;;
+        *) echo "ERROR: Invalid tier '$tier'. Use: observer, compute, admin, reviewer" >&2; exit 1 ;;
     esac
 
     if id "$username" &>/dev/null; then
@@ -99,7 +116,7 @@ add_user() {
     fi
 
     # Assign to tier group (remove from other tiers first)
-    for grp in abg-observer abg-compute abg-admin; do
+    for grp in abg-observer abg-compute abg-admin abg-reviewer; do
         gpasswd -d "$username" "$grp" 2>/dev/null || true
     done
 
@@ -125,7 +142,7 @@ add_user() {
     echo "Capabilities:"
     case "$tier" in
         observer)
-            echo "  - View shared notebooks and results"
+            echo "  - View shared workspace (all directories)"
             echo "  - Health check primals"
             echo "  - Read provenance manifests"
             echo "  - NO workload submission"
@@ -133,6 +150,7 @@ add_user() {
         compute)
             echo "  - All observer capabilities"
             echo "  - Submit workloads via ToadStool"
+            echo "  - Write to commons/ and assigned projects/"
             echo "  - Access NCBI data and workload definitions"
             echo "  - View provenance chain (DAG, ledger, braid)"
             echo "  - Run validation notebooks"
@@ -140,8 +158,16 @@ add_user() {
         admin)
             echo "  - All compute capabilities"
             echo "  - Query raw primal APIs"
+            echo "  - Create projects, manage showcase/"
             echo "  - View deployment status"
             echo "  - Manage other ABG users"
+            ;;
+        reviewer)
+            echo "  - View showcase/ directory only"
+            echo "  - Copy notebooks and results"
+            echo "  - NO workload submission"
+            echo "  - NO access to commons/ or projects/"
+            echo "  - Intended for external PIs and HPC admins"
             ;;
     esac
 
@@ -150,10 +176,46 @@ add_user() {
     echo "  Then: sudo passwd $username"
 }
 
+create_project() {
+    local project_name="$1"
+    local project_dir="$ABG_SHARED/projects/$project_name"
+
+    if [[ -d "$project_dir" ]]; then
+        echo "Project '$project_name' already exists at $project_dir"
+        exit 1
+    fi
+
+    mkdir -p "$project_dir"/{notebooks,data,results}
+    chmod 2775 "$project_dir" "$project_dir"/{notebooks,data,results}
+
+    cat > "$project_dir/README.md" << PEOF
+# $project_name
+
+Created: $(date -Iseconds)
+
+## Structure
+
+- notebooks/ — Jupyter notebooks for this project
+- data/ — Project-specific data (symlink to NestGate or shared/data/ for large files)
+- results/ — Output from workload runs, provenance manifests
+
+## Visibility
+
+All ABG members can see this project. Compute and admin tiers can write to it.
+PEOF
+
+    echo "Created project: $project_name"
+    echo "  Path: $project_dir"
+    echo "  Subdirectories: notebooks/, data/, results/"
+    echo ""
+    echo "Copy a starter notebook:"
+    echo "  cp $ABG_SHARED/templates/abg-wetspring-validation.ipynb $project_dir/notebooks/"
+}
+
 list_users() {
     echo "=== ABG Users ==="
     echo ""
-    for tier in admin compute observer; do
+    for tier in admin compute observer reviewer; do
         local members
         members=$(getent group "abg-$tier" 2>/dev/null | cut -d: -f4)
         echo "[$tier]"
@@ -176,7 +238,7 @@ remove_user() {
         exit 1
     fi
 
-    for grp in abg-observer abg-compute abg-admin; do
+    for grp in abg-observer abg-compute abg-admin abg-reviewer; do
         gpasswd -d "$username" "$grp" 2>/dev/null || true
     done
 
@@ -215,13 +277,14 @@ generate_jupyterhub_config() {
 # --- Main ---
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: sudo bash $0 {add|list|remove|config} [args...]"
+    echo "Usage: sudo bash $0 {add|list|remove|create-project|config} [args...]"
     exit 1
 fi
 
 ACTION="$1"; shift
 
 ensure_groups
+ensure_shared_workspace
 
 case "$ACTION" in
     add)
@@ -231,18 +294,29 @@ case "$ACTION" in
         ;;
     list)
         list_users
+        echo ""
+        echo "=== Projects ==="
+        if [[ -d "$ABG_SHARED/projects" ]]; then
+            for d in "$ABG_SHARED/projects"/*/; do
+                [[ -d "$d" ]] && echo "  - $(basename "$d")"
+            done
+        fi
         ;;
     remove)
         [[ $# -lt 1 ]] && { echo "Usage: sudo bash $0 remove <username>"; exit 1; }
         remove_user "$1"
         generate_jupyterhub_config
         ;;
+    create-project)
+        [[ $# -lt 1 ]] && { echo "Usage: sudo bash $0 create-project <name>"; exit 1; }
+        create_project "$1"
+        ;;
     config)
         generate_jupyterhub_config
         ;;
     *)
         echo "Unknown action: $ACTION"
-        echo "Usage: sudo bash $0 {add|list|remove|config} [args...]"
+        echo "Usage: sudo bash $0 {add|list|remove|create-project|config} [args...]"
         exit 1
         ;;
 esac

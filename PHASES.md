@@ -166,17 +166,44 @@ Cloudflare quick tunnel established and tested end-to-end:
 
 ### ABG Tiered Access Model
 
-JupyterHub supports three access tiers via Linux groups (`deploy/abg_accounts.sh`):
+JupyterHub supports four access tiers via Linux groups (`deploy/abg_accounts.sh`):
 
-| Tier | Group | Resources | Can Execute | Can Visualize |
-|------|-------|-----------|-------------|---------------|
-| observer | `abg-observer` | 8 GB / 4 cores | No | Yes (cached results) |
-| compute | `abg-compute` | 32 GB / 8 cores | Yes (via ToadStool) | Yes |
-| admin | `abg-admin` | 48 GB / 16 cores | Yes | Yes + raw API access |
+| Tier | Group | Resources | Workspace | Execute |
+|------|-------|-----------|-----------|---------|
+| admin | `abg-admin` | 48 GB / 16 cores | Full + manage | Yes + raw APIs |
+| compute | `abg-compute` | 32 GB / 8 cores | commons/, projects/ | Yes (ToadStool) |
+| observer | `abg-observer` | 8 GB / 4 cores | All (read-only) | No |
+| reviewer | `abg-reviewer` | 4 GB / 2 cores | showcase/ only | No |
 
 `pre_spawn_hook` in JupyterHub sets per-user resource limits, `NUCLEUS_TIER`
-environment variable, and primal port configuration. Observer-tier users
-get `NUCLEUS_READONLY=1` and see pre-computed results only.
+environment variable, primal port configuration, and shared workspace symlinks.
+Observer and reviewer tiers get `NUCLEUS_READONLY=1`.
+
+### ABG Shared Workspace
+
+All-visible shared space at `/home/irongate/shared/abg/` (see `specs/SHARED_WORKSPACE.md`):
+
+```
+commons/     — scratch notebooks, experiments (all members)
+projects/    — per-project spaces (abg_accounts.sh create-project)
+data/        — shared datasets (NCBI, reference genomes)
+templates/   — starter notebooks and workload TOMLs
+showcase/    — polished work for external review (PIs, HPC admins)
+```
+
+Google Doc model: all work visible to all members. Reviewers see showcase/ only.
+Work elevates from commons/ → projects/ → showcase/ → primals.eco/lab (public).
+
+### sporePrint Integration (primals.eco/lab)
+
+New `/lab` section on primals.eco — public read-only view of validated science:
+- Rendered notebooks (nbconvert → HTML → Zola pages)
+- "Reproduce It Yourself" guide (deploy, run, verify provenance)
+- Validation results (235+ checks, provenance chain summary)
+- `scripts/render_notebooks.sh` converts showcase/ notebooks for the static site
+
+sporePrint remains a static Zola site on GitHub Pages. No dynamic compute.
+The lab section is the display case; the shared workspace is the incubator.
 
 ### Notebook Elevation (from `specs/NOTEBOOK_ELEVATION.md`)
 

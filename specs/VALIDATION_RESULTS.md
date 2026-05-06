@@ -203,9 +203,11 @@ To reproduce this validation:
 | ToadStool security incomplete | Warns "incomplete cryptographic verification" | ToadStool team evolution |
 | Workload isolation = None | Workloads execute as host user | Phase 2: cgroups + namespaces |
 | Single witness | No multi-witness or certificate chain | Phase 2b: BearDog co-sign |
-| Primals bind 0.0.0.0 | 7 rebound to 127.0.0.1 via `BIND_ADDRESS`; 6 need upstream `--bind` flag | See `validation/SECURITY_HANDBACK_MAY06_2026.md` |
+| NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | Acceptable for localhost; awareness needed if TCP is exposed externally |
 | JupyterHub plain HTTP | No BTSP on localhost | Phase 2a: Cloudflare tunnel (external TLS) |
 | No ionic token scoping | JupyterHub uses PAM auth, not capability tokens | Phase 2b: BTSP ionic auth |
+
+**Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. The previous gap (7 rebound, 6 need upstream `--bind`) is fully closed. See `validation/PHASE59_ABSORPTION_MAY06_2026.md`.
 
 ### Security Evolution Path
 

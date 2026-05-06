@@ -11,10 +11,13 @@
 
 Ran automated penetration testing (below/at/above the primal layer) on the
 live composition. Fixed what we could at the composition level. Remaining
-issues require primal-level changes.
+issues were escalated upstream.
 
 **Before fixes**: 13 primal ports on 0.0.0.0, reachable from LAN
-**After fixes**: 7 ports rebound to 127.0.0.1, 6 ports still need upstream `--bind` flag
+**After composition fixes**: 7 ports rebound to 127.0.0.1, 6 ports still needed upstream `--bind` flag
+**After primalSpring Phase 59**: **All 13/13 primals default `127.0.0.1`**. Zero open bind gaps.
+
+> **UPDATE 2026-05-06**: All 5 security gaps (PG-55 through PG-59) resolved by primalSpring v0.9.24 Phase 59. See below.
 
 ---
 
@@ -38,64 +41,25 @@ Also fixed: `jupyterhub.sqlite` permissions (644 → 600).
 
 ---
 
-## Needs Primal-Level Fix (upstream)
+## Resolved by primalSpring Phase 59 (2026-05-06)
 
-These primals only accept `--port` and hardcode `0.0.0.0` as the bind address.
-They need a `--bind` or `--host` flag added to their CLI:
+All 6 upstream gaps resolved. Every primal now defaults to `127.0.0.1`:
 
-### P1: Songbird — HTTP server binds to all interfaces
+| PG | Primal | Resolution |
+|----|--------|-----------|
+| PG-55 | All 13 | All primals default `127.0.0.1`. Songbird, ToadStool, skunkBat, biomeOS, petalTongue: `--bind`. sweetGrass: bare `--port` = localhost. biomeOS nucleus forwards `--bind`. |
+| PG-56 | NestGate | BTSP method-level auth gating. 10-method exempt whitelist (health, identity, capabilities). |
+| PG-57 | skunkBat | Multi-dimensional anomaly detection (connection rate + traffic volume + port diversity). 12 normal + 7 attack patterns seeded. |
+| PG-58 | Songbird | `--bind` for HTTP server, `--listen` for IPC socket (separate concerns, documented). |
+| PG-59 | sweetGrass | `--http-address` and `--port` both accept `host:port`, documented in CLI help. |
 
-**Port**: 9200 (HTTP)
-**Current**: `--port 9200` → binds `*:9200`
-**Needed**: `--bind` or `--listen-address` flag for the HTTP server
-**Risk**: HIGH when NucBox intake goes live — Songbird's HTTP health
-endpoint and BirdSong UDP multicast would be reachable from WAN
-**Note**: Songbird already has `--listen` but it's for the internal
-IPC socket, not the HTTP server
+### What to Absorb
 
-### P2: ToadStool — TCP server binds to all interfaces
-
-**Port**: 9400
-**Current**: `--port 9400` → binds `0.0.0.0:9400`
-**Needed**: `--bind` or `--host` flag
-**Risk**: MEDIUM — ToadStool accepts workload submissions; LAN exposure
-means any device on the subnet could submit compute workloads
-**Pattern**: Follow BarraCuda's pattern: `--bind host:port` overrides `--port`
-
-### P3: skunkBat — TCP server binds to all interfaces
-
-**Port**: 9140
-**Current**: `--port 9140` → binds `0.0.0.0:9140`
-**Needed**: `--bind` or `--host` flag
-**Risk**: LOW-MEDIUM — skunkBat is defensive/read-only, but exposing
-security.scan/detect/metrics to the LAN leaks security posture info
-**Irony**: The defense primal is the one with the security gap
-
-### P4: biomeOS — Neural API binds to all interfaces
-
-**Port**: 9800
-**Current**: `--port 9800` → binds `0.0.0.0:9800`
-**Needed**: `--bind` or `--host` flag
-**Risk**: MEDIUM — Neural API is the orchestration layer; LAN exposure
-allows capability discovery and potentially workload routing
-**Note**: Has `--tcp-only` flag but no bind address control
-
-### P5: sweetGrass — Main TCP binds to all interfaces
-
-**Port**: 9850 (newline-delimited JSON-RPC)
-**Current**: `--port 9850` → binds `0.0.0.0:9850`
-**Needed**: The existing `--http-address` only controls the HTTP endpoint;
-the main newline-delimited TCP listener needs its own `--bind` flag
-**Risk**: MEDIUM — sweetGrass holds attribution braids and BTSP keys
-**Note**: BTSP enforcement at transport level mitigates somewhat
-
-### P6: petalTongue — TCP server binds to all interfaces
-
-**Port**: 9900
-**Current**: `--port 9900` → binds `0.0.0.0:9900`
-**Needed**: `--bind` or `--host` flag
-**Risk**: LOW — petalTongue serves UI, minimal sensitive data
-**Pattern**: Follow BarraCuda's `--bind host:port` pattern
+1. **Bind policy**: Deploy scripts can drop explicit `--bind 0.0.0.0` overrides. Use `bind_policy = "localhost"` in graph metadata; guidestone validates it. Pass `--bind 0.0.0.0` only for intentional cross-host access.
+2. **`PrimalDeployProfile.bind_flag`**: All 13 primals return `Some(flag)` — deploy tooling can use `profile.bind_flag` programmatically.
+3. **Foundation validation graph**: `graphs/compositions/foundation_validation.toml` — 12-node NUCLEUS for scientific sediment pipeline.
+4. **Checksums**: primalSpring CHECKSUMS generated via `tools/regenerate_checksums.sh`. Verify `validation/CHECKSUMS` matches after pull.
+5. **NestGate TCP fallback note**: PG-56 BTSP gating applies to UDS/isomorphic paths only. TCP fallback (Tier 5, localhost) still dispatches all methods ungated — acceptable for localhost, but be aware if TCP is exposed externally.
 
 ---
 
@@ -135,13 +99,13 @@ This is a **one-line change** in each primal's CLI parser and a
 | Missing X-Frame-Options header | LOW | JupyterHub config | Documented |
 | Missing X-Content-Type-Options | LOW | JupyterHub config | Documented |
 
-### Primal Level (needs upstream evolution)
+### Primal Level (resolved by Phase 59)
 
 | Finding | Severity | Owner | Status |
 |---------|----------|-------|--------|
-| NestGate `storage.list` unauthenticated | MEDIUM | NestGate team | Needs BTSP scoping |
-| 6 primals bind 0.0.0.0 | HIGH | Each primal team | Needs `--bind` flag |
-| sweetGrass ephemeral ports on 0.0.0.0 | LOW | sweetGrass team | Two extra ports exposed |
+| NestGate `storage.list` unauthenticated | MEDIUM | NestGate team | **RESOLVED** — PG-56 BTSP method-level auth gating |
+| 6 primals bind 0.0.0.0 | HIGH | Each primal team | **RESOLVED** — PG-55 all 13 default `127.0.0.1` |
+| sweetGrass ephemeral ports on 0.0.0.0 | LOW | sweetGrass team | **RESOLVED** — PG-59 `--port` accepts `host:port` |
 
 ### Positive Findings (upstream should know)
 
@@ -172,11 +136,13 @@ during this test, and alert when similar patterns appear in production.
 
 ## Action Summary
 
-| Action | Owner | Priority | Effort |
+| Action | Owner | Priority | Status |
 |--------|-------|----------|--------|
-| Add `--bind` to UniBin v1.1 standard | wateringHole | HIGH | 1 day |
-| Add `--bind` to 6 primals (P1-P6) | Each primal team | HIGH | 1 hour each |
-| NestGate BTSP scoping for storage.list | NestGate team | MEDIUM | 1 day |
-| Activate UFW on ironGate | ironGate admin | MEDIUM | 5 minutes |
-| skunkBat baseline learning from pen test data | skunkBat team | MEDIUM | Evolution |
-| JupyterHub security headers | projectNUCLEUS | LOW | 30 minutes |
+| Add `--bind` to UniBin v1.1 standard | wateringHole | HIGH | **DONE** — Phase 59 |
+| Add `--bind` to 6 primals (P1-P6) | Each primal team | HIGH | **DONE** — PG-55/58/59 |
+| NestGate BTSP scoping for storage.list | NestGate team | MEDIUM | **DONE** — PG-56 |
+| skunkBat baseline learning from pen test data | skunkBat team | MEDIUM | **DONE** — PG-57 |
+| Activate UFW on ironGate | ironGate admin | MEDIUM | Open |
+| JupyterHub security headers | projectNUCLEUS | LOW | Open |
+
+**Ecosystem state post-Phase 59**: 13/13 BTSP Phase 3 FULL AEAD, 13/13 default `127.0.0.1` bind, zero open security gaps, 5-tier discovery escalation hierarchy live, 85 experiments, 661 tests, 74 deploy graphs.

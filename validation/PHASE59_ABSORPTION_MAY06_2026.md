@@ -109,7 +109,26 @@ Every primal's `capabilities.list` now returns `protocol` and `transport` fields
 - [x] Security handback for upstream primal teams
 - [x] Notebook elevation (wetspring-validation-viz.ipynb)
 
+## Phase 59 Security Convergence (absorbed 2026-05-06)
+
+All 5 security gaps from our Phase 2a pen test resolved upstream:
+
+| PG | Resolution |
+|----|-----------|
+| PG-55 | All 13 primals default `127.0.0.1`. Deploy scripts drop explicit `--bind 0.0.0.0` overrides. |
+| PG-56 | NestGate BTSP method-level auth gating. 10-method exempt whitelist. |
+| PG-57 | skunkBat multi-dimensional anomaly detection. 12 normal + 7 attack patterns seeded. |
+| PG-58 | Songbird `--bind` for HTTP, `--listen` for IPC (separate concerns). |
+| PG-59 | sweetGrass `--http-address` and `--port` both accept `host:port`. |
+
+- [x] Updated SECURITY_HANDBACK_MAY06_2026.md — all PG items marked resolved
+- [x] Updated VALIDATION_RESULTS.md — bind status → 13/13 default localhost
+- [x] Updated PHASES.md — security posture reflects zero open gaps
+- [x] Updated README.md — security status line
+
+**Ecosystem state**: 13/13 BTSP Phase 3 FULL AEAD, 13/13 default `127.0.0.1` bind, zero open security gaps, 5-tier discovery escalation hierarchy live, 85 experiments, 661 tests, 74 deploy graphs.
+
 ---
 
 **The stack is encrypted. The wire standard is universal. The discovery hierarchy is
-live. The composition layer is validated. Pull, validate, absorb, deploy.**
+live. The composition layer is validated. Security is converged. Pull, validate, absorb, deploy.**

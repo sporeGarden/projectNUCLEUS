@@ -66,18 +66,22 @@ science workloads.
 - Python runs as native subprocess (no toadStool introspection)
 - `wetspring-exp001-python-baseline` FAIL (missing dependencies — wetSpring issue)
 
-### Security Posture (from `specs/SECURITY_VALIDATION.md`)
+### Security Posture (Phase 59 — Zero Open Gaps)
 
-Three-layer pen testing baseline captured (2026-05-06):
+All security gaps from the Phase 2a pen test have been resolved upstream (primalSpring v0.9.24, Phase 59):
 
-| Layer | Key Finding | Action |
-|-------|-------------|--------|
-| Below (OS) | Primals bind 0.0.0.0, UFW inactive | Activate UFW, rebind when NucBox goes live |
-| At (APIs) | All primals survive fuzzing, no hidden methods | NestGate storage.list needs BTSP scoping |
-| Above (App) | Auth enforced, CSP present | Add missing security headers |
+| PG | Resolution |
+|----|-----------|
+| PG-55 | All 13 primals default `127.0.0.1`. `--bind` flags implemented across the board. |
+| PG-56 | NestGate BTSP method-level auth gating. 10-method exempt whitelist (health, identity, capabilities). |
+| PG-57 | skunkBat multi-dimensional anomaly detection (connection rate + traffic volume + port diversity). |
+| PG-58 | Songbird `--bind` for HTTP server, `--listen` for IPC socket (separate concerns). |
+| PG-59 | sweetGrass `--http-address` and `--port` both accept `host:port`. |
+
+**Bind policy**: Deploy scripts no longer need explicit `--bind 0.0.0.0` overrides — all primals default localhost. `PrimalDeployProfile.bind_flag` returns `Some(flag)` for all 13 primals.
 
 - `deploy/security_validation.sh` — automated three-layer pen testing
-- skunkBat observes all scans (training data for baseline learning)
+- skunkBat multi-dimensional anomaly detection live (12 normal + 7 attack patterns seeded)
 - Run before and after every tunnel evolution step
 
 ---

@@ -70,7 +70,7 @@ Gates connect to each other through chemical bonding patterns:
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 - **Phase 2a validated**: JupyterHub + Cloudflare Tunnel, 15/15 external checks, 270ms p50 latency
 - **ABG tiered access**: observer / compute / admin via PAM groups and `pre_spawn_hook`
-- **Security baseline**: three-layer pen testing (below/at/above primals), skunkBat observing
+- **Security**: Zero open gaps — all PG-55 through PG-59 resolved by primalSpring Phase 59. 13/13 default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat multi-dimensional anomaly detection
 - Capability-based discovery (`by_capability`) preferred over identity-based (`name`) in all graphs
 - TCP fallback ports aligned to Phase 59 canonical table (skunkBat 9750→9140, port swaps corrected)
 

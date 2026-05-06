@@ -4,12 +4,18 @@
 #   toadstool execute --timeout 120 --format text your-workload.toml
 #
 # For Python scripts, set command to your Python interpreter path
-# (e.g., /home/user/miniforge3/envs/bioinfo/bin/python3)
 # and put the script path in args.
 #
-# NOTE: Use absolute paths. The toadStool sandbox may override working_dir
-# to /tmp under Standard isolation. Set [security] isolation_level = "None"
-# for local development.
+# Path resolution:
+#   Use absolute paths. toadStool does not expand ${VAR} patterns (Gap 8).
+#   The sandbox may override working_dir under Standard isolation.
+#   Set [security] isolation_level = "None" for local development.
+#
+# Portability:
+#   For machine-portable workloads, consider using paths relative to a
+#   well-known env root (e.g., ECOPRIMALS_ROOT) and wrapping execution
+#   with a script that resolves them. Or use `which <binary>` for PATH
+#   binaries and avoid hardcoding /home/<user>/... paths.
 
 [metadata]
 name = "your-workload-name"
@@ -28,3 +34,8 @@ max_cpu_percent = 80.0
 
 [security]
 isolation_level = "None"
+
+# [provenance]
+# track = true
+# archive_to = "nestgate"
+# Uncomment when toadStool supports native [provenance] sections (Gap 5).

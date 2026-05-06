@@ -166,7 +166,7 @@ error[E0599]: no method named `submit_and_poll` found for struct `Arc<WgpuDevice
 2. **235+ Rust validation checks passed through composition dispatch**: Full parity with standalone execution — the composition layer adds zero regression
 3. **Real NCBI data processed**: 11.9M paired-end reads (PRJNA488170) through Rust validators, 50K reads through Python baseline
 4. **Full provenance pipeline operational**: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid, all via JSON-RPC
-5. **9 primals stable**: Nest Atomic + ToadStool ran for hours across all validation sessions without crashes
+5. **13 primals stable**: Full NUCLEUS ran for hours across all validation sessions without crashes
 6. **TOML workload format is expressive**: The `[metadata]` + `[execution]` + `[resources]` + `[security]` structure covers the dispatch needs well
 7. **Sub-millisecond dispatch overhead**: Rust binaries completed in 1-2ms including toadStool's orchestrator initialization — the dispatch layer is not a bottleneck
 8. **Provenance wrapper pattern validated**: Shell script successfully brackets toadStool execution with pre/post RPC calls to the trio, proving the composition model for provenance

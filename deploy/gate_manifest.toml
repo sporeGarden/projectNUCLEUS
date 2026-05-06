@@ -6,19 +6,22 @@
 # Add a gate: create a gates/<name>.toml and add an entry here.
 
 [manifest]
-version = "0.1.0"
+version = "0.2.0"
 bonding_default = "covalent"
+btsp_phase = 3
+wire_standard = "L3"
 
-# Add your gates below. Each gate needs a gates/<name>.toml config file.
-#
-# [[gates]]
-# name = "workstation"
-# atomic = "node"
-# config = "../gates/workstation.toml"
-# status = "active"
-#
-# [[gates]]
-# name = "intake"
-# atomic = "tower"
-# config = "../gates/intake.toml"
-# status = "planned"
+[[gates]]
+name = "irongate"
+atomic = "nest+node"
+config = "../gates/irongate.toml"
+status = "active"
+primals = 9
+composition = "nest_atomic + node_atomic_compute"
+graph = "../graphs/nucleus_complete.toml"
+
+[[gates]]
+name = "nuc-intake"
+atomic = "tower"
+config = "../gates/nuc-intake.toml"
+status = "planned"

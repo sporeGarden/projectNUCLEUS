@@ -20,7 +20,7 @@ All 5 primals running at time of execution:
 | beardog    | 608859 | 9100  | OK     |
 | songbird   | 608938 | 9200  | OK     |
 | toadstool  | 609984 | 9400  | OK     |
-| barracuda  | 609106 | 9500  | OK     |
+| barracuda  | 609106 | 9740  | OK     |
 | coralreef  | 610064 | 9730  | OK     |
 
 Family ID: `9b32f3a8` (irongate-sovereign)

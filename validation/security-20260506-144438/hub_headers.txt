@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+server: TornadoServer/6.5.5
+content-type: text/html
+date: Wed, 06 May 2026 18:46:54 GMT
+x-jupyterhub-version: 5.4.5
+access-control-allow-headers: accept, content-type, authorization
+content-security-policy: frame-ancestors 'none'; report-uri /hub/security/csp-report
+etag: "7020b528354abe78bd5579484ff2c0ac95c65fad"
+content-length: 7870
+set-cookie: _xsrf=MnwxOjB8MTA6MTc3ODA5MzIxNHw1Ol94c3JmfDY4OlRtOXVaVHBsY2pkVWVFRnJSa3hIY2psbmRXWTNXVlZJVWpaRE9ERTNUblIzYjBWSlZtWk9VSGxQZEVSZmNreGpQUT09fGQyMDdjM2QzNTEwYTRlNjc2MmI2MjJkZmE2YjNiOTY4NDYyNzZjZWUxNDlmNWIyMThkZjJmYzFlNDBiYjg5N2Q; Max-Age=3600; Path=/hub/
+connection: keep-alive
+

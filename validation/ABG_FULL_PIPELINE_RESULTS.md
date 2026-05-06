@@ -2,7 +2,7 @@
 
 **Date**: 2026-05-04
 **Hardware**: Intel i9-14900K, 96 GB DDR5, RTX 5070
-**Composition**: Nest Atomic + ToadStool (9 primals)
+**Composition**: Full NUCLEUS (13 primals)
 **Dispatch**: All workloads executed via `toadstool execute` on live composition
 **Provenance**: Full DAG → Merkle root → loamSpine ledger → sweetGrass braid
 
@@ -149,7 +149,7 @@ Every execution output is hashed and stored in NestGate.
 ## Architecture
 
 ```
-Nest Atomic + ToadStool Composition (9 primals live on hardware)
+Full NUCLEUS Composition (13 primals live on hardware)
 ├── Tower Atomic
 │   ├── BearDog     (BTSP identity, family seed 9b32f3a8, port 9100)
 │   └── SongBird    (networking, port 9200)
@@ -162,7 +162,7 @@ Nest Atomic + ToadStool Composition (9 primals live on hardware)
 └── Provenance Trio
     ├── rhizoCrypt   (ephemeral DAG, BLAKE3 vertices, port 9601)
     ├── loamSpine    (permanent append-only ledger, port 9700)
-    └── sweetGrass   (attribution braids, W3C PROV-O, port 39085)
+    └── sweetGrass   (attribution braids, W3C PROV-O, port 9850)
 ```
 
 ## Verification Instructions
@@ -177,7 +177,7 @@ curl -s -X POST http://HOST:9700 \
   -d '{"jsonrpc":"2.0","method":"spine.get","params":{"spine_id":"019df41b-40c5-7b93-bf35-79dbd95a2cb3"},"id":1}'
 
 # Query sweetGrass braid
-curl -s -X POST http://HOST:39085/jsonrpc \
+curl -s -X POST http://HOST:9850/jsonrpc \
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","method":"braid.get","params":{"data_hash":"292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"},"id":1}'
 ```

@@ -4,14 +4,23 @@
 #
 # Full NUCLEUS Complete — Zero-Port Tower Atomic Standard
 #
-# All 8 core primals + provenance trio + primalSpring coordination.
-# Zero TCP ports bound. All IPC over Unix domain sockets.
+# 13 primals discovered from plasmidBin + primalSpring coordination validator.
+# Domain: BearDog, Songbird, ToadStool, BarraCuda, CoralReef, NestGate,
+#         Squirrel, rhizoCrypt, loamSpine, sweetGrass, skunkBat.
+# Meta:   biomeOS (orchestrator), petalTongue (UI), primalSpring (coordination).
+# Future: sourDough (scaffolding — starter culture for new primals, no binary yet).
+#
+# Zero TCP ports bound by default. All IPC over Unix domain sockets.
+# TCP fallback ports declared per node for Tier 5 discovery.
 #
 # Security model:
-#   All primals: BTSP authenticated (13/13 converged Phase 45c)
-#   Tower boundary (BearDog + Songbird): BTSP enforced, full encryption
+#   All primals: BTSP Phase 3 AEAD (13/13 converged Phase 59)
+#   Tower boundary (BearDog + Songbird): BTSP enforced, ChaCha20-Poly1305
 #   NUCLEUS internal (same-host UDS): BTSP authenticated, HMAC-plain cipher
 #   External federation: opt-in Songbird TCP with full encryption
+#
+# Wire Standard: L3 — `protocol` + `transport` on `capabilities.list`
+# Discovery: 5-tier escalation (Songbird IPC → biomeOS Neural → UDS → registry → TCP)
 #
 # This is the canonical reference graph for downstream springs.
 # Also serves as the primalSpring coordination niche deployment
@@ -23,8 +32,9 @@
 [graph]
 name = "nucleus_complete"
 description = "Full NUCLEUS: biomeOS + Tower + Core Services + Provenance Trio + primalSpring"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
+bonding_policy = "btsp_required"
 
 [graph.metadata]
 security_model = "btsp_enforced"
@@ -55,6 +65,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "orchestration"
 security_model = "tower_delegated"
+tcp_fallback_port = 9800
 capabilities = [
     "graph.deploy",
     "graph.status",
@@ -77,6 +88,7 @@ required = true
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
+tcp_fallback_port = 9100
 capabilities = [
     "crypto.encrypt", "crypto.decrypt", "crypto.sign",
     "crypto.verify", "crypto.keygen", "crypto.identity",
@@ -91,6 +103,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
+tcp_fallback_port = 9200
 capabilities = [
     "discovery.find_primals", "discovery.announce",
     "network.tls_connect", "network.http_request",
@@ -109,6 +122,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "btsp"
+tcp_fallback_port = 9400
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
@@ -120,6 +134,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "btsp"
+tcp_fallback_port = 9740
 capabilities = [
     "tensor.create", "tensor.matmul", "tensor.add",
     "tensor.batch.submit", "math.matvec", "math.cholesky",
@@ -134,6 +149,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "shader"
 security_model = "btsp"
+tcp_fallback_port = 9730
 capabilities = ["shader.compile.wgsl", "shader.dispatch"]
 
 [[graph.nodes]]
@@ -145,6 +161,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "btsp"
+tcp_fallback_port = 9500
 capabilities = [
     "storage.store", "storage.retrieve",
     "storage.store_blob", "storage.retrieve_blob",
@@ -161,6 +178,7 @@ depends_on = ["beardog", "songbird", "toadstool", "nestgate"]
 health_method = "health.liveness"
 by_capability = "ai"
 security_model = "btsp"
+tcp_fallback_port = 9300
 capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
 
 # ═══════════════════════════════════════════════════════════════
@@ -174,8 +192,9 @@ order = 8
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "dag"
 security_model = "btsp"
+tcp_fallback_port = 9601
 capabilities = [
     "dag.session.create", "dag.event.append",
     "dag.dehydration.trigger", "dag.merkle.root",
@@ -190,6 +209,7 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "btsp"
+tcp_fallback_port = 9700
 capabilities = ["session.commit", "entry.append"]
 
 [[graph.nodes]]
@@ -201,9 +221,29 @@ depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "btsp"
+tcp_fallback_port = 9850
 capabilities = [
     "provenance.create_braid", "provenance.lineage",
     "provenance.graph",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 3b: Defense — metadata-only threat detection
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 10
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+tcp_fallback_port = 9140
+capabilities = [
+    "defense.scan", "defense.detect",
+    "defense.baseline", "defense.health",
 ]
 
 # ═══════════════════════════════════════════════════════════════
@@ -219,6 +259,7 @@ depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "visualization"
 security_model = "btsp"
+tcp_fallback_port = 9900
 args = ["server"]
 capabilities = [
     "visualization.render", "visualization.render.scene",

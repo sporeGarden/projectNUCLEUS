@@ -17,16 +17,38 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$SCRIPT_DIR/../../../../" 2>/dev/null && pwd)}"
-WETSPRING_DIR="${WETSPRING_DIR:-$ECOPRIMALS_ROOT/springs/wetSpring}"
-TOADSTOOL="${TOADSTOOL:-$ECOPRIMALS_ROOT/infra/plasmidBin/primals/toadstool}"
-WORKLOADS_DIR="${1:-$PROJECT_ROOT/workloads/wetspring}"
-RESULTS_DIR="${2:-$PROJECT_ROOT/validation/provenance-run-$(date +%Y%m%d-%H%M%S)}"
 
-NESTGATE_PORT=9500
-RHIZOCRYPT_PORT=9601
-LOAMSPINE_PORT=9700
-SWEETGRASS_PORT=39085
+# Discover ecoPrimals root via git or relative path
+if command -v git &>/dev/null; then
+    _git_root="$(cd "$PROJECT_ROOT" && git rev-parse --show-toplevel 2>/dev/null)" || true
+fi
+ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-${_git_root:+$(cd "$_git_root/../.." 2>/dev/null && pwd)}}"
+ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$SCRIPT_DIR/../../../.." 2>/dev/null && pwd)}"
+unset _git_root
+
+WETSPRING_DIR="${WETSPRING_DIR:-$ECOPRIMALS_ROOT/springs/wetSpring}"
+PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-${ECOPRIMALS_PLASMID_BIN:-$ECOPRIMALS_ROOT/infra/plasmidBin}}"
+TOADSTOOL="${TOADSTOOL:-$PLASMIDBIN_DIR/primals/toadstool}"
+
+# Parse --workloads-dir and --results-dir flags
+WORKLOADS_DIR="$PROJECT_ROOT/workloads/wetspring"
+RESULTS_DIR="$PROJECT_ROOT/validation/provenance-run-$(date +%Y%m%d-%H%M%S)"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --workloads-dir) WORKLOADS_DIR="$2"; shift 2 ;;
+        --results-dir)   RESULTS_DIR="$2"; shift 2 ;;
+        *)               WORKLOADS_DIR="$1"; shift ;;
+    esac
+done
+
+# Phase 59 canonical TCP fallback ports (overridable via env)
+BEARDOG_PORT="${BEARDOG_PORT:-9100}"
+SONGBIRD_PORT="${SONGBIRD_PORT:-9200}"
+TOADSTOOL_PORT="${TOADSTOOL_PORT:-9400}"
+NESTGATE_PORT="${NESTGATE_PORT:-9500}"
+RHIZOCRYPT_PORT="${RHIZOCRYPT_PORT:-9601}"
+LOAMSPINE_PORT="${LOAMSPINE_PORT:-9700}"
+SWEETGRASS_PORT="${SWEETGRASS_PORT:-9850}"
 
 mkdir -p "$RESULTS_DIR"
 
@@ -35,7 +57,9 @@ rpc_nestgate() {
 }
 
 rpc_rhizocrypt() {
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$RHIZOCRYPT_PORT" 2>/dev/null
+    # rhizoCrypt serves JSON-RPC on port+1 (dual HTTP+newline), tarpc on base port
+    local jsonrpc_port=$((RHIZOCRYPT_PORT + 1))
+    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$jsonrpc_port" 2>/dev/null
 }
 
 rpc_loamspine() {
@@ -44,8 +68,7 @@ rpc_loamspine() {
 }
 
 rpc_sweetgrass() {
-    curl -s -X POST "http://127.0.0.1:$SWEETGRASS_PORT/jsonrpc" \
-        -H 'Content-Type: application/json' -d "$1" 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$SWEETGRASS_PORT" 2>/dev/null
 }
 
 blake3_hash() {
@@ -74,26 +97,72 @@ log "  Results: $RESULTS_DIR"
 log "═══════════════════════════════════════════════════════════"
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 1: Health checks — verify all 9 primals
+# PHASE 1: Health checks — verify provenance primals
 # ══════════════════════════════════════════════════════════════
 log ""
 log "── Phase 1: Health Checks ──"
 
-NESTGATE_HEALTH=$(rpc_nestgate '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
-RHIZO_HEALTH=$(rpc_rhizocrypt '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
-LOAM_HEALTH=$(rpc_loamspine '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
-SWEET_HEALTH=$(rpc_sweetgrass '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
+rpc_health() {
+    local name="$1" port="$2"
+    local resp
 
-for primal_check in "NestGate:$NESTGATE_HEALTH" "rhizoCrypt:$RHIZO_HEALTH" "loamSpine:$LOAM_HEALTH" "sweetGrass:$SWEET_HEALTH"; do
-    name="${primal_check%%:*}"
-    resp="${primal_check#*:}"
-    if echo "$resp" | grep -q '"alive"'; then
-        log "  [OK] $name healthy"
-    else
-        log "  [FAIL] $name not responding: $resp"
-        exit 1
+    # Songbird uses HTTP GET /health (not JSON-RPC POST)
+    if [[ "$name" == "Songbird" ]]; then
+        resp=$(curl -sf --max-time 3 "http://127.0.0.1:$port/health" 2>/dev/null) || resp=""
+        if [[ "$resp" == "OK" ]]; then
+            log "  [OK] $name (HTTP $port) healthy"
+            return 0
+        fi
+        log "  [FAIL] $name (HTTP $port) not responding"
+        return 1
+    fi
+
+    # rhizoCrypt serves JSON-RPC on port+1 (tarpc on base port)
+    if [[ "$name" == "rhizoCrypt" ]]; then
+        local jsonrpc_port=$((port + 1))
+        resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 127.0.0.1 "$jsonrpc_port" 2>/dev/null) || resp=""
+        if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
+            log "  [OK] $name (TCP $jsonrpc_port) healthy"
+            return 0
+        fi
+        log "  [FAIL] $name (TCP $jsonrpc_port) not responding"
+        return 1
+    fi
+
+    # HTTP JSON-RPC (loamSpine, petalTongue)
+    resp=$(curl -sf --max-time 3 "http://127.0.0.1:$port" \
+        -X POST -H 'Content-Type: application/json' \
+        -d '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}' 2>/dev/null) || resp=""
+    if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
+        log "  [OK] $name (TCP $port) healthy"
+        return 0
+    fi
+
+    # Newline-delimited JSON-RPC (BearDog, ToadStool, NestGate, sweetGrass, etc.)
+    resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 127.0.0.1 "$port" 2>/dev/null) || resp=""
+    if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
+        log "  [OK] $name (TCP $port) healthy"
+        return 0
+    fi
+
+    log "  [FAIL] $name (TCP $port) not responding"
+    return 1
+}
+
+HEALTH_FAIL=0
+for primal_pair in "BearDog:$BEARDOG_PORT" "Songbird:$SONGBIRD_PORT" "ToadStool:$TOADSTOOL_PORT" "NestGate:$NESTGATE_PORT" "rhizoCrypt:$RHIZOCRYPT_PORT" "loamSpine:$LOAMSPINE_PORT" "sweetGrass:$SWEETGRASS_PORT"; do
+    name="${primal_pair%%:*}"
+    port="${primal_pair#*:}"
+    if ! rpc_health "$name" "$port"; then
+        HEALTH_FAIL=$((HEALTH_FAIL + 1))
     fi
 done
+
+if [[ $HEALTH_FAIL -gt 0 ]]; then
+    log "  $HEALTH_FAIL primal(s) failed health check."
+    log "  Ensure composition is running: bash deploy.sh --composition nest --gate irongate"
+    exit 1
+fi
 
 # ══════════════════════════════════════════════════════════════
 # PHASE 2: Create rhizoCrypt DAG session
@@ -258,18 +327,16 @@ execute_with_provenance() {
     fi
 }
 
-for toml in "$WORKLOADS_DIR"/wetspring-r-industry-parity.toml \
-            "$WORKLOADS_DIR"/wetspring-fajgenbaum-pathway.toml \
-            "$WORKLOADS_DIR"/wetspring-diversity-rust-validation.toml \
-            "$WORKLOADS_DIR"/wetspring-gonzales-cpu-parity.toml \
-            "$WORKLOADS_DIR"/wetspring-algae-16s-rust.toml \
-            "$WORKLOADS_DIR"/wetspring-16s-rust-validation.toml \
-            "$WORKLOADS_DIR"/wetspring-cold-seep-pipeline.toml \
-            "$WORKLOADS_DIR"/wetspring-real-ncbi-pipeline.toml \
-            "$WORKLOADS_DIR"/wetspring-16s-python-baseline.toml \
-            "$WORKLOADS_DIR"/wetspring-benchmark-python-baseline.toml; do
-    [ -f "$toml" ] && execute_with_provenance "$toml"
+WORKLOAD_COUNT=0
+for toml in "$WORKLOADS_DIR"/*.toml; do
+    [ -f "$toml" ] || continue
+    execute_with_provenance "$toml"
+    WORKLOAD_COUNT=$((WORKLOAD_COUNT + 1))
 done
+
+if [[ $WORKLOAD_COUNT -eq 0 ]]; then
+    log "  [WARN] No workload TOMLs found in $WORKLOADS_DIR"
+fi
 
 # ══════════════════════════════════════════════════════════════
 # PHASE 6: Dehydrate DAG → Merkle root
@@ -277,8 +344,7 @@ done
 log ""
 log "── Phase 6: Dehydrate → Sign → Commit → Braid ──"
 
-set +e
-MERKLE_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.merkle.root\",\"params\":{\"session_id\":\"$SESSION_ID\"},\"id\":900}")
+MERKLE_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.merkle.root\",\"params\":{\"session_id\":\"$SESSION_ID\"},\"id\":900}" || echo "{}")
 MERKLE_ROOT_RAW=$(echo "$MERKLE_RESP" | python3 -c "import sys,json; r=json.load(sys.stdin).get('result',''); print(json.dumps(r) if isinstance(r,(list,dict)) else str(r))" 2>/dev/null)
 
 MERKLE_HEX=$(echo "$MERKLE_ROOT_RAW" | python3 -c "
@@ -343,7 +409,7 @@ cat > "$RESULTS_DIR/PROVENANCE_MANIFEST.md" << MANIFEST_EOF
 # Provenance Manifest — $SESSION_NAME
 
 **Date**: $(date -Iseconds)
-**Composition**: Nest Atomic + ToadStool (9 primals)
+**Composition**: Full NUCLEUS (13 primals)
 **Session**: $SESSION_ID
 **Spine**: $SPINE_ID
 

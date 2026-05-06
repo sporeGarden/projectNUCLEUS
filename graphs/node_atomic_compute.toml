@@ -8,14 +8,17 @@
 # toadStool dispatches, barraCuda runs GPU/CPU tensor ops,
 # coralReef compiles shaders.
 #
+# Phase 59: All nodes BTSP Phase 3 AEAD, Wire L3, tcp_fallback_port declared.
+#
 # Usage:
 #   biomeos deploy --graph graphs/node_atomic_compute.toml
 
 [graph]
 name = "node_atomic_compute"
 description = "Node Atomic: toadStool dispatch + barraCuda tensor + coralReef shader"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
+bonding_policy = "btsp_required"
 
 [graph.metadata]
 security_model = "btsp_enforced"
@@ -39,6 +42,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "orchestration"
 security_model = "tower_delegated"
+tcp_fallback_port = 9800
 capabilities = ["graph.deploy", "capability.discover"]
 
 [[graph.nodes]]
@@ -49,6 +53,7 @@ required = true
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
+tcp_fallback_port = 9100
 capabilities = ["crypto.sign", "crypto.verify", "crypto.keygen"]
 
 [[graph.nodes]]
@@ -60,6 +65,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
+tcp_fallback_port = 9200
 capabilities = ["discovery.find_primals", "discovery.announce"]
 
 [[graph.nodes]]
@@ -70,7 +76,8 @@ required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
-security_model = "tower_delegated"
+security_model = "btsp"
+tcp_fallback_port = 9400
 capabilities = ["compute.dispatch.submit", "compute.dispatch.result", "compute.execute"]
 
 [[graph.nodes]]
@@ -81,7 +88,8 @@ required = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
 by_capability = "tensor"
-security_model = "tower_delegated"
+security_model = "btsp"
+tcp_fallback_port = 9740
 capabilities = [
     "tensor.matmul", "tensor.add", "tensor.scale",
     "tensor.batch.submit",
@@ -96,5 +104,6 @@ required = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
 by_capability = "shader"
-security_model = "tower_delegated"
+security_model = "btsp"
+tcp_fallback_port = 9730
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.validate"]

@@ -1,6 +1,8 @@
 # Basement HPC Covalent Mesh — N-Gate Deployment
 # =============================================================================
 #
+# Phase 59: BTSP Phase 3 AEAD, tcp_fallback_port, bonding_policy, Wire L3.
+#
 # Deploys additional NUCLEUS instances on basement machines and bonds them
 # covalently to the Tower via shared .family.seed and BirdSong mesh discovery.
 #
@@ -17,19 +19,20 @@
 # Parameterized:
 #   FAMILY_ID  — hex(genesis_seed[0..8]) from .family.seed (canonical: 8ff3b864a4bc589a)
 #   NODE_ID    — unique per gate, matching HARDWARE.md inventory:
-#     eastgate    — i9-12900, RTX 4070, Akida NPU, 32GB DDR5 (dev host)
-#     northgate   — i9-14900K, RTX 5090, 192GB DDR5 (flagship AI/LLM)
+#     irongate    — i9-14900K, RTX 5070, 96GB DDR5 (composition validation)
+#     northgate   — Ryzen 9 9950X3D, RTX 5090, 96GB DDR5 (gaming + remote compute)
 #     southgate   — 5800X3D, RTX 4060, 128GB DDR4 (gaming + compute)
+#     eastgate    — i9-12900, RTX 4070, Akida NPU, 32GB DDR5 (utility + NPU)
 #     strandgate  — dual EPYC 64c, RTX 3090+RX 6950 XT, 256GB ECC (bio)
 #     biomegate   — TR 3970X, Titan V x2, MI50 x2, 256GB (HBM2 bench)
 #     westgate    — i7-4771, RTX 2070S, 76TB ZFS, 32GB DDR3 (cold storage)
 #     swiftgate   — 5800X, RTX 3070 FE, 64GB (mobile compact)
 #     kingate     — i7-6700K, RTX 3070, 32GB (staging)
-#     flockgate   — i9-13900K, RTX 3070 Ti, 64GB DDR5 (brother's, remote)
+#     flockgate   — i9-13900K, RTX 3070 Ti, 64GB DDR5 (remote covalent)
 #   XDG_RUNTIME_DIR — socket directory (e.g. /run/user/1000)
 #
 # Usage:
-#   biomeos atomic deploy graphs/multi_node/basement_hpc_covalent.toml \
+#   biomeos atomic deploy graphs/basement_hpc_covalent.toml \
 #     --env FAMILY_ID=cf7e8729 \
 #     --env NODE_ID=gate2 \
 #     --env XDG_RUNTIME_DIR=/run/user/1000
@@ -42,9 +45,10 @@
 [graph]
 id = "basement-hpc-covalent"
 name = "basement_hpc_covalent"
-version = "1.0.0"
+version = "2.0.0"
 description = "Covalent Tower + partial Node (Toadstool) + NestGate + Squirrel gate for basement HPC mesh"
 coordination = "Sequential"
+bonding_policy = "btsp_required"
 
 # =============================================================================
 # PHASE 1: TOWER ATOMIC (Crypto + Network)
@@ -74,6 +78,9 @@ encryption_tiers.nucleus = "hmac_plain"
 id = "gate_beardog"
 output = "beardog_genesis"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash", "crypto.encrypt", "crypto.decrypt", "crypto.keygen"]
+health_method = "health.liveness"
+security_model = "btsp"
+tcp_fallback_port = 9100
 
 [graph.nodes.primal]
 by_capability = "security"
@@ -96,6 +103,9 @@ id = "gate_songbird"
 depends_on = ["gate_beardog"]
 output = "songbird_genesis"
 capabilities = ["http.request", "http.get", "http.post", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers", "stun.get_public_address"]
+health_method = "health.liveness"
+security_model = "btsp"
+tcp_fallback_port = 9200
 
 [graph.nodes.primal]
 by_capability = "discovery"
@@ -164,6 +174,9 @@ id = "gate_toadstool"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "toadstool_genesis"
 capabilities = ["compute.submit", "compute.status", "compute.health"]
+health_method = "health.liveness"
+security_model = "btsp"
+tcp_fallback_port = 9400
 
 [graph.nodes.primal]
 by_capability = "compute"
@@ -191,6 +204,9 @@ id = "gate_nestgate"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "nestgate_genesis"
 capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists", "storage.fetch_external"]
+health_method = "health.liveness"
+security_model = "btsp"
+tcp_fallback_port = 9500
 
 [graph.nodes.primal]
 by_capability = "storage"
@@ -217,6 +233,9 @@ id = "gate_squirrel"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "squirrel_genesis"
 capabilities = ["ai.query", "ai.chat", "ai.list_providers", "tool.execute", "tool.list", "context.create"]
+health_method = "health.liveness"
+security_model = "btsp"
+tcp_fallback_port = 9300
 
 [graph.nodes.primal]
 by_capability = "ai"

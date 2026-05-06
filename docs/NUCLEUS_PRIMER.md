@@ -34,17 +34,20 @@ into a system that handles all of those problems locally:
 
 | What You Need | Primal | What It Does |
 |---------------|--------|--------------|
-| Identity and encryption | **BearDog** | Cryptographic identity, signing, BTSP authentication |
-| Networking | **Songbird** | Discovery, mesh networking, NAT traversal |
+| Identity and encryption | **BearDog** | Cryptographic identity, signing, BTSP Phase 3 AEAD |
+| Networking | **Songbird** | Discovery (5-tier escalation), mesh networking, NAT traversal |
 | Job dispatch | **ToadStool** | Accepts workload specs (TOML), dispatches to hardware |
 | GPU compute | **barraCuda** | Executes compute shaders across GPU vendors |
 | Shader compilation | **coralReef** | Compiles WGSL programs for the target GPU/CPU |
 | Storage | **NestGate** | Content-addressed storage with encryption at rest |
-| Provenance | **loamSpine** | Audit trails — who ran what, when, on which machine |
+| DAG provenance | **rhizoCrypt** | Ephemeral DAG sessions, BLAKE3 Merkle trees |
+| Permanent ledger | **loamSpine** | Append-only audit trails with certificate minting |
+| Attribution | **sweetGrass** | Ed25519-witnessed provenance braids (W3C PROV-O) |
 
 These primals are statically-linked Rust binaries. No Python runtime, no
-Docker, no JVM. Each is under 5 MB. They communicate over Unix domain
-sockets (fast, local) and TCP (cross-machine).
+Docker, no JVM. They communicate over Unix domain sockets (fast, local)
+and TCP (cross-machine). All 13 NUCLEUS primals implement BTSP Phase 3
+with ChaCha20-Poly1305 AEAD encryption.
 
 ## Atomics: Composable Building Blocks
 
@@ -59,8 +62,9 @@ as a tunnel endpoint.
 Any machine with a GPU or substantial CPU runs Node. This is where
 science workloads execute.
 
-**Nest** (the storage layer): Tower + NestGate + provenance tools. Machines
-with large storage run Nest. Results are content-addressed and auditable.
+**Nest** (the storage layer): Tower + NestGate + rhizoCrypt + loamSpine +
+sweetGrass. Machines with large storage run Nest. Results are
+content-addressed with full provenance chains (DAG → ledger → braid).
 
 A full NUCLEUS is all three atomics plus AI coordination (Squirrel) and
 orchestration (biomeOS).
@@ -86,10 +90,10 @@ ToadStool selects the right runtime (native binary, Python script, GPU
 shader, WASM module), executes it, and returns results with an execution
 ID for audit.
 
-This has been validated end-to-end with real bioinformatics: 133 checks
+This has been validated end-to-end with real bioinformatics: 235+ checks
 across 16S pipeline, diversity metrics, immunological modeling, and algae
-community analysis — all passing through ToadStool dispatch on a single
-Node Atomic.
+community analysis — all passing through ToadStool dispatch on a live
+Nest + Node composition with full provenance tracking.
 
 ## Bonding: How Machines Trust Each Other
 
@@ -107,16 +111,25 @@ pool of interchangeable compute nodes.
 
 ## What's Running Today
 
-On a validated Phase 1 gate (i9 + 96 GB DDR5 + RTX 5070):
+On **ironGate** (i9-14900K + 96 GB DDR5 + RTX 5070), Phase 59 absorbed:
 
-- Node Atomic: 5 primals running (BearDog, Songbird, ToadStool,
-  barraCuda, coralReef)
-- wetSpring science: 133/133 Rust validation checks passing through
+- Full NUCLEUS (13 primals running): BearDog, Songbird, ToadStool,
+  barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass,
+  Squirrel, skunkBat, biomeOS, petalTongue
+- 235+ wetSpring science checks passing across 10 workloads through
   composition dispatch
-- Python baselines: benchmark suite completing in 4.15s through ToadStool
+- Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger →
+  sweetGrass ed25519-witnessed braid
+- All 13 NUCLEUS primals converged: BTSP Phase 3 AEAD, Wire Standard L3,
+  5-tier discovery hierarchy
+- Python baselines: benchmark suite through ToadStool
 - JupyterHub: notebook access with bioinformatics kernels (Python + R)
+- ABG tiered access: observer / compute / admin via PAM groups
+- Cloudflare Tunnel baseline: 270ms p50 latency, 15/15 external checks
+- Security baseline: three-layer pen testing, skunkBat observing
 
-Phase 2 (multi-gate, friend compute sharing) is next.
+**Current**: Phase 2a validated — Cloudflare Tunnel ionic baseline captured.
+Progressing through tunnel evolution steps toward full BTSP sovereignty.
 
 ## For ABG Collaborators
 
@@ -135,9 +148,11 @@ means concretely:
    baselines. The validation pattern is:
    Published data → Python/standard tools → Rust → NUCLEUS composition.
 
-4. **Your work helps evolve the system**: Every workload you run
-   exercises the dispatch pipeline. Gaps we find become improvement
-   targets. The gap reports are public (AGPL).
+4. **Your work validates the infrastructure**: Every workload you run
+   exercises primalSpring's composition patterns under real load — deploy
+   graphs, BTSP encryption, discovery, provenance. Gaps we find flow
+   back upstream. The gap reports are public (AGPL). Your science drives
+   the evolution of the system.
 
 ## The Validation Pattern
 

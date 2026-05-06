@@ -1,22 +1,31 @@
 # Gate: NUC Intake — External-Facing Tunnel Termination
 #
-# Phase 2 concept: expendable Intel NUC acts as the tunnel termination
-# and reverse proxy, isolating the internal compute mesh from external
+# GMKtec NucBox M6 (32 GB RAM) acts as the tunnel termination and
+# reverse proxy, isolating the internal compute mesh from external
 # traffic. Tower Atomic only — no compute or storage.
 #
-# Status: Planned (Phase 2)
+# Physical link: USB-C ethernet to ironGate (point-to-point, no switch).
+# This creates an isolated two-node covalent bond for composition testing.
+#
+# Phase 2a: cloudflared tunnel terminates here
+# Phase 2b: + BearDog BTSP auth inside the Cloudflare tunnel
+# Phase 3b: + petalTongue reverse proxy replaces cloudflared
+# Phase 4:  Songbird NAT traversal, zero external dependencies
+#
+# Status: Phase 2 (cloudflared target)
 
 [gate]
 name = "nuc-intake"
 role = "Tunnel termination, reverse proxy, external-facing intake"
-location = "Sovereign cluster — LAN"
+location = "Sovereign cluster — USB-C to ironGate"
 bonding = "covalent"
 
 [hardware]
-cpu = "Intel NUC (TBD model)"
-ram_gb = 16
+model = "GMKtec NucBox M6"
+cpu = "AMD (integrated)"
+ram_gb = 32
 storage_type = "NVMe"
-network = "Cat6e ethernet (LAN), WAN-facing"
+network = "USB-C ethernet to ironGate (point-to-point 10.99.0.0/30), Wi-Fi (WAN-facing)"
 os = "Linux (minimal)"
 
 [composition]
@@ -29,8 +38,18 @@ beardog = 9100
 songbird = 9200
 
 [identity]
-family_name = "my-sovereign"
+family_name = "pop-os-sovereign"
 node_id = "nuc-intake"
+
+[network]
+internal_ip = "10.99.0.1"
+irongate_ip = "10.99.0.2"
+link_type = "usb-c-ethernet"
+
+[tunnel]
+phase_2a = "cloudflared"
+cloudflare_route_compute = "/compute → 10.99.0.2:8000"
+cloudflare_route_site = "/ → GitHub Pages (sporePrint)"
 
 [phase]
 target = 2

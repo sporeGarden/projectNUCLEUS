@@ -32,13 +32,23 @@ FAMILY_NAME="${NUCLEUS_FAMILY_NAME:-$(hostname -s)-sovereign}"
 STOP=false
 STATUS=false
 
-# Standard ports (from plasmidBin/ports.env)
+# Bind address: localhost by default, override for cross-gate access
+BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS:-127.0.0.1}"
+
+# Standard TCP fallback ports (Phase 59 canonical — primalSpring/docs/PRIMAL_GAPS.md)
 BEARDOG_PORT=9100
 SONGBIRD_PORT=9200
-NESTGATE_PORT=9300
+SQUIRREL_PORT=9300
 TOADSTOOL_PORT=9400
-BARRACUDA_PORT=9500
+NESTGATE_PORT=9500
+RHIZOCRYPT_PORT=9601
+LOAMSPINE_PORT=9700
 CORALREEF_PORT=9730
+BARRACUDA_PORT=9740
+SKUNKBAT_PORT=9140
+BIOMEOS_PORT=9800
+SWEETGRASS_PORT=9850
+PETALTONGUE_PORT=9900
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -71,8 +81,25 @@ primals_for_composition() {
     case "$1" in
         tower) echo "beardog songbird" ;;
         node)  echo "beardog songbird toadstool barracuda coralreef" ;;
-        nest)  echo "beardog songbird nestgate" ;;
-        full)  echo "beardog songbird toadstool barracuda coralreef nestgate" ;;
+        nest)  echo "beardog songbird nestgate rhizocrypt loamspine sweetgrass" ;;
+        full)
+            # Discover all available primal binaries from plasmidBin.
+            # Boot order: beardog first (security), songbird second (network),
+            # then remaining primals alphabetically. This replaces hardcoded lists.
+            local discovered=""
+            local bin_dir="$PLASMIDBIN_DIR/primals"
+            [[ -d "$bin_dir/x86_64-unknown-linux-musl" ]] && bin_dir="$bin_dir/x86_64-unknown-linux-musl"
+            local boot_first="beardog songbird"
+            local rest=""
+            for bin in "$bin_dir"/*; do
+                [[ -x "$bin" ]] || continue
+                local name
+                name=$(basename "$bin")
+                [[ "$name" == "beardog" || "$name" == "songbird" ]] && continue
+                rest="$rest $name"
+            done
+            echo "$boot_first$(echo "$rest" | tr ' ' '\n' | sort | tr '\n' ' ')"
+            ;;
         *)     echo "ERROR: Unknown composition: $1" >&2; return 1 ;;
     esac
 }
@@ -81,9 +108,7 @@ primals_for_composition() {
 
 if $STOP; then
     echo "Stopping all primals..."
-    for p in beardog songbird toadstool barracuda coralreef nestgate squirrel biomeos; do
-        pkill -f "$PLASMIDBIN_DIR/primals/$p" 2>/dev/null || true
-    done
+    pkill -f "$PLASMIDBIN_DIR/primals/" 2>/dev/null || true
     sleep 1
     echo "Done."
     exit 0
@@ -93,14 +118,19 @@ fi
 
 if $STATUS; then
     echo "=== NUCLEUS Status ==="
-    for p in beardog songbird toadstool barracuda coralreef nestgate squirrel biomeos; do
+    local_bin_dir="$PLASMIDBIN_DIR/primals"
+    [[ -d "$local_bin_dir/x86_64-unknown-linux-musl" ]] && local_bin_dir="$local_bin_dir/x86_64-unknown-linux-musl"
+    running_count=0
+    for bin in "$local_bin_dir"/*; do
+        [[ -x "$bin" ]] || continue
+        p=$(basename "$bin")
         pid=$(pgrep -f "$PLASMIDBIN_DIR/primals/$p" 2>/dev/null | head -1) || true
         if [[ -n "$pid" ]]; then
             echo "  $p: PID $pid — RUNNING"
+            running_count=$((running_count + 1))
         fi
     done
-    running=$(pgrep -cf "$PLASMIDBIN_DIR/primals/" 2>/dev/null) || running=0
-    echo "  Total: $running primal(s) running"
+    echo "  Total: $running_count primal(s) running"
     exit 0
 fi
 
@@ -124,17 +154,105 @@ echo "  plasmidBin:  $PLASMIDBIN_DIR"
 echo "  Family:      $FAMILY_NAME"
 echo ""
 
-# Check binaries exist
-MISSING=0
+# ── Load gate config (if --gate specified) ────────────────────────────────
+# Gate TOMLs override ports and composition. Minimal TOML parsing via grep.
+
+GATE_FILE=""
+if [[ -n "$GATE" ]] && [[ -f "$PROJECT_ROOT/gates/${GATE}.toml" ]]; then
+    GATE_FILE="$PROJECT_ROOT/gates/${GATE}.toml"
+    echo "  Loading gate config: $GATE_FILE"
+
+    toml_val() { grep "^$1 " "$GATE_FILE" 2>/dev/null | head -1 | sed 's/.*= *//; s/"//g; s/ *$//'; }
+
+    _port=$(toml_val "beardog");    [[ -n "$_port" ]] && BEARDOG_PORT="$_port"
+    _port=$(toml_val "songbird");   [[ -n "$_port" ]] && SONGBIRD_PORT="$_port"
+    _port=$(toml_val "squirrel");   [[ -n "$_port" ]] && SQUIRREL_PORT="$_port"
+    _port=$(toml_val "toadstool");  [[ -n "$_port" ]] && TOADSTOOL_PORT="$_port"
+    _port=$(toml_val "nestgate");   [[ -n "$_port" ]] && NESTGATE_PORT="$_port"
+    _port=$(toml_val "rhizocrypt"); [[ -n "$_port" ]] && RHIZOCRYPT_PORT="$_port"
+    _port=$(toml_val "loamspine");  [[ -n "$_port" ]] && LOAMSPINE_PORT="$_port"
+    _port=$(toml_val "coralreef");  [[ -n "$_port" ]] && CORALREEF_PORT="$_port"
+    _port=$(toml_val "barracuda");  [[ -n "$_port" ]] && BARRACUDA_PORT="$_port"
+    _port=$(toml_val "sweetgrass"); [[ -n "$_port" ]] && SWEETGRASS_PORT="$_port"
+    unset _port
+fi
+
+# ── Deployment readiness check ─────────────────────────────────────────────
+# Mirrors primalSpring's validate_deployment_readiness():
+#   1. Structure  — graph TOML exists and parses
+#   2. Binary     — each primal binary is present and executable
+#   3. Env        — required environment variables are set
+#   4. Bonding    — bonding_policy consistency (BTSP requires BearDog)
+
+graph_for_composition() {
+    case "$1" in
+        tower) echo "$PROJECT_ROOT/graphs/tower_atomic.toml" ;;
+        node)  echo "$PROJECT_ROOT/graphs/node_atomic_compute.toml" ;;
+        nest)  echo "$PROJECT_ROOT/graphs/nest_atomic.toml" ;;
+        full)  echo "$PROJECT_ROOT/graphs/nucleus_complete.toml" ;;
+        *)     echo "$PROJECT_ROOT/graphs/nucleus_complete.toml" ;;
+    esac
+}
+
+GRAPH_FILE=$(graph_for_composition "$COMPOSITION")
+
+READINESS_ISSUES=0
+
+echo "=== Deployment Readiness ==="
+echo "  Graph: $GRAPH_FILE"
+
+# 1. Structure — graph file must exist
+if [[ ! -f "$GRAPH_FILE" ]]; then
+    echo "  [Structure] Graph file not found: $GRAPH_FILE"
+    READINESS_ISSUES=$((READINESS_ISSUES + 1))
+fi
+
+# 2. Binary discovery
 for p in $PRIMALS; do
     if [[ ! -x "$PLASMIDBIN_DIR/primals/$p" ]]; then
-        echo "  MISSING: $p — run 'bash $PLASMIDBIN_DIR/fetch.sh --all' first"
-        MISSING=$((MISSING + 1))
+        echo "  [BinaryMissing] $p — run 'bash $PLASMIDBIN_DIR/fetch.sh --all' first"
+        READINESS_ISSUES=$((READINESS_ISSUES + 1))
     fi
 done
-if [[ $MISSING -gt 0 ]]; then
-    echo "ERROR: $MISSING binaries missing."
-    exit 1
+
+# 3. Environment checks
+if echo "$PRIMALS" | grep -q beardog; then
+    if [[ -z "${BEARDOG_FAMILY_SEED:-}" ]] && [[ ! -f "${FAMILY_DIR}/.beacon.seed" ]]; then
+        echo "  [EnvMissing] BEARDOG_FAMILY_SEED not set and no .beacon.seed found"
+        READINESS_ISSUES=$((READINESS_ISSUES + 1))
+    fi
+fi
+
+if echo "$PRIMALS" | grep -q nestgate; then
+    if [[ -z "${NESTGATE_JWT_SECRET:-}" ]]; then
+        echo "  [EnvMissing] NESTGATE_JWT_SECRET not set (will auto-generate)"
+    fi
+fi
+
+# 4. Bonding consistency — BTSP compositions require BearDog
+if ! echo "$PRIMALS" | grep -q beardog; then
+    echo "  [BondingInconsistent] BTSP required but beardog not in composition"
+    READINESS_ISSUES=$((READINESS_ISSUES + 1))
+fi
+
+# 5. primalspring_guidestone structural validation (if available)
+GUIDESTONE=$(command -v primalspring_guidestone 2>/dev/null || echo "")
+if [[ -n "$GUIDESTONE" ]] && [[ -f "$GRAPH_FILE" ]]; then
+    echo "  Running primalspring_guidestone against $GRAPH_FILE..."
+    if ! "$GUIDESTONE" validate --graph "$GRAPH_FILE"; then
+        echo "  [Structure] guidestone validation reported issues"
+        READINESS_ISSUES=$((READINESS_ISSUES + 1))
+    fi
+fi
+
+if [[ $READINESS_ISSUES -gt 0 ]]; then
+    echo ""
+    echo "ERROR: Deployment readiness check found $READINESS_ISSUES issue(s)."
+    echo "  Fix issues above or set NUCLEUS_SKIP_READINESS=1 to override."
+    if [[ "${NUCLEUS_SKIP_READINESS:-0}" != "1" ]]; then
+        exit 1
+    fi
+    echo "  NUCLEUS_SKIP_READINESS=1 — proceeding despite issues."
 fi
 
 # ── Phase 1: Family seed ──────────────────────────────────────────────────
@@ -179,6 +297,11 @@ echo "=== Phase 3: Start primals ==="
 
 mkdir -p "$RUNTIME_DIR/biomeos"
 
+# Clean stale sockets from previous runs
+for sock in "$RUNTIME_DIR"/biomeos/*.sock; do
+    [[ -S "$sock" ]] && rm -f "$sock" 2>/dev/null
+done
+
 export FAMILY_ID="$FAMILY_ID"
 export NODE_ID="$NODE_ID"
 export ECOPRIMALS_PLASMID_BIN="$PLASMIDBIN_DIR"
@@ -194,7 +317,7 @@ for p in $PRIMALS; do
             nohup "$PLASMIDBIN_DIR/primals/beardog" server \
                 --socket "$BEARDOG_SOCKET" \
                 --family-id "$FAMILY_ID" \
-                --listen "0.0.0.0:$BEARDOG_PORT" \
+                --listen "$BIND_ADDRESS:$BEARDOG_PORT" \
                 > /tmp/beardog.log 2>&1 &
             echo "    PID: $!"
             sleep 2
@@ -229,7 +352,7 @@ for p in $PRIMALS; do
         barracuda)
             echo "  Starting barracuda (TCP $BARRACUDA_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/barracuda" server \
-                --port "$BARRACUDA_PORT" \
+                --bind "$BIND_ADDRESS:$BARRACUDA_PORT" \
                 > /tmp/barracuda.log 2>&1 &
             echo "    PID: $!"
             sleep 1
@@ -245,14 +368,101 @@ for p in $PRIMALS; do
             ;;
 
         nestgate)
-            echo "  Starting nestgate (UDS)..."
+            echo "  Starting nestgate (UDS + TCP $NESTGATE_PORT)..."
             export NESTGATE_FAMILY_ID="$FAMILY_ID"
-            export NESTGATE_JWT_SECRET="projectnucleus-$NODE_ID-$FAMILY_ID"
+            export NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 32 /dev/urandom | base64)}"
             nohup "$PLASMIDBIN_DIR/primals/nestgate" daemon \
                 --socket-only --dev \
+                --port "$NESTGATE_PORT" \
+                --bind "$BIND_ADDRESS" \
                 > /tmp/nestgate.log 2>&1 &
             echo "    PID: $!"
             sleep 2
+            ;;
+
+        rhizocrypt)
+            echo "  Starting rhizocrypt (TCP $RHIZOCRYPT_PORT, JSON-RPC $((RHIZOCRYPT_PORT+1)))..."
+            export FAMILY_SEED="$BEACON_SEED"
+            nohup "$PLASMIDBIN_DIR/primals/rhizocrypt" server \
+                --port "$RHIZOCRYPT_PORT" \
+                --host "$BIND_ADDRESS" \
+                > /tmp/rhizocrypt.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        loamspine)
+            echo "  Starting loamspine (TCP $LOAMSPINE_PORT)..."
+            nohup "$PLASMIDBIN_DIR/primals/loamspine" server \
+                --port "$LOAMSPINE_PORT" \
+                --bind-address "$BIND_ADDRESS" \
+                > /tmp/loamspine.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        sweetgrass)
+            echo "  Starting sweetgrass (TCP $SWEETGRASS_PORT)..."
+            nohup "$PLASMIDBIN_DIR/primals/sweetgrass" server \
+                --port "$SWEETGRASS_PORT" \
+                --http-address "$BIND_ADDRESS:$((SWEETGRASS_PORT + 1))" \
+                > /tmp/sweetgrass.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        squirrel)
+            echo "  Starting squirrel (TCP $SQUIRREL_PORT)..."
+            export CAPABILITY_REGISTRY_SOCKET="$RUNTIME_DIR/biomeos/neural-api-$FAMILY_ID.sock"
+            nohup "$PLASMIDBIN_DIR/primals/squirrel" server \
+                --port "$SQUIRREL_PORT" \
+                --bind "$BIND_ADDRESS" \
+                > /tmp/squirrel.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        skunkbat)
+            echo "  Starting skunkbat (TCP $SKUNKBAT_PORT)..."
+            nohup "$PLASMIDBIN_DIR/primals/skunkbat" server \
+                --port "$SKUNKBAT_PORT" \
+                > /tmp/skunkbat.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        biomeos)
+            echo "  Starting biomeos neural-api (TCP $BIOMEOS_PORT)..."
+            nohup "$PLASMIDBIN_DIR/primals/biomeos" neural-api \
+                --port "$BIOMEOS_PORT" \
+                --family-id "$FAMILY_ID" \
+                --btsp-optional \
+                > /tmp/biomeos.log 2>&1 &
+            echo "    PID: $!"
+            sleep 2
+            ;;
+
+        petaltongue)
+            echo "  Starting petaltongue server (TCP $PETALTONGUE_PORT)..."
+            nohup "$PLASMIDBIN_DIR/primals/petaltongue" server \
+                --port "$PETALTONGUE_PORT" \
+                > /tmp/petaltongue.log 2>&1 &
+            echo "    PID: $!"
+            sleep 1
+            ;;
+
+        *)
+            # Unknown primal — attempt standard server --port pattern
+            local primal_bin="$PLASMIDBIN_DIR/primals/$p"
+            if [[ -x "$primal_bin" ]]; then
+                echo "  Starting $p (discovered, attempting server --port)..."
+                nohup "$primal_bin" server --port 0 \
+                    > "/tmp/$p.log" 2>&1 &
+                echo "    PID: $! (port auto-assigned — check /tmp/$p.log)"
+                sleep 1
+            else
+                echo "  SKIP $p — no binary found"
+            fi
             ;;
     esac
 done
@@ -263,14 +473,51 @@ echo ""
 
 echo "=== Phase 4: Verify ==="
 
+port_for_primal() {
+    case "$1" in
+        beardog)     echo "$BEARDOG_PORT" ;;
+        songbird)    echo "$SONGBIRD_PORT" ;;
+        toadstool)   echo "$TOADSTOOL_PORT" ;;
+        barracuda)   echo "$BARRACUDA_PORT" ;;
+        coralreef)   echo "$CORALREEF_PORT" ;;
+        nestgate)    echo "$NESTGATE_PORT" ;;
+        rhizocrypt)  echo "$RHIZOCRYPT_PORT" ;;
+        loamspine)   echo "$LOAMSPINE_PORT" ;;
+        sweetgrass)  echo "$SWEETGRASS_PORT" ;;
+        squirrel)    echo "$SQUIRREL_PORT" ;;
+        skunkbat)    echo "$SKUNKBAT_PORT" ;;
+        biomeos)     echo "$BIOMEOS_PORT" ;;
+        petaltongue) echo "$PETALTONGUE_PORT" ;;
+        *)           echo "" ;;
+    esac
+}
+
+rpc_health_check() {
+    local port="$1"
+    curl -sf --max-time 3 "http://127.0.0.1:$port" \
+        -X POST -H 'Content-Type: application/json' \
+        -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' 2>/dev/null
+}
+
 ALL_OK=true
 for p in $PRIMALS; do
     pid=$(pgrep -f "$PLASMIDBIN_DIR/primals/$p" 2>/dev/null | head -1) || true
-    if [[ -n "$pid" ]]; then
-        echo "  $p: PID $pid — OK"
-    else
+    if [[ -z "$pid" ]]; then
         echo "  $p: NOT RUNNING — check /tmp/$p.log"
         ALL_OK=false
+        continue
+    fi
+
+    port=$(port_for_primal "$p")
+    if [[ -n "$port" ]]; then
+        resp=$(rpc_health_check "$port") || resp=""
+        if [[ -n "$resp" ]]; then
+            echo "  $p: PID $pid, TCP $port — HEALTHY"
+        else
+            echo "  $p: PID $pid, TCP $port — running (health probe pending)"
+        fi
+    else
+        echo "  $p: PID $pid — running"
     fi
 done
 
@@ -285,23 +532,11 @@ else
 fi
 
 echo ""
-echo "  Family ID: $FAMILY_ID"
-echo "  Node ID:   $NODE_ID"
-echo "  Logs:      /tmp/{$(echo $PRIMALS | tr ' ' ',')}.log"
+echo "  Family ID:   $FAMILY_ID"
+echo "  Node ID:     $NODE_ID"
+echo "  Graph:       $GRAPH_FILE"
+echo "  Composition: $COMPOSITION ($(echo $PRIMALS | wc -w | tr -d ' ') primals)"
+echo "  Logs:        /tmp/{$(echo $PRIMALS | tr ' ' ',')}.log"
 echo ""
 echo "  To stop:   bash $0 --stop"
 echo "  To check:  bash $0 --status"
-echo ""
-
-# Quick toadstool dispatch test (if toadstool is in the composition)
-if echo "$PRIMALS" | grep -q toadstool; then
-    echo "  Testing toadstool dispatch..."
-    RESPONSE=$(curl -sf --max-time 5 "http://127.0.0.1:$TOADSTOOL_PORT" \
-        -X POST -H 'Content-Type: application/json' \
-        -d '{"jsonrpc":"2.0","method":"system.health","id":1}' 2>/dev/null) || RESPONSE=""
-    if [[ -n "$RESPONSE" ]]; then
-        echo "  toadstool JSON-RPC: responding"
-    else
-        echo "  toadstool JSON-RPC: no response (may still be initializing)"
-    fi
-fi

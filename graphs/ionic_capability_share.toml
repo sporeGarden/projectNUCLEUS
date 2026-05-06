@@ -7,15 +7,17 @@
 # Neither can decrypt the other's BirdSong beacons. Capability sharing
 # requires explicit contract (API key, mTLS, metered billing).
 #
+# Phase 59: BTSP Phase 3 AEAD, tcp_fallback_port, health.liveness standard.
+#
 # Usage:
-#   biomeos deploy --graph graphs/bonding/ionic_capability_share.toml
+#   biomeos deploy --graph graphs/ionic_capability_share.toml
 
 [graph]
 name = "ionic_capability_share"
 description = "Cross-organization capability sharing (metered) — two family seeds, ionic contract boundary"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "parallel"
-bond_type = "ionic"
+bonding_policy = "btsp_required"
 
 [graph.metadata]
 security_model = "btsp_enforced"
@@ -38,9 +40,11 @@ name = "beardog_alpha"
 binary = "beardog"
 order = 1
 required = true
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.identity"]
+security_model = "btsp"
+tcp_fallback_port = 9100
+capabilities = ["crypto.identity", "crypto.encrypt", "crypto.sign"]
 family = "alpha"
 
 [[graph.nodes]]
@@ -49,9 +53,11 @@ binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog_alpha"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = ["net.discovery", "net.mesh"]
+security_model = "btsp"
+tcp_fallback_port = 9200
+capabilities = ["discovery.find_primals", "discovery.announce", "network.http_request"]
 family = "alpha"
 
 [[graph.nodes]]
@@ -60,8 +66,10 @@ binary = "toadstool"
 order = 3
 required = true
 depends_on = ["beardog_alpha", "songbird_alpha"]
-health_method = "compute.health"
+health_method = "health.liveness"
 by_capability = "compute"
+security_model = "btsp"
+tcp_fallback_port = 9400
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 family = "alpha"
 
@@ -71,9 +79,11 @@ name = "beardog_beta"
 binary = "beardog"
 order = 4
 required = true
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.identity"]
+security_model = "btsp"
+tcp_fallback_port = 9100
+capabilities = ["crypto.identity", "crypto.encrypt", "crypto.sign"]
 family = "beta"
 
 [[graph.nodes]]
@@ -82,9 +92,11 @@ binary = "songbird"
 order = 5
 required = true
 depends_on = ["beardog_beta"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = ["net.discovery"]
+security_model = "btsp"
+tcp_fallback_port = 9200
+capabilities = ["discovery.find_primals", "discovery.announce"]
 family = "beta"
 
 [[graph.nodes]]
@@ -93,8 +105,9 @@ binary = "neuralspring_primal"
 order = 6
 required = true
 depends_on = ["beardog_beta", "songbird_beta"]
-health_method = "neural.health"
+health_method = "health.liveness"
 by_capability = "neural"
+security_model = "btsp"
 capabilities = ["neural.spectral", "neural.eigensolve", "neural.evoformer"]
 family = "beta"
 
@@ -105,7 +118,9 @@ binary = "biomeos"
 order = 7
 required = true
 depends_on = ["toadstool_alpha", "neuralspring_beta"]
-health_method = "health"
-by_capability = "ecosystem"
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+tcp_fallback_port = 9800
 capabilities = ["route.register", "capability.call", "ionic.meter"]
 bond_role = "ionic_bridge"

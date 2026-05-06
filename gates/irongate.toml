@@ -3,6 +3,7 @@
 # First gate bootstrapped from zero via plasmidBin.
 # Nest Atomic + ToadStool validated 2026-05-04 with 235+ checks passing.
 # Provenance pipeline elevated same day — full DAG/ledger/braid chain.
+# Phase 59 absorption 2026-05-06: 13/13 BTSP Phase 3 AEAD, Wire L3, 5-tier discovery.
 
 [gate]
 name = "irongate"
@@ -33,16 +34,18 @@ primals = [
 ]
 fragment = "nest_atomic + node_atomic_compute"
 
+# Phase 59 canonical TCP fallback ports (Tier 5 discovery)
 [ports]
 beardog = 9100
 songbird = 9200
+squirrel = 9300
 toadstool = 9400
 nestgate = 9500
-rhizocrypt_jsonrpc = 9601
+rhizocrypt = 9601
 loamspine = 9700
-barracuda = 9740
 coralreef = 9730
-sweetgrass_http = 39085
+barracuda = 9740
+sweetgrass = 9850
 
 [identity]
 family_name = "irongate-sovereign"
@@ -58,3 +61,11 @@ python_benchmark = true
 workloads_dispatched = 10
 provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
+
+[upstream]
+primalspring_phase = 59
+btsp_phase = 3
+wire_standard = "L3"
+primals_converged = "13/13"
+discovery_tiers = 5
+absorption_date = "2026-05-06"

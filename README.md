@@ -10,20 +10,24 @@ external dependency.
 
 ## What This Is
 
-projectNUCLEUS packages the proven ecoPrimals substrate into a deployable
-system. It is the infrastructure product that every other sporeGarden product
-(helixVision, esotericWebb, RPGPT) eventually runs on.
+projectNUCLEUS is the deployable NUCLEUS infrastructure on **ironGate** — our
+local development and validation system. It takes primal binaries from
+plasmidBin, composition graphs from primalSpring, and standards from
+wateringHole, and assembles them into a running gate on real hardware.
 
 ```
-ecoPrimals (organisms) → syntheticChemistry (springs/validation) → sporeGarden (products)
-                                    ↓                                       ↓
-                            primalSpring                          projectNUCLEUS
-                         (validates compositions)          (deploys compositions)
+primalSpring (upstream patterns)
+       ↓ deploy graphs, validation, standards
+projectNUCLEUS on ironGate (deploys + validates patterns)
+       ↓ real workloads, real users
+ABG collaborators (ionic compute sharing = pattern validation under load)
 ```
 
-It takes primal binaries from plasmidBin, composition graphs from
-primalSpring, and standards from wateringHole, and assembles them into a
-running gate on your hardware.
+**The core loop**: primalSpring defines composition patterns upstream.
+projectNUCLEUS deploys those patterns on ironGate. ABG workloads validate
+them under real external load. Gaps flow back upstream via handoff docs.
+Every successful ABG workload is proof that primalSpring's deploy graphs,
+BTSP, discovery hierarchy, and provenance pipeline work in production.
 
 ## NUCLEUS Atomics
 
@@ -36,6 +40,9 @@ NUCLEUS composes from three atomics, each named for a subatomic particle:
 | **Nest** | Neutron | Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass | Storage — content-addressed data, provenance, attribution |
 
 Full NUCLEUS = Tower + Node + Nest + Squirrel (AI) + biomeOS (orchestration).
+
+**fieldMouse** is NOT a primal — it is a deployment class (biomeOS chimeras for edge/IoT).
+Do not include fieldMouse in primal rosters.
 
 Every gate runs the atomics that match its hardware. A NUC runs Tower. A
 workstation runs Node. A storage server runs Nest. biomeOS coordinates
@@ -54,13 +61,18 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Phase 1 validated (2026-05-04, elevated 2026-05-04)**:
-- Nest Atomic + ToadStool (9 primals) running: BearDog, SongBird, ToadStool, BarraCuda, CoralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass
+**Phase 59 absorbed (2026-05-06)** — Full Ecosystem Convergence from primalSpring v0.9.24:
+- All **13/13 NUCLEUS primals** deployed and healthy on ironGate: BearDog, Songbird, ToadStool, barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass, Squirrel, skunkBat, biomeOS, petalTongue
+- BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
+- **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
+- Deploy graphs carry `tcp_fallback_port`, `bonding_policy`, `security_model` per node — validated by `primalspring_guidestone`
 - 235+ wetSpring science checks passing across 10 workloads (8 Rust validators, 2 Python baselines)
-- Real NCBI data processed: 11.9M paired-end reads from PRJNA488170
-- Full provenance chain operational: BLAKE3 content hashes → rhizoCrypt DAG (24 events) → loamSpine permanent ledger → sweetGrass ed25519-witnessed braid
-- Python + Rust workloads dispatched via TOML workload specs through toadStool
-- JupyterHub available for notebook-style access
+- Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
+- **Phase 2a validated**: JupyterHub + Cloudflare Tunnel, 15/15 external checks, 270ms p50 latency
+- **ABG tiered access**: observer / compute / admin via PAM groups and `pre_spawn_hook`
+- **Security baseline**: three-layer pen testing (below/at/above primals), skunkBat observing
+- Capability-based discovery (`by_capability`) preferred over identity-based (`name`) in all graphs
+- TCP fallback ports aligned to Phase 59 canonical table (skunkBat 9750→9140, port swaps corrected)
 
 ## Quick Start
 
@@ -77,16 +89,18 @@ See [deploy/](deploy/) for full deployment instructions.
 
 ## Phase Roadmap
 
-### Phase 1: Covalent LAN HPC (current)
+### Phase 1: Covalent LAN HPC (validated)
 
-Single-gate Nest Atomic + ToadStool (9 primals) with provenance pipeline.
-Manual bootstrap, covalent bonding only. Workloads run locally with full
-provenance: BLAKE3 content hashing, DAG sessions, permanent ledger, attribution braids.
+13 primals on ironGate (Full NUCLEUS) with provenance pipeline.
+235+ wetSpring science checks passing. Full provenance chain operational.
+This proves the substrate works on our hardware.
 
-### Phase 2: Ionic Compute Sharing
+### Phase 2: Ionic Compute Sharing (in progress — Step 2a validated)
 
-Tower Atomic on NUC as intake node. songBird cross-gate routing. BTSP Phase 2
-authentication for external users. The "lend a GPU to a friend" pattern.
+Deploy a usable system for ABG as validation of primalSpring patterns.
+NUC intake → ironGate JupyterHub → BTSP-secured access via primals.eco.
+Step 2a: Cloudflare Tunnel baseline captured (270ms p50, 15/15 external checks).
+ABG tiered access live (observer/compute/admin). Notebook elevation operational.
 
 ### Phase 3: Self-Hosted sporePrint
 
@@ -105,13 +119,14 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ## Repo Structure
 
 ```
+specs/              Local specs: execution model, composition contract, invisibility, security, tunnel evolution
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, gate manifest)
+deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, security_validation.sh, abg_accounts.sh)
 graphs/             Curated deploy graph TOMLs (from primalSpring)
 workloads/          Workload catalog (TOML specs for toadStool)
-  wetspring/        Validated wetSpring science workloads
+  wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
-validation/         Composition validation results, provenance manifests, gap reports
+validation/         Composition validation results, provenance manifests, security handbacks, gap reports
 docs/               Architecture primers and external-facing docs
 ```
 
@@ -119,9 +134,10 @@ docs/               Architecture primers and external-facing docs
 
 | Repo | Org | Relationship |
 |------|-----|-------------|
-| **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primals from here |
-| **primalSpring** | syntheticChemistry | Composition validation — projectNUCLEUS references deploy graphs |
+| **primalSpring** | syntheticChemistry | Upstream — defines composition patterns that projectNUCLEUS deploys and validates |
+| **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
-| **sporePrint** | ecoPrimals/infra | The website — projectNUCLEUS eventually hosts it |
+| **sporePrint** | ecoPrimals/infra | The website (primals.eco) — projectNUCLEUS eventually hosts it |
+| **foundation** | sporeGarden | External-facing — institutional relationships, metallic federation |
 | **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
 | **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |

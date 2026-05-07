@@ -61,21 +61,47 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Phase 59 absorbed (2026-05-06)** — Full Ecosystem Convergence from primalSpring v0.9.24:
-- All **13/13 NUCLEUS primals** deployed and healthy on ironGate: BearDog, Songbird, ToadStool, barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass, Squirrel, skunkBat, biomeOS, petalTongue
+**Phase 59 absorbed (2026-05-06), sovereignty evolution in progress (2026-05-07)**
+
+### Infrastructure
+
+- All **13/13 NUCLEUS primals** deployed and healthy on ironGate
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
-- Deploy graphs carry `tcp_fallback_port`, `bonding_policy`, `security_model` per node — validated by `primalspring_guidestone`
 - 235+ wetSpring science checks passing across 11 workloads (8 Rust PASS, 2 Python RUN, 1 deferred FAIL)
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
-- **Phase 2a validated**: JupyterHub + Cloudflare Tunnel, 15/15 external checks, 270ms p50 latency
-- **ABG tiered access**: observer / compute / admin via PAM groups and `pre_spawn_hook`
-- **Security**: Zero open gaps — all PG-55 through PG-59 resolved by primalSpring Phase 59. 13/13 default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat multi-dimensional anomaly detection
-- Capability-based discovery (`by_capability`) preferred over identity-based (`name`) in all graphs
-- TCP fallback ports aligned to Phase 59 canonical table (skunkBat 9750→9140, port swaps corrected)
-- **sporePrint live**: 5 public notebooks rendered on [primals.eco/lab/notebooks](https://primals.eco/lab/notebooks/) with embedded charts; auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
-- **Live Science API spec**: 6 JSON-RPC methods defined in `specs/LIVE_SCIENCE_API.md` — Tier 2 evolution target for notebooks calling primals directly
-- Spring validation template: `notebooks/spring-validation-template.ipynb` — parameterized dispatch + visualization
+
+### Services (all persistent via systemd)
+
+| Service | URL | Port | Status |
+|---------|-----|------|--------|
+| JupyterHub | `lab.primals.eco` | 8000 | Live, PAM auth, tiered ABG access |
+| Forgejo | `git.primals.eco` | 3000 | Live, projectNUCLEUS mirrored |
+| Cloudflare Tunnel | — | outbound | Routes lab + git subdomains |
+| 13 NUCLEUS primals | localhost | 9100–9900 | All healthy, user services |
+
+### Security
+
+- **UFW active**: deny-by-default, allow SSH/LAN/localhost
+- JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
+- Zero open gaps — all PG-55 through PG-59 resolved by primalSpring Phase 59
+- 13/13 primals default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat anomaly detection
+- Three-layer pen test complete (`validation/security-20260507-110312/`)
+
+### Sovereignty Evolution
+
+- **35 external dependencies mapped** across 6 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
+- **Cloudflare baselines capturing** hourly via cron (DNS, TCP, TLS, TTFB, total latency)
+- **benchScale framework** operational (`infra/benchScale/`) — 5 scenarios, 3 pentest scripts
+- **Forgejo calibration instrument** installed — baseline for RootPulse parity targets
+- **RootPulse commit workflow tested** — 5/6 phases pass against live primals, Phase 5 (LoamSpine commit) has param mismatch
+- **3 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5)
+
+### sporePrint
+
+- 5 public notebooks on [primals.eco/lab/notebooks](https://primals.eco/lab/notebooks/)
+- Auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
+- Live Science API spec: 6 JSON-RPC methods (`specs/LIVE_SCIENCE_API.md`)
 
 ## Quick Start
 
@@ -122,14 +148,18 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ## Repo Structure
 
 ```
-specs/              Local specs: execution model, composition contract, invisibility, security, tunnel evolution
+specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, security_validation.sh, abg_accounts.sh)
-graphs/             Curated deploy graph TOMLs (from primalSpring)
+deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, security_validation.sh)
+graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
-validation/         Composition validation results, provenance manifests, security handbacks, gap reports
+validation/         Composition validation, security pen tests, upstream gap handbacks
+  baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs)
+  archive/          Timestamped provenance runs and prior security scans
+infra/              Infrastructure tooling
+  benchScale/       Load generation and pen testing framework for sovereignty validation
 docs/               Architecture primers and external-facing docs
 ```
 

@@ -1,0 +1,104 @@
+[11:03:12] ═══════════════════════════════════════════════════════════
+[11:03:12]   Security Validation Pipeline — Three-Layer Pen Testing
+[11:03:12]   Target: 127.0.0.1
+[11:03:12]   Layer: all
+[11:03:12]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260507-110312
+[11:03:12] ═══════════════════════════════════════════════════════════
+[11:03:17]   skunkBat scan baseline captured
+[11:03:17] 
+[11:03:17] ══ Layer 1: Below the Primals (OS / Network) ══
+[11:03:17] 
+[11:03:17] ── 1a: Port Exposure Scan ──
+[11:03:17]   [WARN] Found 9 non-localhost listeners:
+[11:03:17]   [INFO]   LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:9140       0.0.0.0:*    users:(("skunkbat",pid=3724650,fd=9))
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:9400       0.0.0.0:*    users:(("toadstool",pid=3724814,fd=23))
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:9900       0.0.0.0:*    users:(("petaltongue",pid=3724542,fd=14))
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:9800       0.0.0.0:*    users:(("biomeos",pid=3724282,fd=10))
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:9850       0.0.0.0:*    users:(("sweetgrass",pid=3724760,fd=10))
+[11:03:17]   [INFO]   LISTEN 0      128    192.168.1.238:40771      0.0.0.0:*    users:(("rustdesk",pid=1816372,fd=21))
+[11:03:17]   [INFO]   LISTEN 0      128          0.0.0.0:39521      0.0.0.0:*    users:(("sweetgrass",pid=3724760,fd=11))
+[11:03:17]   [INFO]   LISTEN 0      128                *:9200             *:*    users:(("songbird",pid=3724154,fd=10))
+[11:03:17]   [FAIL] Port 9100 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [INFO] Port 9200: LISTEN 0      128                *:9200             *:*    users:(("songbird",pid=3724154,fd=10))   
+[11:03:17]   [FAIL] Port 9300 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9400 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9500 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9601 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9602 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9700 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9730 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9740 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9800 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9850 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9900 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [FAIL] Port 9140 bound to 0.0.0.0 (externally exposed)
+[11:03:17]   [PASS] JupyterHub (8000) bound to 127.0.0.1 — tunnel-only access
+[11:03:17] 
+[11:03:17] ── 1b: Unnecessary Service Check ──
+[11:03:17] 
+[11:03:17] ── 1c: Firewall Status ──
+[11:03:17]   [WARN] UFW installed but not active: permission denied
+[11:03:17] 
+[11:03:17] ── 1d: Sensitive File Permissions ──
+[11:03:17]   [PASS] /home/irongate/.config/biomeos/family: mode 700 (restricted)
+[11:03:17]   [PASS] /home/irongate/jupyterhub/jupyterhub_cookie_secret: mode 600 (restricted)
+[11:03:17]   [PASS] /home/irongate/jupyterhub/jupyterhub.sqlite: mode 600 (restricted)
+[11:03:17] 
+[11:03:17] ══ Layer 2: At the Primal Layer (API Security) ══
+[11:03:17] 
+[11:03:17] ── 2a: Unauthenticated API Probe ──
+[11:03:20]   [INFO] beardog health.liveness accessible (expected — public health endpoint)
+[11:03:23]   [INFO] toadstool health.liveness accessible (expected — public health endpoint)
+[11:03:27]   [INFO] nestgate health.liveness accessible (expected — public health endpoint)
+[11:03:30]   [WARN] nestgate storage.list accessible without auth
+[11:03:33]   [INFO] rhizocrypt health.liveness accessible (expected — public health endpoint)
+[11:03:36]   [INFO] rhizocrypt dag.session.list accessible (BTSP enforced at connection level)
+[11:03:39]   [INFO] loamspine health.liveness accessible (expected — public health endpoint)
+[11:03:42]   [INFO] sweetgrass health.liveness accessible (expected — public health endpoint)
+[11:03:45]   [PASS] sweetgrass braid.list rejects unauthenticated request
+[11:03:48]   [INFO] skunkbat health.liveness accessible (expected — public health endpoint)
+[11:03:48] 
+[11:03:48] ── 2b: Input Fuzzing (Malformed Requests) ──
+[11:04:02]   [PASS] beardog survived all 7 fuzz payloads without crash
+[11:04:16]   [PASS] toadstool survived all 7 fuzz payloads without crash
+[11:04:30]   [PASS] nestgate survived all 7 fuzz payloads without crash
+[11:04:46]   [PASS] skunkbat survived all 7 fuzz payloads without crash
+[11:04:46] 
+[11:04:46] ── 2c: Method Enumeration ──
+[11:05:00]   [PASS] beardog rejects all 7 suspicious method probes
+[11:05:14]   [PASS] toadstool rejects all 7 suspicious method probes
+[11:05:28]   [PASS] nestgate rejects all 7 suspicious method probes
+[11:05:28] 
+[11:05:28] ── 2d: BTSP Enforcement ──
+[11:05:28]   [PASS] sweetgrass (port 9850) rejects plaintext connection
+[11:05:28]   [PASS] rhizocrypt (port 9601) rejects plaintext connection
+[11:05:28] 
+[11:05:28] ══ Layer 3: Above the Primals (Application Security) ══
+[11:05:28] 
+[11:05:28] ── 3a: JupyterHub Security Headers ──
+[11:05:28]   [PASS] JupyterHub sends x-frame-options: DENY
+[11:05:28]   [PASS] JupyterHub sends x-content-type-options: nosniff
+[11:05:28]   [PASS] JupyterHub sends content-security-policy: frame-ancestors 'none'; report-uri /hub/security/csp-report
+[11:05:28]   [PASS] JupyterHub sends x-xss-protection: 1; mode=block
+[11:05:28]   [WARN] Server header disclosed: server: NUCLEUS
+[11:05:28] 
+[11:05:28] ── 3b: Authentication Enforcement ──
+── 3b: Authentication Enforcement ──
+  [PASS] JupyterHub /hub/api/users requires auth (HTTP 403)
+  [PASS] JupyterHub spawn endpoint requires auth (HTTP 403)
+
+── 3c: Path Traversal Probes ──
+  [PASS] Path traversal blocked: /hub/../../../etc/passwd (HTTP 302)
+  [PASS] Path traversal blocked: /hub/%2e%2e/%2e%2e/etc/passwd (HTTP 302)
+  [PASS] Path /hub/login?next=//evil.com returned 200 but no sensitive content
+  [PASS] Path traversal blocked: /hub/api/../../../etc/shadow (HTTP 302)
+
+── 3d: Tunnel Security ──
+  [PASS] Tunnel uses modern TLS
+  [WARN] Tunnel missing HSTS header
+
+── skunkBat Post-Scan ──
+  skunkBat: threats=0 quarantined=0 alerts=0
+
+Remaining tests complete.

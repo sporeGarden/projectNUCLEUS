@@ -1,0 +1,156 @@
+# RootPulse Commit Workflow
+# Orchestrates the provenance trio: rhizoCrypt → BearDog → NestGate → LoamSpine → sweetGrass
+#
+# Temporal collapse: ephemeral DAG session is dehydrated to permanent linear history
+# with cryptographic signing, content storage, and semantic attribution.
+#
+# Required: Tower (BearDog + Songbird) + rhizoCrypt + NestGate + LoamSpine
+# Optional: sweetGrass (attribution)
+
+[graph]
+id = "rootpulse_commit"
+description = "RootPulse commit: dehydrate ephemeral session to permanent history with attribution"
+coordination = "Sequential"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 1: HEALTH CHECKS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "check_rhizocrypt"
+output = "rhizocrypt_healthy"
+capabilities = ["dag"]
+
+[nodes.operation]
+name = "rpc_call"
+target = "rhizocrypt"
+
+[nodes.operation.params]
+method = "health"
+params = {}
+
+[nodes.constraints]
+timeout_ms = 5000
+
+[[nodes]]
+id = "check_loamspine"
+output = "loamspine_healthy"
+capabilities = ["permanent_storage"]
+
+[nodes.operation]
+name = "rpc_call"
+target = "loamspine"
+
+[nodes.operation.params]
+method = "health"
+params = {}
+
+[nodes.constraints]
+timeout_ms = 5000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 2: DEHYDRATE (rhizoCrypt)
+# Compute Merkle root, extract frontier, produce DehydrationSummary
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "dehydrate_session"
+depends_on = ["check_rhizocrypt"]
+output = "dehydration_summary"
+capabilities = ["dehydration"]
+
+[nodes.operation]
+name = "capability_call"
+
+[nodes.operation.params]
+capability = "dag.dehydrate"
+params = { session_id = "${SESSION_ID}" }
+
+[nodes.constraints]
+timeout_ms = 30000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: SIGN (BearDog)
+# Cryptographically sign the dehydration summary
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "sign_commit"
+depends_on = ["dehydrate_session"]
+output = "signed_summary"
+capabilities = ["crypto"]
+
+[nodes.operation]
+name = "capability_call"
+
+[nodes.operation.params]
+capability = "crypto.sign"
+params = { data = "${DEHYDRATION_SUMMARY}", did = "${AGENT_DID}" }
+
+[nodes.constraints]
+timeout_ms = 10000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 4: STORE CONTENT (NestGate)
+# Persist payload content to content-addressed storage
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "store_content"
+depends_on = ["sign_commit"]
+output = "content_stored"
+capabilities = ["storage"]
+
+[nodes.operation]
+name = "rpc_call"
+target = "nestgate"
+
+[nodes.operation.params]
+method = "storage.store"
+params = { key = "rootpulse:commit:${SESSION_ID}", value = "${SIGNED_SUMMARY}", family_id = "${FAMILY_ID}" }
+
+[nodes.constraints]
+timeout_ms = 30000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 5: COMMIT TO PERMANENT HISTORY (LoamSpine)
+# Append to linear immutable history
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "commit_permanent"
+depends_on = ["store_content", "check_loamspine"]
+output = "commit_ref"
+capabilities = ["permanent_storage"]
+
+[nodes.operation]
+name = "capability_call"
+
+[nodes.operation.params]
+capability = "commit.session"
+params = { summary = "${SIGNED_SUMMARY}", content_hash = "${CONTENT_STORED}" }
+
+[nodes.constraints]
+timeout_ms = 30000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE 6: ATTRIBUTE (sweetGrass) — optional
+# Create provenance braid for semantic attribution
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[[nodes]]
+id = "create_attribution"
+depends_on = ["commit_permanent"]
+output = "braid_ref"
+capabilities = ["attribution"]
+
+[nodes.operation]
+name = "capability_call"
+
+[nodes.operation.params]
+capability = "provenance.create_braid"
+params = { commit_ref = "${COMMIT_REF}", agents = "${AGENT_SUMMARIES}" }
+
+[nodes.constraints]
+timeout_ms = 15000
+# sweetGrass is optional — workflow succeeds even if attribution unavailable

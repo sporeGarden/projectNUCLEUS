@@ -88,7 +88,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Step 2a validated (2026-05-06) — Cloudflare Tunnel baseline captured
+**Status**: Step 2a hardened (2026-05-07) — UFW active, baselines capturing, Forgejo live
 **System**: ironGate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -155,18 +155,49 @@ exceeds its behavior under real ABG load. See `specs/TUNNEL_EVOLUTION.md`.
 - `SOVEREIGN_COMPUTE_SHARING.md` — full pattern doc (Phase 0-4)
 - JupyterHub validated on ironGate (Phase 1)
 
-### Step 2a Validated (2026-05-06)
+### Step 2a Validated and Hardened (2026-05-06 → 2026-05-07)
 
-Cloudflare quick tunnel established and tested end-to-end:
-- `cloudflared` 2026.3.0 → QUIC tunnel → Cloudflare ORD edge → public URL
-- All JupyterHub endpoints accessible externally (HTTP 200)
+Cloudflare tunnel established, hardened, and baselines capturing:
+
+**Tunnel + Lab (2026-05-06)**:
+- `cloudflared` 2026.3.0 → QUIC tunnel → Cloudflare ORD edge → `lab.primals.eco`
 - Tunnel latency p50: **270ms** (5-sample median via trycloudflare.com)
-- 13/13 primals healthy behind the tunnel
-- Provenance pipeline (run 2): 26 events, Merkle root, ed25519 braid
-- External validation: **15/15 PASS**
-- Local validation: **12/12 PASS**
-- `deploy/external_validation.sh` — automated validation for both modes
+- External validation: **15/15 PASS**, Local validation: **12/12 PASS**
 - See `validation/EXTERNAL_PIPELINE_VALIDATION_MAY06_2026.md`
+
+**System Hardening (2026-05-07)**:
+- UFW activated: deny-by-default, allow SSH/LAN/localhost
+- JupyterHub security headers added (X-Frame-Options, nosniff, referrer, server suppressed)
+- Three-layer pen test: `validation/security-20260507-110312/SECURITY_RESULTS.md`
+
+**Sovereignty Evolution (2026-05-07)**:
+- Hourly baseline capture via cron (`validation/baselines/capture_tunnel_metrics.sh`)
+- `infra/benchScale/` framework created — 5 parity scenarios, 3 pentest scripts
+- `specs/SOVEREIGNTY_VALIDATION_PROTOCOL.md` — master cutover document
+- `specs/TUNNEL_EVOLUTION.md` — updated with concrete implementation for Steps 2b→4
+- `specs/COMPLETE_DEPENDENCY_INVENTORY.md` — 35 dependencies across 6 clusters mapped
+
+**Forgejo Calibration Instrument (2026-05-07)**:
+- Forgejo v15.0.0 installed as `forgejo.service` on port 3000
+- Accessible via `git.primals.eco` (Cloudflare tunnel ingress)
+- projectNUCLEUS mirrored, SQLite backend, registration disabled
+- Calibration target for RootPulse parity
+
+**RootPulse Commit Workflow (2026-05-07)**:
+- Ported `rootpulse_commit.toml` from biomeOS to `graphs/`
+- Tested all 6 phases against live primals:
+  - Phase 1 (health): PASS — rhizoCrypt + LoamSpine alive
+  - Phase 2 (dehydrate): PASS — DAG session created, merkle root returned
+  - Phase 3 (sign): PASS — BearDog Ed25519 signature
+  - Phase 4 (store): PASS — NestGate KV storage
+  - Phase 5 (commit): FAIL — LoamSpine API param mismatch with graph spec
+  - Phase 6 (attribute): PASS — sweetGrass braid with W3C PROV witness
+- 5 upstream gaps documented in `validation/ROOTPULSE_GAPS_HANDBACK.md`
+
+**Upstream Gap Handbacks Delivered**:
+- `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
+- `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
+- `validation/ROOTPULSE_GAPS_HANDBACK.md` — 5 gaps (RP-1→RP-5)
 
 ### ABG Tiered Access Model
 
@@ -250,14 +281,33 @@ Curated in projectNUCLEUS/graphs/ (canonical source: primalSpring/graphs/):
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Near-term (sporePrint ownership moving to projectNUCLEUS;
-NestGate + provenance trio operational from Phase 1)
+**Status**: Blocked on upstream gaps (petalTongue PT-1, NestGate NG-1) — gap handbacks delivered
 **Bonding**: Covalent core + public weak endpoint
 **New Primals**: petalTongue (UI), BTSP Phase 3
 
 projectNUCLEUS takes short-term ownership of sporePrint. The site
 evolves from GitHub Pages → NestGate-backed content → petalTongue
 rendering, each step validated against Cloudflare CDN baselines.
+
+### Gap Discovery (2026-05-07)
+
+Live testing of petalTongue and NestGate revealed the gaps that block
+Phase 3 execution. These are documented as upstream handbacks:
+
+**petalTongue** (`validation/PETALTONGUE_GAPS_HANDBACK.md`):
+- PT-1 (High): `web` mode has 6 hardcoded routes, no catch-all for static files
+- PT-2 (High): No NestGate backend integration
+- PT-3 (Medium): No web-mode config schema (docroot, backend, cache)
+- PT-4 (Medium): Deploy mode mismatch (`server` vs `web`)
+- PT-5 (Low): `--workers` flag accepted but unused
+- **Shortest fix**: ~10 lines of Rust — `ServeDir` fallback with `--docroot` flag
+
+**NestGate** (`validation/NESTGATE_CONTENT_GAPS_HANDBACK.md`):
+- NG-1 (High): No content-addressed storage (BLAKE3 hash as auto-key)
+- NG-2 (Medium): No collection/manifest for versioned releases
+- NG-3 (Medium): Blob store and KV store are separate namespaces
+- NG-4 (Low): No streaming store for large content
+- **Workaround**: Client-side BLAKE3 hashing + KV manifest + blob store works today
 
 ### Architecture
 

@@ -20,6 +20,8 @@ projectNUCLEUS's own operational terms.
 | [SECURITY_VALIDATION.md](SECURITY_VALIDATION.md) | Three-layer pen testing (below/at/above primals), skunkBat integration, baseline results |
 | [SHARED_WORKSPACE.md](SHARED_WORKSPACE.md) | ABG shared workspace visibility model, access tiers, reviewer access, sporePrint integration |
 | [LIVE_SCIENCE_API.md](LIVE_SCIENCE_API.md) | JSON-RPC method specs for Tier 2/3 live science — toadstool.validate, barracuda.compute, etc. |
+| [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) | Master document: baseline → shadow-run → cutover for every external dependency replacement |
+| [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) | All 35 external dependencies across 6 clusters, primal replacement mappings, calibration instruments |
 
 ## Architecture Lineage
 

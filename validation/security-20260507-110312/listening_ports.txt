@@ -1,0 +1,26 @@
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*                                             
+LISTEN 0      128          0.0.0.0:9140       0.0.0.0:*    users:(("skunkbat",pid=3724650,fd=9))    
+LISTEN 0      128          0.0.0.0:9400       0.0.0.0:*    users:(("toadstool",pid=3724814,fd=23))  
+LISTEN 0      128          0.0.0.0:9900       0.0.0.0:*    users:(("petaltongue",pid=3724542,fd=14))
+LISTEN 0      128          0.0.0.0:9800       0.0.0.0:*    users:(("biomeos",pid=3724282,fd=10))    
+LISTEN 0      128          0.0.0.0:9850       0.0.0.0:*    users:(("sweetgrass",pid=3724760,fd=10)) 
+LISTEN 0      128    192.168.1.238:40771      0.0.0.0:*    users:(("rustdesk",pid=1816372,fd=21))   
+LISTEN 0      128        127.0.0.1:631        0.0.0.0:*                                             
+LISTEN 0      511        127.0.0.1:8000       0.0.0.0:*                                             
+LISTEN 0      511        127.0.0.1:8001       0.0.0.0:*                                             
+LISTEN 0      128        127.0.0.1:8091       0.0.0.0:*    users:(("songbird",pid=3724154,fd=14))   
+LISTEN 0      128        127.0.0.1:8081       0.0.0.0:*                                             
+LISTEN 0      128        127.0.0.1:9001       0.0.0.0:*    users:(("loamspine",pid=3724409,fd=11))  
+LISTEN 0      128        127.0.0.1:9100       0.0.0.0:*    users:(("beardog",pid=3724079,fd=9))     
+LISTEN 0      128        127.0.0.1:9300       0.0.0.0:*    users:(("squirrel",pid=3724705,fd=11))   
+LISTEN 0      128        127.0.0.1:9500       0.0.0.0:*    users:(("nestgate",pid=3724468,fd=10))   
+LISTEN 0      128        127.0.0.1:9700       0.0.0.0:*    users:(("loamspine",pid=3724409,fd=10))  
+LISTEN 0      128        127.0.0.1:9602       0.0.0.0:*    users:(("rhizocrypt",pid=3724595,fd=9))  
+LISTEN 0      128        127.0.0.1:9601       0.0.0.0:*    users:(("rhizocrypt",pid=3724595,fd=11)) 
+LISTEN 0      128        127.0.0.1:9851       0.0.0.0:*    users:(("sweetgrass",pid=3724760,fd=9))  
+LISTEN 0      128        127.0.0.1:9740       0.0.0.0:*    users:(("barracuda",pid=3724228,fd=9))   
+LISTEN 0      4096       127.0.0.1:9730       0.0.0.0:*    users:(("coralreef",pid=3724352,fd=9))   
+LISTEN 0      4096       127.0.0.1:20241      0.0.0.0:*    users:(("cloudflared",pid=3736801,fd=3)) 
+LISTEN 0      128          0.0.0.0:39521      0.0.0.0:*    users:(("sweetgrass",pid=3724760,fd=11)) 
+LISTEN 0      128                *:9200             *:*    users:(("songbird",pid=3724154,fd=10))   
+LISTEN 0      128            [::1]:631           [::]:*                                             

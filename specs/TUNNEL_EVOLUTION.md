@@ -103,6 +103,24 @@ Browser → lab.primals.eco (Cloudflare DNS + CDN)
 
 **Goal**: Ionic capability tokens scope ABG access, replacing PAM passwords.
 
+**Prerequisites discovered during JupyterHub deployment** (see
+`validation/JUPYTERHUB_PATTERNS_HANDBACK.md`):
+
+- **JH-0 (Critical)**: Before ionic tokens can scope access, every primal's
+  RPC dispatcher must check capability tokens before executing methods. The
+  JupyterHub deployment revealed that convention-based access control
+  (`NUCLEUS_READONLY=1` env var) provides zero enforcement — reviewer-tier
+  users could execute arbitrary code and call any primal RPC on localhost.
+  The dispatcher check pattern must be defined and implemented across all
+  primals before Step 2b can provide real security.
+- **JH-1 (High)**: BearDog needs `identity.create` for canonical identity
+  management. PAM username case-sensitivity bugs (`ABGreviewer` vs
+  `abgreviewer`) showed that identity normalization must be handled at the
+  identity layer, not delegated to OS-level PAM.
+- **JH-4 (Medium)**: Token delivery UX for non-technical ABG members. The
+  manual `chpasswd` workflow exposed the real credential lifecycle that
+  ionic tokens must support end-to-end.
+
 ```
 Browser → lab.primals.eco → cloudflared tunnel
        → BearDog BTSP handshake (inside tunnel, on ironGate)
@@ -110,17 +128,24 @@ Browser → lab.primals.eco → cloudflared tunnel
 ```
 
 **What to build**:
-1. **BearDog ionic token issuer** — `beardog.auth.issue_ionic` method that
+1. **RPC dispatcher capability check** (all primals) — before `auth.issue_ionic`
+   can be meaningful, every primal must enforce tokens at the dispatch layer.
+   Pattern: token → allowlist check → execute or reject. Without this, tokens
+   are advisory, not enforcing. See JH-0 in patterns handback.
+2. **BearDog ionic token issuer** — `beardog.auth.issue_ionic` method that
    creates time-limited capability tokens scoped to ABG tier (compute, admin, pi).
    Token encodes: user identity, tier, expiry, allowed primal methods.
-2. **JupyterHub BTSP authenticator plugin** — custom `Authenticator` class that
+   Also requires `beardog.identity.create` for canonical identity management
+   (DID-based, case-insensitive lookup). See JH-1 in patterns handback.
+3. **JupyterHub BTSP authenticator plugin** — custom `Authenticator` class that
    validates BTSP ionic tokens instead of PAM passwords. Located at
    `deploy/jupyterhub_btsp_auth.py`. Must implement:
    - `authenticate()` — validate token via `beardog.auth.verify_ionic` RPC
    - `pre_spawn_hook()` — inject token-scoped environment into notebook server
    - Fallback to PAM during shadow run (dual-auth mode)
-3. **Token distribution** — BearDog CLI command or web form to issue tokens to
-   ABG members. Token delivered via secure channel (not email).
+4. **Token distribution** — BearDog CLI command or web form to issue tokens to
+   ABG members. Token delivered via secure channel (not email). Must be usable
+   by non-technical researchers. See JH-4 in patterns handback.
 
 **Implementation detail**:
 ```python
@@ -165,7 +190,7 @@ Browser → primals.eco (Cloudflare DNS + CDN proxy)
 1. **NestGate content ingestion pipeline** — script that builds sporePrint
    with Zola, then pushes rendered HTML/CSS/JS to NestGate via
    `nestgate.content.put` RPC. Each file stored by its BLAKE3 hash.
-   Located at `deploy/publish_sporeprint.sh`.
+   To be created at `deploy/publish_sporeprint.sh`.
    ```bash
    # Build and publish flow
    cd infra/sporePrint && zola build
@@ -175,7 +200,7 @@ Browser → primals.eco (Cloudflare DNS + CDN proxy)
    ```
 2. **petalTongue web server mode** — petalTongue already has a web serving
    capability. Configure it to resolve URL paths to NestGate content hashes.
-   Routing config at `deploy/petaltongue_web.toml`:
+   Routing config (to be created) at `deploy/petaltongue_web.toml`:
    ```toml
    [web]
    listen = "127.0.0.1:9901"

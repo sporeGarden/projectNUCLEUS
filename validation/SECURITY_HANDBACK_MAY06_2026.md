@@ -142,7 +142,65 @@ during this test, and alert when similar patterns appear in production.
 | Add `--bind` to 6 primals (P1-P6) | Each primal team | HIGH | **DONE** — PG-55/58/59 |
 | NestGate BTSP scoping for storage.list | NestGate team | MEDIUM | **DONE** — PG-56 |
 | skunkBat baseline learning from pen test data | skunkBat team | MEDIUM | **DONE** — PG-57 |
-| Activate UFW on ironGate | ironGate admin | MEDIUM | Open |
-| JupyterHub security headers | projectNUCLEUS | LOW | Open |
+| Activate UFW on ironGate | ironGate admin | MEDIUM | **DONE** — deny-by-default |
+| JupyterHub security headers | projectNUCLEUS | LOW | **DONE** — X-Frame-Options, nosniff, Server suppressed |
+| Process isolation (hidepid=2) | ironGate admin | MEDIUM | **DONE** — fstab persistent |
+| Outbound network restriction | ironGate admin | HIGH | **DONE** — iptables/ip6tables owner match UID 1001-1099 |
+| Reviewer/observer read-only | projectNUCLEUS | CRITICAL | **DONE** — filesystem + JupyterLab server flags |
+| Shared notebook write protection | projectNUCLEUS | MEDIUM | **DONE** — 444 perms, compute users run but can't save |
+| RPC dispatcher capability check | All primal teams | CRITICAL | **OPEN** — upstream gap JH-0 |
 
-**Ecosystem state post-Phase 59**: 13/13 BTSP Phase 3 FULL AEAD, 13/13 default `127.0.0.1` bind, zero open security gaps, 5-tier discovery escalation hierarchy live, 85 experiments, 661 tests, 74 deploy graphs.
+**Ecosystem state post-Phase 59**: 13/13 BTSP Phase 3 FULL AEAD, 13/13 default `127.0.0.1` bind, 5-tier discovery escalation hierarchy live, 85 experiments, 661 tests, 74 deploy graphs.
+
+---
+
+## Phase 2a Multi-User Pentest (2026-05-07)
+
+Second pentest round: validated security from an authenticated ABG compute-tier
+user (tamison) running inside JupyterHub via
+`shared/commons/nucleus-security-validation.ipynb`.
+
+### Results
+
+| Test | Result | Severity | Action |
+|------|--------|----------|--------|
+| Primal port scan | 13/13 reachable on localhost | Expected | JH-0 gap documented |
+| BTSP enforcement | sweetGrass 9850 accepts plaintext | Info | By design: dual-port (9850=IPC, 9851=BTSP) |
+| Filesystem isolation | 10/10 PASS | Strong | shadow, homes, tunnel config, sqlite all denied |
+| NestGate write | ALLOWED without auth | High | Confirms JH-0 |
+| Outbound internet | GitHub, PyPI reachable via IPv4+IPv6 | High | **FIXED**: iptables owner match |
+| Process visibility | 13 primal PIDs visible | Medium | **FIXED**: hidepid=2 |
+| Reviewer code execution | Could execute code, create files | Critical | **FIXED**: server flags + filesystem |
+| NUCLEUS_READONLY bypass | Env var not enforced | Critical | **FIXED**: replaced with mechanism |
+
+### Hardening Applied
+
+| Layer | Method | Persistent | Scope |
+|-------|--------|-----------|-------|
+| Process isolation | `hidepid=2` on /proc (gid=0 exempts root) | fstab | All non-root users |
+| Outbound network | iptables+ip6tables DROP for UID 1001-1099 | systemd restore service | ABG users |
+| Localhost preserved | iptables ACCEPT 127.0.0.0/8 | Persisted | Primal RPC works |
+| LAN preserved | iptables ACCEPT RFC1918 | Persisted | NucBox link |
+| Reviewer read-only | chmod 550 root-owned notebook dir | Filesystem | reviewer/observer |
+| Reviewer no-exec | JupyterLab server flags (no kernels, no terminals) | jupyterhub_config.py | reviewer/observer |
+| Shared immutable | chmod 444 on notebooks, 2755 on commons/ | Filesystem | All tiers |
+
+### Dual-Port Clarification
+
+Primals with BTSP use two ports by design:
+
+| Primal | IPC Port (plaintext) | BTSP Port (encrypted) |
+|--------|---------------------|----------------------|
+| sweetGrass | 9850 | 9851 |
+| rhizoCrypt | 9602 | 9601 |
+
+IPC ports are for primal-to-primal localhost communication. BTSP ports for
+cross-host. Both localhost-bound. The IPC ports accepting plaintext is correct —
+the gap is they accept it from *any* localhost process (JH-0).
+
+### Remaining Critical Gap
+
+**JH-0**: All primals accept any localhost JSON-RPC call without caller identity
+check. A compute-tier user can call `storage.store`, `braid.create`,
+`crypto.sign`, and any other method. No capability enforcement at the RPC
+dispatcher level. See `validation/JUPYTERHUB_PATTERNS_HANDBACK.md`.

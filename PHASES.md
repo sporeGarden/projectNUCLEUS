@@ -168,7 +168,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **System Hardening (2026-05-07)**:
 - UFW activated: deny-by-default, allow SSH/LAN/localhost
 - JupyterHub security headers added (X-Frame-Options, nosniff, referrer, server suppressed)
-- Three-layer pen test: `validation/security-20260507-110312/SECURITY_RESULTS.md`
+- Three-layer pen test: `validation/archive/security-20260507-110312/SECURITY_RESULTS.md`
 
 **Sovereignty Evolution (2026-05-07)**:
 - Hourly baseline capture via cron (`validation/baselines/capture_tunnel_metrics.sh`)
@@ -194,10 +194,22 @@ Cloudflare tunnel established, hardened, and baselines capturing:
   - Phase 6 (attribute): PASS — sweetGrass braid with W3C PROV witness
 - 5 upstream gaps documented in `validation/ROOTPULSE_GAPS_HANDBACK.md`
 
+**Multi-User Pentest and Hardening (2026-05-07)**:
+- Ran `nucleus-security-validation.ipynb` from compute-tier user (tamison)
+- 13/13 primals reachable on localhost (expected), NestGate write allowed without auth (JH-0)
+- Filesystem isolation 10/10 PASS (shadow, homes, tunnel config, sqlite all denied)
+- sweetGrass dual-port clarified: 9850=IPC (plaintext by design), 9851=BTSP
+- **hidepid=2** on /proc — users can't see other processes (persistent via fstab)
+- **iptables/ip6tables** outbound DROP for ABG UIDs 1001-1099 (persistent via systemd)
+- **Reviewer lockdown**: terminals disabled, kernels disabled, filesystem 550 root-owned
+- **Shared notebooks immutable**: chmod 444, compute users run but can't save back
+- **Compute/save separation**: shared templates read-only, per-user `~/notebooks/results/` for outputs
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
 - `validation/ROOTPULSE_GAPS_HANDBACK.md` — 5 gaps (RP-1→RP-5)
+- `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5), 1 critical
 
 ### ABG Tiered Access Model
 
@@ -212,7 +224,13 @@ JupyterHub supports four access tiers via Linux groups (`deploy/abg_accounts.sh`
 
 `pre_spawn_hook` in JupyterHub sets per-user resource limits, `NUCLEUS_TIER`
 environment variable, primal port configuration, and shared workspace symlinks.
-Observer and reviewer tiers get `NUCLEUS_READONLY=1`.
+Observer and reviewer tiers enforce read-only via JupyterLab server flags
+(`--ServerApp.terminals_enabled=False`, `--KernelSpecManager.allowed_kernelspecs=set()`)
+and filesystem permissions (root-owned `chmod 550` notebook directory).
+
+**Security note**: The original `NUCLEUS_READONLY=1` env var was a convention
+flag with zero enforcement — JupyterLab ignored it entirely (JH-0 pattern).
+Replaced with mechanism-level enforcement at application and filesystem layers.
 
 ### ABG Shared Workspace
 

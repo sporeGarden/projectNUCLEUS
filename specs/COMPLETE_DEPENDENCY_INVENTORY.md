@@ -146,6 +146,7 @@ must prove parity before the external is removed.
 | 4. Container Registries | 3 registries | No | Low — config swap | N/A |
 | 5. AI/ML APIs | 3 providers | No (optional) | Low — Ollama works | N/A |
 | 6. Science Data APIs | 3 sources | No (data, not service) | Low — cache + provenance | `abg_data.sh` registry |
+| 7. Internal Primal Gaps | 5 gaps (1 critical) | **Yes** (prerequisite) | **Critical** — blocks Steps 2b-3b | JupyterHub deployment |
 
 ---
 
@@ -158,7 +159,42 @@ Cluster 3 (Registries):  ██░░░░░░░░ ~20% mapped, vendor esca
 Cluster 4 (Containers):  ██░░░░░░░░ ~20% mapped, config swap path known
 Cluster 5 (AI APIs):     ██████░░░░ ~60% mapped, Ollama fallback working
 Cluster 6 (Science):     █████░░░░░ ~50% mapped, data registry operational
+Cluster 7 (Internal):    █░░░░░░░░░ ~10% mapped, gaps identified, zero implemented
 ```
+
+---
+
+## Cluster 7 — Internal Primal Gaps (Discovered via JupyterHub Deployment)
+
+**Status**: 5 gaps identified from live multi-user deployment. 1 critical. See
+`validation/JUPYTERHUB_PATTERNS_HANDBACK.md` for full analysis.
+
+These are not external dependencies but missing primal capabilities that block
+sovereignty steps. They were discovered by deploying JupyterHub as a real
+multi-user service and observing where the primal stack could not enforce,
+manage, or observe what the external tooling (PAM, systemd, Cloudflare headers)
+currently handles.
+
+| Gap | Severity | Owner | Blocks | Description |
+|-----|----------|-------|--------|-------------|
+| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | Convention flags (`NUCLEUS_READONLY` env var) gave false security. Every primal's RPC dispatcher must check capability tokens before executing methods. |
+| JH-1: BearDog identity management | High | BearDog | Step 2b (BTSP auth) | `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` methods needed. PAM case-sensitivity bugs showed identity must be primal-native. |
+| JH-2: Token-carried resource envelope | High | biomeOS + ToadStool | neuralAPI enforcement | Ionic tokens need resource limits (mem, cpu, method allowlist) that composition spawners enforce. Currently done via Python `pre_spawn_hook`. |
+| JH-3: Composition hot-reload | Medium | biomeOS | Rolling primal updates | `composition.reload` for swapping a single primal without restarting the full composition. Currently requires `systemctl restart`. |
+| JH-4: Token issuance UX | Medium | BearDog + primalSpring | Non-technical user onboarding | End-to-end credential flow for researchers who can't use CLI. Currently: `echo 'user:pass' \| chpasswd`. |
+| JH-5: Log aggregation + provenance | Medium | skunkBat | Unified security monitoring | Aggregate logs from systemd journal, primal files, and tunnel into single surface. Feed security events into rhizoCrypt DAG + sweetGrass braid. |
+
+**Sovereignty Progress**:
+
+```
+Cluster 7 (Internal):   █░░░░░░░░░ ~10% — gaps identified, zero implemented
+```
+
+**Relationship to other clusters**: Cluster 7 is a prerequisite for Cluster 1
+(Cloudflare) and Cluster 2 (GitHub) sovereignty. Without RPC capability
+enforcement (JH-0), removing Cloudflare's perimeter protection (Step 3b)
+exposes all primal endpoints to unauthenticated access. Without identity
+management (JH-1), BTSP auth (Step 2b) cannot replace PAM.
 
 ---
 
@@ -179,3 +215,4 @@ Cluster 6 (Science):     █████░░░░░ ~50% mapped, data regist
 | Date | Change |
 |------|--------|
 | 2026-05-07 | Initial inventory. 6 clusters, ~35 distinct dependencies mapped. |
+| 2026-05-07 | Added Cluster 7 — Internal Primal Gaps. 5 gaps (1 critical) from JupyterHub deployment patterns. |

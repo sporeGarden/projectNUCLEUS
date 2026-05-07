@@ -195,11 +195,10 @@ Results are written to `validation/security-YYYYMMDD-HHMMSS/` with:
 
 ## Relationship to benchScale
 
-`sort-after/benchScale/` (to be moved to `infra/benchScale/`) provides:
-- Docker-based multi-node topologies for isolated security testing
-- `ecoprimals-skunkbat-defensive.yaml` — defended mesh with external probe
-- IPC compliance validation (`ipc_compliance.rs`)
-- `cargo-audit` / RustSec supply chain scanning
+`infra/benchScale/` provides:
+- 5 parity scenarios for sovereignty validation
+- 3 pentest scripts for security testing
+- Baseline comparison framework for external dependency replacement
 
 benchScale topologies model **multi-node** security scenarios (untrusted
 external node probing a defended mesh). `security_validation.sh` tests

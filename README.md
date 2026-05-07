@@ -66,13 +66,16 @@ Gates connect to each other through chemical bonding patterns:
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
 - Deploy graphs carry `tcp_fallback_port`, `bonding_policy`, `security_model` per node — validated by `primalspring_guidestone`
-- 235+ wetSpring science checks passing across 10 workloads (8 Rust validators, 2 Python baselines)
+- 235+ wetSpring science checks passing across 11 workloads (8 Rust PASS, 2 Python RUN, 1 deferred FAIL)
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 - **Phase 2a validated**: JupyterHub + Cloudflare Tunnel, 15/15 external checks, 270ms p50 latency
 - **ABG tiered access**: observer / compute / admin via PAM groups and `pre_spawn_hook`
 - **Security**: Zero open gaps — all PG-55 through PG-59 resolved by primalSpring Phase 59. 13/13 default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat multi-dimensional anomaly detection
 - Capability-based discovery (`by_capability`) preferred over identity-based (`name`) in all graphs
 - TCP fallback ports aligned to Phase 59 canonical table (skunkBat 9750→9140, port swaps corrected)
+- **sporePrint live**: 5 public notebooks rendered on [primals.eco/lab/notebooks](https://primals.eco/lab/notebooks/) with embedded charts; auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
+- **Live Science API spec**: 6 JSON-RPC methods defined in `specs/LIVE_SCIENCE_API.md` — Tier 2 evolution target for notebooks calling primals directly
+- Spring validation template: `notebooks/spring-validation-template.ipynb` — parameterized dispatch + visualization
 
 ## Quick Start
 
@@ -137,7 +140,7 @@ docs/               Architecture primers and external-facing docs
 | **primalSpring** | syntheticChemistry | Upstream — defines composition patterns that projectNUCLEUS deploys and validates |
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
-| **sporePrint** | ecoPrimals/infra | The website (primals.eco) — projectNUCLEUS eventually hosts it |
+| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — live with notebooks, spring science hubs, auto-refresh CI; Phase 3 target: self-hosted on NUCLEUS |
 | **foundation** | sporeGarden | External-facing — institutional relationships, metallic federation |
 | **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
 | **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |

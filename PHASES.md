@@ -8,7 +8,7 @@ bonding remains the foundation even when Phase 4 metallic federation is live.
 ## Phase 1: Covalent LAN HPC
 
 **Status**: Validated (2026-05-06), full provenance pipeline operational
-**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 5070)
+**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Bonding**: Covalent (shared family seed, full trust)
 **Composition**: Full NUCLEUS (13 primals, dynamically discovered from plasmidBin)
 - Tower: BearDog + SongBird
@@ -198,16 +198,22 @@ showcase/    — polished work for external review (PIs, HPC admins)
 Google Doc model: all work visible to all members. Reviewers see showcase/ only.
 Work elevates from commons/ → projects/ → showcase/ → primals.eco/lab (public).
 
-### sporePrint Integration (primals.eco/lab)
+### sporePrint Integration (primals.eco/lab) — LIVE
 
-New `/lab` section on primals.eco — public read-only view of validated science:
-- Rendered notebooks (nbconvert → HTML → Zola pages)
-- "Reproduce It Yourself" guide (deploy, run, verify provenance)
-- Validation results (235+ checks, provenance chain summary)
-- `scripts/render_notebooks.sh` converts showcase/ notebooks for the static site
+**What's live now** on primals.eco (GitHub Pages + auto-refresh CI):
+- 5 public notebooks rendered with embedded charts at `/lab/notebooks/` (16S pipeline, benchmarks, paper reproductions, cross-spring connections, soil Anderson)
+- Spring science hubs for wetSpring, hotSpring, airSpring, healthSpring at `/lab/springs/`
+- "Reproduce It Yourself" guide, provenance pipeline, compute access pages
+- `render_notebooks.sh` executes notebooks via `jupyter nbconvert --execute` and wraps output in Zola front matter
+- Auto-refresh CI: `notify-sporeprint.yml` in all 26 repos → `auto-refresh.yml` dispatches metric updates (auto-commit) or content PRs (review)
+- `sporeprint/` directories in all 8 springs with validation-summary stubs
+- `sources.toml` registry maps 15 primals + 8 springs + 3 products to GitHub repos
 
-sporePrint remains a static Zola site on GitHub Pages. No dynamic compute.
-The lab section is the display case; the shared workspace is the incubator.
+**What's still planned** (Phase 3 sovereignty):
+- NestGate serves sporePrint content directly (no GitHub Pages)
+- petalTongue renders live dashboards from Tier 2 JSON-RPC APIs
+- BTSP replaces Cloudflare TLS on all external connections
+- sporePrint becomes a NUCLEUS composition running on sovereign hardware
 
 ### Notebook Elevation (from `specs/NOTEBOOK_ELEVATION.md`)
 

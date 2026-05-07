@@ -1,7 +1,7 @@
 # ABG Full Pipeline Demo — Provenance-Verified Results
 
 **Date**: 2026-05-04
-**Hardware**: Intel i9-14900K, 96 GB DDR5, RTX 5070
+**Hardware**: Intel i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090
 **Composition**: Full NUCLEUS (13 primals)
 **Dispatch**: All workloads executed via `toadstool execute` on live composition
 **Provenance**: Full DAG → Merkle root → loamSpine ledger → sweetGrass braid

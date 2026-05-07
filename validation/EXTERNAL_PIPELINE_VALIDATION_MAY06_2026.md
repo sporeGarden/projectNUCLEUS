@@ -1,7 +1,7 @@
 # External Pipeline Validation — Phase 2a
 
 **Date**: 2026-05-06
-**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 5070)
+**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Composition**: 13/13 primals (full NUCLEUS, dynamically discovered from plasmidBin)
 **JupyterHub**: v5.4.5, PAM auth, LocalProcessSpawner
 **Tunnel**: cloudflared 2026.3.0 quick tunnel (trycloudflare.com)

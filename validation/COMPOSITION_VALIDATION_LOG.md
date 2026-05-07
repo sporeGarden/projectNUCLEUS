@@ -1,7 +1,7 @@
 # Composition Validation Log — wetSpring Through Node Atomic
 
 **Date**: 2026-05-04
-**Gate**: ironGate (Intel i9-14900K, 96 GB DDR5, RTX 5070)
+**Gate**: ironGate (Intel i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Composition**: Node Atomic (beardog, songbird, toadstool, barracuda, coralreef)
 
 ## Objective

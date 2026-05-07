@@ -43,6 +43,10 @@ into a system that handles all of those problems locally:
 | DAG provenance | **rhizoCrypt** | Ephemeral DAG sessions, BLAKE3 Merkle trees |
 | Permanent ledger | **loamSpine** | Append-only audit trails with certificate minting |
 | Attribution | **sweetGrass** | Ed25519-witnessed provenance braids (W3C PROV-O) |
+| AI coordination | **Squirrel** | Task routing, model orchestration, agentic loops |
+| Anomaly detection | **skunkBat** | Multi-dimensional network/security anomaly detection |
+| Orchestration | **biomeOS** | System coordinator, Neural API, deploy graph execution |
+| Dashboards | **petalTongue** | Live data visualization and HTTP dashboard server |
 
 These primals are statically-linked Rust binaries. No Python runtime, no
 Docker, no JVM. They communicate over Unix domain sockets (fast, local)
@@ -111,12 +115,12 @@ pool of interchangeable compute nodes.
 
 ## What's Running Today
 
-On **ironGate** (i9-14900K + 96 GB DDR5 + RTX 5070), Phase 59 absorbed:
+On **ironGate** (i9-14900K + 96 GB DDR5 + RTX 4070 / RTX 3090), Phase 59 absorbed:
 
 - Full NUCLEUS (13 primals running): BearDog, Songbird, ToadStool,
   barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass,
   Squirrel, skunkBat, biomeOS, petalTongue
-- 235+ wetSpring science checks passing across 10 workloads through
+- 235+ wetSpring science checks passing across 11 workloads through
   composition dispatch
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger →
   sweetGrass ed25519-witnessed braid

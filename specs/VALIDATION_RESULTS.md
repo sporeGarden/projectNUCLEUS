@@ -1,4 +1,4 @@
-# Validation Results — Phase 1 Full Pipeline (2026-05-06)
+# Validation Results — Phase 1-2a Pipeline Validation (2026-05-06)
 
 Concrete evidence from the first full local validation run on ironGate.
 This document records what worked, what didn't, and what it means for

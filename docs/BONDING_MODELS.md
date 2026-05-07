@@ -17,7 +17,7 @@ See `infra/whitePaper/gen3/about/HARDWARE.md` for the full node inventory.
 
 | Gate | CPU | RAM | GPU | Atomic | Role |
 |------|-----|-----|-----|--------|------|
-| **ironGate** | i9-14900K | 96 GB DDR5 | RTX 5070 | Node | Composition validation, agentic dev |
+| **ironGate** | i9-14900K | 96 GB DDR5 | RTX 4070 / RTX 3090 | Node | Composition validation, agentic dev |
 | **northGate** | Ryzen 9 9950X3D | 96 GB DDR5 | RTX 5090 | Node | Gaming + remote compute |
 | **southGate** | Ryzen 5800X3D | 128 GB DDR4 | RTX 4060 | Node | Gaming + heavy compute |
 | **eastGate** | i9-12900 | 32 GB DDR5 | RTX 4070 + Akida NPU | Node | Utility + neuromorphic |
@@ -56,10 +56,14 @@ freely between them based on what the workload needs.
 
 The current operational instance: 13 primals (Full NUCLEUS) on ironGate
 with covalent bonding. JupyterHub runs alongside for notebook-style
-access with tiered ABG accounts (observer/compute/admin). Full provenance
+access with tiered ABG accounts (observer/compute/admin/reviewer). Full provenance
 pipeline operational (9 phases, ed25519-witnessed braid). Cloudflare
 Tunnel baseline captured for ionic access validation. Three-layer
 security pen testing baseline established.
+
+**sporePrint visibility**: 5 public notebooks rendered on [primals.eco/lab/notebooks](https://primals.eco/lab/notebooks/)
+with embedded matplotlib charts. Auto-refresh CI propagates metrics and content from all
+26 source repos. Spring science hubs at `/lab/springs/` with validation summaries per domain.
 See `specs/VALIDATION_RESULTS.md` for detailed evidence.
 
 ### NucBox M6 — Isolated Two-Node Covalent Bond (Phase 2)

@@ -19,7 +19,7 @@
 # Parameterized:
 #   FAMILY_ID  — hex(genesis_seed[0..8]) from .family.seed (canonical: 8ff3b864a4bc589a)
 #   NODE_ID    — unique per gate, matching HARDWARE.md inventory:
-#     irongate    — i9-14900K, RTX 5070, 96GB DDR5 (composition validation)
+#     irongate    — i9-14900K, RTX 4070 / RTX 3090, 96GB DDR5 (composition validation)
 #     northgate   — Ryzen 9 9950X3D, RTX 5090, 96GB DDR5 (gaming + remote compute)
 #     southgate   — 5800X3D, RTX 4060, 128GB DDR4 (gaming + compute)
 #     eastgate    — i9-12900, RTX 4070, Akida NPU, 32GB DDR5 (utility + NPU)

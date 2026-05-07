@@ -19,6 +19,7 @@ projectNUCLEUS's own operational terms.
 | [NOTEBOOK_ELEVATION.md](NOTEBOOK_ELEVATION.md) | How springs elevate CLI validations into visual notebooks — output contract, tier access, evolution path |
 | [SECURITY_VALIDATION.md](SECURITY_VALIDATION.md) | Three-layer pen testing (below/at/above primals), skunkBat integration, baseline results |
 | [SHARED_WORKSPACE.md](SHARED_WORKSPACE.md) | ABG shared workspace visibility model, access tiers, reviewer access, sporePrint integration |
+| [LIVE_SCIENCE_API.md](LIVE_SCIENCE_API.md) | JSON-RPC method specs for Tier 2/3 live science — toadstool.validate, barracuda.compute, etc. |
 
 ## Architecture Lineage
 

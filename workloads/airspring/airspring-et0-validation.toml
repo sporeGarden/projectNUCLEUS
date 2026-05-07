@@ -1,0 +1,21 @@
+# airSpring — FAO-56 ET₀ validation
+# Validates reference evapotranspiration against Python within 1e-5
+#
+# TODO: Update command path when airSpring validation binaries are built
+
+[metadata]
+name = "airspring-et0-validation"
+description = "FAO-56 reference evapotranspiration — 75/75 Python-Rust cross-validated checks"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "/home/irongate/Development/ecoPrimals/springs/airSpring/target/release/validate_fao56_et0"
+working_dir = "/home/irongate/Development/ecoPrimals/springs/airSpring"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

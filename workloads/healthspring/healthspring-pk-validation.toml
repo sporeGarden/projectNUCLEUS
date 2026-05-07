@@ -1,0 +1,21 @@
+# healthSpring — PK/PD model validation
+# Validates pharmacokinetic models with Python cross-validation
+#
+# TODO: Update command path when healthSpring validation binaries are built
+
+[metadata]
+name = "healthspring-pk-validation"
+description = "Pharmacokinetic model validation — Hill, PBPK, population Monte Carlo, Michaelis-Menten"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "/home/irongate/Development/ecoPrimals/springs/healthSpring/target/release/validate_pk_models"
+working_dir = "/home/irongate/Development/ecoPrimals/springs/healthSpring"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

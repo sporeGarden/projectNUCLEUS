@@ -1,0 +1,21 @@
+# hotSpring — Sarkas Yukawa MD validation
+# Validates paper-parity molecular dynamics on consumer GPU
+#
+# TODO: Update command path when hotSpring validation binaries are built
+
+[metadata]
+name = "hotspring-md-validation"
+description = "Sarkas Yukawa OCP molecular dynamics — paper parity, 0.000% energy drift"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "/home/irongate/Development/ecoPrimals/springs/hotSpring/target/release/validate_sarkas_md"
+working_dir = "/home/irongate/Development/ecoPrimals/springs/hotSpring"
+
+[resources]
+max_memory_bytes = 8589934592
+max_cpu_percent = 90.0
+
+[security]
+isolation_level = "None"

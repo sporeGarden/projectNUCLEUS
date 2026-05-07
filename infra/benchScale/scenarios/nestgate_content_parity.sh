@@ -19,9 +19,11 @@ set -euo pipefail
 #     [--samples 10]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 GHPAGES_URL="https://primals.eco"
-NESTGATE_URL="http://127.0.0.1:9900"
+NESTGATE_URL="http://${NUCLEUS_BIND_ADDRESS}:${PETALTONGUE_PORT}"
 SAMPLES=10
 PATHS=("/" "/lab/compute-access/" "/about/")
 

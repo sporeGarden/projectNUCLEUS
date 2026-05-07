@@ -15,11 +15,13 @@ set -euo pipefail
 #   ./full_stack_load.sh [--multiplier 2] [--duration 60] [--target hub|primals|all]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 MULTIPLIER=2
 DURATION=60
 TARGET="all"
-HUB_URL="http://127.0.0.1:8000/hub/login"
+HUB_URL="http://${NUCLEUS_BIND_ADDRESS}:${JUPYTERHUB_PORT}/hub/login"
 
 # Estimated peak: 5 req/s across hub + primals
 PEAK_RPS=5
@@ -50,11 +52,11 @@ echo "  Targets:    $TARGET"
 echo ""
 
 PRIMAL_ENDPOINTS=(
-    "127.0.0.1:9100"   # beardog
-    "127.0.0.1:9400"   # toadstool
-    "127.0.0.1:9500"   # nestgate
-    "127.0.0.1:9700"   # loamspine
-    "127.0.0.1:9140"   # skunkbat
+    "${NUCLEUS_BIND_ADDRESS}:${BEARDOG_PORT}"
+    "${NUCLEUS_BIND_ADDRESS}:${TOADSTOOL_PORT}"
+    "${NUCLEUS_BIND_ADDRESS}:${NESTGATE_PORT}"
+    "${NUCLEUS_BIND_ADDRESS}:${LOAMSPINE_PORT}"
+    "${NUCLEUS_BIND_ADDRESS}:${SKUNKBAT_PORT}"
 )
 
 TOTAL_REQS=0

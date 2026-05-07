@@ -14,6 +14,8 @@ set -euo pipefail
 # Produces a parity report showing whether BTSP matches CF performance.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 BASELINE=""
 BTSP_URL="https://127.0.0.1:8443/hub/login"

@@ -12,15 +12,15 @@
 #   bash external_validation.sh --local
 #   bash external_validation.sh --tunnel --hostname primals.eco
 #
-# Requires: curl, jq, nc, cloudflared (for --tunnel mode)
+# Requires: curl, python3, nc, cloudflared (for --tunnel mode)
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh"
 
+PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
 CLOUDFLARED="${CLOUDFLARED:-$(command -v cloudflared 2>/dev/null || echo "$HOME/bin/cloudflared")}"
-JUPYTERHUB_PORT="${JUPYTERHUB_PORT:-8000}"
 JUPYTERHUB_URL="http://127.0.0.1:$JUPYTERHUB_PORT"
 TUNNEL_HOSTNAME="${TUNNEL_HOSTNAME:-}"
 MODE="local"
@@ -79,7 +79,7 @@ else
 fi
 
 PRIMAL_COUNT=0
-for pair in "beardog:9100" "songbird:9200" "toadstool:9400" "nestgate:9500" "rhizocrypt:9602" "loamspine:9700" "sweetgrass:9850" "squirrel:9300" "barracuda:9740" "coralreef:9730" "biomeos:9800" "petaltongue:9900" "skunkbat:9140"; do
+for pair in "beardog:$BEARDOG_PORT" "songbird:$SONGBIRD_PORT" "toadstool:$TOADSTOOL_PORT" "nestgate:$NESTGATE_PORT" "rhizocrypt:$RHIZOCRYPT_RPC_PORT" "loamspine:$LOAMSPINE_PORT" "sweetgrass:$SWEETGRASS_PORT" "squirrel:$SQUIRREL_PORT" "barracuda:$BARRACUDA_PORT" "coralreef:$CORALREEF_PORT" "biomeos:$BIOMEOS_PORT" "petaltongue:$PETALTONGUE_PORT" "skunkbat:$SKUNKBAT_PORT"; do
     name="${pair%%:*}"
     port="${pair#*:}"
     if [[ "$name" == "songbird" ]]; then

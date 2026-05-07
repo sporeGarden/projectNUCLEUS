@@ -20,7 +20,10 @@
 
 set -euo pipefail
 
-ABG_DATA="/home/irongate/shared/abg/data"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh"
+
+ABG_DATA="${ABG_SHARED}/data"
 ROOT_MANIFEST="$ABG_DATA/manifest.toml"
 
 register_dataset() {

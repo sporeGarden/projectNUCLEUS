@@ -25,13 +25,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-JUPYTERHUB_CONFIG="/home/irongate/jupyterhub/jupyterhub_config.py"
+source "$SCRIPT_DIR/nucleus_config.sh"
 
-SHARED_NOTEBOOKS="/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/notebooks"
-SHARED_DATA="/home/irongate/Development/ecoPrimals/springs/wetSpring/data"
-PLASMIDBIN="/home/irongate/Development/ecoPrimals/infra/plasmidBin"
-ABG_SHARED="/home/irongate/shared/abg"
+PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
+SHARED_NOTEBOOKS="$PROJECT_ROOT/notebooks"
+SHARED_DATA="$WETSPRING_DIR/data"
+PLASMIDBIN="$PLASMIDBIN_DIR"
 
 ensure_groups() {
     for grp in abg-observer abg-compute abg-admin abg-reviewer; do
@@ -49,14 +48,13 @@ ensure_shared_workspace() {
 setup_shared_dirs() {
     local user_home="$1"
     local tier="$2"
+    local username="$3"
 
     mkdir -p "$user_home/notebooks"
     mkdir -p "$user_home/results"
 
-    # Symlink shared notebooks so users see them but can't modify originals
     ln -sf "$SHARED_NOTEBOOKS/abg-wetspring-validation.ipynb" "$user_home/notebooks/" 2>/dev/null || true
 
-    # Shared workspace — all tiers see it, reviewers only see showcase/
     if [[ "$tier" == "reviewer" ]]; then
         ln -sf "$ABG_SHARED/showcase" "$user_home/notebooks/shared" 2>/dev/null || true
     else
@@ -81,13 +79,13 @@ write_user_env() {
 export NUCLEUS_TIER="$tier"
 export NUCLEUS_ROOT="$PROJECT_ROOT"
 export TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1
-export BEARDOG_PORT=9100
-export SONGBIRD_PORT=9200
-export TOADSTOOL_PORT=9400
-export NESTGATE_PORT=9500
-export RHIZOCRYPT_PORT=9601
-export LOAMSPINE_PORT=9700
-export SWEETGRASS_PORT=9850
+export BEARDOG_PORT=$BEARDOG_PORT
+export SONGBIRD_PORT=$SONGBIRD_PORT
+export TOADSTOOL_PORT=$TOADSTOOL_PORT
+export NESTGATE_PORT=$NESTGATE_PORT
+export RHIZOCRYPT_PORT=$RHIZOCRYPT_PORT
+export LOAMSPINE_PORT=$LOAMSPINE_PORT
+export SWEETGRASS_PORT=$SWEETGRASS_PORT
 EOF
 
     if [[ "$tier" == "observer" ]]; then
@@ -130,7 +128,7 @@ add_user() {
         usermod -aG "abg-compute" "$username"
     fi
 
-    setup_shared_dirs "/home/$username" "$tier"
+    setup_shared_dirs "/home/$username" "$tier" "$username"
     write_user_env "/home/$username" "$tier" "$username"
 
     echo ""

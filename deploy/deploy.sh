@@ -20,10 +20,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh"
 
-PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-$(cd "$PROJECT_ROOT/../../infra/plasmidBin" 2>/dev/null && pwd)}"
-RUNTIME_DIR="/tmp/biomeos"
+PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
+PLASMIDBIN_DIR="${PLASMIDBIN_DIR}"
+RUNTIME_DIR="${RUNTIME_DIR}"
 FAMILY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/biomeos/family"
 
 COMPOSITION="node"
@@ -32,23 +33,7 @@ FAMILY_NAME="${NUCLEUS_FAMILY_NAME:-$(hostname -s)-sovereign}"
 STOP=false
 STATUS=false
 
-# Bind address: localhost by default, override for cross-gate access
-BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS:-127.0.0.1}"
-
-# Standard TCP fallback ports (Phase 59 canonical — primalSpring/docs/PRIMAL_GAPS.md)
-BEARDOG_PORT=9100
-SONGBIRD_PORT=9200
-SQUIRREL_PORT=9300
-TOADSTOOL_PORT=9400
-NESTGATE_PORT=9500
-RHIZOCRYPT_PORT=9601
-LOAMSPINE_PORT=9700
-CORALREEF_PORT=9730
-BARRACUDA_PORT=9740
-SKUNKBAT_PORT=9140
-BIOMEOS_PORT=9800
-SWEETGRASS_PORT=9850
-PETALTONGUE_PORT=9900
+BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS}"
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -108,7 +93,13 @@ primals_for_composition() {
 
 if $STOP; then
     echo "Stopping all primals..."
-    pkill -f "$PLASMIDBIN_DIR/primals/" 2>/dev/null || true
+    local_bin_dir="$PLASMIDBIN_DIR/primals"
+    [[ -d "$local_bin_dir/x86_64-unknown-linux-musl" ]] && local_bin_dir="$local_bin_dir/x86_64-unknown-linux-musl"
+    for bin in "$local_bin_dir"/*; do
+        [[ -x "$bin" ]] || continue
+        p=$(basename "$bin")
+        pkill -f "$PLASMIDBIN_DIR/primals/.*$p" 2>/dev/null || true
+    done
     sleep 1
     echo "Done."
     exit 0
@@ -361,7 +352,7 @@ for p in $PRIMALS; do
         coralreef)
             echo "  Starting coralreef (RPC $CORALREEF_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/coralreef" server \
-                --rpc-bind "127.0.0.1:$CORALREEF_PORT" \
+                --rpc-bind "$BIND_ADDRESS:$CORALREEF_PORT" \
                 > /tmp/coralreef.log 2>&1 &
             echo "    PID: $!"
             sleep 1
@@ -372,7 +363,7 @@ for p in $PRIMALS; do
             export NESTGATE_FAMILY_ID="$FAMILY_ID"
             export NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 32 /dev/urandom | base64)}"
             nohup "$PLASMIDBIN_DIR/primals/nestgate" daemon \
-                --socket-only --dev \
+                --socket-only \
                 --port "$NESTGATE_PORT" \
                 --bind "$BIND_ADDRESS" \
                 > /tmp/nestgate.log 2>&1 &

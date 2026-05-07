@@ -17,8 +17,10 @@ set -euo pipefail
 #     [--samples 20] [--duration 300]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+
 REPORTS_DIR="$SCRIPT_DIR/../reports"
-CF_URL="https://lab.primals.eco/hub/login"
+CF_URL="${LAB_URL}/hub/login"
 SONGBIRD_URL=""
 SAMPLES=20
 DURATION=0

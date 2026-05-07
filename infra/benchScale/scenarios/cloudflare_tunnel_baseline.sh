@@ -9,9 +9,11 @@ set -euo pipefail
 #   ./cloudflare_tunnel_baseline.sh [--samples N] [--url URL] [--output DIR]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+
 BASELINES_DIR="$SCRIPT_DIR/../baselines"
 SAMPLES=10
-TARGET_URL="https://lab.primals.eco/hub/login"
+TARGET_URL="${LAB_URL}/hub/login"
 DELAY_BETWEEN=2
 
 while [[ $# -gt 0 ]]; do

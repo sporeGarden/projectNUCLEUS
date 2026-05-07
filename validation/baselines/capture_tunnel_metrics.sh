@@ -5,7 +5,8 @@ set -euo pipefail
 # Designed to run via cron every hour, appending to a daily CSV.
 
 BASELINES_DIR="$(cd "$(dirname "$0")" && pwd)"
-TARGET_URL="https://lab.primals.eco/hub/login"
+source "$BASELINES_DIR/../../deploy/nucleus_config.sh" 2>/dev/null || true
+TARGET_URL="${LAB_URL:-https://lab.primals.eco}/hub/login"
 CSV_DIR="${BASELINES_DIR}/daily"
 mkdir -p "$CSV_DIR"
 

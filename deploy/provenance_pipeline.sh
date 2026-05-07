@@ -10,24 +10,15 @@
 # Usage:
 #   ./provenance_pipeline.sh [--workloads-dir DIR] [--results-dir DIR]
 #
-# Requires: b3sum, curl, nc (netcat), jq, toadstool
+# Requires: b3sum, curl, nc (netcat), python3, toadstool
 # Requires running: BearDog, SongBird, ToadStool, NestGate, rhizoCrypt, loamSpine, sweetGrass
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh"
 
-# Discover ecoPrimals root via git or relative path
-if command -v git &>/dev/null; then
-    _git_root="$(cd "$PROJECT_ROOT" && git rev-parse --show-toplevel 2>/dev/null)" || true
-fi
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-${_git_root:+$(cd "$_git_root/../.." 2>/dev/null && pwd)}}"
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$SCRIPT_DIR/../../../.." 2>/dev/null && pwd)}"
-unset _git_root
-
-WETSPRING_DIR="${WETSPRING_DIR:-$ECOPRIMALS_ROOT/springs/wetSpring}"
-PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-${ECOPRIMALS_PLASMID_BIN:-$ECOPRIMALS_ROOT/infra/plasmidBin}}"
+PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
 TOADSTOOL="${TOADSTOOL:-$PLASMIDBIN_DIR/primals/toadstool}"
 
 # Parse --workloads-dir and --results-dir flags
@@ -40,15 +31,6 @@ while [[ $# -gt 0 ]]; do
         *)               WORKLOADS_DIR="$1"; shift ;;
     esac
 done
-
-# Phase 59 canonical TCP fallback ports (overridable via env)
-BEARDOG_PORT="${BEARDOG_PORT:-9100}"
-SONGBIRD_PORT="${SONGBIRD_PORT:-9200}"
-TOADSTOOL_PORT="${TOADSTOOL_PORT:-9400}"
-NESTGATE_PORT="${NESTGATE_PORT:-9500}"
-RHIZOCRYPT_PORT="${RHIZOCRYPT_PORT:-9601}"
-LOAMSPINE_PORT="${LOAMSPINE_PORT:-9700}"
-SWEETGRASS_PORT="${SWEETGRASS_PORT:-9850}"
 
 mkdir -p "$RESULTS_DIR"
 

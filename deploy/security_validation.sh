@@ -19,7 +19,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh"
+
+PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
 RESULTS_DIR="$PROJECT_ROOT/validation/security-$(date +%Y%m%d-%H%M%S)"
 
 LAYER="all"
@@ -87,7 +89,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "below" ]]; then
     fi
 
     # Verify primal ports are NOT externally exposed
-    for port in 9100 9200 9300 9400 9500 9601 9602 9700 9730 9740 9800 9850 9900 9140; do
+    for port in "${ALL_PRIMAL_PORTS_LIST[@]}"; do
         bind=$(echo "$LISTENING" | grep ":$port " | head -1)
         if echo "$bind" | grep -q "0.0.0.0" 2>/dev/null; then
             fail "Port $port bound to 0.0.0.0 (externally exposed)"

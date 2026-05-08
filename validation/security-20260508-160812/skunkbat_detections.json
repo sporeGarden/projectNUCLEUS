@@ -1,0 +1,8 @@
+{
+    "jsonrpc": "2.0",
+    "error": {
+        "code": -32001,
+        "message": "permission denied: method 'security.detect' requires a capability token"
+    },
+    "id": 3
+}

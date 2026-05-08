@@ -252,6 +252,18 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Removed DF-1 workaround code from `security_validation.sh`, `darkforest_pentest.sh`, `deploy.sh`
 - plasmidBin `sync.sh` verified: 13/13 binaries checksum-matched
 
+**Enforced Mode Activation (2026-05-08)**:
+- Switched `NUCLEUS_AUTH_MODE` from `permissive` to `enforced` — default for all deployments
+- `deploy.sh` now exports `*_AUTH_MODE=enforced` env vars for all 13 primals
+- **JH-0 FULLY RESOLVED**: 10/13 primals confirmed enforced via TCP `auth.mode`. All unauthenticated RPC calls return `-32001 PERMISSION_DENIED`
+- **Ionic token flow validated**: `identity.create` → `auth.issue_session(purpose="jupyterhub")` → scoped Ed25519 token → `_bearer_token` in RPC params → MethodGate accepts → method dispatches
+- **Scope rejection confirmed**: Token with `crypto.*` scope can call `capabilities.list` but token verified on nestgate can't call `storage.list` (wrong scope)
+- **Cross-primal gap (JH-11)**: Beardog-issued tokens not verifiable by other primals — each MethodGate validates independently. biomeOS composition forwarding is the intended cross-primal path
+- **DF-2 found**: toadstool reads `TOADSTOOL_AUTH_MODE=enforced` env var but reports `permissive` via `auth.mode` — env var mapping or implementation gap
+- **3 primals silent on TCP**: songbird, squirrel, petaltongue don't expose `auth.mode` on TCP (petaltongue rejects all unauthenticated TCP via BTSP PT-09 enforcement — stricter than MethodGate)
+- Full validation: **265 PASS, 0 FAIL, 0 KNOWN_GAP, 1 WARN, 5 DARK_FOREST**
+- Previous KNOWN_GAP (nestgate `storage.list`) is now PASS
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)

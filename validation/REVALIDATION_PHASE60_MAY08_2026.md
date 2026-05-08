@@ -91,12 +91,54 @@ This is a plasmidBin evolution item, not a primal gap.
 
 ---
 
+## Enforced Mode Results (2026-05-08)
+
+After switching `NUCLEUS_AUTH_MODE` from `permissive` to `enforced`:
+
+**Result**: 265 PASS, 0 FAIL, 0 KNOWN_GAP, 1 WARN, 5 DARK_FOREST
+
+### What Changed
+
+| Finding | Permissive | Enforced |
+|---------|-----------|----------|
+| `nestgate storage.list` unauthenticated | KNOWN_GAP (logged) | **PASS** (rejected -32001) |
+| `nestgate storage.store_blob` | KNOWN_GAP | **PASS** (rejected) |
+| `loamspine spine.status` | KNOWN_GAP | **PASS** (rejected) |
+| `beardog crypto.list_keys` | KNOWN_GAP | **PASS** (rejected) |
+| `biomeos composition.list` | KNOWN_GAP | **PASS** (rejected) |
+| `toadstool job.list` | KNOWN_GAP | **PASS** (rejected -32601) |
+| MethodGate status (all tiers) | "permissive — logged" | **"enforced — blocked"** |
+
+### Ionic Token Flow Validated
+
+```
+identity.create → DID (did:key:z6Mkk...)
+auth.issue_session(purpose="jupyterhub") → scoped token (scope: ["crypto.*","health.*","capabilities.*","identity.*","auth.verify_ionic"])
+auth.verify_ionic(token) → valid: true, scope_ok: true, Ed25519 signature verified
+capabilities.list + _bearer_token → OK (in scope)
+crypto.list_keys + _bearer_token → -32601 (past gate, method not found — correct)
+storage.list on nestgate + beardog token → -32001 (cross-primal: token not verifiable — JH-11)
+```
+
+### New Gaps Found
+
+| ID | Finding | Severity | Owner |
+|----|---------|----------|-------|
+| **JH-11** | Cross-primal token federation: beardog-issued tokens not verifiable by other primals | Medium | primalSpring / biomeOS team |
+| **DF-2** | toadstool reads `TOADSTOOL_AUTH_MODE=enforced` but reports `permissive` via `auth.mode` | Low | toadstool team |
+| **DF-3** | songbird, squirrel, petaltongue don't expose `auth.mode` on TCP | Info | Each primal team |
+
+**JH-11 context**: Each primal's MethodGate validates independently. biomeOS composition forwarding (`_resource_envelope`) is the intended cross-primal auth path. For NUCLEUS deployment, this means a user who issues a token from beardog can authenticate to beardog methods, but calling nestgate/loamspine/etc. requires either per-primal token issuance or biomeOS-mediated forwarding.
+
+---
+
 ## Next Steps
 
-1. **Enforced mode activation**: Deploy with `NUCLEUS_AUTH_MODE=enforced` on staging. Test scope rejections, verify compute users get valid ionic tokens via `auth.issue_session(purpose="jupyterhub")`, confirm reviewer/observer calls are blocked
-2. **JH-5 cross-primal forwarding**: skunkBat → rhizoCrypt DAG + sweetGrass braids (next evolution cycle)
-3. **JH-10 mitigation**: Add Cloudflare WAF rule to block `/hub/api/` from unauthenticated requests, or proxy rewrite to strip version from response
-4. **Composition parity tests**: Run primalSpring validation items 1-4 from PRIMAL_GAPS.md
+1. **JH-5 cross-primal forwarding**: skunkBat → rhizoCrypt DAG + sweetGrass braids (next evolution cycle)
+2. **JH-11 resolution**: biomeOS composition forwarding with `_resource_envelope` carrying auth context across primals
+3. **DF-2 fix**: toadstool team needs to map `TOADSTOOL_AUTH_MODE` env var to MethodGate enforcement
+4. **JH-10 mitigation**: Cloudflare WAF rule to block `/hub/api/` version disclosure
+5. **Composition parity tests**: primalSpring validation items 1-4
 
 ---
 
@@ -106,11 +148,12 @@ This is a plasmidBin evolution item, not a primal gap.
 |--------|-------|
 | Primals deployed | 13/13 |
 | Primals on 127.0.0.1 | 14/14 ports |
-| MethodGate active | 9/13 respond on TCP (permissive) |
-| Ionic tokens | Live (BearDog Ed25519) |
+| MethodGate enforced | 10/13 confirmed on TCP, 3 silent (UDS-only or BTSP-gated) |
+| Ionic tokens | Live (BearDog Ed25519, verified, scope-checked) |
 | Resource envelopes | Enforced (biomeOS + ToadStool) |
 | Audit log | Live (skunkBat ring buffer) |
-| Security validation | 263 PASS, 0 FAIL |
+| Security validation | **265 PASS, 0 FAIL, 0 KNOWN_GAP** |
 | Pen test assertions | 158+ adversarial probes, 0 exploitable |
 | ABG tier enforcement | 62+ assertions, 4 tiers, 0 violations |
 | plasmidBin sync | 13/13 checksum-verified |
+| Cross-primal auth | JH-11 gap (deferred — biomeOS forwarding path) |

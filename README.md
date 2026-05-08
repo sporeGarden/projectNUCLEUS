@@ -89,7 +89,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Voila compute contracts**: Reviewers see code + run pipelines via Voila widgets (server-side execution, no kernel). Observers see rendered output + provenance. Code visible for scientific transparency (`strip_sources=False`). Calibration instrument for petalTongue sovereignty replacement
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
-- **MethodGate (JH-0) ADOPTED**: 13/13 primals ship MethodGate pre-dispatch auth gate (primalSpring Phase 60). 9/13 respond to `auth.mode` on TCP. Permissive mode (log + allow) active. Set `NUCLEUS_AUTH_MODE=enforced` to activate scope-based rejection
+- **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. 10/13 confirmed enforced via TCP `auth.mode`. Unauthenticated calls return `-32001 PERMISSION_DENIED`. All 6 RPC probes now PASS (was KNOWN_GAP in permissive)
 - **Ionic tokens (JH-1) LIVE**: BearDog `identity.create` → `auth.issue_ionic` → `auth.verify_ionic`. Ed25519-signed scoped tokens with expiry and JTI
 - **Resource envelopes (JH-2) RESOLVED**: biomeOS v3.48 enforces `timeout_ms`, ToadStool S232 enforces `mem_mb`, `cpu_cores`, `max_timeout_ms` on all dispatch paths
 - **Composition reload (JH-3) RESOLVED**: biomeOS `composition.reload` — hot-swap single primal without full restart
@@ -98,7 +98,7 @@ Gates connect to each other through chemical bonding patterns:
 - All PG-55 through PG-62 resolved by primalSpring Phase 60
 - **All 14 primal ports bound `127.0.0.1`** (Phase 60 binaries ship PG-55 default). NestGate BTSP method-level auth, skunkBat anomaly detection
 - **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
-- **Dark Forest hardening**: 5-layer security validation pipeline — **263 PASS, 0 FAIL** (`deploy/security_validation.sh`)
+- **Dark Forest hardening**: 5-layer security validation pipeline — **265 PASS, 0 FAIL, 0 KNOWN_GAP** (`deploy/security_validation.sh`)
 - **Pen test + fuzz coverage**: adversarial pen test (`darkforest_pentest.sh`), protocol fuzzing all 13 primals + JupyterHub (`darkforest_fuzz.py`), timing analysis
 - **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS blocked for ABG UIDs
 - **Supply chain locked**: shared conda envs root-owned, 755 — compute users cannot plant malicious packages
@@ -116,13 +116,15 @@ Gates connect to each other through chemical bonding patterns:
 - **RootPulse commit workflow tested** — 5/6 phases pass against live primals, Phase 5 (LoamSpine commit) has param mismatch
 - **Voila baselines captured**: ~600ms render latency, 33–51KB output, source stripping active (`validation/baselines/`)
 - **4 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-5)
-- **JH-0 ADOPTED**: MethodGate shipped 13/13 primals. Permissive mode active (log + allow). Enforced mode blocks unauthenticated calls via ionic token scope check. Next: activate enforced mode in staging
+- **JH-0 RESOLVED**: MethodGate enforced on 10/13 primals via TCP. Ionic token auth flow validated: `identity.create` → `auth.issue_session` → `_bearer_token` RPC. Cross-primal token federation deferred (JH-11)
 - **JH-6**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by `NoKernelManager` override
 - **JH-7**: Voila executes notebooks as hub user (privilege escalation risk) — mitigated by restricting to curated showcase only
 - **JH-8 (New)**: DNS port 53 was open to all external servers — exfiltration channel. **FIXED**: restricted to local resolver only
 - **JH-9 (New)**: Shared conda envs were group-writable — supply chain poisoning vector. **FIXED**: root-owned, 755
 - **JH-10 (New)**: `/hub/api/` version disclosure (built-in handler, cannot override in config) — document and block at tunnel
 - **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. All 14 primal ports verified bound to localhost only — no UFW workaround needed
+- **JH-11 (New)**: Cross-primal token federation — beardog-issued ionic tokens are not verifiable by other primals. Each primal's MethodGate validates independently. biomeOS composition forwarding with `_resource_envelope` is the intended path
+- **DF-2 (New)**: toadstool reads `TOADSTOOL_AUTH_MODE=enforced` but reports `mode=permissive` via `auth.mode` — env var name or implementation gap. 3 primals (songbird, squirrel, petaltongue) don't expose `auth.mode` on TCP
 
 ### sporePrint
 

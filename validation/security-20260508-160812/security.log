@@ -1,0 +1,116 @@
+[16:08:12] ═══════════════════════════════════════════════════════════
+[16:08:12]   Security Validation Pipeline — Five-Layer Pen Testing
+[16:08:12]   Target: 127.0.0.1
+[16:08:12]   Layer: all
+[16:08:12]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260508-160812
+[16:08:12] ═══════════════════════════════════════════════════════════
+[16:08:17]   skunkBat scan baseline captured
+[16:08:17] 
+[16:08:17] ══ Layer 1: Below the Primals (OS / Network) ══
+[16:08:17] 
+[16:08:17] ── 1a: Port Exposure Scan ──
+[16:08:17]   [WARN] Found 3 non-localhost listeners:
+[16:08:17]   [INFO]   LISTEN 0      128    192.168.1.238:42583      0.0.0.0:*    users:(("rustdesk",pid=5137,fd=23))
+[16:08:17]   [INFO]   LISTEN 0      128          0.0.0.0:36185      0.0.0.0:*    users:(("sweetgrass",pid=35990,fd=13))
+[16:08:17]   [INFO]   LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=934,fd=14))
+[16:08:17]   [PASS] Port 9100 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9200 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9300 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9400 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9500 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9601 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9602 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9700 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9730 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9740 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9800 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9850 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9900 bound to 127.0.0.1 only
+[16:08:17]   [PASS] Port 9140 bound to 127.0.0.1 only
+[16:08:17]   [PASS] JupyterHub (8000) bound to 127.0.0.1 — tunnel-only access
+[16:08:17] 
+[16:08:17] ── 1b: Unnecessary Service Check ──
+[16:08:17] 
+[16:08:17] ── 1c: Firewall Status ──
+[16:08:17]   [PASS] UFW firewall active
+[16:08:17] 
+[16:08:17] ── 1d: Sensitive File Permissions ──
+[16:08:17] 
+[16:08:17] ══ Layer 2: At the Primal Layer (API Security) ══
+[16:08:17] 
+[16:08:17] ── 2a: Unauthenticated API Probe ──
+[16:08:20]   [INFO] beardog health.liveness accessible (expected — public health endpoint)
+[16:08:23]   [INFO] toadstool health.liveness accessible (expected — public health endpoint)
+[16:08:26]   [INFO] nestgate health.liveness accessible (expected — public health endpoint)
+[16:08:29]   [PASS] nestgate storage.list rejects unauthenticated request
+[16:08:32]   [INFO] rhizocrypt health.liveness accessible (expected — public health endpoint)
+[16:08:38]   [INFO] loamspine health.liveness accessible (expected — public health endpoint)
+[16:08:41]   [INFO] sweetgrass health.liveness accessible (expected — public health endpoint)
+[16:08:44]   [PASS] sweetgrass braid.list rejects unauthenticated request
+[16:08:47]   [INFO] skunkbat health.liveness accessible (expected — public health endpoint)
+[16:08:47] 
+[16:08:47] ── 2b: Input Fuzzing (Malformed Requests) ──
+[16:09:01]   [PASS] beardog survived all 7 fuzz payloads without crash
+[16:09:15]   [PASS] toadstool survived all 7 fuzz payloads without crash
+[16:09:30]   [PASS] nestgate survived all 7 fuzz payloads without crash
+[16:09:46]   [PASS] skunkbat survived all 7 fuzz payloads without crash
+[16:09:46] 
+[16:09:46] ── 2c: Method Enumeration ──
+[16:10:00]   [PASS] beardog rejects all 7 suspicious method probes
+[16:10:14]   [PASS] toadstool rejects all 7 suspicious method probes
+[16:10:28]   [PASS] nestgate rejects all 7 suspicious method probes
+[16:10:28] 
+[16:10:28] ── 2d: BTSP Enforcement ──
+[16:10:28]   [PASS] sweetgrass (port 9850) rejects plaintext connection
+[16:10:28]   [PASS] rhizocrypt (port 9601) rejects plaintext connection
+[16:10:28] 
+[16:10:28] ══ Layer 3: Above the Primals (Application Security) ══
+[16:10:28] 
+[16:10:28] ── 3a: JupyterHub Security Headers ──
+[16:10:28]   [PASS] JupyterHub sends x-frame-options: DENY
+[16:10:28]   [PASS] JupyterHub sends x-content-type-options: nosniff
+[16:10:28]   [PASS] JupyterHub sends content-security-policy: frame-ancestors 'none'; report-uri /hub/security/csp-report
+[16:10:28]   [PASS] JupyterHub sends x-xss-protection: 1; mode=block
+[16:10:28]   [PASS] Server header suppressed (dark forest)
+[16:10:28] 
+[16:10:28] ── 3b: Authentication Enforcement ──
+[16:10:28]   [PASS] JupyterHub /hub/api/users requires auth (HTTP 403)
+[16:10:28]   [PASS] JupyterHub spawn endpoint requires auth (HTTP 403)
+[16:10:28] 
+[16:10:28] ── 3c: Path Traversal Probes ──
+[16:10:28]   [PASS] Path traversal blocked: /hub/../../../etc/passwd (HTTP 302)
+[16:10:28]   [PASS] Path traversal blocked: /hub/%2e%2e/%2e%2e/etc/passwd (HTTP 302)
+[16:10:28]   [PASS] Path /hub/login?next=//evil.com returned 200 but no sensitive content
+[16:10:28]   [PASS] Path traversal blocked: /hub/api/../../../etc/shadow (HTTP 302)
+[16:10:28] 
+[16:10:28] ══ Layer 4: ABG Tier Enforcement ══
+[16:10:28] 
+[16:10:28] ── 4a: OS-Level Tier Enforcement ──
+[16:10:54]   [PASS] OS-level tier enforcement: 48 assertions pass (0 known gaps)
+[16:10:54] 
+[16:10:54] ── 4b: JupyterHub API Tier Enforcement ──
+[16:11:20]   [PASS] JupyterHub API tier enforcement: 18 assertions pass (0 skipped)
+[16:11:20] 
+[16:11:20] ══ Layer 5: Dark Forest ══
+[16:11:20] 
+[16:11:20] ── 5a: Dark Forest Pen Test ──
+[16:11:42]   [PASS] Dark Forest pen test: 43 pass, 0 gaps, 3 dark forest findings
+[16:11:42] 
+[16:11:42] ── 5b: Protocol Fuzz ──
+[16:25:11]   [PASS] Protocol fuzz: 114 pass, 2 dark forest findings
+[16:25:11] 
+[16:25:11] ══ skunkBat Observation ══
+[16:25:16]   [INFO] skunkBat metrics after scan:
+[16:25:16]   [INFO]   Threats detected: ?
+[16:25:16]   [INFO]   Connections quarantined: ?
+[16:25:16]   [INFO]   Alerts sent: ?
+[16:25:21] 
+[16:25:21] ═══════════════════════════════════════════════════════════
+[16:25:21]   Security Validation Complete
+[16:25:21]   PASS: 265
+[16:25:21]   FAIL: 0
+[16:25:21]   WARN: 1
+[16:25:21]   INFO: 11
+[16:25:21]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260508-160812
+[16:25:21] ═══════════════════════════════════════════════════════════
+[16:25:21]   Report: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260508-160812/SECURITY_RESULTS.md

@@ -45,7 +45,7 @@ SKUNKBAT_PORT="${SKUNKBAT_PORT:-9140}"
 # --- MethodGate (JH-0/JH-1, Phase 60) ---
 # "permissive" (default) = log + allow unauthenticated calls
 # "enforced" = require valid ionic token with scope match
-NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-permissive}"
+NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-enforced}"
 
 # --- ABG user management ---
 ABG_UID_MIN="${ABG_UID_MIN:-1001}"

@@ -55,11 +55,7 @@ setup_shared_dirs() {
 
     ln -sf "$SHARED_NOTEBOOKS/abg-wetspring-validation.ipynb" "$user_home/notebooks/" 2>/dev/null || true
 
-    if [[ "$tier" == "reviewer" ]]; then
-        ln -sf "$ABG_SHARED/showcase" "$user_home/notebooks/shared" 2>/dev/null || true
-    else
-        ln -sf "$ABG_SHARED" "$user_home/notebooks/shared" 2>/dev/null || true
-    fi
+    ln -sf "$ABG_SHARED" "$user_home/notebooks/shared" 2>/dev/null || true
 
     if [[ "$tier" == "compute" || "$tier" == "admin" ]]; then
         ln -sf "$PROJECT_ROOT/workloads" "$user_home/workloads" 2>/dev/null || true
@@ -161,10 +157,10 @@ add_user() {
             echo "  - Manage other ABG users"
             ;;
         reviewer)
-            echo "  - View showcase/ directory only"
-            echo "  - Copy notebooks and results"
+            echo "  - View all shared workspace (read-only)"
+            echo "  - Browse notebooks, results, and project data"
             echo "  - NO workload submission"
-            echo "  - NO access to commons/ or projects/"
+            echo "  - NO code execution (kernels and terminals disabled)"
             echo "  - Intended for external PIs and HPC admins"
             ;;
     esac

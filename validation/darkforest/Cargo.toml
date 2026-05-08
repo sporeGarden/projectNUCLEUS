@@ -1,8 +1,8 @@
 [package]
 name = "darkforest"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
-description = "Dark Forest security validator — pure Rust pen test + fuzz for NUCLEUS primals and JupyterHub"
+description = "Dark Forest — auditable security validator for NUCLEUS primals, JupyterHub, and crypto posture"
 license = "AGPL-3.0-or-later"
 
 [[bin]]
@@ -11,6 +11,8 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }

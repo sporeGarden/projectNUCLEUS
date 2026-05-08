@@ -4,9 +4,9 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-08 (Phase 60 absorbed, MethodGate enforced, Horizon 1 hardened, Rust validator live)
+**Last updated**: 2026-05-08 (Rust v0.2.0 — modular auditable framework, crypto strength validation)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
-**Rust validator**: 159 PASS, 0 FAIL, 3 DARK_FOREST (`validation/darkforest/`)
+**Rust validator**: 177 PASS, 0 FAIL, 4 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -14,10 +14,12 @@ Related specs:
 - [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) — replacement methodology
 - [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
 
-**Rust evolution**: `validation/darkforest/` — pure Rust pen test + fuzz binary (863KB, zero
-runtime deps). Replaces `deploy/darkforest_pentest.sh` (bash) and `deploy/darkforest_fuzz.py`
-(Python). Tests three threat actors (external, compute, readonly) + protocol fuzzing for all
-13 primals + JupyterHub. Same assertion format (`PASS|FAIL|KNOWN_GAP|DARK_FOREST`).
+**Rust evolution**: `validation/darkforest/` v0.2.0 — modular auditable security framework (939KB,
+zero runtime deps). 7 source modules: `check.rs` (structured types), `net.rs` (TCP/HTTP helpers),
+`pentest.rs` (3 threat actors), `fuzz.rs` (13 primals + JupyterHub), `crypto.rs` (13 crypto
+strength checks), `report.rs` (pipe + JSON output), `main.rs` (CLI + runner). Backward-compatible
+`PASS|FAIL|KNOWN_GAP|DARK_FOREST` pipe format, plus `--output json` for auditable structured reports
+with per-check severity, category, evidence, remediation, and timestamps.
 
 ---
 
@@ -183,3 +185,4 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-08 | H1-01→H1-03, H1-06, H1-07 resolved. Voila isolated (UID 998). Cron deduplicated. |
 | 2026-05-08 | H1-04, H1-05 resolved. systemctl + python3 ACLs for ABG users. Voila home dir fix (500→200). Revalidation: **267 PASS, 0 FAIL**. Horizon 1 COMPLETE. |
 | 2026-05-08 | Pure Rust `darkforest` validator created. Replaces bash+python pen/fuzz tools. 863KB binary, 159 PASS 0 FAIL 3 DARK_FOREST. Primal ecosystem validated in Rust. |
+| 2026-05-08 | `darkforest` v0.2.0 — modular auditable framework. 7 source modules. 13 crypto strength checks (CRY-01→CRY-13). JSON report output (`--output json`). Per-check severity, evidence, remediation. **177 PASS, 0 FAIL, 4 DARK_FOREST**. Cloudflare config.yml fixed (664→600). |

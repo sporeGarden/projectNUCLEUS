@@ -222,8 +222,8 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Dark Forest Security Hardening (2026-05-08)**:
 - `deploy/darkforest_pentest.sh` — comprehensive adversarial pen test across 3 threat actors (external, compute, reviewer/observer)
 - `deploy/darkforest_fuzz.py` — protocol-level fuzzing for all 13 primals + JupyterHub (malformed JSON-RPC, binary probes, timing analysis, auth bypass)
-- Wired into `security_validation.sh` as Layer 5 (total: 5 layers, **250 PASS, 0 FAIL**)
-- **DF-1 CLARIFIED**: 5 primals (toadstool, skunkbat, biomeos, petaltongue, sweetgrass) lack `--bind` CLI flag — upstream gap, not deploy.sh misconfiguration. 8 primals with `--bind` correctly use `127.0.0.1`. UFW deny-by-default mitigates
+- Wired into `security_validation.sh` as Layer 5 (total: 5 layers, **263 PASS, 0 FAIL**)
+- **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. Verified: all 14 primal ports on localhost, no UFW workaround needed. deploy.sh DF-1 comments removed
 - **JH-8 FIXED**: DNS port 53 was open to all external servers — exfiltration channel closed, restricted to local stub resolver only
 - **JH-9 FIXED**: Shared conda envs group-writable — now root-owned with 755 permissions
 - **JH-10 found**: `/hub/api/` version disclosure is a built-in handler that cannot be overridden via config. X-JupyterHub-Version and Server headers suppressed
@@ -242,12 +242,22 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **Registry**: 389 methods across 82 domains
 - **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
 
+**Phase 60 Revalidation (2026-05-08)**:
+- Full 5-layer security validation with Phase 60 binaries: **263 PASS, 0 FAIL, 2 WARN**
+- **DF-1 RESOLVED**: All 14 primal ports on `127.0.0.1` — PG-55 default binding confirmed in v2026.05.08 binaries
+- **MethodGate (JH-0) confirmed**: All 4 ABG tiers detect permissive mode on `beardog:9100`
+- **1 KNOWN_GAP remaining**: `nestgate storage.list` accessible without auth in permissive mode (will auto-resolve when `NUCLEUS_AUTH_MODE=enforced`)
+- **4 DARK_FOREST findings**: version disclosure (JH-10), systemd service enumeration, reviewer python3 access (terminals blocked), null byte reflection (CSP mitigates)
+- **2 WARN**: sweetgrass secondary port on 0.0.0.0 (ephemeral, not configured port), rustdesk listener
+- Removed DF-1 workaround code from `security_validation.sh`, `darkforest_pentest.sh`, `deploy.sh`
+- plasmidBin `sync.sh` verified: 13/13 binaries checksum-matched
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
 - `validation/ROOTPULSE_GAPS_HANDBACK.md` — 5 gaps (RP-1→RP-5)
 - `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5) — all now resolved or adopted upstream
-- Dark Forest gaps: JH-8 (DNS exfil), JH-9 (supply chain), JH-10 (version disclosure), DF-1 (binding)
+- Dark Forest gaps: JH-8 (DNS exfil — FIXED), JH-9 (supply chain — FIXED), JH-10 (version disclosure — upstream), DF-1 (binding — RESOLVED Phase 60)
 
 ### ABG Tiered Access Model
 

@@ -328,8 +328,6 @@ for p in $PRIMALS; do
             ;;
 
         toadstool)
-            # DF-1: toadstool has no --bind flag; binds 0.0.0.0 when --port given.
-            # UFW mitigates. Upstream gap for primal team.
             echo "  Starting toadstool (TCP $TOADSTOOL_PORT)..."
             export TOADSTOOL_FAMILY_ID="$FAMILY_ID"
             export TOADSTOOL_NODE_ID="$NODE_ID"
@@ -395,7 +393,6 @@ for p in $PRIMALS; do
             ;;
 
         sweetgrass)
-            # DF-1: sweetgrass has no --bind flag for TCP port; only --http-address.
             echo "  Starting sweetgrass (TCP $SWEETGRASS_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/sweetgrass" server \
                 --port "$SWEETGRASS_PORT" \
@@ -417,7 +414,6 @@ for p in $PRIMALS; do
             ;;
 
         skunkbat)
-            # DF-1: skunkbat has no --bind flag. UFW mitigates.
             echo "  Starting skunkbat (TCP $SKUNKBAT_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/skunkbat" server \
                 --port "$SKUNKBAT_PORT" \
@@ -427,7 +423,6 @@ for p in $PRIMALS; do
             ;;
 
         biomeos)
-            # DF-1: biomeos neural-api has no --bind flag. UFW mitigates.
             echo "  Starting biomeos neural-api (TCP $BIOMEOS_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/biomeos" neural-api \
                 --port "$BIOMEOS_PORT" \
@@ -439,7 +434,6 @@ for p in $PRIMALS; do
             ;;
 
         petaltongue)
-            # DF-1: petaltongue has no --bind flag. UFW mitigates.
             echo "  Starting petaltongue server (TCP $PETALTONGUE_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/petaltongue" server \
                 --port "$PETALTONGUE_PORT" \

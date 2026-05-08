@@ -96,9 +96,9 @@ Gates connect to each other through chemical bonding patterns:
 - **Session UX (JH-4) RESOLVED**: BearDog `auth.issue_session` — purpose-based presets (`jupyterhub`, `desktop`, `admin`)
 - **Audit log (JH-5) Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling. Cross-primal forwarding deferred
 - All PG-55 through PG-62 resolved by primalSpring Phase 60
-- 8/13 primals bound `127.0.0.1` via `--bind`, 5 mitigated by UFW. NestGate BTSP method-level auth, skunkBat anomaly detection
+- **All 14 primal ports bound `127.0.0.1`** (Phase 60 binaries ship PG-55 default). NestGate BTSP method-level auth, skunkBat anomaly detection
 - **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
-- **Dark Forest hardening**: 5-layer security validation pipeline — **250 PASS, 0 FAIL** (`deploy/security_validation.sh`)
+- **Dark Forest hardening**: 5-layer security validation pipeline — **263 PASS, 0 FAIL** (`deploy/security_validation.sh`)
 - **Pen test + fuzz coverage**: adversarial pen test (`darkforest_pentest.sh`), protocol fuzzing all 13 primals + JupyterHub (`darkforest_fuzz.py`), timing analysis
 - **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS blocked for ABG UIDs
 - **Supply chain locked**: shared conda envs root-owned, 755 — compute users cannot plant malicious packages
@@ -122,7 +122,7 @@ Gates connect to each other through chemical bonding patterns:
 - **JH-8 (New)**: DNS port 53 was open to all external servers — exfiltration channel. **FIXED**: restricted to local resolver only
 - **JH-9 (New)**: Shared conda envs were group-writable — supply chain poisoning vector. **FIXED**: root-owned, 755
 - **JH-10 (New)**: `/hub/api/` version disclosure (built-in handler, cannot override in config) — document and block at tunnel
-- **DF-1**: 5 primals (toadstool, skunkbat, biomeos, petaltongue, sweetgrass) lack `--bind` CLI flag — bind `0.0.0.0` when `--port` given. **MITIGATED**: UFW deny-by-default blocks external. 8 primals with `--bind` correctly use `127.0.0.1`. Upstream gap for primal teams
+- **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. All 14 primal ports verified bound to localhost only — no UFW workaround needed
 
 ### sporePrint
 

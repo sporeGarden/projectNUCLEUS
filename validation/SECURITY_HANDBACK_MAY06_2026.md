@@ -148,9 +148,9 @@ during this test, and alert when similar patterns appear in production.
 | Outbound network restriction | ironGate admin | HIGH | **DONE** — iptables/ip6tables owner match UID 1001-1099 |
 | Reviewer/observer read-only | projectNUCLEUS | CRITICAL | **DONE** — filesystem + JupyterLab server flags |
 | Shared notebook write protection | projectNUCLEUS | MEDIUM | **DONE** — 444 perms, compute users run but can't save |
-| RPC dispatcher capability check | All primal teams | CRITICAL | **OPEN** — upstream gap JH-0 |
+| RPC dispatcher capability check | All primal teams | CRITICAL | **ADOPTED** — MethodGate shipped 13/13 primals (Phase 60), permissive mode active |
 
-**Ecosystem state post-Phase 59**: 13/13 BTSP Phase 3 FULL AEAD, 13/13 default `127.0.0.1` bind, 5-tier discovery escalation hierarchy live, 85 experiments, 661 tests, 74 deploy graphs.
+**Ecosystem state post-Phase 60**: 13/13 BTSP Phase 3 FULL AEAD, 14/14 ports on `127.0.0.1`, MethodGate on 13/13 primals, ionic tokens live, resource envelopes enforced, audit log operational. 263 PASS, 0 FAIL validation. See `validation/REVALIDATION_PHASE60_MAY08_2026.md`.
 
 ---
 
@@ -198,9 +198,9 @@ IPC ports are for primal-to-primal localhost communication. BTSP ports for
 cross-host. Both localhost-bound. The IPC ports accepting plaintext is correct —
 the gap is they accept it from *any* localhost process (JH-0).
 
-### Remaining Critical Gap
+### JH-0 Status Update (2026-05-08)
 
-**JH-0**: All primals accept any localhost JSON-RPC call without caller identity
-check. A compute-tier user can call `storage.store`, `braid.create`,
-`crypto.sign`, and any other method. No capability enforcement at the RPC
-dispatcher level. See `validation/JUPYTERHUB_PATTERNS_HANDBACK.md`.
+**JH-0 ADOPTED**: primalSpring Phase 60 shipped MethodGate on all 13 primals.
+Permissive mode active — calls are logged but allowed. Set `NUCLEUS_AUTH_MODE=enforced`
+to activate scope-based rejection via ionic tokens. See
+`validation/REVALIDATION_PHASE60_MAY08_2026.md` for full revalidation results.

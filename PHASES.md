@@ -238,22 +238,37 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 
 ### ABG Tiered Access Model
 
-JupyterHub supports four access tiers via Linux groups (`deploy/abg_accounts.sh`):
+Four tiers, modeled on scientific peer review (`deploy/abg_accounts.sh`):
 
-| Tier | Group | Resources | Workspace | Execute | Voila |
-|------|-------|-----------|-----------|---------|-------|
-| admin | `abg-admin` | 48 GB / 16 cores | Full + manage | Yes + raw APIs | Yes |
-| compute | `abg-compute` | 32 GB / 8 cores | commons/, projects/ | Yes (ToadStool) | Yes |
-| reviewer | `abg-reviewer` | 4 GB / 2 cores | All (read-only) | No (NoKernelManager) | Yes |
-| observer | `abg-observer` | 8 GB / 4 cores | All (read-only) | No (NoKernelManager) | Yes |
+| Tier | Group | Resources | Kernel | Sees Code | Runs Pipelines | Saves |
+|------|-------|-----------|--------|-----------|----------------|-------|
+| admin | `abg-admin` | 48 GB / 16 cores | Yes | Yes | Yes (arbitrary) | Yes |
+| user | `abg-compute` | 32 GB / 8 cores | Yes | Yes | Yes (ToadStool) | Yes |
+| reviewer | `abg-reviewer` | 8 GB / 4 cores | **No** (NoKernelManager) | Yes | Contracts (Voila widgets) | No (550 fs) |
+| observer | `abg-observer` | 4 GB / 2 cores | **No** (NoKernelManager) | Yes (rendered) | No | No (550 fs) |
 
-`pre_spawn_hook` in JupyterHub sets per-user resource limits, `NUCLEUS_TIER`
-environment variable, primal port configuration, and shared workspace symlinks.
-Observer and reviewer tiers enforce read-only via `NoKernelManager` (blocks
-`start_kernel()` — more reliable than `KernelSpecManager.allowed_kernelspecs`
-which only filters listing), `--ServerApp.terminals_enabled=False`, and
-filesystem permissions (root-owned `chmod 550` notebook directory). Voila
-dashboards provide interactive notebook views without code exposure.
+**Reviewer = peer review / PI validation.** The reviewer sees code in JupyterLab
+(read-only filesystem) and can run pipelines via Voila compute contracts — the
+notebook defines the contract, Voila executes server-side, the reviewer interacts
+through widgets only (e.g., upload own data, select parameters). No arbitrary
+code execution, no kernel under reviewer control. Like submitting to a journal:
+the reviewer reads your code and results, and if they want to test a data point,
+the system runs the fixed pipeline on their input.
+
+**Observer = public window.** View-only rendered output plus provenance chains.
+No execution whatsoever.
+
+**Admin/user separation.** The system owner has both an admin account (irongate,
+hardware control) and a user account (ABG member, does science). In later stages,
+admin owns hardware, not data — the sovereignty separation.
+
+`pre_spawn_hook` sets resource limits, `NUCLEUS_TIER` environment variable,
+primal port configuration, and shared workspace symlinks. Reviewer and observer
+tiers enforce no-execution via `NoKernelManager` (blocks `start_kernel()` —
+more reliable than `KernelSpecManager.allowed_kernelspecs` which only filters
+listing), `--ServerApp.terminals_enabled=False`, and filesystem permissions
+(root-owned `chmod 550` notebook directory). Voila serves notebooks with
+`strip_sources=False` (code visible for scientific transparency).
 
 **Security note**: The original `NUCLEUS_READONLY=1` env var was a convention
 flag with zero enforcement — JupyterLab ignored it entirely (JH-0 pattern).

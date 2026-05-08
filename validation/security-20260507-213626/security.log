@@ -1,0 +1,14 @@
+[21:36:26] ═══════════════════════════════════════════════════════════
+[21:36:26]   Security Validation Pipeline — Three-Layer Pen Testing
+[21:36:26]   Target: 127.0.0.1
+[21:36:26]   Layer: tiers
+[21:36:26]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260507-213626
+[21:36:26] ═══════════════════════════════════════════════════════════
+[21:36:31]   skunkBat scan baseline captured
+[21:36:31] 
+[21:36:31] ══ Layer 4: ABG Tier Enforcement ══
+[21:36:31] 
+[21:36:31] ── 4a: OS-Level Tier Enforcement ──
+[21:36:52]   [PASS] OS-level tier enforcement: 44 assertions pass (4 known gaps)
+[21:36:52] 
+[21:36:52] ── 4b: JupyterHub API Tier Enforcement ──

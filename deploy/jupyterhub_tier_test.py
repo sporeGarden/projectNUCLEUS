@@ -43,6 +43,14 @@ TIER_USERS = {
 }
 
 # Expected capabilities per tier (True = should be allowed)
+#
+# Four tiers:
+#   admin    — hardware owner, system control (tested separately)
+#   user     — ABG member, full kernels + terminals + writes
+#   reviewer — peer review / PI validation. No kernel (uses Voila compute
+#              contracts instead), no terminal, read-only filesystem.
+#              Sees code in JupyterLab + runs pipelines via Voila widgets.
+#   observer — public window. No execution, view-only.
 TIER_EXPECTATIONS = {
     "compute": {
         "kernel_create": True,
@@ -54,9 +62,7 @@ TIER_EXPECTATIONS = {
         "kernel_create": False,
         "terminal_create": False,
         "file_write": False,
-        # allowed_kernelspecs filter is inconsistent across spawns.
-        # Kernel CREATION is blocked by NoKernelManager (the real boundary).
-        "kernelspecs_visible": True,
+        "kernelspecs_visible": False,
     },
     "observer": {
         "kernel_create": False,

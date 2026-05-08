@@ -1,0 +1,8 @@
+ERROR: Cannot obtain JupyterHub admin API token
+  Set JUPYTERHUB_API_TOKEN env var or run as irongate user
+═══════════════════════════════════════════════════
+  JupyterHub API Tier Enforcement Test
+  Date: 2026-05-07T21:36:52-0400
+  Hub: http://127.0.0.1:8000
+  Filter: all
+═══════════════════════════════════════════════════

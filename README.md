@@ -86,7 +86,7 @@ Gates connect to each other through chemical bonding patterns:
 - **hidepid=2**: process isolation — ABG users cannot see primal PIDs or other users' processes
 - **Outbound network blocked**: iptables/ip6tables owner match DROPs all internet for ABG UIDs (localhost + LAN preserved)
 - **Reviewer/observer lockdown**: NoKernelManager blocks all kernel creation, no terminals, filesystem read-only (chmod 550 root-owned)
-- **Voila dashboards**: Curated showcase notebooks served as interactive dashboards (no code exposure). Calibration instrument for petalTongue sovereignty replacement
+- **Voila compute contracts**: Reviewers see code + run pipelines via Voila widgets (server-side execution, no kernel). Observers see rendered output + provenance. Code visible for scientific transparency (`strip_sources=False`). Calibration instrument for petalTongue sovereignty replacement
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
 - All PG-55 through PG-59 resolved by primalSpring Phase 59

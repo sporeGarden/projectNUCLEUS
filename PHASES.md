@@ -230,11 +230,23 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `/etc/crontab` restricted to 640 — ABG users cannot enumerate scheduled tasks
 - `shared/data/` and `shared/projects/` restricted to `abg-compute` group — reviewer/observer blocked
 
+**Phase 60 Upstream Absorption (2026-05-08)**:
+- Pulled primalSpring v0.9.25 (`d56d2ad`), all 15 primals at HEAD, plasmidBin `v2026.05.08`, wateringHole
+- **JH-0 ADOPTED**: 13/13 primals ship MethodGate with `auth.check`/`auth.mode`/`auth.peer_info`. 9/13 respond on TCP. Permissive mode active (log + allow)
+- **JH-1 RESOLVED**: BearDog `identity.create` → `auth.issue_ionic` → `auth.verify_ionic`. Ed25519-signed ionic tokens with scope, expiry, JTI
+- **JH-2 RESOLVED**: biomeOS v3.48 resource envelope enforcement (`timeout_ms`, `cpu`, `mem`). ToadStool S232 enforces all dispatch paths
+- **JH-3 RESOLVED**: biomeOS `composition.reload` — hot-swap single primal without full restart
+- **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
+- **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
+- **GAP-11 CLOSED**: barraCuda 18/18 methods (71 total JSON-RPC methods)
+- **Registry**: 389 methods across 82 domains
+- **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
 - `validation/ROOTPULSE_GAPS_HANDBACK.md` — 5 gaps (RP-1→RP-5)
-- `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5), 1 critical
+- `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5) — all now resolved or adopted upstream
 - Dark Forest gaps: JH-8 (DNS exfil), JH-9 (supply chain), JH-10 (version disclosure), DF-1 (binding)
 
 ### ABG Tiered Access Model

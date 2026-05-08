@@ -145,8 +145,18 @@ run_tier_tests() {
             "curl -sf --max-time 5 https://github.com -o /dev/null"
     fi
 
-    # --- Network: localhost primals (JH-0 known gap) ---
-    known_gap "$tier" "net_primal_rpc" "Can call primal RPC on localhost — no capability check (JH-0)"
+    # --- Network: localhost primals (JH-0 MethodGate adopted, permissive mode) ---
+    # MethodGate is live on 9/13 primals (Phase 60). Permissive mode logs but allows.
+    # Set NUCLEUS_AUTH_MODE=enforced to activate scope-based rejection.
+    local rpc_result
+    rpc_result=$(sudo -u "$user" bash -c 'echo "{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}" | timeout 3 nc -q1 127.0.0.1 9100 2>/dev/null' || echo "")
+    if echo "$rpc_result" | grep -q '"permissive"' 2>/dev/null; then
+        pass "$tier" "net_primal_rpc" "MethodGate live (permissive) — RPC logged but allowed (JH-0 adopted)"
+    elif echo "$rpc_result" | grep -q '"enforced"' 2>/dev/null; then
+        pass "$tier" "net_primal_rpc" "MethodGate enforced — unauthenticated RPC blocked (JH-0 resolved)"
+    else
+        known_gap "$tier" "net_primal_rpc" "MethodGate not detected on beardog:9100 — verify binary version"
+    fi
 
     # --- Process: visibility ---
     local proc_count

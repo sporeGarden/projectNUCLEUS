@@ -42,6 +42,11 @@ SWEETGRASS_BTSP_PORT="${SWEETGRASS_BTSP_PORT:-9851}"
 PETALTONGUE_PORT="${PETALTONGUE_PORT:-9900}"
 SKUNKBAT_PORT="${SKUNKBAT_PORT:-9140}"
 
+# --- MethodGate (JH-0/JH-1, Phase 60) ---
+# "permissive" (default) = log + allow unauthenticated calls
+# "enforced" = require valid ionic token with scope match
+NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-permissive}"
+
 # --- ABG user management ---
 ABG_UID_MIN="${ABG_UID_MIN:-1001}"
 ABG_UID_MAX="${ABG_UID_MAX:-1099}"

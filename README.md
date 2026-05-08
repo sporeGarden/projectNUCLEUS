@@ -92,6 +92,10 @@ Gates connect to each other through chemical bonding patterns:
 - All PG-55 through PG-59 resolved by primalSpring Phase 59
 - 13/13 primals default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat anomaly detection
 - **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
+- **Dark Forest hardening**: 5-layer security validation (`deploy/darkforest_pentest.sh`, `deploy/darkforest_fuzz.py`) — adversarial pen test, protocol fuzzing, timing analysis
+- **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS (8.8.8.8) blocked for ABG UIDs
+- **Supply chain locked**: shared conda envs root-owned, 755 permissions — compute users cannot plant malicious packages
+- **Version disclosure suppressed**: X-JupyterHub-Version and Server headers emptied; /hub/api/ version is JH-10 upstream gap
 - Two-round pen test complete: infrastructure layer + multi-user layer (`validation/SECURITY_HANDBACK_MAY06_2026.md`)
 - skunkBat surveillance targets identified: JupyterHub auth events, NestGate writes, iptables DROPs, process enumeration
 
@@ -105,8 +109,12 @@ Gates connect to each other through chemical bonding patterns:
 - **Voila baselines captured**: ~600ms render latency, 33–51KB output, source stripping active (`validation/baselines/`)
 - **4 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-5)
 - **JH-0 (Critical)**: RPC dispatchers accept unauthenticated calls from any localhost user — upstream gap for all primal teams
-- **JH-6 (New)**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by `NoKernelManager` override
-- **JH-7 (New)**: Voila executes notebooks as hub user (privilege escalation risk) — mitigated by restricting to curated showcase only
+- **JH-6**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by `NoKernelManager` override
+- **JH-7**: Voila executes notebooks as hub user (privilege escalation risk) — mitigated by restricting to curated showcase only
+- **JH-8 (New)**: DNS port 53 was open to all external servers — exfiltration channel. **FIXED**: restricted to local resolver only
+- **JH-9 (New)**: Shared conda envs were group-writable — supply chain poisoning vector. **FIXED**: root-owned, 755
+- **JH-10 (New)**: `/hub/api/` version disclosure (built-in handler, cannot override in config) — document and block at tunnel
+- **DF-1**: 5 primals on `0.0.0.0` via deploy.sh override. **FIXED**: all use `$NUCLEUS_BIND_ADDRESS` (127.0.0.1)
 
 ### sporePrint
 

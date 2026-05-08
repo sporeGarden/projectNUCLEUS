@@ -219,11 +219,22 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Baseline captured: ~600ms render, 33–51KB output, accessible via tunnel
 - Calibration instrument for petalTongue sovereignty replacement
 
+**Dark Forest Security Hardening (2026-05-08)**:
+- `deploy/darkforest_pentest.sh` — comprehensive adversarial pen test across 3 threat actors (external, compute, reviewer/observer)
+- `deploy/darkforest_fuzz.py` — protocol-level fuzzing for all 13 primals + JupyterHub (malformed JSON-RPC, binary probes, timing analysis, auth bypass)
+- Wired into `security_validation.sh` as Layer 5 (total: 5 layers, 100+ assertions)
+- **DF-1 FIXED**: 5 primals on `0.0.0.0` — deploy.sh now uses `$NUCLEUS_BIND_ADDRESS` (127.0.0.1) for all primals
+- **JH-8 FIXED**: DNS port 53 was open to all external servers — exfiltration channel closed, restricted to local stub resolver only
+- **JH-9 FIXED**: Shared conda envs group-writable — now root-owned with 755 permissions
+- **JH-10 found**: `/hub/api/` version disclosure is a built-in handler that cannot be overridden via config. X-JupyterHub-Version and Server headers suppressed
+- Version suppression: `Server` header emptied, `X-JupyterHub-Version` header emptied
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
 - `validation/ROOTPULSE_GAPS_HANDBACK.md` — 5 gaps (RP-1→RP-5)
 - `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5), 1 critical
+- Dark Forest gaps: JH-8 (DNS exfil), JH-9 (supply chain), JH-10 (version disclosure), DF-1 (binding)
 
 ### ABG Tiered Access Model
 

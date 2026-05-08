@@ -334,6 +334,7 @@ for p in $PRIMALS; do
             export TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1
             nohup "$PLASMIDBIN_DIR/primals/toadstool" server \
                 --port "$TOADSTOOL_PORT" \
+                --bind "$BIND_ADDRESS" \
                 --family-id "$FAMILY_ID" \
                 > /tmp/toadstool.log 2>&1 &
             echo "    PID: $!"
@@ -396,6 +397,7 @@ for p in $PRIMALS; do
             echo "  Starting sweetgrass (TCP $SWEETGRASS_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/sweetgrass" server \
                 --port "$SWEETGRASS_PORT" \
+                --bind "$BIND_ADDRESS" \
                 --http-address "$BIND_ADDRESS:$((SWEETGRASS_PORT + 1))" \
                 > /tmp/sweetgrass.log 2>&1 &
             echo "    PID: $!"
@@ -417,6 +419,7 @@ for p in $PRIMALS; do
             echo "  Starting skunkbat (TCP $SKUNKBAT_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/skunkbat" server \
                 --port "$SKUNKBAT_PORT" \
+                --bind "$BIND_ADDRESS" \
                 > /tmp/skunkbat.log 2>&1 &
             echo "    PID: $!"
             sleep 1
@@ -426,6 +429,7 @@ for p in $PRIMALS; do
             echo "  Starting biomeos neural-api (TCP $BIOMEOS_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/biomeos" neural-api \
                 --port "$BIOMEOS_PORT" \
+                --bind "$BIND_ADDRESS" \
                 --family-id "$FAMILY_ID" \
                 --btsp-optional \
                 > /tmp/biomeos.log 2>&1 &
@@ -437,6 +441,7 @@ for p in $PRIMALS; do
             echo "  Starting petaltongue server (TCP $PETALTONGUE_PORT)..."
             nohup "$PLASMIDBIN_DIR/primals/petaltongue" server \
                 --port "$PETALTONGUE_PORT" \
+                --bind "$BIND_ADDRESS" \
                 > /tmp/petaltongue.log 2>&1 &
             echo "    PID: $!"
             sleep 1

@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# Security Validation Pipeline — Four-Layer Penetration Testing
+# Security Validation Pipeline — Five-Layer Penetration Testing
 #
 # Tests security posture above, at, and below the primal layer:
 #
-#   Layer 1 (BELOW):  OS/network — open ports, exposed services, firewall
-#   Layer 2 (AT):     Primal APIs — auth enforcement, input fuzzing, BTSP
-#   Layer 3 (ABOVE):  Application — JupyterHub, tunnel, web endpoints
-#   Layer 4 (TIERS):  ABG tier enforcement — filesystem, network, process, API
+#   Layer 1 (BELOW):      OS/network — open ports, exposed services, firewall
+#   Layer 2 (AT):         Primal APIs — auth enforcement, input fuzzing, BTSP
+#   Layer 3 (ABOVE):      Application — JupyterHub, tunnel, web endpoints
+#   Layer 4 (TIERS):      ABG tier enforcement — filesystem, network, process, API
+#   Layer 5 (DARK_FOREST): Adversarial pen testing + protocol fuzzing
 #
 # skunkBat observes the entire run and records metrics.
 # Results feed back into the tunnel evolution validation targets.
 #
 # Usage:
-#   bash security_validation.sh [--layer all|below|at|above|tiers] [--tunnel-url URL]
+#   bash security_validation.sh [--layer all|below|at|above|tiers|darkforest] [--tunnel-url URL]
 #
 # Requires: curl, openssl, nc, ss, python3
 # Requires running: Full NUCLEUS composition (13 primals), JupyterHub
@@ -54,7 +55,7 @@ rpc_skunkbat() {
 }
 
 log "═══════════════════════════════════════════════════════════"
-log "  Security Validation Pipeline — Three-Layer Pen Testing"
+log "  Security Validation Pipeline — Five-Layer Pen Testing"
 log "  Target: $TARGET_HOST"
 log "  Layer: $LAYER"
 log "  Results: $RESULTS_DIR"
@@ -456,6 +457,69 @@ if [[ "$LAYER" == "all" || "$LAYER" == "tiers" ]]; then
 fi
 
 # ══════════════════════════════════════════════════════════════
+# LAYER 5: DARK FOREST — Adversarial Pen Test + Protocol Fuzz
+# ══════════════════════════════════════════════════════════════
+if [[ "$LAYER" == "all" || "$LAYER" == "darkforest" ]]; then
+    log ""
+    log "══ Layer 5: Dark Forest ══"
+
+    # 5a: Adversarial pen test
+    log ""
+    log "── 5a: Dark Forest Pen Test ──"
+
+    PENTEST_SCRIPT="$SCRIPT_DIR/darkforest_pentest.sh"
+    if [[ -x "$PENTEST_SCRIPT" ]]; then
+        PENTEST_OUT="$RESULTS_DIR/darkforest_pentest.txt"
+        TUNNEL_ARG=""
+        [[ -n "$TUNNEL_URL" ]] && TUNNEL_ARG="--tunnel-url $TUNNEL_URL"
+        bash "$PENTEST_SCRIPT" --suite all $TUNNEL_ARG 2>&1 | tee "$PENTEST_OUT" || true
+
+        DF_PEN_PASS=$(grep -c '^PASS|' "$PENTEST_OUT" 2>/dev/null || true)
+        DF_PEN_FAIL=$(grep -c '^FAIL|' "$PENTEST_OUT" 2>/dev/null || true)
+        DF_PEN_GAP=$(grep -c '^KNOWN_GAP|' "$PENTEST_OUT" 2>/dev/null || true)
+        DF_PEN_DF=$(grep -c '^DARK_FOREST|' "$PENTEST_OUT" 2>/dev/null || true)
+        : "${DF_PEN_PASS:=0}" "${DF_PEN_FAIL:=0}" "${DF_PEN_GAP:=0}" "${DF_PEN_DF:=0}"
+
+        PASS=$((PASS + DF_PEN_PASS))
+        FAIL=$((FAIL + DF_PEN_FAIL))
+
+        if [[ "$DF_PEN_FAIL" -eq 0 ]]; then
+            pass "Dark Forest pen test: $DF_PEN_PASS pass, $DF_PEN_GAP gaps, $DF_PEN_DF dark forest findings"
+        else
+            fail "Dark Forest pen test: $DF_PEN_FAIL failures out of $((DF_PEN_PASS + DF_PEN_FAIL)) assertions"
+        fi
+    else
+        warn "darkforest_pentest.sh not found at $PENTEST_SCRIPT"
+    fi
+
+    # 5b: Protocol fuzz
+    log ""
+    log "── 5b: Protocol Fuzz ──"
+
+    FUZZ_SCRIPT="$SCRIPT_DIR/darkforest_fuzz.py"
+    if [[ -f "$FUZZ_SCRIPT" ]]; then
+        FUZZ_OUT="$RESULTS_DIR/darkforest_fuzz.txt"
+        python3 "$FUZZ_SCRIPT" 2>&1 | tee "$FUZZ_OUT" || true
+
+        DF_FUZZ_PASS=$(grep -c '^PASS|' "$FUZZ_OUT" 2>/dev/null || true)
+        DF_FUZZ_FAIL=$(grep -c '^FAIL|' "$FUZZ_OUT" 2>/dev/null || true)
+        DF_FUZZ_DF=$(grep -c '^DARK_FOREST|' "$FUZZ_OUT" 2>/dev/null || true)
+        : "${DF_FUZZ_PASS:=0}" "${DF_FUZZ_FAIL:=0}" "${DF_FUZZ_DF:=0}"
+
+        PASS=$((PASS + DF_FUZZ_PASS))
+        FAIL=$((FAIL + DF_FUZZ_FAIL))
+
+        if [[ "$DF_FUZZ_FAIL" -eq 0 ]]; then
+            pass "Protocol fuzz: $DF_FUZZ_PASS pass, $DF_FUZZ_DF dark forest findings"
+        else
+            fail "Protocol fuzz: $DF_FUZZ_FAIL failures out of $((DF_FUZZ_PASS + DF_FUZZ_FAIL)) assertions"
+        fi
+    else
+        warn "darkforest_fuzz.py not found at $FUZZ_SCRIPT"
+    fi
+fi
+
+# ══════════════════════════════════════════════════════════════
 # SKUNKBAT METRICS — Post-scan
 # ══════════════════════════════════════════════════════════════
 log ""
@@ -524,6 +588,7 @@ $(if [[ -n "$TUNNEL_URL" ]]; then echo "**Tunnel**: $TUNNEL_URL"; fi)
 | At (Primal APIs) | Auth probes, input fuzzing, method enumeration, BTSP | $(if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then echo "Included"; else echo "Skipped"; fi) |
 | Above (Application) | JupyterHub headers, auth, path traversal, tunnel TLS | $(if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then echo "Included"; else echo "Skipped"; fi) |
 | Tiers (ABG Enforcement) | Filesystem, network, process, JupyterHub API per tier | $(if [[ "$LAYER" == "all" || "$LAYER" == "tiers" ]]; then echo "Included"; else echo "Skipped"; fi) |
+| Dark Forest | Adversarial pen test, protocol fuzz, timing analysis | $(if [[ "$LAYER" == "all" || "$LAYER" == "darkforest" ]]; then echo "Included"; else echo "Skipped"; fi) |
 
 ## Environment
 
@@ -540,6 +605,8 @@ $(if [[ -n "$TUNNEL_URL" ]]; then echo "**Tunnel**: $TUNNEL_URL"; fi)
 - \`skunkbat_detections.json\` — skunkBat detections during scan
 - \`tier_os_results.txt\` — OS-level tier enforcement test output
 - \`tier_api_results.txt\` — JupyterHub API tier enforcement test output
+- \`darkforest_pentest.txt\` — adversarial pen test output
+- \`darkforest_fuzz.txt\` — protocol fuzz output
 EOF
 
 log "  Report: $RESULTS_DIR/SECURITY_RESULTS.md"

@@ -91,11 +91,24 @@ if [[ "$LAYER" == "all" || "$LAYER" == "below" ]]; then
     fi
 
     # Verify primal ports are NOT externally exposed
+    # DF-1: 5 primals lack --bind CLI flag and bind 0.0.0.0 when --port given.
+    # UFW blocks external access. These are KNOWN_GAP, not FAIL.
+    NO_BIND_FLAG_PORTS=("$TOADSTOOL_PORT" "$SWEETGRASS_PORT" "$SKUNKBAT_PORT" "$BIOMEOS_PORT" "$PETALTONGUE_PORT")
     for port in "${ALL_PRIMAL_PORTS_LIST[@]}"; do
         bind=$(echo "$LISTENING" | grep ":$port " | head -1)
-        if echo "$bind" | grep -q "0.0.0.0" 2>/dev/null; then
-            fail "Port $port bound to 0.0.0.0 (externally exposed)"
-        elif echo "$bind" | grep -q "127.0.0.1" 2>/dev/null; then
+        # Extract local address (4th field in ss output) to avoid matching remote 0.0.0.0:*
+        local_addr=$(echo "$bind" | awk '{print $4}')
+        if echo "$local_addr" | grep -q "^0\.0\.0\.0:" 2>/dev/null; then
+            is_no_bind=0
+            for nbp in "${NO_BIND_FLAG_PORTS[@]}"; do
+                [[ "$port" == "$nbp" ]] && is_no_bind=1 && break
+            done
+            if [[ $is_no_bind -eq 1 ]]; then
+                warn "Port $port on 0.0.0.0 — DF-1 upstream gap (no --bind flag), UFW mitigates"
+            else
+                fail "Port $port bound to 0.0.0.0 (externally exposed)"
+            fi
+        elif echo "$local_addr" | grep -q "^127\.0\.0\.1:" 2>/dev/null; then
             pass "Port $port bound to 127.0.0.1 only"
         elif [[ -n "$bind" ]]; then
             info "Port $port: $bind"
@@ -104,9 +117,10 @@ if [[ "$LAYER" == "all" || "$LAYER" == "below" ]]; then
 
     # JupyterHub binding
     HUB_BIND=$(echo "$LISTENING" | grep ":8000 " | head -1)
-    if echo "$HUB_BIND" | grep -q "127.0.0.1" 2>/dev/null; then
+    hub_local=$(echo "$HUB_BIND" | awk '{print $4}')
+    if echo "$hub_local" | grep -q "^127\.0\.0\.1:" 2>/dev/null; then
         pass "JupyterHub (8000) bound to 127.0.0.1 — tunnel-only access"
-    elif echo "$HUB_BIND" | grep -q "0.0.0.0" 2>/dev/null; then
+    elif echo "$hub_local" | grep -q "^0\.0\.0\.0:" 2>/dev/null; then
         fail "JupyterHub (8000) bound to 0.0.0.0 — directly exposed"
     fi
 

@@ -43,8 +43,8 @@ PETALTONGUE_PORT="${PETALTONGUE_PORT:-9900}"
 SKUNKBAT_PORT="${SKUNKBAT_PORT:-9140}"
 
 # --- MethodGate (JH-0/JH-1, Phase 60) ---
-# "permissive" (default) = log + allow unauthenticated calls
-# "enforced" = require valid ionic token with scope match
+# "enforced" (default) = require valid ionic token with scope match (-32001 rejection)
+# "permissive" = log + allow unauthenticated calls (testing only)
 NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-enforced}"
 
 # --- ABG user management ---

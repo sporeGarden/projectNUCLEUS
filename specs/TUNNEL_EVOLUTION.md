@@ -48,9 +48,9 @@ generation and penetration testing framework for validation.
 - 13 primals deployed via `deploy.sh --composition full --gate irongate`
 - Named Cloudflare tunnel (not quick tunnel) with systemd persistence
 - JupyterHub as system service with PAM auth and tiered ABG access
-- UFW deny-by-default blocks 0.0.0.0 primals from WAN
+- UFW deny-by-default (all primals now bind 127.0.0.1 natively since Phase 60)
 - Security headers: X-Frame-Options DENY, X-Content-Type-Options nosniff, X-XSS-Protection, Referrer-Policy same-origin, Server disclosure suppressed
-- Three-layer pen test complete: 24 PASS, 13 FAIL (all 0.0.0.0 binding — mitigated by UFW), 4 WARN
+- Five-layer pen test: **265 PASS, 0 FAIL, 0 KNOWN_GAP** (Phase 60 enforced mode, 2026-05-08)
 - All primals survive input fuzzing (7 payloads × 4 targets, zero crashes)
 - BTSP enforcement validated (sweetGrass/rhizoCrypt reject plaintext)
 - `irongate` user blocked from tunnel login via `post_auth_hook`

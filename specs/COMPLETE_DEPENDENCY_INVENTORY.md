@@ -159,30 +159,30 @@ Cluster 3 (Registries):  ██░░░░░░░░ ~20% mapped, vendor esca
 Cluster 4 (Containers):  ██░░░░░░░░ ~20% mapped, config swap path known
 Cluster 5 (AI APIs):     ██████░░░░ ~60% mapped, Ollama fallback working
 Cluster 6 (Science):     █████░░░░░ ~50% mapped, data registry operational
-Cluster 7 (Internal):    █░░░░░░░░░ ~10% mapped, gaps identified, zero implemented
+Cluster 7 (Internal):    ████████░░ ~80% resolved, JH-0→JH-5 adopted/enforced (Phase 60)
 ```
 
 ---
 
 ## Cluster 7 — Internal Primal Gaps (Discovered via JupyterHub Deployment)
 
-**Status**: 5 gaps identified from live multi-user deployment. 1 critical. See
-`validation/JUPYTERHUB_PATTERNS_HANDBACK.md` for full analysis.
+**Status (2026-05-08)**: 5/6 gaps resolved or adopted by primalSpring Phase 60.
+MethodGate enforced, ionic tokens live, resource envelopes enforced, audit log operational.
+See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results.
 
-These are not external dependencies but missing primal capabilities that block
-sovereignty steps. They were discovered by deploying JupyterHub as a real
-multi-user service and observing where the primal stack could not enforce,
-manage, or observe what the external tooling (PAM, systemd, Cloudflare headers)
-currently handles.
+> Original gap discovery documented below. These were found by deploying
+> JupyterHub as a real multi-user service and observing where the primal
+> stack could not enforce what external tooling (PAM, systemd, Cloudflare)
+> currently handles.
 
 | Gap | Severity | Owner | Blocks | Description |
 |-----|----------|-------|--------|-------------|
-| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | Convention flags (`NUCLEUS_READONLY` env var) gave false security. Every primal's RPC dispatcher must check capability tokens before executing methods. |
-| JH-1: BearDog identity management | High | BearDog | Step 2b (BTSP auth) | `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` methods needed. PAM case-sensitivity bugs showed identity must be primal-native. |
-| JH-2: Token-carried resource envelope | High | biomeOS + ToadStool | neuralAPI enforcement | Ionic tokens need resource limits (mem, cpu, method allowlist) that composition spawners enforce. Currently done via Python `pre_spawn_hook`. |
-| JH-3: Composition hot-reload | Medium | biomeOS | Rolling primal updates | `composition.reload` for swapping a single primal without restarting the full composition. Currently requires `systemctl restart`. |
-| JH-4: Token issuance UX | Medium | BearDog + primalSpring | Non-technical user onboarding | End-to-end credential flow for researchers who can't use CLI. Currently: `echo 'user:pass' \| chpasswd`. |
-| JH-5: Log aggregation + provenance | Medium | skunkBat | Unified security monitoring | Aggregate logs from systemd journal, primal files, and tunnel into single surface. Feed security events into rhizoCrypt DAG + sweetGrass braid. |
+| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | **ENFORCED** — MethodGate on 13/13 primals, 10/13 confirmed enforced via TCP. `-32001 PERMISSION_DENIED` on unauthenticated calls. |
+| JH-1: BearDog identity management | High | BearDog | Step 2b (BTSP auth) | **RESOLVED** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` live. Ed25519-signed scoped tokens. |
+| JH-2: Token-carried resource envelope | High | biomeOS + ToadStool | neuralAPI enforcement | **RESOLVED** — biomeOS v3.48 enforces `timeout_ms`, ToadStool S232 enforces `mem_mb`, `cpu_cores`. |
+| JH-3: Composition hot-reload | Medium | biomeOS | Rolling primal updates | **RESOLVED** — `composition.reload` ships in biomeOS v3.47. |
+| JH-4: Token issuance UX | Medium | BearDog + primalSpring | Non-technical user onboarding | **RESOLVED** — `auth.issue_session` with purpose-based presets (`jupyterhub`, `desktop`, `admin`). |
+| JH-5: Log aggregation + provenance | Medium | skunkBat | Unified security monitoring | **Phase 2 COMPLETE** — `security.audit_log` ring buffer live. Cross-primal forwarding deferred. |
 
 **Sovereignty Progress**:
 

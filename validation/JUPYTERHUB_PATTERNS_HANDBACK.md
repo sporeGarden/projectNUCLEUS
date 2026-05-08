@@ -27,7 +27,7 @@ enforcement. JupyterLab ignored this variable entirely — reviewer-tier account
 - Execute arbitrary Python/shell code as their Linux user
 - Open terminals and interact with the system
 - Call any primal JSON-RPC endpoint on localhost (all 13 primals bind
-  0.0.0.0, mitigated by UFW from WAN but fully open on localhost)
+  0.0.0.0 at time of writing; **now 127.0.0.1 since Phase 60 PG-55, MethodGate enforced**)
 - Read files outside their home directory if Linux permissions allowed
 
 **Local fix applied**: The `pre_spawn_hook` now passes actual JupyterLab

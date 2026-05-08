@@ -80,9 +80,9 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 **Bind policy**: Deploy scripts no longer need explicit `--bind 0.0.0.0` overrides — all primals default localhost. `PrimalDeployProfile.bind_flag` returns `Some(flag)` for all 13 primals.
 
-- `deploy/security_validation.sh` — automated three-layer pen testing
+- `deploy/security_validation.sh` — automated five-layer pen testing (OS, API, application, tier enforcement, dark forest)
 - skunkBat multi-dimensional anomaly detection live (12 normal + 7 attack patterns seeded)
-- Run before and after every tunnel evolution step
+- Run before and after every evolution step
 
 ---
 
@@ -208,7 +208,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Automated Tier Enforcement (2026-05-08)**:
 - `deploy/tier_enforcement_test.sh` — 44 OS-level assertions via `sudo -u` (filesystem, network, process)
 - `deploy/jupyterhub_tier_test.py` — 18 JupyterHub API probes (kernels, terminals, file write, Voila)
-- Wired into `security_validation.sh` as Layer 4 (total: 62 assertions, 0 FAIL, 4 KNOWN_GAP)
+- Wired into `security_validation.sh` as Layer 4 (total: 62 assertions, 0 FAIL, 0 KNOWN_GAP in enforced mode)
 - **JH-6 found**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by NoKernelManager
 - **JH-7 found**: Voila executes notebooks as hub user — mitigated by restricting to curated showcase only
 

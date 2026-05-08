@@ -205,7 +205,7 @@ To reproduce this validation:
 | Single witness | No multi-witness or certificate chain | Phase 2b: BearDog co-sign |
 | NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | Acceptable for localhost; awareness needed if TCP is exposed externally |
 | JupyterHub plain HTTP | No BTSP on localhost | Phase 2a: Cloudflare tunnel (external TLS) |
-| No ionic token scoping | JupyterHub uses PAM auth, not capability tokens | Phase 2b: BTSP ionic auth |
+| ~~No ionic token scoping~~ | **RESOLVED Phase 60**: BearDog ionic tokens live, MethodGate enforced, scope-checked | Enforced 2026-05-08 |
 
 **Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. The previous gap (7 rebound, 6 need upstream `--bind`) is fully closed. See `validation/PHASE59_ABSORPTION_MAY06_2026.md`.
 

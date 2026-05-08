@@ -1,0 +1,99 @@
+[10:18:37] ═══════════════════════════════════════════════════════════
+[10:18:37]   Security Validation Pipeline — Five-Layer Pen Testing
+[10:18:37]   Target: 127.0.0.1
+[10:18:37]   Layer: all
+[10:18:37]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/validation/security-20260508-101837
+[10:18:37] ═══════════════════════════════════════════════════════════
+[10:18:42]   skunkBat scan baseline captured
+[10:18:42] 
+[10:18:42] ══ Layer 1: Below the Primals (OS / Network) ══
+[10:18:42] 
+[10:18:42] ── 1a: Port Exposure Scan ──
+[10:18:42]   [WARN] Found 9 non-localhost listeners:
+[10:18:42]   [INFO]   LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=943,fd=14))
+[10:18:42]   [INFO]   LISTEN 0      128    192.168.1.238:45517      0.0.0.0:*    users:(("rustdesk",pid=1816372,fd=3))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:9140       0.0.0.0:*    users:(("skunkbat",pid=1919928,fd=11))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:9400       0.0.0.0:*    users:(("toadstool",pid=1920096,fd=27))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:9900       0.0.0.0:*    users:(("petaltongue",pid=1919817,fd=16))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:9800       0.0.0.0:*    users:(("biomeos",pid=1919553,fd=12))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:9850       0.0.0.0:*    users:(("sweetgrass",pid=1920042,fd=13))
+[10:18:42]   [INFO]   LISTEN 0      128          0.0.0.0:33195      0.0.0.0:*    users:(("sweetgrass",pid=1920042,fd=12))
+[10:18:42]   [INFO]   LISTEN 0      128                *:9200             *:*    users:(("songbird",pid=1919419,fd=12))
+[10:18:42]   [FAIL] Port 9100 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [INFO] Port 9200: LISTEN 0      128                *:9200             *:*    users:(("songbird",pid=1919419,fd=12))      
+[10:18:42]   [FAIL] Port 9300 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9400 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9500 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9601 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9602 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9700 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9730 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9740 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9800 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9850 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9900 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [FAIL] Port 9140 bound to 0.0.0.0 (externally exposed)
+[10:18:42]   [PASS] JupyterHub (8000) bound to 127.0.0.1 — tunnel-only access
+[10:18:42] 
+[10:18:42] ── 1b: Unnecessary Service Check ──
+[10:18:42] 
+[10:18:42] ── 1c: Firewall Status ──
+[10:18:42]   [PASS] UFW firewall active
+[10:18:42] 
+[10:18:42] ── 1d: Sensitive File Permissions ──
+[10:18:42] 
+[10:18:42] ══ Layer 2: At the Primal Layer (API Security) ══
+[10:18:42] 
+[10:18:42] ── 2a: Unauthenticated API Probe ──
+[10:18:45]   [INFO] beardog health.liveness accessible (expected — public health endpoint)
+[10:18:48]   [INFO] toadstool health.liveness accessible (expected — public health endpoint)
+[10:18:51]   [INFO] nestgate health.liveness accessible (expected — public health endpoint)
+[10:18:54]   [WARN] nestgate storage.list accessible without auth
+[10:18:57]   [INFO] rhizocrypt health.liveness accessible (expected — public health endpoint)
+[10:19:00]   [INFO] rhizocrypt dag.session.list accessible (BTSP enforced at connection level)
+[10:19:03]   [INFO] loamspine health.liveness accessible (expected — public health endpoint)
+[10:19:06]   [INFO] sweetgrass health.liveness accessible (expected — public health endpoint)
+[10:19:09]   [PASS] sweetgrass braid.list rejects unauthenticated request
+[10:19:12]   [INFO] skunkbat health.liveness accessible (expected — public health endpoint)
+[10:19:12] 
+[10:19:12] ── 2b: Input Fuzzing (Malformed Requests) ──
+[10:19:26]   [PASS] beardog survived all 7 fuzz payloads without crash
+[10:19:40]   [PASS] toadstool survived all 7 fuzz payloads without crash
+[10:19:54]   [PASS] nestgate survived all 7 fuzz payloads without crash
+[10:20:10]   [PASS] skunkbat survived all 7 fuzz payloads without crash
+[10:20:10] 
+[10:20:10] ── 2c: Method Enumeration ──
+[10:20:24]   [PASS] beardog rejects all 7 suspicious method probes
+[10:20:38]   [PASS] toadstool rejects all 7 suspicious method probes
+[10:20:52]   [PASS] nestgate rejects all 7 suspicious method probes
+[10:20:52] 
+[10:20:52] ── 2d: BTSP Enforcement ──
+[10:20:52]   [PASS] sweetgrass (port 9850) rejects plaintext connection
+[10:20:52]   [PASS] rhizocrypt (port 9601) rejects plaintext connection
+[10:20:52] 
+[10:20:52] ══ Layer 3: Above the Primals (Application Security) ══
+[10:20:52] 
+[10:20:52] ── 3a: JupyterHub Security Headers ──
+[10:20:52]   [PASS] JupyterHub sends x-frame-options: DENY
+[10:20:52]   [PASS] JupyterHub sends x-content-type-options: nosniff
+[10:20:52]   [PASS] JupyterHub sends content-security-policy: frame-ancestors 'none'; report-uri /hub/security/csp-report
+[10:20:52]   [PASS] JupyterHub sends x-xss-protection: 1; mode=block
+[10:20:52]   [PASS] Server header suppressed (dark forest)
+[10:20:52] 
+[10:20:52] ── 3b: Authentication Enforcement ──
+[10:20:52]   [PASS] JupyterHub /hub/api/users requires auth (HTTP 403)
+[10:20:52]   [PASS] JupyterHub spawn endpoint requires auth (HTTP 403)
+[10:20:52] 
+[10:20:52] ── 3c: Path Traversal Probes ──
+[10:20:52]   [PASS] Path traversal blocked: /hub/../../../etc/passwd (HTTP 302)
+[10:20:52]   [PASS] Path traversal blocked: /hub/%2e%2e/%2e%2e/etc/passwd (HTTP 302)
+[10:20:52]   [PASS] Path /hub/login?next=//evil.com returned 200 but no sensitive content
+[10:20:52]   [PASS] Path traversal blocked: /hub/api/../../../etc/shadow (HTTP 302)
+[10:20:52] 
+[10:20:52] ══ Layer 4: ABG Tier Enforcement ══
+[10:20:52] 
+[10:20:52] ── 4a: OS-Level Tier Enforcement ──
+[10:21:13]   [PASS] OS-level tier enforcement: 44 assertions pass (4 known gaps)
+[10:21:13] 
+[10:21:13] ── 4b: JupyterHub API Tier Enforcement ──
+[10:21:38]   [PASS] JupyterHub API tier enforcement: 18 assertions pass (0 skipped)

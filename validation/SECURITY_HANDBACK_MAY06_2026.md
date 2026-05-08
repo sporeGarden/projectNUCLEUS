@@ -148,7 +148,7 @@ during this test, and alert when similar patterns appear in production.
 | Outbound network restriction | ironGate admin | HIGH | **DONE** — iptables/ip6tables owner match UID 1001-1099 |
 | Reviewer/observer read-only | projectNUCLEUS | CRITICAL | **DONE** — filesystem + JupyterLab server flags |
 | Shared notebook write protection | projectNUCLEUS | MEDIUM | **DONE** — 444 perms, compute users run but can't save |
-| RPC dispatcher capability check | All primal teams | CRITICAL | **ADOPTED** — MethodGate shipped 13/13 primals (Phase 60), permissive mode active |
+| RPC dispatcher capability check | All primal teams | CRITICAL | **ENFORCED** — MethodGate on 13/13 primals, `NUCLEUS_AUTH_MODE=enforced` default, 265 PASS 0 FAIL |
 
 **Ecosystem state post-Phase 60**: 13/13 BTSP Phase 3 FULL AEAD, 14/14 ports on `127.0.0.1`, MethodGate on 13/13 primals, ionic tokens live, resource envelopes enforced, audit log operational. 263 PASS, 0 FAIL validation. See `validation/REVALIDATION_PHASE60_MAY08_2026.md`.
 
@@ -201,6 +201,6 @@ the gap is they accept it from *any* localhost process (JH-0).
 ### JH-0 Status Update (2026-05-08)
 
 **JH-0 ADOPTED**: primalSpring Phase 60 shipped MethodGate on all 13 primals.
-Permissive mode active — calls are logged but allowed. Set `NUCLEUS_AUTH_MODE=enforced`
-to activate scope-based rejection via ionic tokens. See
-`validation/REVALIDATION_PHASE60_MAY08_2026.md` for full revalidation results.
+**Enforced mode now active** (2026-05-08) — unauthenticated calls return `-32001`.
+`NUCLEUS_AUTH_MODE=enforced` is the default. 265 PASS, 0 FAIL, 0 KNOWN_GAP.
+See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results.

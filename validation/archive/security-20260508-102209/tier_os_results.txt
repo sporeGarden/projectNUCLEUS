@@ -1,0 +1,65 @@
+═══════════════════════════════════════════════════
+  ABG Tier Enforcement Test Suite
+  Date: 2026-05-08T10:24:24-04:00
+  Filter: all
+═══════════════════════════════════════════════════
+
+── Tier: admin (user: kmok) ──
+PASS|admin|fs_write_notebooks|Can write to ~/notebooks/
+PASS|admin|fs_write_shared_commons|Cannot write to shared/commons/
+PASS|admin|fs_read_shadow|Cannot read /etc/shadow
+PASS|admin|fs_read_other_home|Cannot read /home/tamison/
+PASS|admin|fs_read_shared_commons|Can read shared/commons/
+PASS|admin|fs_read_shared_showcase|Can read shared/showcase/
+PASS|admin|net_outbound_internet|Cannot reach internet (iptables DROP, UID 1003 in ABG range)
+KNOWN_GAP|admin|net_primal_rpc|Can call primal RPC on localhost — no capability check (JH-0) (JH-0)
+PASS|admin|proc_isolation|Sees 2 processes (hidepid=2 working)
+PASS|admin|fs_write_tmp|Can write to /tmp
+PASS|admin|fs_read_irongate_dev|Cannot read irongate development dirs
+PASS|admin|fs_read_tunnel_config|Cannot read tunnel credentials
+
+── Tier: compute (user: tamison) ──
+PASS|compute|fs_write_notebooks|Can write to ~/notebooks/
+PASS|compute|fs_write_shared_commons|Cannot write to shared/commons/
+PASS|compute|fs_read_shadow|Cannot read /etc/shadow
+PASS|compute|fs_read_other_home|Cannot read /home/abgreviewer/
+PASS|compute|fs_read_shared_commons|Can read shared/commons/
+PASS|compute|fs_read_shared_showcase|Can read shared/showcase/
+PASS|compute|net_outbound_internet|Cannot reach internet (iptables DROP, UID 1002 in ABG range)
+KNOWN_GAP|compute|net_primal_rpc|Can call primal RPC on localhost — no capability check (JH-0) (JH-0)
+PASS|compute|proc_isolation|Sees 2 processes (hidepid=2 working)
+PASS|compute|fs_write_tmp|Can write to /tmp
+PASS|compute|fs_read_irongate_dev|Cannot read irongate development dirs
+PASS|compute|fs_read_tunnel_config|Cannot read tunnel credentials
+
+── Tier: reviewer (user: abgreviewer) ──
+PASS|reviewer|fs_write_notebooks|Cannot write to ~/notebooks/ (550 root-owned)
+PASS|reviewer|fs_write_shared_commons|Cannot write to shared/commons/
+PASS|reviewer|fs_read_shadow|Cannot read /etc/shadow
+PASS|reviewer|fs_read_other_home|Cannot read /home/tamison/
+PASS|reviewer|fs_read_shared_commons|Can read shared/commons/
+PASS|reviewer|fs_read_shared_showcase|Can read shared/showcase/
+PASS|reviewer|net_outbound_internet|Cannot reach internet (iptables DROP, UID 1005 in ABG range)
+KNOWN_GAP|reviewer|net_primal_rpc|Can call primal RPC on localhost — no capability check (JH-0) (JH-0)
+PASS|reviewer|proc_isolation|Sees 2 processes (hidepid=2 working)
+PASS|reviewer|fs_write_tmp|Can write to /tmp
+PASS|reviewer|fs_read_irongate_dev|Cannot read irongate development dirs
+PASS|reviewer|fs_read_tunnel_config|Cannot read tunnel credentials
+
+── Tier: observer (user: abg-test) ──
+PASS|observer|fs_write_notebooks|Cannot write to ~/notebooks/ (550 root-owned)
+PASS|observer|fs_write_shared_commons|Cannot write to shared/commons/
+PASS|observer|fs_read_shadow|Cannot read /etc/shadow
+PASS|observer|fs_read_other_home|Cannot read /home/tamison/
+PASS|observer|fs_read_shared_commons|Can read shared/commons/
+PASS|observer|fs_read_shared_showcase|Can read shared/showcase/
+PASS|observer|net_outbound_internet|Cannot reach internet (iptables DROP, UID 1001 in ABG range)
+KNOWN_GAP|observer|net_primal_rpc|Can call primal RPC on localhost — no capability check (JH-0) (JH-0)
+PASS|observer|proc_isolation|Sees 2 processes (hidepid=2 working)
+PASS|observer|fs_write_tmp|Can write to /tmp
+PASS|observer|fs_read_irongate_dev|Cannot read irongate development dirs
+PASS|observer|fs_read_tunnel_config|Cannot read tunnel credentials
+
+═══════════════════════════════════════════════════
+  Results: 44 PASS, 0 FAIL, 4 KNOWN_GAP
+═══════════════════════════════════════════════════

@@ -1,8 +1,22 @@
-# Security Validation — Three-Layer Penetration Testing
+# Security Validation — Five-Layer Penetration Testing
 
 How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
+
+## Current State (2026-05-08)
+
+**265 PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh`
+
+- **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
+- **MethodGate enforced**: 10/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
+- **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default)
+- **Ionic tokens live**: Ed25519-signed, scope-checked, expiry-verified
+- **UFW active**, hidepid=2, iptables outbound DROP for ABG UIDs, DNS exfil closed
+- See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results
+
+> The May 6 baselines below are preserved as fossil record — they document
+> the initial security posture and the gap discovery process.
 
 ---
 
@@ -19,7 +33,12 @@ from the inside during external probing.
 
 ---
 
-## Three-Layer Model
+## Layer Model (originally 3, now 5)
+
+> **Update**: Layers 4 (ABG tier enforcement) and 5 (dark forest pentest + protocol fuzz) 
+> were added 2026-05-08. See `deploy/security_validation.sh` for the live implementation.
+
+### Historical Three-Layer Model (May 6 baseline)
 
 ### Layer 1: Below the Primals (OS / Network)
 

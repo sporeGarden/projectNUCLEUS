@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# Security Validation Pipeline — Three-Layer Penetration Testing
+# Security Validation Pipeline — Four-Layer Penetration Testing
 #
 # Tests security posture above, at, and below the primal layer:
 #
 #   Layer 1 (BELOW):  OS/network — open ports, exposed services, firewall
 #   Layer 2 (AT):     Primal APIs — auth enforcement, input fuzzing, BTSP
 #   Layer 3 (ABOVE):  Application — JupyterHub, tunnel, web endpoints
+#   Layer 4 (TIERS):  ABG tier enforcement — filesystem, network, process, API
 #
 # skunkBat observes the entire run and records metrics.
 # Results feed back into the tunnel evolution validation targets.
 #
 # Usage:
-#   bash security_validation.sh [--layer all|below|at|above] [--tunnel-url URL]
+#   bash security_validation.sh [--layer all|below|at|above|tiers] [--tunnel-url URL]
 #
 # Requires: curl, openssl, nc, ss, python3
-# Requires running: Full NUCLEUS composition (13 primals)
+# Requires running: Full NUCLEUS composition (13 primals), JupyterHub
 
 set -euo pipefail
 
@@ -395,6 +396,66 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
 fi
 
 # ══════════════════════════════════════════════════════════════
+# LAYER 4: TIER ENFORCEMENT — ABG User Boundaries
+# ══════════════════════════════════════════════════════════════
+if [[ "$LAYER" == "all" || "$LAYER" == "tiers" ]]; then
+    log ""
+    log "══ Layer 4: ABG Tier Enforcement ══"
+
+    # 4a: OS-level tier probes
+    log ""
+    log "── 4a: OS-Level Tier Enforcement ──"
+
+    TIER_SCRIPT="$SCRIPT_DIR/tier_enforcement_test.sh"
+    if [[ -x "$TIER_SCRIPT" ]]; then
+        TIER_OS_OUT="$RESULTS_DIR/tier_os_results.txt"
+        bash "$TIER_SCRIPT" 2>&1 | tee "$TIER_OS_OUT" || true
+
+        TIER_OS_PASS=$(grep -c '^PASS|' "$TIER_OS_OUT" 2>/dev/null || true)
+        TIER_OS_FAIL=$(grep -c '^FAIL|' "$TIER_OS_OUT" 2>/dev/null || true)
+        TIER_OS_GAP=$(grep -c '^KNOWN_GAP|' "$TIER_OS_OUT" 2>/dev/null || true)
+        : "${TIER_OS_PASS:=0}" "${TIER_OS_FAIL:=0}" "${TIER_OS_GAP:=0}"
+
+        PASS=$((PASS + TIER_OS_PASS))
+        FAIL=$((FAIL + TIER_OS_FAIL))
+
+        if [[ "$TIER_OS_FAIL" -eq 0 ]]; then
+            pass "OS-level tier enforcement: $TIER_OS_PASS assertions pass ($TIER_OS_GAP known gaps)"
+        else
+            fail "OS-level tier enforcement: $TIER_OS_FAIL failures out of $((TIER_OS_PASS + TIER_OS_FAIL)) assertions"
+        fi
+    else
+        warn "tier_enforcement_test.sh not found at $TIER_SCRIPT"
+    fi
+
+    # 4b: JupyterHub API tier probes
+    log ""
+    log "── 4b: JupyterHub API Tier Enforcement ──"
+
+    TIER_API_SCRIPT="$SCRIPT_DIR/jupyterhub_tier_test.py"
+    if [[ -f "$TIER_API_SCRIPT" ]]; then
+        TIER_API_OUT="$RESULTS_DIR/tier_api_results.txt"
+        python3 "$TIER_API_SCRIPT" 2>&1 | tee "$TIER_API_OUT" || true
+
+        TIER_API_PASS=$(grep -c '^PASS|' "$TIER_API_OUT" 2>/dev/null || true)
+        TIER_API_FAIL=$(grep -c '^FAIL|' "$TIER_API_OUT" 2>/dev/null || true)
+        TIER_API_SKIP=$(grep -c '^SKIP|' "$TIER_API_OUT" 2>/dev/null || true)
+        : "${TIER_API_PASS:=0}" "${TIER_API_FAIL:=0}" "${TIER_API_SKIP:=0}"
+
+        PASS=$((PASS + TIER_API_PASS))
+        FAIL=$((FAIL + TIER_API_FAIL))
+
+        if [[ "$TIER_API_FAIL" -eq 0 ]]; then
+            pass "JupyterHub API tier enforcement: $TIER_API_PASS assertions pass ($TIER_API_SKIP skipped)"
+        else
+            fail "JupyterHub API tier enforcement: $TIER_API_FAIL failures out of $((TIER_API_PASS + TIER_API_FAIL)) assertions"
+        fi
+    else
+        warn "jupyterhub_tier_test.py not found at $TIER_API_SCRIPT"
+    fi
+fi
+
+# ══════════════════════════════════════════════════════════════
 # SKUNKBAT METRICS — Post-scan
 # ══════════════════════════════════════════════════════════════
 log ""
@@ -462,6 +523,7 @@ $(if [[ -n "$TUNNEL_URL" ]]; then echo "**Tunnel**: $TUNNEL_URL"; fi)
 | Below (OS/Network) | Port exposure, firewall, file permissions | $(if [[ "$LAYER" == "all" || "$LAYER" == "below" ]]; then echo "Included"; else echo "Skipped"; fi) |
 | At (Primal APIs) | Auth probes, input fuzzing, method enumeration, BTSP | $(if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then echo "Included"; else echo "Skipped"; fi) |
 | Above (Application) | JupyterHub headers, auth, path traversal, tunnel TLS | $(if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then echo "Included"; else echo "Skipped"; fi) |
+| Tiers (ABG Enforcement) | Filesystem, network, process, JupyterHub API per tier | $(if [[ "$LAYER" == "all" || "$LAYER" == "tiers" ]]; then echo "Included"; else echo "Skipped"; fi) |
 
 ## Environment
 
@@ -476,6 +538,8 @@ $(if [[ -n "$TUNNEL_URL" ]]; then echo "**Tunnel**: $TUNNEL_URL"; fi)
 - \`hub_headers.txt\` — JupyterHub response headers
 - \`skunkbat_metrics.json\` — skunkBat post-scan metrics
 - \`skunkbat_detections.json\` — skunkBat detections during scan
+- \`tier_os_results.txt\` — OS-level tier enforcement test output
+- \`tier_api_results.txt\` — JupyterHub API tier enforcement test output
 EOF
 
 log "  Report: $RESULTS_DIR/SECURITY_RESULTS.md"

@@ -65,6 +65,39 @@ setup_shared_dirs() {
     chown -R "$username:$username" "$user_home/notebooks" "$user_home/results"
 }
 
+setup_user_venv() {
+    local username="$1"
+    local user_home="/home/$username"
+    local venv_dir="$user_home/.venv/bioinfo"
+    local bioinfo_python="$ABG_SHARED/envs/bioinfo/bin/python3"
+
+    if [[ ! -x "$bioinfo_python" ]]; then
+        echo "ERROR: bioinfo python not found at $bioinfo_python" >&2
+        return 1
+    fi
+
+    echo "  Creating per-user venv at $venv_dir ..."
+    sudo -u "$username" "$bioinfo_python" -m venv --system-site-packages "$venv_dir"
+
+    # Configure pip to use local wheelhouse (no internet needed)
+    local pip_conf="$venv_dir/pip.conf"
+    cat > "$pip_conf" << PIPEOF
+[global]
+find-links = $ABG_SHARED/wheelhouse
+no-index = true
+PIPEOF
+    chown "$username:$username" "$pip_conf"
+
+    # Register per-user kernel that runs from their venv
+    echo "  Registering per-user Bioinfo kernel ..."
+    sudo -u "$username" "$venv_dir/bin/python3" -m ipykernel install \
+        --user --name bioinfo --display-name "ABG Bioinfo (Python 3.12)" \
+        >/dev/null 2>&1
+
+    echo "  venv ready: $venv_dir"
+    echo "  User can now run: %pip install <package>"
+}
+
 write_user_env() {
     local user_home="$1"
     local tier="$2"
@@ -126,6 +159,11 @@ add_user() {
 
     setup_shared_dirs "/home/$username" "$tier" "$username"
     write_user_env "/home/$username" "$tier" "$username"
+
+    # Compute and admin tiers get a per-user venv for pip installs
+    if [[ "$tier" == "compute" || "$tier" == "admin" ]]; then
+        setup_user_venv "$username"
+    fi
 
     echo ""
     echo "User: $username"
@@ -271,7 +309,7 @@ generate_jupyterhub_config() {
 # --- Main ---
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: sudo bash $0 {add|list|remove|create-project|config} [args...]"
+    echo "Usage: sudo bash $0 {add|list|remove|create-project|setup-env|config} [args...]"
     exit 1
 fi
 
@@ -285,6 +323,14 @@ case "$ACTION" in
         [[ $# -lt 2 ]] && { echo "Usage: sudo bash $0 add <username> <tier>"; exit 1; }
         add_user "$1" "$2"
         generate_jupyterhub_config
+        ;;
+    setup-env)
+        [[ $# -lt 1 ]] && { echo "Usage: sudo bash $0 setup-env <username>"; exit 1; }
+        if ! id "$1" &>/dev/null; then
+            echo "ERROR: User '$1' does not exist" >&2
+            exit 1
+        fi
+        setup_user_venv "$1"
         ;;
     list)
         list_users
@@ -310,7 +356,7 @@ case "$ACTION" in
         ;;
     *)
         echo "Unknown action: $ACTION"
-        echo "Usage: sudo bash $0 {add|list|remove|create-project|config} [args...]"
+        echo "Usage: sudo bash $0 {add|list|remove|create-project|setup-env|config} [args...]"
         exit 1
         ;;
 esac

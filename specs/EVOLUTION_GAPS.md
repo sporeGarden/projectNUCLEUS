@@ -4,14 +4,20 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-08 (Phase 60 absorbed, MethodGate enforced, Horizon 1 hardened)
-**Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP
+**Last updated**: 2026-05-08 (Phase 60 absorbed, MethodGate enforced, Horizon 1 hardened, Rust validator live)
+**Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
+**Rust validator**: 159 PASS, 0 FAIL, 3 DARK_FOREST (`validation/darkforest/`)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
 - [SECURITY_VALIDATION.md](SECURITY_VALIDATION.md) — five-layer validation model
 - [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) — replacement methodology
 - [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
+
+**Rust evolution**: `validation/darkforest/` — pure Rust pen test + fuzz binary (863KB, zero
+runtime deps). Replaces `deploy/darkforest_pentest.sh` (bash) and `deploy/darkforest_fuzz.py`
+(Python). Tests three threat actors (external, compute, readonly) + protocol fuzzing for all
+13 primals + JupyterHub. Same assertion format (`PASS|FAIL|KNOWN_GAP|DARK_FOREST`).
 
 ---
 
@@ -176,3 +182,4 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-08 | Initial spec. Phase 60 enforced. 3 horizons, 37 gaps tracked. |
 | 2026-05-08 | H1-01→H1-03, H1-06, H1-07 resolved. Voila isolated (UID 998). Cron deduplicated. |
 | 2026-05-08 | H1-04, H1-05 resolved. systemctl + python3 ACLs for ABG users. Voila home dir fix (500→200). Revalidation: **267 PASS, 0 FAIL**. Horizon 1 COMPLETE. |
+| 2026-05-08 | Pure Rust `darkforest` validator created. Replaces bash+python pen/fuzz tools. 863KB binary, 159 PASS 0 FAIL 3 DARK_FOREST. Primal ecosystem validated in Rust. |

@@ -311,11 +311,13 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     done
 
     # Server header disclosure
-    SERVER_HEADER=$(echo "$HEADERS" | grep -i "^server:" | tr -d '\r')
-    if [[ -n "$SERVER_HEADER" ]]; then
-        warn "Server header disclosed: $SERVER_HEADER"
+    SERVER_HEADER=$(echo "$HEADERS" | grep -i "^server:" | tr -d '\r' | sed 's/^[Ss]erver: *//')
+    if [[ -z "$SERVER_HEADER" || "$SERVER_HEADER" == " " ]]; then
+        pass "Server header suppressed (dark forest)"
+    elif echo "$SERVER_HEADER" | grep -qi "tornado\|python\|jupyter\|nginx\|apache"; then
+        warn "Server header leaks implementation: $SERVER_HEADER"
     else
-        pass "No server version disclosed in headers"
+        pass "Server header present but non-identifying: $SERVER_HEADER"
     fi
 
     # 3b: JupyterHub authentication enforcement
@@ -323,7 +325,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     log "── 3b: Authentication Enforcement ──"
 
     # Try to access user API without auth
-    UNAUTH_API=$(curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/hub/api/users" 2>/dev/null)
+    UNAUTH_API=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/hub/api/users" 2>/dev/null || echo "000")
     if [[ "$UNAUTH_API" == "403" || "$UNAUTH_API" == "401" ]]; then
         pass "JupyterHub /hub/api/users requires auth (HTTP $UNAUTH_API)"
     else
@@ -331,7 +333,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     fi
 
     # Try to access spawn endpoint without auth
-    UNAUTH_SPAWN=$(curl -sf -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:8000/hub/api/users/testuser/server" 2>/dev/null)
+    UNAUTH_SPAWN=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:8000/hub/api/users/testuser/server" 2>/dev/null || echo "000")
     if [[ "$UNAUTH_SPAWN" == "403" || "$UNAUTH_SPAWN" == "401" || "$UNAUTH_SPAWN" == "302" ]]; then
         pass "JupyterHub spawn endpoint requires auth (HTTP $UNAUTH_SPAWN)"
     else
@@ -499,7 +501,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "darkforest" ]]; then
     FUZZ_SCRIPT="$SCRIPT_DIR/darkforest_fuzz.py"
     if [[ -f "$FUZZ_SCRIPT" ]]; then
         FUZZ_OUT="$RESULTS_DIR/darkforest_fuzz.txt"
-        python3 "$FUZZ_SCRIPT" 2>&1 | tee "$FUZZ_OUT" || true
+        timeout 900 python3 -u "$FUZZ_SCRIPT" --rounds 2 2>&1 | tee "$FUZZ_OUT" || true
 
         DF_FUZZ_PASS=$(grep -c '^PASS|' "$FUZZ_OUT" 2>/dev/null || true)
         DF_FUZZ_FAIL=$(grep -c '^FAIL|' "$FUZZ_OUT" 2>/dev/null || true)

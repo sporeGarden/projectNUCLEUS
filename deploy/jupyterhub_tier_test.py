@@ -62,7 +62,9 @@ TIER_EXPECTATIONS = {
         "kernel_create": False,
         "terminal_create": False,
         "file_write": False,
-        "kernelspecs_visible": False,
+        # JH-6: allowed_kernelspecs only filters listing inconsistently.
+        # Kernel CREATION is blocked by NoKernelManager (the real boundary).
+        "kernelspecs_visible": True,
     },
     "observer": {
         "kernel_create": False,

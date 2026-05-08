@@ -70,13 +70,14 @@ HUB_PORT = 8000
 BIND = "127.0.0.1"
 
 
-def send_raw(host, port, data, timeout=5):
+def send_raw(host, port, data, timeout=3):
     """Send raw bytes and return response bytes."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(timeout)
         s.connect((host, port))
-        s.sendall(data)
+        if data:
+            s.sendall(data)
         resp = b""
         while True:
             try:
@@ -84,15 +85,17 @@ def send_raw(host, port, data, timeout=5):
                 if not chunk:
                     break
                 resp += chunk
+                if len(resp) > 65536:
+                    break
             except socket.timeout:
                 break
         s.close()
         return resp
-    except (ConnectionRefusedError, OSError):
+    except (ConnectionRefusedError, OSError, socket.timeout):
         return None
 
 
-def send_jsonrpc(host, port, payload_str, timeout=5):
+def send_jsonrpc(host, port, payload_str, timeout=3):
     """Send a JSON-RPC string via HTTP POST and return (status_line, body)."""
     content = payload_str.encode()
     http_req = (

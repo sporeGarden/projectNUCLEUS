@@ -1,0 +1,153 @@
+═══════════════════════════════════════════════════
+  Dark Forest Fuzz Tester
+  Date: 2026-05-08T09:32:44-0400
+═══════════════════════════════════════════════════
+
+
+── Fuzzing barracuda:9740 ──
+PASS|fuzz_barracuda|malformed_resilient|barracuda handled all 19 malformed payloads
+PASS|fuzz_barracuda|binary_tls_clienthello|barracuda rejects tls_clienthello
+PASS|fuzz_barracuda|binary_http2_preface|barracuda rejects http2_preface
+PASS|fuzz_barracuda|binary_ssh_banner|barracuda rejects ssh_banner
+PASS|fuzz_barracuda|binary_redis_ping|barracuda rejects redis_ping
+PASS|fuzz_barracuda|binary_memcached_stats|barracuda rejects memcached_stats
+PASS|fuzz_barracuda|large_payload|barracuda handled 100KB payload
+PASS|timing_barracuda|timing_uniform|barracuda: response times within 0.000s
+
+── Fuzzing beardog:9100 ──
+PASS|fuzz_beardog|malformed_resilient|beardog handled all 19 malformed payloads
+PASS|fuzz_beardog|binary_tls_clienthello|beardog rejects tls_clienthello
+PASS|fuzz_beardog|binary_http2_preface|beardog rejects http2_preface
+PASS|fuzz_beardog|binary_ssh_banner|beardog rejects ssh_banner
+PASS|fuzz_beardog|binary_redis_ping|beardog rejects redis_ping
+PASS|fuzz_beardog|binary_memcached_stats|beardog rejects memcached_stats
+PASS|fuzz_beardog|large_payload|beardog handled 100KB payload
+PASS|timing_beardog|timing_insufficient|beardog: too few methods responded for timing analysis
+
+── Fuzzing biomeos:9800 ──
+PASS|fuzz_biomeos|malformed_resilient|biomeos handled all 19 malformed payloads
+PASS|fuzz_biomeos|binary_tls_clienthello|biomeos rejects tls_clienthello
+PASS|fuzz_biomeos|binary_http2_preface|biomeos rejects http2_preface
+PASS|fuzz_biomeos|binary_ssh_banner|biomeos rejects ssh_banner
+PASS|fuzz_biomeos|binary_redis_ping|biomeos rejects redis_ping
+PASS|fuzz_biomeos|binary_memcached_stats|biomeos rejects memcached_stats
+PASS|fuzz_biomeos|large_payload|biomeos handled 100KB payload
+PASS|timing_biomeos|timing_uniform|biomeos: response times within 0.000s
+
+── Fuzzing coralreef:9730 ──
+PASS|fuzz_coralreef|malformed_resilient|coralreef handled all 19 malformed payloads
+PASS|fuzz_coralreef|binary_tls_clienthello|coralreef rejects tls_clienthello
+PASS|fuzz_coralreef|binary_http2_preface|coralreef rejects http2_preface
+PASS|fuzz_coralreef|binary_ssh_banner|coralreef rejects ssh_banner
+PASS|fuzz_coralreef|binary_redis_ping|coralreef rejects redis_ping
+PASS|fuzz_coralreef|binary_memcached_stats|coralreef rejects memcached_stats
+PASS|fuzz_coralreef|large_payload|coralreef handled 100KB payload
+PASS|timing_coralreef|timing_uniform|coralreef: response times within 0.000s
+
+── Fuzzing loamspine:9700 ──
+PASS|fuzz_loamspine|malformed_resilient|loamspine handled all 19 malformed payloads
+PASS|fuzz_loamspine|binary_tls_clienthello|loamspine rejects tls_clienthello
+PASS|fuzz_loamspine|binary_http2_preface|loamspine rejects http2_preface
+PASS|fuzz_loamspine|binary_ssh_banner|loamspine rejects ssh_banner
+PASS|fuzz_loamspine|binary_redis_ping|loamspine rejects redis_ping
+PASS|fuzz_loamspine|binary_memcached_stats|loamspine rejects memcached_stats
+PASS|fuzz_loamspine|large_payload|loamspine handled 100KB payload
+PASS|timing_loamspine|timing_uniform|loamspine: response times within 0.000s
+
+── Fuzzing nestgate:9500 ──
+PASS|fuzz_nestgate|malformed_resilient|nestgate handled all 19 malformed payloads
+PASS|fuzz_nestgate|binary_tls_clienthello|nestgate rejects tls_clienthello
+PASS|fuzz_nestgate|binary_http2_preface|nestgate rejects http2_preface
+PASS|fuzz_nestgate|binary_ssh_banner|nestgate rejects ssh_banner
+PASS|fuzz_nestgate|binary_redis_ping|nestgate rejects redis_ping
+PASS|fuzz_nestgate|binary_memcached_stats|nestgate rejects memcached_stats
+PASS|fuzz_nestgate|large_payload|nestgate handled 100KB payload
+PASS|timing_nestgate|timing_uniform|nestgate: response times within 0.000s
+
+── Fuzzing petaltongue:9900 ──
+PASS|fuzz_petaltongue|malformed_resilient|petaltongue handled all 19 malformed payloads
+PASS|fuzz_petaltongue|binary_tls_clienthello|petaltongue rejects tls_clienthello
+PASS|fuzz_petaltongue|binary_http2_preface|petaltongue rejects http2_preface
+PASS|fuzz_petaltongue|binary_ssh_banner|petaltongue rejects ssh_banner
+PASS|fuzz_petaltongue|binary_redis_ping|petaltongue rejects redis_ping
+PASS|fuzz_petaltongue|binary_memcached_stats|petaltongue rejects memcached_stats
+PASS|fuzz_petaltongue|large_payload|petaltongue handled 100KB payload
+PASS|timing_petaltongue|timing_insufficient|petaltongue: too few methods responded for timing analysis
+
+── Fuzzing rhizocrypt:9601 ──
+PASS|fuzz_rhizocrypt|malformed_resilient|rhizocrypt handled all 19 malformed payloads
+PASS|fuzz_rhizocrypt|binary_tls_clienthello|rhizocrypt rejects tls_clienthello
+PASS|fuzz_rhizocrypt|binary_http2_preface|rhizocrypt rejects http2_preface
+PASS|fuzz_rhizocrypt|binary_ssh_banner|rhizocrypt rejects ssh_banner
+PASS|fuzz_rhizocrypt|binary_redis_ping|rhizocrypt rejects redis_ping
+PASS|fuzz_rhizocrypt|binary_memcached_stats|rhizocrypt rejects memcached_stats
+PASS|fuzz_rhizocrypt|large_payload|rhizocrypt handled 100KB payload
+PASS|timing_rhizocrypt|timing_uniform|rhizocrypt: response times within 0.000s
+
+── Fuzzing skunkbat:9140 ──
+PASS|fuzz_skunkbat|malformed_resilient|skunkbat handled all 19 malformed payloads
+PASS|fuzz_skunkbat|binary_tls_clienthello|skunkbat rejects tls_clienthello
+PASS|fuzz_skunkbat|binary_http2_preface|skunkbat rejects http2_preface
+PASS|fuzz_skunkbat|binary_ssh_banner|skunkbat rejects ssh_banner
+PASS|fuzz_skunkbat|binary_redis_ping|skunkbat rejects redis_ping
+PASS|fuzz_skunkbat|binary_memcached_stats|skunkbat rejects memcached_stats
+PASS|fuzz_skunkbat|large_payload|skunkbat handled 100KB payload
+PASS|timing_skunkbat|timing_insufficient|skunkbat: too few methods responded for timing analysis
+
+── Fuzzing songbird:9200 ──
+PASS|fuzz_songbird|malformed_resilient|songbird handled all 19 malformed payloads
+PASS|fuzz_songbird|binary_tls_clienthello|songbird rejects tls_clienthello
+PASS|fuzz_songbird|binary_http2_preface|songbird rejects http2_preface
+PASS|fuzz_songbird|binary_ssh_banner|songbird rejects ssh_banner
+PASS|fuzz_songbird|binary_redis_ping|songbird rejects redis_ping
+PASS|fuzz_songbird|binary_memcached_stats|songbird rejects memcached_stats
+PASS|fuzz_songbird|large_payload|songbird handled 100KB payload
+PASS|timing_songbird|timing_uniform|songbird: response times within 0.000s
+
+── Fuzzing squirrel:9300 ──
+PASS|fuzz_squirrel|malformed_resilient|squirrel handled all 19 malformed payloads
+PASS|fuzz_squirrel|binary_tls_clienthello|squirrel rejects tls_clienthello
+PASS|fuzz_squirrel|binary_http2_preface|squirrel rejects http2_preface
+PASS|fuzz_squirrel|binary_ssh_banner|squirrel rejects ssh_banner
+PASS|fuzz_squirrel|binary_redis_ping|squirrel rejects redis_ping
+PASS|fuzz_squirrel|binary_memcached_stats|squirrel rejects memcached_stats
+PASS|fuzz_squirrel|large_payload|squirrel handled 100KB payload
+PASS|timing_squirrel|timing_uniform|squirrel: response times within 0.001s
+
+── Fuzzing sweetgrass:9850 ──
+PASS|fuzz_sweetgrass|malformed_resilient|sweetgrass handled all 19 malformed payloads
+PASS|fuzz_sweetgrass|binary_tls_clienthello|sweetgrass rejects tls_clienthello
+PASS|fuzz_sweetgrass|binary_http2_preface|sweetgrass rejects http2_preface
+PASS|fuzz_sweetgrass|binary_ssh_banner|sweetgrass rejects ssh_banner
+PASS|fuzz_sweetgrass|binary_redis_ping|sweetgrass rejects redis_ping
+PASS|fuzz_sweetgrass|binary_memcached_stats|sweetgrass rejects memcached_stats
+PASS|fuzz_sweetgrass|large_payload|sweetgrass handled 100KB payload
+PASS|timing_sweetgrass|timing_insufficient|sweetgrass: too few methods responded for timing analysis
+
+── Fuzzing toadstool:9400 ──
+PASS|fuzz_toadstool|malformed_resilient|toadstool handled all 19 malformed payloads
+PASS|fuzz_toadstool|binary_tls_clienthello|toadstool rejects tls_clienthello
+PASS|fuzz_toadstool|binary_http2_preface|toadstool rejects http2_preface
+PASS|fuzz_toadstool|binary_ssh_banner|toadstool rejects ssh_banner
+PASS|fuzz_toadstool|binary_redis_ping|toadstool rejects redis_ping
+PASS|fuzz_toadstool|binary_memcached_stats|toadstool rejects memcached_stats
+PASS|fuzz_toadstool|large_payload|toadstool handled 100KB payload
+PASS|timing_toadstool|timing_uniform|toadstool: response times within 0.000s
+
+── Fuzzing JupyterHub ──
+DARK_FOREST|fuzz_hub|oversized_cookie|Unexpected response to oversized cookie: HTTP 431
+FAIL|fuzz_hub|null_byte_user|Null byte username reflected in response (HTTP 403)
+PASS|fuzz_hub|fake_token|Fake token rejected (HTTP 403)
+PASS|fuzz_hub|sqli_login|Login form handles SQL injection payloads without crash
+PASS|fuzz_hub|xss_next|XSS in ?next parameter not reflected
+PASS|fuzz_hub|method_put|PUT /hub/api/users returns 405
+PASS|fuzz_hub|method_delete|DELETE /hub/api/users returns 405
+PASS|fuzz_hub|method_patch|PATCH /hub/api/users returns 405
+PASS|fuzz_hub|method_options|OPTIONS /hub/api/users returns 200
+PASS|fuzz_hub|method_trace|TRACE /hub/api/users returns 405
+PASS|fuzz_hub|trace_echo|TRACE method blocked (HTTP 405)
+PASS|fuzz_hub|conn_flood|Hub survives 50 concurrent connections
+
+═══════════════════════════════════════════════════
+  Results: 114 PASS, 1 FAIL, 0 KNOWN_GAP, 1 DARK_FOREST
+═══════════════════════════════════════════════════

@@ -1,0 +1,33 @@
+=== Voila Baseline Capture — 2026-05-08T07:33:26-04:00 ===
+
+--- Voila Service Info ---
+Version: 0.5.12
+Port: 8866
+Served from: /home/irongate/shared/abg
+
+--- Latency Baselines (3 runs each) ---
+
+Notebook: showcase/security-posture-summary.ipynb
+  Run 1: time_total=0.702433s size=33668B status=200
+  Run 2: time_total=0.726765s size=33668B status=200
+  Run 3: time_total=0.591322s size=33668B status=200
+
+Notebook: commons/nucleus-primal-health.ipynb
+  Run 1: time_total=0.755283s size=51424B status=200
+  Run 2: time_total=0.590594s size=51424B status=200
+  Run 3: time_total=0.602831s size=51424B status=200
+
+Notebook: commons/nucleus-security-validation.ipynb
+  Run 1: time_total=0.775338s size=35669B status=200
+  Run 2: time_total=0.617365s size=35669B status=200
+  Run 3: time_total=0.592659s size=35669B status=200
+
+--- Via Tunnel (external) ---
+Tree page: status=200 time=0.129493s
+
+--- Rendering Fidelity ---
+showcase/security-posture-summary.ipynb: 33669B html, 1 output cells, 1 markdown blocks
+commons/nucleus-primal-health.ipynb: 51425B html, 3 output cells, 2 markdown blocks
+
+--- Source Stripping ---
+Input cells visible: 3 (should be 0 with strip_sources=True)

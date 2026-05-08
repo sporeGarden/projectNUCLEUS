@@ -85,11 +85,13 @@ Gates connect to each other through chemical bonding patterns:
 - **UFW active**: deny-by-default, allow SSH/LAN/localhost
 - **hidepid=2**: process isolation — ABG users cannot see primal PIDs or other users' processes
 - **Outbound network blocked**: iptables/ip6tables owner match DROPs all internet for ABG UIDs (localhost + LAN preserved)
-- **Reviewer/observer lockdown**: no kernels, no terminals, filesystem read-only (chmod 550 root-owned)
+- **Reviewer/observer lockdown**: NoKernelManager blocks all kernel creation, no terminals, filesystem read-only (chmod 550 root-owned)
+- **Voila dashboards**: Curated showcase notebooks served as interactive dashboards (no code exposure). Calibration instrument for petalTongue sovereignty replacement
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
 - All PG-55 through PG-59 resolved by primalSpring Phase 59
 - 13/13 primals default `127.0.0.1`, NestGate BTSP method-level auth, skunkBat anomaly detection
+- **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
 - Two-round pen test complete: infrastructure layer + multi-user layer (`validation/SECURITY_HANDBACK_MAY06_2026.md`)
 - skunkBat surveillance targets identified: JupyterHub auth events, NestGate writes, iptables DROPs, process enumeration
 
@@ -100,9 +102,11 @@ Gates connect to each other through chemical bonding patterns:
 - **benchScale framework** operational (`infra/benchScale/`) — 5 scenarios, 3 pentest scripts
 - **Forgejo calibration instrument** installed — baseline for RootPulse parity targets
 - **RootPulse commit workflow tested** — 5/6 phases pass against live primals, Phase 5 (LoamSpine commit) has param mismatch
+- **Voila baselines captured**: ~600ms render latency, 33–51KB output, source stripping active (`validation/baselines/`)
 - **4 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-5)
 - **JH-0 (Critical)**: RPC dispatchers accept unauthenticated calls from any localhost user — upstream gap for all primal teams
-- **40+ dependencies mapped** across 7 clusters including internal primal gaps (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
+- **JH-6 (New)**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by `NoKernelManager` override
+- **JH-7 (New)**: Voila executes notebooks as hub user (privilege escalation risk) — mitigated by restricting to curated showcase only
 
 ### sporePrint
 

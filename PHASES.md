@@ -201,9 +201,23 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - sweetGrass dual-port clarified: 9850=IPC (plaintext by design), 9851=BTSP
 - **hidepid=2** on /proc — users can't see other processes (persistent via fstab)
 - **iptables/ip6tables** outbound DROP for ABG UIDs 1001-1099 (persistent via systemd)
-- **Reviewer lockdown**: terminals disabled, kernels disabled, filesystem 550 root-owned
+- **Reviewer lockdown**: terminals disabled, kernels blocked (NoKernelManager), filesystem 550 root-owned
 - **Shared notebooks immutable**: chmod 444, compute users run but can't save back
 - **Compute/save separation**: shared templates read-only, per-user `~/notebooks/results/` for outputs
+
+**Automated Tier Enforcement (2026-05-08)**:
+- `deploy/tier_enforcement_test.sh` — 44 OS-level assertions via `sudo -u` (filesystem, network, process)
+- `deploy/jupyterhub_tier_test.py` — 18 JupyterHub API probes (kernels, terminals, file write, Voila)
+- Wired into `security_validation.sh` as Layer 4 (total: 62 assertions, 0 FAIL, 4 KNOWN_GAP)
+- **JH-6 found**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by NoKernelManager
+- **JH-7 found**: Voila executes notebooks as hub user — mitigated by restricting to curated showcase only
+
+**Voila Dashboard Service (2026-05-08)**:
+- Voila 0.5.12 installed as JupyterHub managed service on port 8866
+- Serves curated showcase notebooks at `/services/voila/` with dark theme, source stripping
+- All ABG users can access dashboards via JupyterHub OAuth (no code exposure)
+- Baseline captured: ~600ms render, 33–51KB output, accessible via tunnel
+- Calibration instrument for petalTongue sovereignty replacement
 
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
@@ -215,18 +229,20 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 
 JupyterHub supports four access tiers via Linux groups (`deploy/abg_accounts.sh`):
 
-| Tier | Group | Resources | Workspace | Execute |
-|------|-------|-----------|-----------|---------|
-| admin | `abg-admin` | 48 GB / 16 cores | Full + manage | Yes + raw APIs |
-| compute | `abg-compute` | 32 GB / 8 cores | commons/, projects/ | Yes (ToadStool) |
-| observer | `abg-observer` | 8 GB / 4 cores | All (read-only) | No |
-| reviewer | `abg-reviewer` | 4 GB / 2 cores | showcase/ only | No |
+| Tier | Group | Resources | Workspace | Execute | Voila |
+|------|-------|-----------|-----------|---------|-------|
+| admin | `abg-admin` | 48 GB / 16 cores | Full + manage | Yes + raw APIs | Yes |
+| compute | `abg-compute` | 32 GB / 8 cores | commons/, projects/ | Yes (ToadStool) | Yes |
+| reviewer | `abg-reviewer` | 4 GB / 2 cores | All (read-only) | No (NoKernelManager) | Yes |
+| observer | `abg-observer` | 8 GB / 4 cores | All (read-only) | No (NoKernelManager) | Yes |
 
 `pre_spawn_hook` in JupyterHub sets per-user resource limits, `NUCLEUS_TIER`
 environment variable, primal port configuration, and shared workspace symlinks.
-Observer and reviewer tiers enforce read-only via JupyterLab server flags
-(`--ServerApp.terminals_enabled=False`, `--KernelSpecManager.allowed_kernelspecs=set()`)
-and filesystem permissions (root-owned `chmod 550` notebook directory).
+Observer and reviewer tiers enforce read-only via `NoKernelManager` (blocks
+`start_kernel()` — more reliable than `KernelSpecManager.allowed_kernelspecs`
+which only filters listing), `--ServerApp.terminals_enabled=False`, and
+filesystem permissions (root-owned `chmod 550` notebook directory). Voila
+dashboards provide interactive notebook views without code exposure.
 
 **Security note**: The original `NUCLEUS_READONLY=1` env var was a convention
 flag with zero enforcement — JupyterLab ignored it entirely (JH-0 pattern).

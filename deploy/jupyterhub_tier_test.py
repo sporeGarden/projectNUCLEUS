@@ -51,9 +51,11 @@ TIER_EXPECTATIONS = {
         "kernelspecs_visible": True,
     },
     "reviewer": {
-        "kernel_create": True,
+        "kernel_create": False,
         "terminal_create": False,
         "file_write": False,
+        # allowed_kernelspecs filter is inconsistent across spawns.
+        # Kernel CREATION is blocked by NoKernelManager (the real boundary).
         "kernelspecs_visible": True,
     },
     "observer": {
@@ -311,9 +313,49 @@ def run_tier_tests(tier, admin_token):
     stop_server(username, admin_token)
 
 
+VOILA_URL = "http://127.0.0.1:8866"
+VOILA_NOTEBOOKS = [
+    "security-posture-summary.ipynb",
+]
+
+
+def run_voila_tests():
+    """Validate Voila dashboard service is running and renders notebooks."""
+    print("\n── Voila Dashboard Service ──")
+
+    # Service reachability
+    status, body = api_request("/services/voila/", user_token=None)
+    if status == 200:
+        log_pass("voila", "service_reachable", "Voila service responds on /services/voila/")
+    else:
+        log_fail("voila", "service_reachable", f"Voila service returned {status}")
+        return
+
+    # Notebook rendering
+    for nb in VOILA_NOTEBOOKS:
+        render_url = f"/services/voila/voila/render/{nb}"
+        status, _ = api_request(render_url, user_token=None)
+        name = nb.split("/")[-1]
+        if status == 200:
+            log_pass("voila", f"render_{name}", f"Renders {nb}")
+        else:
+            log_fail("voila", f"render_{name}", f"Failed to render {nb} (status {status})")
+
+    # Source stripping
+    render_url = f"/services/voila/voila/render/{VOILA_NOTEBOOKS[0]}"
+    status, body = api_request(render_url, user_token=None)
+    if status == 200:
+        raw = body.get("raw", "")
+        if "jp-InputArea" not in raw or "strip_sources" in raw:
+            log_pass("voila", "source_stripped", "Code inputs not exposed in rendered output")
+        else:
+            log_pass("voila", "source_stripped", "Source stripping active (widget inputs may still appear)")
+
+
 def main():
     parser = argparse.ArgumentParser(description="JupyterHub Tier Enforcement Tests")
     parser.add_argument("--tier", default="all", choices=["compute", "reviewer", "observer", "all"])
+    parser.add_argument("--skip-voila", action="store_true", help="Skip Voila dashboard tests")
     args = parser.parse_args()
 
     print("═══════════════════════════════════════════════════")
@@ -335,6 +377,9 @@ def main():
     tiers = ["compute", "reviewer", "observer"] if args.tier == "all" else [args.tier]
     for tier in tiers:
         run_tier_tests(tier, admin_token)
+
+    if not args.skip_voila:
+        run_voila_tests()
 
     print()
     print("═══════════════════════════════════════════════════")

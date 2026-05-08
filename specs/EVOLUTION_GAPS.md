@@ -4,8 +4,8 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-08 (Phase 60 absorbed, MethodGate enforced)
-**Validation baseline**: 265 PASS, 0 FAIL, 0 KNOWN_GAP
+**Last updated**: 2026-05-08 (Phase 60 absorbed, MethodGate enforced, Horizon 1 hardened)
+**Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -22,10 +22,7 @@ systemd services. No primal evolution required. All local work.
 
 ### Open
 
-| ID | Gap | Severity | Effort | Action |
-|----|-----|----------|--------|--------|
-| H1-04 | Compute user can enumerate systemd services | Info | Low | `SystemCallFilter` or `ProtectSystem=strict` on primal units (optional — visibility ≠ control) |
-| H1-05 | Reviewer can execute `python3` directly | Info | Low | Strip interpreter from reviewer PATH, or rootless container for reviewer sessions. Terminals already disabled |
+None. All Horizon 1 gaps resolved.
 
 ### Resolved (fossil record)
 
@@ -45,6 +42,8 @@ systemd services. No primal evolution required. All local work.
 | H1-03 | rustdesk on 0.0.0.0 | 2026-05-08 | Already binds LAN IP (192.168.1.238), not 0.0.0.0. No action needed |
 | H1-06 | Cookie secret rotation | 2026-05-08 | `deploy/rotate_cookie_secret.sh` created. Manual rotation — run monthly or after events |
 | H1-07 | Baseline 7-day summary | 2026-05-08 | Cron capturing hourly (deduplicated). Run `summarize_baselines.sh` after May 14 |
+| H1-04 | systemd enumeration | 2026-05-08 | `setfacl` deny execute on `/usr/bin/systemctl` for abg-compute/reviewer/observer groups |
+| H1-05 | Reviewer python3 access | 2026-05-08 | `setfacl` deny execute on `/usr/bin/python3` for abg-reviewer/observer. Compute and admin unaffected |
 
 ---
 
@@ -162,7 +161,7 @@ Horizon 1 or local Horizon 2 work.
 ## Scoring
 
 ```
-Horizon 1 (external security):    █████████░  2 open (info), 5 resolved
+Horizon 1 (external security):    ██████████  COMPLETE — 7/7 resolved, 267 PASS 0 FAIL
 Horizon 2 (sovereignty):          ██░░░░░░░░  Step 2a done, 2b ready, 3a close
 Horizon 3 (primal-only):          █░░░░░░░░░  10 items, all blocked on H2
 Upstream (waiting):                ████████░░  7 items handed off, not blocking
@@ -175,4 +174,5 @@ Upstream (waiting):                ████████░░  7 items hande
 | Date | Change |
 |------|--------|
 | 2026-05-08 | Initial spec. Phase 60 enforced. 3 horizons, 37 gaps tracked. |
-| 2026-05-08 | H1-01→H1-03, H1-06, H1-07 resolved. Voila isolated (UID 998). Cron deduplicated. 2 info items remain. |
+| 2026-05-08 | H1-01→H1-03, H1-06, H1-07 resolved. Voila isolated (UID 998). Cron deduplicated. |
+| 2026-05-08 | H1-04, H1-05 resolved. systemctl + python3 ACLs for ABG users. Voila home dir fix (500→200). Revalidation: **267 PASS, 0 FAIL**. Horizon 1 COMPLETE. |

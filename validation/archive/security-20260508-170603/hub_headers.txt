@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+server: 
+content-type: text/html
+date: Fri, 08 May 2026 21:08:19 GMT
+x-frame-options: DENY
+x-content-type-options: nosniff
+referrer-policy: same-origin
+x-xss-protection: 1; mode=block
+x-jupyterhub-version: 
+access-control-allow-headers: accept, content-type, authorization
+content-security-policy: frame-ancestors 'none'; report-uri /hub/security/csp-report
+etag: "6562ff511808d4f6e7acbfce6a25694ac0a5931f"
+content-length: 7870
+set-cookie: _xsrf=MnwxOjB8MTA6MTc3ODI3NDQ5OXw1Ol94c3JmfDY4OlRtOXVaVHBsY2pkVWVFRnJSa3hIY2psbmRXWTNXVlZJVWpaRE9ERTNUblIzYjBWSlZtWk9VSGxQZEVSZmNreGpQUT09fGNmODk1ZTYwZWQ3NzExZWQ0OWVmMGFiNzU4ZjUzOGFmZGU4NzdhNDVlMjc5ZjI0ZDJhZGEzNGFlZTYyMTM1NWI; Max-Age=3600; Path=/hub/
+connection: keep-alive
+

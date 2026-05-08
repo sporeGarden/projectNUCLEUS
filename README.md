@@ -98,7 +98,7 @@ Gates connect to each other through chemical bonding patterns:
 - All PG-55 through PG-62 resolved by primalSpring Phase 60
 - **All 14 primal ports bound `127.0.0.1`** (Phase 60 binaries ship PG-55 default). NestGate BTSP method-level auth, skunkBat anomaly detection
 - **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
-- **Dark Forest hardening**: 5-layer security validation pipeline — **265 PASS, 0 FAIL, 0 KNOWN_GAP** (`deploy/security_validation.sh`)
+- **Dark Forest hardening**: 5-layer security validation pipeline — **267 PASS, 0 FAIL, 0 KNOWN_GAP** (`deploy/security_validation.sh`)
 - **Pen test + fuzz coverage**: adversarial pen test (`darkforest_pentest.sh`), protocol fuzzing all 13 primals + JupyterHub (`darkforest_fuzz.py`), timing analysis
 - **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS blocked for ABG UIDs
 - **Supply chain locked**: shared conda envs root-owned, 755 — compute users cannot plant malicious packages

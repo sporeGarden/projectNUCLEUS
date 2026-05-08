@@ -1,0 +1,39 @@
+═══════════════════════════════════════════════════
+  JupyterHub API Tier Enforcement Test
+  Date: 2026-05-08T17:08:45-0400
+  Hub: http://127.0.0.1:8000
+  Filter: all
+═══════════════════════════════════════════════════
+Hub version: 5.4.5
+
+── JupyterHub API: Tier compute (user: tamison) ──
+PASS|compute|kernelspecs_visible|Sees 3 kernelspecs (expected: True)
+PASS|compute|kernel_create|Kernel create succeeded (expected: True)
+PASS|compute|terminal_create|Terminal create succeeded (expected: True)
+PASS|compute|file_write|File write succeeded (expected: True)
+PASS|compute|server_running|Server is running with spawner config applied
+
+── JupyterHub API: Tier reviewer (user: abgreviewer) ──
+PASS|reviewer|kernelspecs_visible|Sees 3 kernelspecs (expected: True)
+PASS|reviewer|kernel_create|Kernel create blocked (expected: False)
+PASS|reviewer|terminal_create|Terminal create blocked (expected: False)
+PASS|reviewer|file_write|File write blocked (expected: False)
+PASS|reviewer|server_running|Server is running with spawner config applied
+
+── JupyterHub API: Tier observer (user: abg-test) ──
+PASS|observer|kernelspecs_visible|Sees 0 kernelspecs (expected: False)
+PASS|observer|kernel_create|Kernel create blocked (expected: False)
+PASS|observer|terminal_create|Terminal create blocked (expected: False)
+PASS|observer|file_write|File write blocked (expected: False)
+PASS|observer|server_running|Server is running with spawner config applied
+
+── Voila Dashboard Service ──
+PASS|voila|service_reachable|Voila service responds on /services/voila/
+FAIL|voila|render_security-posture-summary.ipynb|Failed to render security-posture-summary.ipynb (status 500)
+
+═══════════════════════════════════════════════════
+  Results: 16 PASS, 1 FAIL, 0 SKIP
+═══════════════════════════════════════════════════
+
+FAILURES DETECTED — JupyterHub tier enforcement is broken.
+Review FAIL lines above and fix jupyterhub_config.py.

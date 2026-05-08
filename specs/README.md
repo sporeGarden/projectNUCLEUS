@@ -22,6 +22,7 @@ projectNUCLEUS's own operational terms.
 | [LIVE_SCIENCE_API.md](LIVE_SCIENCE_API.md) | JSON-RPC method specs for Tier 2/3 live science — toadstool.validate, barracuda.compute, etc. |
 | [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) | Master document: baseline → shadow-run → cutover for every external dependency replacement |
 | [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) | All 35 external dependencies across 6 clusters, primal replacement mappings, calibration instruments |
+| [EVOLUTION_GAPS.md](EVOLUTION_GAPS.md) | Living gap tracker: Horizon 1 (external security), Horizon 2 (sovereignty), Horizon 3 (primal-only). Updated as gaps close |
 
 ## Architecture Lineage
 

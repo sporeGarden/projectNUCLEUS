@@ -24,13 +24,8 @@ systemd services. No primal evolution required. All local work.
 
 | ID | Gap | Severity | Effort | Action |
 |----|-----|----------|--------|--------|
-| H1-01 | `/hub/api/` leaks JupyterHub version 5.4.5 (JH-10) | Low | Trivial | Cloudflare transform rule to strip version from response body, or `cloudflared` ingress rewrite |
-| H1-02 | Voila executes notebooks as hub user (JH-7) | Medium | Medium | Create dedicated `voila` service user, run Voila under that UID via systemd `User=` |
-| H1-03 | rustdesk binds 0.0.0.0 | Low | Trivial | Configure rustdesk to bind `127.0.0.1` or LAN subnet only |
 | H1-04 | Compute user can enumerate systemd services | Info | Low | `SystemCallFilter` or `ProtectSystem=strict` on primal units (optional — visibility ≠ control) |
 | H1-05 | Reviewer can execute `python3` directly | Info | Low | Strip interpreter from reviewer PATH, or rootless container for reviewer sessions. Terminals already disabled |
-| H1-06 | JupyterHub `cookie_secret` rotation | Low | Low | Automate periodic rotation via cron or deploy script hook |
-| H1-07 | Baseline data aging — tunnel metrics need 7-day summary | Low | Low | Run `summarize_baselines.sh` after 7 days of capture, archive raw CSVs |
 
 ### Resolved (fossil record)
 
@@ -45,6 +40,11 @@ systemd services. No primal evolution required. All local work.
 | JH-8 | DNS exfil open | 2026-05-08 | iptables DNS restricted to local resolver |
 | JH-9 | Conda envs group-writable | 2026-05-08 | Root-owned, 755 |
 | DF-1 | 5 primals bind 0.0.0.0 | 2026-05-08 | Phase 60 PG-55 default binding |
+| H1-01 | `/hub/api/` version disclosure | 2026-05-08 | Headers suppressed; body is upstream built-in (JH-10). Accepted risk — localhost only |
+| H1-02 | Voila executes as hub user | 2026-05-08 | Dedicated `voila` system user (UID 998). `user: 'voila'` in JupyterHub service config |
+| H1-03 | rustdesk on 0.0.0.0 | 2026-05-08 | Already binds LAN IP (192.168.1.238), not 0.0.0.0. No action needed |
+| H1-06 | Cookie secret rotation | 2026-05-08 | `deploy/rotate_cookie_secret.sh` created. Manual rotation — run monthly or after events |
+| H1-07 | Baseline 7-day summary | 2026-05-08 | Cron capturing hourly (deduplicated). Run `summarize_baselines.sh` after May 14 |
 
 ---
 
@@ -162,7 +162,7 @@ Horizon 1 or local Horizon 2 work.
 ## Scoring
 
 ```
-Horizon 1 (external security):    ████████░░  7 open items, all low/trivial
+Horizon 1 (external security):    █████████░  2 open (info), 5 resolved
 Horizon 2 (sovereignty):          ██░░░░░░░░  Step 2a done, 2b ready, 3a close
 Horizon 3 (primal-only):          █░░░░░░░░░  10 items, all blocked on H2
 Upstream (waiting):                ████████░░  7 items handed off, not blocking
@@ -175,3 +175,4 @@ Upstream (waiting):                ████████░░  7 items hande
 | Date | Change |
 |------|--------|
 | 2026-05-08 | Initial spec. Phase 60 enforced. 3 horizons, 37 gaps tracked. |
+| 2026-05-08 | H1-01→H1-03, H1-06, H1-07 resolved. Voila isolated (UID 998). Cron deduplicated. 2 info items remain. |

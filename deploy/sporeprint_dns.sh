@@ -145,6 +145,9 @@ else:
 
 do_sovereign() {
     log "Switching $RECORD_NAME to sovereign (tunnel) routing..."
+    warn "NOTE: Brief DNS gap is unavoidable (A records must be deleted before CNAME"
+    warn "can be created). ISP resolvers may cache negative responses during this gap."
+    warn "LAN devices using ISP DNS may need cache flush or resolver change to 1.1.1.1."
 
     local resp
     resp=$(list_records)
@@ -159,21 +162,15 @@ for r in d.get('result', []):
 ")
 
     if [[ -n "$record_ids" ]]; then
-        log "Removing existing records..."
+        log "Removing existing records (fast batch)..."
         while IFS= read -r rid; do
-            local del_resp
-            del_resp=$(delete_record "$rid")
-            local ok
-            ok=$(echo "$del_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',''))" 2>/dev/null)
-            if [[ "$ok" == "True" ]]; then
-                info "  Deleted record $rid"
-            else
-                warn "  Failed to delete $rid"
-            fi
+            delete_record "$rid" > /dev/null &
         done <<< "$record_ids"
+        wait
+        info "  All records deleted"
     fi
 
-    log "Creating CNAME → $TUNNEL_CNAME (proxied)..."
+    log "Creating CNAME → $TUNNEL_CNAME (proxied) immediately..."
     local create_resp
     create_resp=$(create_cname_record "$TUNNEL_CNAME")
     local create_ok
@@ -209,32 +206,20 @@ for r in d.get('result', []):
 ")
 
     if [[ -n "$record_ids" ]]; then
-        log "Removing existing records..."
+        log "Removing existing records (fast batch)..."
         while IFS= read -r rid; do
-            local del_resp
-            del_resp=$(delete_record "$rid")
-            local ok
-            ok=$(echo "$del_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',''))" 2>/dev/null)
-            if [[ "$ok" == "True" ]]; then
-                info "  Deleted record $rid"
-            else
-                warn "  Failed to delete $rid"
-            fi
+            delete_record "$rid" > /dev/null &
         done <<< "$record_ids"
+        wait
+        info "  All records deleted"
     fi
 
     log "Creating A records for GitHub Pages..."
     for ip in "${GHPAGES_IPS[@]}"; do
-        local create_resp
-        create_resp=$(create_a_record "$ip")
-        local create_ok
-        create_ok=$(echo "$create_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',''))" 2>/dev/null)
-        if [[ "$create_ok" == "True" ]]; then
-            info "  Created A → $ip"
-        else
-            warn "  Failed to create A → $ip"
-        fi
+        create_a_record "$ip" > /dev/null &
     done
+    wait
+    info "  Created 4 A records"
 
     log "DNS switched to external routing"
     info "  $RECORD_NAME → GitHub Pages CDN"

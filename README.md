@@ -61,7 +61,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Phase 60 absorbed, MethodGate enforced (2026-05-08)**
+**Phase 60 absorbed, MethodGate enforced, open observer live (2026-05-09)**
 
 ### Infrastructure
 
@@ -75,62 +75,71 @@ Gates connect to each other through chemical bonding patterns:
 
 | Service | URL | Port | Status |
 |---------|-----|------|--------|
-| JupyterHub | `lab.primals.eco` | 8000 | Live, PAM auth, tiered ABG access |
+| Voila (observer) | `lab.primals.eco` | 8866 | Live, open/unauthenticated, public science surface |
+| JupyterHub | `lab.primals.eco` (gated) | 8000 | Live, PAM auth + Cloudflare Access, reviewer/user tiers |
 | Forgejo | `git.primals.eco` | 3000 | Live, projectNUCLEUS mirrored |
-| Cloudflare Tunnel | — | outbound | Routes lab + git subdomains |
+| pappusCast | — | — | Tiered auto-propagation daemon (workspace → observer) |
+| Cloudflare Tunnel | — | outbound | Routes lab + git subdomains; Access gates reviewer/user |
 | 13 NUCLEUS primals | localhost | 9100–9900 | All healthy, user services |
+
+### Access Model
+
+Three-tier model simplified from four. Observer is the default, open landing page.
+Reviewer and user tiers are gated by Cloudflare Access + PAM.
+
+| Tier | Access | Capabilities | Surface |
+|------|--------|-------------|---------|
+| **Observer** | Open — no login | Read-only rendered notebooks, data, dashboards | Voila at `lab.primals.eco` |
+| **Reviewer** | Cloudflare Access + PAM | Read + run Voila contracts | JupyterHub (showcase-only view) |
+| **User** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub (full workspace) |
+
+### Auto-Propagation (pappusCast)
+
+`pappusCast` daemon auto-propagates validated content from the shared workspace
+to the public observer surface on an adaptive schedule:
+
+- **Light** (on-change): JSON valid, kernel available, title present
+- **Medium** (periodic): Light + execute as voila user, check for cell errors
+- **Heavy** (~6 hours): Medium + diff, changelog, full regression
+- **Adaptive rate limiting**: publish interval scales with active JupyterHub users
+- **Snapshot architecture**: public/ holds managed copies, not live symlinks
+- **Evolution path**: Python (now) → Rust binary → pappusCast primal
 
 ### Security
 
 - **UFW active**: deny-by-default, allow SSH/LAN/localhost
 - **hidepid=2**: process isolation — ABG users cannot see primal PIDs or other users' processes
 - **Outbound network blocked**: iptables/ip6tables owner match DROPs all internet for ABG UIDs (localhost + LAN preserved)
-- **Reviewer/observer lockdown**: NoKernelManager blocks all kernel creation, no terminals, filesystem read-only (chmod 550 root-owned)
-- **Voila compute contracts**: Reviewers see code + run pipelines via Voila widgets (server-side execution, no kernel). Observers see rendered output + provenance. Code visible for scientific transparency (`strip_sources=False`). Calibration instrument for petalTongue sovereignty replacement
+- **Observer surface hardened**: source stripped, internal directories blocked, page titles on all notebooks, admin templates disabled, root redirects to Welcome.ipynb
+- **Reviewer/user lockdown**: NoKernelManager blocks kernel creation for reviewers, no terminals, filesystem read-only (chmod 550 root-owned)
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
-- **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. 10/13 confirmed enforced via TCP `auth.mode`. Unauthenticated calls return `-32001 PERMISSION_DENIED`. All 6 RPC probes now PASS (was KNOWN_GAP in permissive)
-- **Ionic tokens (JH-1) LIVE**: BearDog `identity.create` → `auth.issue_ionic` → `auth.verify_ionic`. Ed25519-signed scoped tokens with expiry and JTI
-- **Resource envelopes (JH-2) RESOLVED**: biomeOS v3.48 enforces `timeout_ms`, ToadStool S232 enforces `mem_mb`, `cpu_cores`, `max_timeout_ms` on all dispatch paths
-- **Composition reload (JH-3) RESOLVED**: biomeOS `composition.reload` — hot-swap single primal without full restart
-- **Session UX (JH-4) RESOLVED**: BearDog `auth.issue_session` — purpose-based presets (`jupyterhub`, `desktop`, `admin`)
-- **Audit log (JH-5) Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling. Cross-primal forwarding deferred
-- All PG-55 through PG-62 resolved by primalSpring Phase 60
-- **All 14 primal ports bound `127.0.0.1`** (Phase 60 binaries ship PG-55 default). NestGate BTSP method-level auth, skunkBat anomaly detection
-- **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
-- **Dark Forest hardening**: 5-layer security validation pipeline — **267 PASS, 0 FAIL, 0 KNOWN_GAP** (`deploy/security_validation.sh`)
-- **Pen test + fuzz + crypto validation**: **darkforest v0.2.0** (`validation/darkforest/`) — 939KB modular Rust binary. Pen test (3 threat actors) + protocol fuzzing (13 primals + JupyterHub) + crypto strength (13 checks: cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep). **175 PASS, 0 FAIL, 6 DARK_FOREST**. `--output <path>` for auditable structured JSON reports
-- **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS blocked for ABG UIDs
-- **Supply chain locked**: shared conda envs root-owned, 755 — compute users cannot plant malicious packages
-- **Version disclosure suppressed**: X-JupyterHub-Version and Server headers emptied; /hub/api/ version is JH-10 upstream gap
-- **Crontab restricted**: `/etc/crontab` set to 640 — ABG users cannot enumerate scheduled tasks
-- **Shared workspace boundaries**: `data/` and `projects/` restricted to `abg-compute` group — reviewer sees only `showcase/` (symlink-level isolation)
-- **ABG workspace scaffolding**: pilot/ lifecycle (commons → pilot → projects → showcase), per-user `scratch/` (chmod 700), tier-appropriate `Welcome.ipynb`, validation dashboard in Voila, READMEs in all shared directories
-- **ABG compute usability**: per-user Python venvs (`--system-site-packages` on shared bioinfo), local wheelhouse for offline `%pip install`, `pre_spawn_hook` PATH priority, Getting-Started.ipynb onboarding
-- skunkBat surveillance targets identified: JupyterHub auth events, NestGate writes, iptables DROPs, process enumeration
+- **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. 10/13 confirmed enforced via TCP. All unauthenticated calls return `-32001 PERMISSION_DENIED`
+- **Ionic tokens (JH-1) LIVE**: BearDog Ed25519-signed scoped tokens with expiry and JTI
+- **Resource envelopes (JH-2)**: biomeOS v3.48 + ToadStool S232 enforce limits on all dispatch paths
+- **Composition reload (JH-3)**: biomeOS `composition.reload` — hot-swap single primal without full restart
+- **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
+- **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
+- **All 14 primal ports bound `127.0.0.1`** (Phase 60 PG-55 default)
+- **darkforest v0.2.0**: modular Rust security validator — **175 PASS, 0 FAIL, 6 DARK_FOREST** (`validation/darkforest/`)
+- **tunnelKeeper**: Rust crate for Cloudflare tunnel health/management (`validation/tunnelKeeper/`)
+- **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
+- **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 
 ### Sovereignty Evolution
 
-- **40+ dependencies mapped** across 7 clusters including internal primal gaps (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
+- **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
 - **Cloudflare baselines capturing** hourly via cron (DNS, TCP, TLS, TTFB, total latency)
-- **benchScale framework** operational (`infra/benchScale/`) — 5 scenarios, 3 pentest scripts
+- **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies (`deploy/cloudflare/access_setup.sh`)
+- **tunnelKeeper** (`validation/tunnelKeeper/`): Rust crate for programmatic tunnel health checks, DNS resolution, config validation — first step toward Rust-native Cloudflare interaction
+- **benchScale framework** operational — 5 scenarios, 3 pentest scripts
 - **Forgejo calibration instrument** installed — baseline for RootPulse parity targets
-- **RootPulse commit workflow tested** — 5/6 phases pass against live primals, Phase 5 (LoamSpine commit) has param mismatch
-- **Voila baselines captured**: ~600ms render latency, 33–51KB output, source stripping active (`validation/baselines/`)
-- **4 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-5)
-- **JH-0 RESOLVED**: MethodGate enforced on 10/13 primals via TCP. Ionic token auth flow validated: `identity.create` → `auth.issue_session` → `_bearer_token` RPC. Cross-primal token federation deferred (JH-11)
-- **JH-6**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by `NoKernelManager` override
-- **JH-7**: Voila executes notebooks as hub user (privilege escalation risk) — mitigated by restricting to curated showcase only
-- **JH-8 (New)**: DNS port 53 was open to all external servers — exfiltration channel. **FIXED**: restricted to local resolver only
-- **JH-9 (New)**: Shared conda envs were group-writable — supply chain poisoning vector. **FIXED**: root-owned, 755
-- **JH-10 (New)**: `/hub/api/` version disclosure (built-in handler, cannot override in config) — document and block at tunnel
-- **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. All 14 primal ports verified bound to localhost only — no UFW workaround needed
-- **JH-11 (New)**: Cross-primal token federation — beardog-issued ionic tokens are not verifiable by other primals. Each primal's MethodGate validates independently. biomeOS composition forwarding with `_resource_envelope` is the intended path
-- **DF-2 (New)**: toadstool reads `TOADSTOOL_AUTH_MODE=enforced` but reports `mode=permissive` via `auth.mode` — env var name or implementation gap. 3 primals (songbird, squirrel, petaltongue) don't expose `auth.mode` on TCP
+- **6 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-11), primal deep debt, consolidated upstream gaps
 
 ### sporePrint
 
-- 5 public notebooks on [primals.eco/lab/notebooks](https://primals.eco/lab/notebooks/)
+- Public observer surface live at `lab.primals.eco` (Voila — open, no login)
+- 15+ notebooks across commons/, showcase/, data/, pilot/, validation/
 - Auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
 - Live Science API spec: 6 JSON-RPC methods (`specs/LIVE_SCIENCE_API.md`)
 
@@ -155,14 +164,14 @@ See [deploy/](deploy/) for full deployment instructions.
 235+ wetSpring science checks passing. Full provenance chain operational.
 This proves the substrate works on our hardware.
 
-### Phase 2: Ionic Compute Sharing (in progress — Step 2a validated)
+### Phase 2: Ionic Compute Sharing (in progress — Step 2a/2b operational)
 
 Deploy a usable system for ABG as validation of primalSpring patterns.
-NUC intake → ironGate JupyterHub → BTSP-secured access via primals.eco.
 Step 2a: Cloudflare Tunnel baseline captured (270ms p50, 15/15 external checks).
-ABG tiered access live (observer/compute/admin/reviewer). Notebook elevation operational.
-Workspace scaffolded: pilot lifecycle, per-user scratch, reviewer showcase-only visibility.
-Compute usability: per-user venvs, offline wheelhouse, tier-appropriate welcome notebooks.
+Step 2b: Open observer landing (Voila, no credentials). Reviewer/user gated via
+Cloudflare Access + PAM. pappusCast auto-propagation daemon live (tiered validation,
+adaptive rate limiting, snapshot architecture). Multi-tier test suite validates all
+access levels. tunnelKeeper Rust crate for Cloudflare interaction evolution.
 
 ### Phase 3: Self-Hosted sporePrint
 
@@ -183,13 +192,18 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ```
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling (deploy.sh, abg_accounts.sh, wheelhouse_sync.sh, security_validation.sh)
+deploy/             Deployment tooling, test suites, pappusCast daemon
+  pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
+  tier_test_*.py    Multi-tier test suite (observer, reviewer, compute)
+  tier_test_all.sh  Unified test runner across all tiers + pappusCast health
+  cloudflare/       Cloudflare Access setup and tunnel configuration
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
 validation/         Composition validation, security pen tests, upstream gap handbacks
   darkforest/       Pure Rust security validator (v0.2.0 — pen test + fuzz + crypto)
+  tunnelKeeper/     Rust crate for Cloudflare tunnel health/management
   baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling
@@ -200,13 +214,15 @@ docs/               Architecture primers and external-facing docs
 ABG shared workspace (`/home/irongate/shared/abg/`):
 
 ```
-commons/            Group scratch — quick experiments
+commons/            Group scratch — quick experiments, onboarding notebooks
 pilot/              Structured experiments (hypothesis, decision criteria, timeline)
 projects/           Formal project spaces (notebooks, data, results)
 data/               Shared datasets (NCBI, reference genomes, calibration)
 templates/          Starter notebooks, workload TOMLs, welcome notebooks
-showcase/           Polished work for external review + Voila dashboards
+showcase/           Polished work + Voila dashboards
 validation/         Surfaced darkforest JSON reports
+public/             Managed snapshot copies for observer surface (pappusCast-managed)
+  .pappusCast/      Daemon state, changelog, quarantine
 ```
 
 ## Relationship to Other Repos

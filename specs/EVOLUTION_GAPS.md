@@ -4,9 +4,10 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-08 (workspace scaffolding, usability, darkforest revalidation)
+**Last updated**: 2026-05-09 (open observer, pappusCast, tunnelKeeper, multi-tier tests)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
+**Multi-tier tests**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -187,3 +188,7 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-08 | Pure Rust `darkforest` validator created. Replaces bash+python pen/fuzz tools. 863KB binary, 159 PASS 0 FAIL 3 DARK_FOREST. Primal ecosystem validated in Rust. |
 | 2026-05-08 | `darkforest` v0.2.0 — modular auditable framework. 7 source modules. 13 crypto strength checks (CRY-01→CRY-13). JSON report output (`--output json`). Per-check severity, evidence, remediation. **177 PASS, 0 FAIL, 4 DARK_FOREST**. Cloudflare config.yml fixed (664→600). |
 | 2026-05-08 | Workspace scaffolding: pilot lifecycle, per-user scratch, reviewer showcase-only visibility, welcome notebooks, validation dashboard. Compute usability: per-user venvs, wheelhouse, offline pip. darkforest revalidation post-scaffolding: **175 PASS, 0 FAIL, 6 DARK_FOREST** (2 new: reviewer-visibility items detected at filesystem level, remediated via symlink isolation). |
+| 2026-05-09 | Open observer landing: Voila public surface at `lab.primals.eco` (no credentials). Observer is default; reviewer/user gated by Cloudflare Access + PAM. Root redirect to Welcome.ipynb, source stripping, internal directory blocking, page titles on all notebooks. |
+| 2026-05-09 | Multi-tier test suite: `tier_test_observer.py` (structural, execution, HTTP), `tier_test_reviewer.py` (access, parse, no-write), `tier_test_compute.py` (venv, packages, kernels, execution). `tier_test_all.sh` runner. Identified and fixed: kernel mismatches, missing metadata, relative path errors, dashboard KeyError, package import issues. |
+| 2026-05-09 | `pappusCast` auto-propagation daemon: tiered validation (light/medium/heavy), adaptive rate limiting (scales with active users), snapshot architecture (copies not symlinks), quarantine for failures, changelog tracking. Python-first with Rust evolution path. |
+| 2026-05-09 | `tunnelKeeper` Rust crate: programmatic Cloudflare tunnel health checks, DNS resolution fallback chain, config file parsing. Integrated into darkforest A6 pen test. First step toward Rust-native Cloudflare interaction. |

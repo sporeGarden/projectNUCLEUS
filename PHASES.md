@@ -88,7 +88,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Step 2a hardened (2026-05-07) — UFW active, baselines capturing, Forgejo live
+**Status**: Step 2b operational (2026-05-09) — open observer, pappusCast, multi-tier testing, tunnelKeeper
 **System**: ironGate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -293,27 +293,59 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `validation/JUPYTERHUB_PATTERNS_HANDBACK.md` — 5 gaps (JH-0→JH-5) — all now resolved or adopted upstream
 - Dark Forest gaps: JH-8 (DNS exfil — FIXED), JH-9 (supply chain — FIXED), JH-10 (version disclosure — upstream), DF-1 (binding — RESOLVED Phase 60)
 
+### Step 2b: Open Observer + Auto-Propagation (2026-05-09)
+
+**Open Observer Landing**:
+- Observer is the default landing page — no credentials, no login
+- Voila renders public surface at `lab.primals.eco` (source stripped, internal directories blocked)
+- Root redirect to `Welcome.ipynb` via lightweight Python HTTP proxy
+- All notebooks have `metadata.title` for clean Voila rendering
+- Admin templates and internal paths return 404
+
+**pappusCast Auto-Propagation**:
+- Python daemon (`deploy/pappusCast.py`) propagates validated content from workspace to observer
+- Named for the dandelion pappus — the parachute that carries seeds to new ground
+- Three validation tiers: Light (on-change), Medium (periodic execution), Heavy (~6h regression)
+- Adaptive rate limiting: `min(BASE_MINUTES * max(1, active_users), MAX_MINUTES)`
+- Snapshot architecture: `public/` holds managed copies, not live symlinks — stable observer surface
+- State tracking: `.pappusCast/last_publish.json`, `changelog.jsonl`, `quarantine/`
+- systemd service: `pappusCast.service` — persistent, restarts on failure
+- Evolution: Python (now) → Rust binary → pappusCast primal
+
+**Multi-Tier Test Suite**:
+- `deploy/tier_test_observer.py` — structural checks, execution, HTTP behavior, source stripping
+- `deploy/tier_test_reviewer.py` — access control, parse, no-write enforcement
+- `deploy/tier_test_compute.py` — venv, packages, kernels, notebook execution
+- `deploy/tier_test_all.sh` — unified runner across all tiers + pappusCast health
+- Test suite identified and fixed: kernel mismatches on 8 notebooks, missing metadata titles,
+  relative path errors after snapshot conversion, dashboard KeyError on status keys,
+  package import issues (biopython → Bio), NUCLEUS_TIER env var location
+
+**Cloudflare Access + tunnelKeeper**:
+- `deploy/cloudflare/access_setup.sh` — Cloudflare Access policies for reviewer/user gating
+- `validation/tunnelKeeper/` — Rust crate for tunnel health, DNS resolution, config parsing
+- Integrated into darkforest pen test as A6 (tunnel health verification)
+
 ### ABG Tiered Access Model
 
-Four tiers, modeled on scientific peer review (`deploy/abg_accounts.sh`):
+Three tiers, simplified from four. Observer is open; reviewer and user are gated
+by Cloudflare Access + PAM:
 
-| Tier | Group | Resources | Kernel | Sees Code | Runs Pipelines | Saves |
-|------|-------|-----------|--------|-----------|----------------|-------|
-| admin | `abg-admin` | 48 GB / 16 cores | Yes | Yes | Yes (arbitrary) | Yes |
-| user | `abg-compute` | 32 GB / 8 cores | Yes | Yes | Yes (ToadStool) | Yes |
-| reviewer | `abg-reviewer` | 8 GB / 4 cores | **No** (NoKernelManager) | Yes (showcase only) | Contracts (Voila widgets) | No (550 fs) |
-| observer | `abg-observer` | 4 GB / 2 cores | **No** (NoKernelManager) | Yes (rendered) | No | No (550 fs) |
+| Tier | Access | Capabilities | Surface |
+|------|--------|-------------|---------|
+| **observer** | Open, unauthenticated | Read-only rendered notebooks, data, dashboards | Voila public surface |
+| **reviewer** | Cloudflare Access + PAM | Read + run Voila contracts (showcase-only view) | JupyterHub |
+| **user** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub |
 
-**Reviewer = peer review / PI validation.** The reviewer sees code in JupyterLab
-(read-only filesystem) and can run pipelines via Voila compute contracts — the
-notebook defines the contract, Voila executes server-side, the reviewer interacts
-through widgets only (e.g., upload own data, select parameters). No arbitrary
-code execution, no kernel under reviewer control. Like submitting to a journal:
-the reviewer reads your code and results, and if they want to test a data point,
-the system runs the fixed pipeline on their input.
+Admin (irongate) owns infrastructure. Users do science. Reviewers validate.
+Observers see everything rendered but interact with nothing.
+
+**Reviewer = peer review / PI validation.** Sees code in JupyterLab (read-only),
+runs pipelines via Voila compute contracts. No arbitrary code execution.
 
 **Observer = public window.** View-only rendered output plus provenance chains.
-No execution whatsoever.
+No execution whatsoever. The entire project is functionally exposed but not
+interactable — science as read-only artifact.
 
 **Admin/user separation.** The system owner has both an admin account (irongate,
 hardware control) and a user account (ABG member, does science). In later stages,

@@ -1,3 +1,6 @@
+> **Canonical copy**: This document has been archived to `foundation/docs/BONDING_MODELS.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Bonding Models — How Gates Trust Each Other
 
 NUCLEUS uses chemistry-inspired bonding to describe trust relationships

@@ -1,3 +1,6 @@
+> **Canonical copy**: This document has been archived to `foundation/docs/NUCLEUS_PRIMER.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # NUCLEUS — A Primer
 
 A short introduction to what NUCLEUS is, why it exists, and what it means

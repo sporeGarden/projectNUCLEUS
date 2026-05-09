@@ -1,3 +1,6 @@
+> **Canonical copy**: This handback has been archived to `foundation/validation/handbacks/ROOTPULSE_GAPS_HANDBACK.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Upstream Gaps — RootPulse Commit Workflow Execution
 
 **Date**: 2026-05-07

@@ -1,3 +1,6 @@
+> **Canonical copy**: This handback has been archived to `foundation/validation/handbacks/SECURITY_HANDBACK_MAY06_2026.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Security Handback — Penetration Testing Results
 
 **Date**: 2026-05-06

@@ -1,3 +1,6 @@
+> **Canonical copy**: This handback has been archived to `foundation/validation/handbacks/UPSTREAM_GAPS_HANDBACK_MAY06_2026.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Upstream Gaps — Handback from projectNUCLEUS Absorption
 
 **Date**: 2026-05-06

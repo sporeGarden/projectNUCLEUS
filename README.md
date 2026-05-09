@@ -10,22 +10,25 @@ external dependency.
 
 ## What This Is
 
-projectNUCLEUS is the deployable NUCLEUS infrastructure on **ironGate** — our
-local development and validation system. It takes primal binaries from
-plasmidBin, composition graphs from primalSpring, and standards from
-wateringHole, and assembles them into a running gate on real hardware.
+projectNUCLEUS is the deployable NUCLEUS infrastructure — the compute layer
+that takes primal binaries from plasmidBin, composition graphs from
+primalSpring, and standards from wateringHole, and assembles them into a
+running gate on real hardware.
 
 ```
 primalSpring (upstream patterns)
        ↓ deploy graphs, validation, standards
-projectNUCLEUS on ironGate (deploys + validates patterns)
+projectNUCLEUS on active gate (deploys + validates patterns)
        ↓ real workloads, real users
 ABG collaborators (ionic compute sharing = pattern validation under load)
+       ↓ geological record
+foundation (the soil: validated lineage, gap handbacks, bonding models)
 ```
 
 **The core loop**: primalSpring defines composition patterns upstream.
-projectNUCLEUS deploys those patterns on ironGate. ABG workloads validate
-them under real external load. Gaps flow back upstream via handoff docs.
+projectNUCLEUS deploys those patterns on the active gate. ABG workloads
+validate them under real external load. Gaps flow back upstream via handoff
+docs. Validated patterns and geological records settle into foundation.
 Every successful ABG workload is proof that primalSpring's deploy graphs,
 BTSP, discovery hierarchy, and provenance pipeline work in production.
 
@@ -65,7 +68,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ### Infrastructure
 
-- All **13/13 NUCLEUS primals** deployed and healthy on ironGate
+- All **13/13 NUCLEUS primals** deployed and healthy on the active gate
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
 - 235+ wetSpring science checks passing across 11 workloads (8 Rust PASS, 2 Python RUN, 1 deferred FAIL)
@@ -104,6 +107,16 @@ to the public observer surface on an adaptive schedule:
 - **Adaptive rate limiting**: publish interval scales with active JupyterHub users
 - **Snapshot architecture**: public/ holds managed copies, not live symlinks
 - **Evolution path**: Python (now) → Rust binary → pappusCast primal
+- **Static HTML export**: Heavy tier renders all public notebooks to `.pappusCast/html_export/` as always-on fallback
+
+### Gate Portability
+
+The compute surface is gate-portable — it can migrate between physical gates
+without downtime for the static observer layer. See `specs/GATE_PORTABILITY.md`.
+
+- **Always-on**: Static HTML exports + sporePrint (GitHub Pages) persist regardless of gate
+- **Gate-portable**: `deploy/gate_switch.sh <target>` transfers compute services to any gate
+- **Bonding isolation**: Observer surface is gate-anonymous (no gate names, no internal topology)
 
 ### Security
 
@@ -160,7 +173,7 @@ See [deploy/](deploy/) for full deployment instructions.
 
 ### Phase 1: Covalent LAN HPC (validated)
 
-13 primals on ironGate (Full NUCLEUS) with provenance pipeline.
+13 primals on the active gate (Full NUCLEUS) with provenance pipeline.
 235+ wetSpring science checks passing. Full provenance chain operational.
 This proves the substrate works on our hardware.
 
@@ -211,7 +224,7 @@ infra/              Infrastructure tooling
 docs/               Architecture primers and external-facing docs
 ```
 
-ABG shared workspace (`/home/irongate/shared/abg/`):
+ABG shared workspace (`$ABG_SHARED`):
 
 ```
 commons/            Group scratch — quick experiments, onboarding notebooks
@@ -233,6 +246,6 @@ public/             Managed snapshot copies for observer surface (pappusCast-man
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
 | **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — live with notebooks, spring science hubs, auto-refresh CI; Phase 3 target: self-hosted on NUCLEUS |
-| **foundation** | sporeGarden | External-facing — institutional relationships, metallic federation |
+| **foundation** | sporeGarden | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
 | **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
 | **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |

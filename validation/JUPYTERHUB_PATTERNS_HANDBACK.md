@@ -1,3 +1,6 @@
+> **Canonical copy**: This handback has been archived to `foundation/validation/handbacks/JUPYTERHUB_PATTERNS_HANDBACK.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Upstream Gaps — JupyterHub Deployment Patterns and Sovereignty Wiring
 
 **Date**: 2026-05-07

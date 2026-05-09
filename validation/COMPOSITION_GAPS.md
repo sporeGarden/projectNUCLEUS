@@ -1,3 +1,6 @@
+> **Canonical copy**: This document has been archived to `foundation/validation/COMPOSITION_GAPS.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Composition Gaps — wetSpring Through Node Atomic
 
 **Date**: 2026-05-04

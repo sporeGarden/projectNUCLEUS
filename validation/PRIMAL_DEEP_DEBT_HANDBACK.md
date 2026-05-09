@@ -1,3 +1,6 @@
+> **Canonical copy**: This handback has been archived to `foundation/validation/handbacks/PRIMAL_DEEP_DEBT_HANDBACK.md`.
+> This copy remains in projectNUCLEUS as a reference.
+
 # Primal Deep Debt Audit — Upstream Handback
 
 **Date**: 2026-05-07

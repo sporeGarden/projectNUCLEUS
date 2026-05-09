@@ -62,6 +62,8 @@ WATCHED_DIRS = ["commons", "showcase", "data", "pilot", "validation"]
 SKIP_NAMES = {".ipynb_checkpoints", "__pycache__", ".pappusCast", "envs",
               "wheelhouse", "templates", "scratch", "projects"}
 
+STATIC_HTML_DIR = STATE_DIR / "html_export"
+
 BASE_MINUTES = 5
 MAX_MINUTES = 30
 HEAVY_INTERVAL_S = 6 * 3600
@@ -390,6 +392,32 @@ def quarantine_file(rel_path: str, reason: str, state: PublishState):
     log.warning("Quarantined: %s — %s", rel_path, reason)
 
 
+def export_static_html(rel_path: str) -> tuple[bool, str]:
+    """Render a notebook to static HTML for always-on observer fallback."""
+    src = PUBLIC_ROOT / rel_path
+    if src.suffix != ".ipynb" or not src.exists():
+        return False, "not a notebook"
+
+    out_dir = STATIC_HTML_DIR / Path(rel_path).parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_file = out_dir / Path(rel_path).with_suffix(".html").name
+
+    try:
+        result = subprocess.run(
+            ["sudo", "-u", VOILA_USER, f"{JUPYTER_BIN}/jupyter", "nbconvert",
+             "--to", "html", "--no-input",
+             "--output", str(out_file), str(src)],
+            capture_output=True, text=True, timeout=180,
+        )
+        if result.returncode != 0:
+            return False, result.stderr.strip().split("\n")[-1][:200]
+        return True, str(out_file)
+    except subprocess.TimeoutExpired:
+        return False, "html export timed out"
+    except Exception as e:
+        return False, str(e)[:200]
+
+
 def append_changelog(entries: list[dict]):
     """Append heavy-tier changelog entries."""
     STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -520,6 +548,17 @@ def run_heavy(state: PublishState) -> dict:
             log.info("Removed stale: %s", gone)
             report["changes"].append({"file": gone, "action": "removed"})
         state.files.pop(gone, None)
+
+    # Static HTML export for always-on observer fallback
+    STATIC_HTML_DIR.mkdir(parents=True, exist_ok=True)
+    html_count = 0
+    for rel in sorted(current.keys()):
+        if Path(rel).suffix == ".ipynb":
+            ok, detail = export_static_html(rel)
+            if ok:
+                html_count += 1
+    report["html_exported"] = html_count
+    log.info("Heavy: exported %d static HTML renders", html_count)
 
     state.last_heavy_ts = now
     append_changelog([report])

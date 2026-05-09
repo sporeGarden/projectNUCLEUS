@@ -14,10 +14,14 @@
 
 set -euo pipefail
 
-SPOREPRINT_REPO="/home/irongate/Development/ecoPrimals/infra/sporePrint"
-ZOLA="/usr/local/bin/zola"
-SERVE_PORT=8880
-SERVE_ADDR="127.0.0.1"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
+  || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
+
+SPOREPRINT_REPO="${SPOREPRINT_REPO}"
+ZOLA="${ZOLA:-/usr/local/bin/zola}"
+SERVE_PORT="${SPOREPRINT_LOCAL_PORT}"
+SERVE_ADDR="${NUCLEUS_BIND_ADDRESS}"
 PID_FILE="/tmp/sporeprint-local.pid"
 LOG_TAG="sporeprint-local"
 

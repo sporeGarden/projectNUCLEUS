@@ -19,9 +19,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
+  || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 MANIFEST="$SCRIPT_DIR/gate_manifest.toml"
-CF_CONFIG="$HOME/.cloudflared/config.yml"
+CF_CONFIG="${CLOUDFLARED_DIR}/config.yml"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -75,7 +77,8 @@ if ! ssh -o ConnectTimeout=5 -o BatchMode=yes "$TARGET" true 2>/dev/null; then
 fi
 log "  SSH connectivity: OK"
 
-REMOTE_DEPLOY=$(ssh "$TARGET" "ls ~/Development/ecoPrimals/sporeGarden/projectNUCLEUS/deploy/deploy.sh 2>/dev/null" || true)
+REMOTE_NUCLEUS="Development/ecoPrimals/sporeGarden/projectNUCLEUS"
+REMOTE_DEPLOY=$(ssh "$TARGET" "ls ~/${REMOTE_NUCLEUS}/deploy/deploy.sh 2>/dev/null" || true)
 if [[ -z "$REMOTE_DEPLOY" ]]; then
     warn "  deploy.sh not found on $TARGET — services must be set up manually"
 fi
@@ -91,7 +94,7 @@ log "  cloudflared on target: OK"
 
 log "Phase 2: Exporting static HTML snapshot (always-on fallback)"
 
-ABG_SHARED="${ABG_SHARED:-/home/$USER/shared/abg}"
+ABG_SHARED="${ABG_SHARED}"
 PAPPUSCAST="$SCRIPT_DIR/pappusCast.py"
 
 if [[ -f "$PAPPUSCAST" ]]; then
@@ -131,7 +134,7 @@ log "  Workspace sync: done"
 log "Phase 5: Deploying services on $TARGET"
 
 if [[ -n "$REMOTE_DEPLOY" ]]; then
-    run_or_print ssh "$TARGET" "cd ~/Development/ecoPrimals/sporeGarden/projectNUCLEUS/deploy && bash deploy.sh"
+    run_or_print ssh "$TARGET" "cd ~/${REMOTE_NUCLEUS}/deploy && bash deploy.sh"
     log "  Services deployed via deploy.sh"
 else
     warn "  Manual service startup required on $TARGET"
@@ -143,7 +146,7 @@ fi
 log "Phase 6: Updating Cloudflare tunnel routing"
 
 # The tunnel credential stays on the active gate; transfer it
-CF_CRED_DIR="$HOME/.cloudflared"
+CF_CRED_DIR="${CLOUDFLARED_DIR}"
 if [[ -d "$CF_CRED_DIR" ]]; then
     run_or_print rsync -az "$CF_CRED_DIR/" "$TARGET:$CF_CRED_DIR/"
     log "  Tunnel credentials synced"
@@ -158,7 +161,7 @@ log "  Tunnel routing transferred to $TARGET"
 
 log "Phase 7: Triggering pappusCast full sync on $TARGET"
 
-run_or_print ssh "$TARGET" "cd ~/Development/ecoPrimals/sporeGarden/projectNUCLEUS/deploy && python3 pappusCast.py once --force"
+run_or_print ssh "$TARGET" "cd ~/${REMOTE_NUCLEUS}/deploy && python3 pappusCast.py once --force"
 log "  Remote pappusCast sync: done"
 
 # ── Phase 8: Verify ─────────────────────────────────────────────────────

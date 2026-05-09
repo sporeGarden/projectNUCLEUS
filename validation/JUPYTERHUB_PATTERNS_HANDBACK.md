@@ -4,9 +4,9 @@
 # Upstream Gaps — JupyterHub Deployment Patterns and Sovereignty Wiring
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS
 **For**: BearDog, biomeOS, NestGate, skunkBat teams, primalSpring
-**Context**: The JupyterHub deployment on ironGate is the first real multi-user
+**Context**: The JupyterHub deployment on the active gate is the first real multi-user
 service running through the full primal stack. Every friction point encountered
 during deployment, user onboarding, and live testing reveals what the primals
 must internalize as they replace external dependencies.
@@ -142,7 +142,7 @@ access control via symlink targets.
 **Severity**: Medium
 **Owner**: BearDog team, Songbird team
 
-The `_post_auth_hook` blocks `irongate` from tunnel login by inspecting
+The `_post_auth_hook` blocks the local admin UNIX account from tunnel login by inspecting
 Cloudflare headers (`Cf-Connecting-Ip`, `X-Forwarded-For`). This is trust
 boundary enforcement: local admin cannot be impersonated from outside.
 
@@ -222,7 +222,7 @@ separately. There is no unified view.
 - skunkBat should aggregate events from all sources (systemd journal, primal
   logs, tunnel logs) into a single queryable surface.
 - The JupyterHub auth hook logs are calibration data — "Blocked tunnel login
-  for local-only user irongate" is a security event that should flow through
+  for local-only admin user" is a security event that should flow through
   rhizoCrypt's DAG for provenance.
 - When JupyterHub auth is replaced with BTSP, every auth event (success,
   failure, blocked) should be a rhizoCrypt event with a sweetGrass

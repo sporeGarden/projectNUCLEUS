@@ -1,7 +1,7 @@
 # Revalidation Report — Phase 60 Upstream Absorption
 
 **Date**: 2026-05-08
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS
 **For**: primalSpring, primal teams, wateringHole
 **Binaries**: plasmidBin v2026.05.08 (all 13 primals checksum-verified via `sync.sh`)
 

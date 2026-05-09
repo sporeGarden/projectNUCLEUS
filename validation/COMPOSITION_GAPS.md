@@ -5,7 +5,7 @@
 
 **Date**: 2026-05-04
 **Source**: First live composition validation of wetSpring science through
-toadStool dispatch on ironGate Node Atomic.
+toadStool dispatch on the active gate Node Atomic.
 **Purpose**: Document gaps for other teams to evolve. Each gap is a handoff —
 not a defect, but a known surface area where the next cycle of work lands.
 

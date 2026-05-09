@@ -20,11 +20,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null || true
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 RESULTS_DIR="${SCRIPT_DIR}/tier_test_results/${TIMESTAMP}"
 mkdir -p "$RESULTS_DIR"
 
-PYTHON="${PYTHON:-/home/irongate/miniforge3/envs/jupyterhub/bin/python3}"
+PYTHON="${PYTHON:-${GATE_HOME:-$HOME}/miniforge3/envs/jupyterhub/bin/python3}"
 TIER="${2:-all}"
 JSON_FLAG=""
 

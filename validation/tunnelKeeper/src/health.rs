@@ -90,32 +90,17 @@ pub async fn run(
 
     // If we have an API token, also check remote tunnel status
     if let Some(token) = api_token {
-        let creds_raw = std::fs::read_to_string(&config.credentials_file).ok();
-        if let Some(raw) = creds_raw {
-            if let Ok(creds) = serde_json::from_str::<serde_json::Value>(&raw) {
-                if let Some(account_id) = creds.get("AccountTag").and_then(|v| v.as_str()) {
-                    let client = api::Client::new(token, account_id);
-                    match client.get_tunnel(&config.tunnel).await {
-                        Ok(info) => {
-                            if !json {
-                                println!("CF Edge status: {}", info.status);
-                                println!(
-                                    "Connections: {}",
-                                    info.connections
-                                        .iter()
-                                        .filter_map(|c| c.colo_name.as_deref())
-                                        .collect::<Vec<_>>()
-                                        .join(", ")
-                                );
-                            }
-                        }
-                        Err(e) => {
-                            if !json {
-                                println!("CF API check failed: {e}");
-                            }
-                        }
-                    }
-                }
+        if let Some(info) = try_cf_api_check(token, &config).await {
+            if !json {
+                println!("CF Edge status: {}", info.status);
+                println!(
+                    "Connections: {}",
+                    info.connections
+                        .iter()
+                        .filter_map(|c| c.colo_name.as_deref())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
             }
         }
     }
@@ -130,6 +115,14 @@ pub async fn run(
     }
 
     Ok(())
+}
+
+async fn try_cf_api_check(token: &str, config: &TunnelConfig) -> Option<api::TunnelInfo> {
+    let raw = std::fs::read_to_string(&config.credentials_file).ok()?;
+    let creds: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    let account_id = creds.get("AccountTag")?.as_str()?;
+    let client = api::Client::new(token, account_id).ok()?;
+    client.get_tunnel(&config.tunnel).await.ok()
 }
 
 fn check_process() -> ProcessHealth {

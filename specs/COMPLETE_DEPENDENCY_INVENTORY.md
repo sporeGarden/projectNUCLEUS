@@ -1,7 +1,7 @@
 # Complete External Dependency Inventory
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS
 **Purpose**: Map every external dependency in the ecoPrimals ecosystem, classify
 by phase (build/run/dev), identify primal replacements (existing/planned/gap),
 and note calibration instruments where applicable.
@@ -21,7 +21,7 @@ must prove parity before the external is removed.
 | Cloudflare DNS (`primals.eco` NS) | Runtime | Domain registrar config | Self-hosted authoritative DNS + BTSP DoH | Specified (Step 4) |
 | Cloudflare TLS (edge termination) | Runtime | Tunnel ingress for `lab.primals.eco` | BearDog BTSP ChaCha20-Poly1305 + ACME | Specified (Step 3b) |
 | Cloudflare CDN (proxy caching) | Runtime | Orange-cloud proxy on `primals.eco` | NestGate content-addressing | Specified (Step 3a) |
-| `cloudflared` binary | Runtime | Systemd user service on ironGate | Songbird NAT traversal | Specified (Step 3c) |
+| `cloudflared` binary | Runtime | Systemd user service on the active gate | Songbird NAT traversal | Specified (Step 3c) |
 | Cloudflare API | Ops | Dynamic DNS updates (future) | Sovereign DNS update mechanism | Planned |
 | Cloudflare dashboard | Ops | Tunnel config, DNS management | CLI / RPC-based management | N/A (ops tooling) |
 
@@ -45,7 +45,7 @@ must prove parity before the external is removed.
 
 | Dependency | Phase | Where Referenced | Primal Replacement | Status |
 |-----------|-------|-----------------|-------------------|--------|
-| GitHub Actions runners | CI | 74 `.github/workflows/*.yml` files | Self-hosted runners on ironGate (or Forgejo Actions) | Gap |
+| GitHub Actions runners | CI | 74 `.github/workflows/*.yml` files | Self-hosted runners on the active gate (or Forgejo Actions) | Gap |
 | `actions/checkout@v4` | CI | Nearly all workflows | Local clone (self-hosted runner) | Trivial with self-hosted runner |
 | `actions/cache` | CI | Rust build caching | Local filesystem cache | Trivial |
 | `dtolnay/rust-toolchain` | CI | Rust workflows | Pre-installed toolchain on runner | Trivial |
@@ -72,7 +72,7 @@ must prove parity before the external is removed.
 | `SPOREPRINT_REFRESH_PAT` | CI | GitHub secret store | Local secret management | Gap |
 | RustSec advisory DB | Dev | `deny.toml` in 32 workspaces | Vendored advisory DB or internal feed | Low priority |
 
-**Calibration instrument**: Forgejo on ironGate. Captures git operation baselines that RootPulse must match.
+**Calibration instrument**: Forgejo on the active gate. Captures git operation baselines that RootPulse must match.
 
 ---
 

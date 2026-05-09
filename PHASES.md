@@ -8,7 +8,7 @@ bonding remains the foundation even when Phase 4 metallic federation is live.
 ## Phase 1: Covalent LAN HPC
 
 **Status**: Validated (2026-05-06), full provenance pipeline operational
-**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
+**System**: active gate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Bonding**: Covalent (shared family seed, full trust)
 **Composition**: Full NUCLEUS (13 primals, dynamically discovered from plasmidBin)
 - Tower: BearDog + SongBird
@@ -19,13 +19,13 @@ bonding remains the foundation even when Phase 4 metallic federation is live.
 - Defense: skunkBat
 - Meta: biomeOS (orchestration) + petalTongue (UI)
 
-ironGate is our local development and validation system. Phase 1 proves
+The active gate is our local development and validation system. Phase 1 proves
 that primalSpring's composition patterns work on real hardware with real
 science workloads.
 
 ### What Works
 
-- Full NUCLEUS (13 primals) deployed via `deploy.sh --composition full --gate irongate`
+- Full NUCLEUS (13 primals) deployed via `deploy.sh --composition full --gate <active-gate>`
 - toadStool dispatches workloads from TOML specs (native runtime)
 - wetSpring science validated through composition dispatch (235+ checks):
   - 16S Pipeline: 37/37 checks PASS
@@ -89,7 +89,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 ## Phase 2: Ionic Compute Sharing
 
 **Status**: Step 2b operational (2026-05-09) — open observer, pappusCast, multi-tier testing, tunnelKeeper
-**System**: ironGate + NUC intake
+**System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
 
@@ -105,7 +105,7 @@ routing, and provenance on collaborator workloads.
        ↓ BTSP Phase 3 tunnel
 [NUC Intake / Tower Atomic]
        ↓ Cat6e LAN (covalent internal)
-[ironGate / JupyterHub + Nest Atomic + provenance]
+[the active gate / JupyterHub + Nest Atomic + provenance]
        ↓ songBird cross-gate routing
 [strandGate or southGate / heavy compute]
 ```
@@ -119,11 +119,11 @@ routing, and provenance on collaborator workloads.
 ### Sub-Goal: Sovereign JupyterHub via primals.eco
 
 **Target**: ABG collaborator navigates to `primals.eco/compute`, authenticates
-via BTSP, and gets a JupyterHub notebook environment on ironGate:
+via BTSP, and gets a JupyterHub notebook environment on the active gate:
 
 ```
 Browser → primals.eco → BTSP tunnel (BearDog + Songbird NAT traversal)
-       → petalTongue reverse proxy → JupyterHub on ironGate
+       → petalTongue reverse proxy → JupyterHub on the active gate
        → notebook kernels (Python bioinformatics, R Seurat/DESeq2)
        → toadStool dispatch for heavy workloads → strandGate
        → provenance pipeline (rhizoCrypt → loamSpine → sweetGrass)
@@ -153,7 +153,7 @@ exceeds its behavior under real ABG load. See `specs/TUNNEL_EVOLUTION.md`.
 - `setup-jupyterhub.sh` — portable JupyterHub with Python + R kernels
 - `TUNNEL_ACCESS_GUIDE.md` — Tailscale/SSH/WireGuard options
 - `SOVEREIGN_COMPUTE_SHARING.md` — full pattern doc (Phase 0-4)
-- JupyterHub validated on ironGate (Phase 1)
+- JupyterHub validated on the active gate (Phase 1)
 
 ### Step 2a Validated and Hardened (2026-05-06 → 2026-05-07)
 
@@ -220,9 +220,10 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Calibration instrument for petalTongue sovereignty replacement
 
 **Dark Forest Security Hardening (2026-05-08)**:
-- `deploy/darkforest_pentest.sh` — comprehensive adversarial pen test across 3 threat actors (external, compute, reviewer/observer)
-- `deploy/darkforest_fuzz.py` — protocol-level fuzzing for all 13 primals + JupyterHub (malformed JSON-RPC, binary probes, timing analysis, auth bypass)
-- Wired into `security_validation.sh` as Layer 5 (total: 5 layers, **263 PASS, 0 FAIL**)
+- Pure Rust `validation/darkforest/` v0.2.0 — modular pen test + fuzz + crypto validator
+- 14 primals + JupyterHub fuzzed, 3 threat actors (external, compute, reviewer/observer)
+- `security_validation.sh` invokes Rust darkforest binary directly
+- Legacy bash/python scripts archived to `validation/archive/legacy/`
 - **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. Verified: all 14 primal ports on localhost, no UFW workaround needed. deploy.sh DF-1 comments removed
 - **JH-8 FIXED**: DNS port 53 was open to all external servers — exfiltration channel closed, restricted to local stub resolver only
 - **JH-9 FIXED**: Shared conda envs group-writable — now root-owned with 755 permissions
@@ -249,7 +250,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **1 KNOWN_GAP remaining**: `nestgate storage.list` accessible without auth in permissive mode (will auto-resolve when `NUCLEUS_AUTH_MODE=enforced`)
 - **4 DARK_FOREST findings**: version disclosure (JH-10), systemd service enumeration, reviewer python3 access (terminals blocked), null byte reflection (CSP mitigates)
 - **2 WARN**: sweetgrass secondary port on 0.0.0.0 (ephemeral, not configured port), rustdesk listener
-- Removed DF-1 workaround code from `security_validation.sh`, `darkforest_pentest.sh`, `deploy.sh`
+- Removed DF-1 workaround code from `security_validation.sh`, `deploy.sh`
 - plasmidBin `sync.sh` verified: 13/13 binaries checksum-matched
 
 **Enforced Mode Activation (2026-05-08)**:
@@ -326,6 +327,17 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `validation/tunnelKeeper/` — Rust crate for tunnel health, DNS resolution, config parsing
 - Integrated into darkforest pen test as A6 (tunnel health verification)
 
+**Deep Debt Sweep (2026-05-09)**:
+- `deploy/nucleus_config.sh` centralized as single source of truth — all paths (`$GATE_HOME`), ports, Cloudflare IDs derive from env vars
+- `deploy/nucleus_paths.py` provides equivalent Python config module for tier tests and pappusCast
+- tunnelKeeper: `Client::new()` returns `Result` (zero `expect()`), tokio slimmed to `rt-multi-thread+macros`, `rand` replaced by `rand_core`, credential paths env-var-driven
+- darkforest: PRIMALS array loaded from env with compiled fallback, rhizoCrypt RPC 9602 added to roster, crypto/pentest paths gate-agnostic via `CryptoConfig` struct
+- `security_validation.sh` invokes Rust darkforest binary directly (archived bash/python scripts)
+- `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
+- 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
+- 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings
+
 ### ABG Tiered Access Model
 
 Three tiers, simplified from four. Observer is open; reviewer and user are gated
@@ -337,7 +349,7 @@ by Cloudflare Access + PAM:
 | **reviewer** | Cloudflare Access + PAM | Read + run Voila contracts (showcase-only view) | JupyterHub |
 | **user** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub |
 
-Admin (irongate) owns infrastructure. Users do science. Reviewers validate.
+Admin (gate owner account) owns infrastructure. Users do science. Reviewers validate.
 Observers see everything rendered but interact with nothing.
 
 **Reviewer = peer review / PI validation.** Sees code in JupyterLab (read-only),
@@ -347,7 +359,7 @@ runs pipelines via Voila compute contracts. No arbitrary code execution.
 No execution whatsoever. The entire project is functionally exposed but not
 interactable — science as read-only artifact.
 
-**Admin/user separation.** The system owner has both an admin account (irongate,
+**Admin/user separation.** The system owner has both an admin account (local gate owner,
 hardware control) and a user account (ABG member, does science). In later stages,
 admin owns hardware, not data — the sovereignty separation.
 
@@ -476,7 +488,7 @@ Phase 3 execution. These are documented as upstream handbacks:
 ```
 [Browser] → primals.eco (Cloudflare DNS, then sovereign)
          → [NucBox M6 intake / cloudflared → petalTongue]
-         → [ironGate / NestGate content store + JupyterHub]
+         → [the active gate / NestGate content store + JupyterHub]
 ```
 
 ### Convergence Path

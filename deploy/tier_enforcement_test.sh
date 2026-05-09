@@ -149,13 +149,13 @@ run_tier_tests() {
     # MethodGate is live on 9/13 primals (Phase 60). Permissive mode logs but allows.
     # Set NUCLEUS_AUTH_MODE=enforced to activate scope-based rejection.
     local rpc_result
-    rpc_result=$(sudo -u "$user" bash -c 'echo "{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}" | timeout 3 nc -q1 127.0.0.1 9100 2>/dev/null' || echo "")
+    rpc_result=$(sudo -u "$user" bash -c "echo '{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}' | timeout 3 nc -q1 127.0.0.1 ${BEARDOG_PORT} 2>/dev/null" || echo "")
     if echo "$rpc_result" | grep -q '"permissive"' 2>/dev/null; then
         pass "$tier" "net_primal_rpc" "MethodGate live (permissive) — RPC logged but allowed (JH-0 adopted)"
     elif echo "$rpc_result" | grep -q '"enforced"' 2>/dev/null; then
         pass "$tier" "net_primal_rpc" "MethodGate enforced — unauthenticated RPC blocked (JH-0 resolved)"
     else
-        known_gap "$tier" "net_primal_rpc" "MethodGate not detected on beardog:9100 — verify binary version"
+        known_gap "$tier" "net_primal_rpc" "MethodGate not detected on beardog:${BEARDOG_PORT} — verify binary version"
     fi
 
     # --- Process: visibility ---
@@ -172,12 +172,12 @@ run_tier_tests() {
         "touch '/tmp/.tier_test_$$' && rm -f '/tmp/.tier_test_$$'"
 
     # --- Filesystem: read irongate development dirs ---
-    assert_fails "$tier" "fs_read_irongate_dev" "Cannot read irongate development dirs" "$user" \
-        "ls /home/irongate/Development/"
+    assert_fails "$tier" "fs_read_gate_dev" "Cannot read gate development dirs" "$user" \
+        "ls ${GATE_HOME}/Development/"
 
     # --- Filesystem: read cloudflared config ---
     assert_fails "$tier" "fs_read_tunnel_config" "Cannot read tunnel credentials" "$user" \
-        "cat /home/irongate/.cloudflared/config.yml"
+        "cat ${CLOUDFLARED_DIR}/config.yml"
 
     echo ""
 }

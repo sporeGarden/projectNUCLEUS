@@ -1,7 +1,7 @@
 # Composition Validation Log — wetSpring Through Node Atomic
 
 **Date**: 2026-05-04
-**Gate**: ironGate (Intel i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
+**Gate**: active gate (Intel i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Composition**: Node Atomic (beardog, songbird, toadstool, barracuda, coralreef)
 
 ## Objective
@@ -23,7 +23,7 @@ All 5 primals running at time of execution:
 | barracuda  | 609106 | 9740  | OK     |
 | coralreef  | 610064 | 9730  | OK     |
 
-Family ID: `9b32f3a8` (irongate-sovereign)
+Family ID: `9b32f3a8` (active-gate-sovereign)
 
 ## Rust Validation Workloads — Through toadStool Dispatch
 

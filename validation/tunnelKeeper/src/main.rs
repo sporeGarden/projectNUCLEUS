@@ -18,7 +18,7 @@ use std::path::PathBuf;
 )]
 struct Cli {
     /// cloudflared config file path
-    #[arg(long, default_value = "/home/irongate/.cloudflared/config.yml")]
+    #[arg(long, env = "CLOUDFLARED_CONFIG", default_value = "~/.cloudflared/config.yml")]
     config: PathBuf,
 
     /// Cloudflare API token (or set CF_API_TOKEN env var)

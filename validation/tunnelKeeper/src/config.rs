@@ -93,7 +93,8 @@ pub async fn sync(
         .and_then(|v| v.as_str())
         .ok_or_else(|| ConfigError::Other("AccountTag not found in credentials".into()))?;
 
-    let client = api::Client::new(token, account_id);
+    let client = api::Client::new(token, account_id)
+        .map_err(|e| ConfigError::Other(format!("API client init failed: {e}")))?;
 
     if pull {
         let remote = client.get_tunnel_config(&config.tunnel).await?;

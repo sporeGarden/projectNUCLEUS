@@ -188,7 +188,7 @@ compare metrics in real time.
 | Baseline | 7 days | Cloudflare tunnel metrics (already captured) | Connection reliability, establishment time |
 | Shadow | 7 days | `songbird_nat_parity.sh` (hourly) | Reliability ≥ 99.5%, establishment p95 ≤ CF p95 |
 | Load test | 1 day | `full_stack_load.sh --multiplier 2` through Songbird | No degradation |
-| Cutover | — | Disable cloudflared service, Songbird primary | Direct browser-to-ironGate |
+| Cutover | — | Disable cloudflared service, Songbird primary | Direct browser path to the active gate |
 | Rollback | Re-enable cloudflared systemd service | < 2 min |
 
 **Security validation**:

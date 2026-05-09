@@ -1,6 +1,6 @@
 # Validation Results — Phase 1-2a Pipeline Validation (2026-05-06)
 
-Concrete evidence from the first full local validation run on ironGate.
+Concrete evidence from the first full local validation run on the active gate.
 This document records what worked, what didn't, and what it means for
 rigor, reproducibility, and security.
 
@@ -8,7 +8,7 @@ rigor, reproducibility, and security.
 
 ## Composition
 
-13 primals deployed via `deploy.sh --composition full --gate irongate`:
+13 primals deployed via `deploy.sh --composition full --gate <active-gate>`:
 
 | Primal | Port | Health | Transport |
 |--------|------|--------|-----------|
@@ -178,7 +178,7 @@ Content-addressed URN from Merkle root. Tower-tier ed25519 witness.
 To reproduce this validation:
 1. Download NCBI FASTQs, verify BLAKE3 hashes match the table above
 2. Build wetSpring Rust binaries (or use plasmidBin)
-3. Deploy full composition: `deploy.sh --composition full --gate irongate`
+3. Deploy full composition: `deploy.sh --composition full --gate <active-gate>`
 4. Run pipeline: `provenance_pipeline.sh --workloads-dir workloads/wetspring`
 5. Compare per-workload output BLAKE3 hashes against the table above
 6. If all match, science is reproduced. Merkle root and braid will differ (expected).

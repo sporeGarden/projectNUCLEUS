@@ -20,7 +20,7 @@ See `infra/whitePaper/gen3/about/HARDWARE.md` for the full node inventory.
 
 | Gate | CPU | RAM | GPU | Atomic | Role |
 |------|-----|-----|-----|--------|------|
-| **ironGate** | i9-14900K | 96 GB DDR5 | RTX 4070 / RTX 3090 | Node | Composition validation, agentic dev |
+| **the active gate** | i9-14900K | 96 GB DDR5 | RTX 4070 / RTX 3090 | Node | Composition validation, agentic dev |
 | **northGate** | Ryzen 9 9950X3D | 96 GB DDR5 | RTX 5090 | Node | Gaming + remote compute |
 | **southGate** | Ryzen 5800X3D | 128 GB DDR4 | RTX 4060 | Node | Gaming + heavy compute |
 | **eastGate** | i9-12900 | 32 GB DDR5 | RTX 4070 + Akida NPU | Node | Utility + neuromorphic |
@@ -55,9 +55,9 @@ freely between them based on what the workload needs.
 
 **Deploy graph**: `basement_hpc_covalent.toml`
 
-### ironGate Today (Phase 2a)
+### The active gate today (Phase 2a)
 
-The current operational instance: 13 primals (Full NUCLEUS) on ironGate
+The current operational instance: 13 primals (Full NUCLEUS) on the active gate
 with covalent bonding. JupyterHub runs alongside for notebook-style
 access with tiered ABG accounts (observer/compute/admin/reviewer). Full provenance
 pipeline operational (9 phases, ed25519-witnessed braid). Cloudflare
@@ -71,11 +71,11 @@ See `specs/VALIDATION_RESULTS.md` for detailed evidence.
 
 ### NucBox M6 — Isolated Two-Node Covalent Bond (Phase 2)
 
-The GMKtec NucBox M6 connects to ironGate via USB-C ethernet, creating
+The GMKtec NucBox M6 connects to the active gate via USB-C ethernet, creating
 a physically isolated two-node covalent mesh:
 
 ```
-[NucBox M6 / Tower Atomic]  ←USB-C ethernet (10.99.0.0/30)→  [ironGate / Full NUCLEUS]
+[NucBox M6 / Tower Atomic]  ←USB-C ethernet (10.99.0.0/30)→  [the active gate / Full NUCLEUS]
 ```
 
 This is the minimal composition test: BearDog lineage verification
@@ -85,7 +85,7 @@ LAN contamination. Songbird BirdSong UDP multicast scopes to the USB-C
 segment only.
 
 The NucBox also serves as the `cloudflared` intake for Phase 2a — the
-Cloudflare Tunnel terminates here, USB-C forwards to ironGate's
+Cloudflare Tunnel terminates here, USB-C forwards to the active gate's
 JupyterHub. See `specs/TUNNEL_EVOLUTION.md` for the systematic
 dependency replacement path.
 
@@ -97,7 +97,7 @@ The 10G backbone switch is acquired and NICs are installed. Once cabled,
 the covalent mesh expands from single-gate to multi-gate:
 
 ```
-[ironGate] ←10G→ [strandGate] ←10G→ [southGate]
+[the active gate] ←10G→ [strandGate] ←10G→ [southGate]
      ↕                  ↕
 [eastGate]         [westGate / cold storage]
 ```
@@ -106,7 +106,7 @@ Each gate runs its matched atomic. Songbird mesh discovery auto-registers
 peers. biomeOS routes workloads to the best gate for the job:
 - `compute.*` → strandGate (64 cores + 3090) or southGate (128 GB RAM)
 - `storage.*` → westGate (76 TB ZFS)
-- `dag.*`, `ledger.*`, `braid.*` → ironGate (provenance trio running)
+- `dag.*`, `ledger.*`, `braid.*` → the active gate (provenance trio running)
 
 **What this is**: The basement HPC. Heterogeneous hardware united by
 genetic trust. The Celeron NUC runs the same primal binary as the
@@ -143,7 +143,7 @@ metagenomics, and structure prediction. The ionic pattern:
       ↓ BTSP-authenticated tunnel
 [NUC intake / Tower Atomic]
       ↓ Cat6e LAN (covalent internal)
-[ironGate / JupyterHub + Nest Atomic]
+[the active gate / JupyterHub + Nest Atomic]
       ↓ toadStool dispatch
 [strandGate / heavy compute]
 ```
@@ -163,11 +163,11 @@ See `specs/TUNNEL_EVOLUTION.md` for the systematic replacement plan.
 
 **Target**: An ABG collaborator navigates to `primals.eco/compute`,
 authenticates via BTSP, and gets a JupyterHub notebook environment on
-ironGate. The security chain:
+the active gate. The security chain:
 
 ```
 Browser → primals.eco → BTSP tunnel (BearDog + Songbird)
-       → petalTongue reverse proxy → JupyterHub on ironGate
+       → petalTongue reverse proxy → JupyterHub on the active gate
        → notebook kernels (Python/R bioinformatics)
        → toadStool dispatch for heavy workloads
        → provenance pipeline (rhizoCrypt → loamSpine → sweetGrass)
@@ -189,7 +189,7 @@ see the mesh topology.
 - `setup-jupyterhub.sh` — portable JupyterHub install with Python + R kernels
 - `TUNNEL_ACCESS_GUIDE.md` — Tailscale/SSH/WireGuard options
 - `SOVEREIGN_COMPUTE_SHARING.md` — full pattern doc (Phase 0-4)
-- JupyterHub has been running on ironGate since Phase 1 validation
+- JupyterHub has been running on the active gate since Phase 1 validation
 
 ---
 
@@ -243,11 +243,11 @@ cannot receive workloads until bonding is established.
 
 ## Mixed Bonding
 
-Real deployments mix bonding types. The ironGate topology today:
+Real deployments mix bonding types. The active gate topology today:
 
 ```
 [Basement LAN — Covalent]
-  ironGate ←10G→ strandGate ←10G→ southGate ←10G→ eastGate
+  the active gate ←10G→ strandGate ←10G→ southGate ←10G→ eastGate
        ↕                                               ↕
   westGate (cold storage)                         biomeGate (HBM2)
        ↕
@@ -275,7 +275,7 @@ encryption_tiers.nucleus = "hmac_plain"
 ## Scope Boundary: projectNUCLEUS vs foundation
 
 **projectNUCLEUS** focuses inward: execution, composability, and
-invisibility of primals on **ironGate**. It owns the covalent basement
+invisibility of primals on **the active gate**. It owns the covalent basement
 HPC and the ionic ABG interactions. The ABG deployment is the primary
 validation vehicle — every ABG workload that succeeds proves that
 primalSpring's upstream patterns (deploy graphs, BTSP, discovery,

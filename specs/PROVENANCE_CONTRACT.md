@@ -89,7 +89,7 @@ Storage keys follow a three-part convention:
 | `provenance` | `provenance:workload_123:ledger` | Ledger entry |
 | `provenance` | `provenance:workload_123:braid` | Braid merkle root |
 | `workload` | `workload:abg_phylo:output` | Workload output blob |
-| `config` | `config:gate:irongate` | Gate configuration snapshot |
+| `config` | `config:gate:<active-gate>` | Gate configuration snapshot |
 
 **NestGate transport note**: NestGate uses newline-delimited TCP JSON-RPC,
 not HTTP. Use `nc` or raw TCP — not `curl`.

@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Post-interstadial, sovereign hosting live (2026-05-09)**
+**Post-interstadial, deep debt swept, sovereign hosting live (2026-05-09)**
 
 ### Infrastructure
 
@@ -74,6 +74,7 @@ Gates connect to each other through chemical bonding patterns:
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 - **Sovereign hosting**: primals.eco dual-hosted (gate tunnel + GitHub Pages fallback), DNS-over-TLS, API-managed DNS switching
+- **Deep debt swept**: gate-agnostic config (`$GATE_HOME`), idiomatic Rust error handling, env-var-driven port/path resolution across all Rust + Python + Bash, 96 ironGate display references scrubbed, zero TODO/FIXME/HACK
 
 ### Services (all persistent via systemd)
 
@@ -136,8 +137,8 @@ without downtime for the static observer layer. See `specs/GATE_PORTABILITY.md`.
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
 - **All 14 primal ports bound `127.0.0.1`** (Phase 60 PG-55 default)
-- **darkforest v0.2.0**: modular Rust security validator — **175 PASS, 0 FAIL, 6 DARK_FOREST** (`validation/darkforest/`)
-- **tunnelKeeper**: Rust crate for Cloudflare tunnel health/management (`validation/tunnelKeeper/`)
+- **darkforest v0.2.0**: modular Rust security validator — **175 PASS, 0 FAIL, 6 DARK_FOREST** (`validation/darkforest/`). Env-var-driven config with compiled fallback — 14 primal ports resolve from `nucleus_config.sh` env vars at startup
+- **tunnelKeeper**: Rust crate for Cloudflare tunnel health/management (`validation/tunnelKeeper/`). Error-propagating API client, slimmed tokio features, `rand_core` replaces `rand`, gate-agnostic credential paths
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 - **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 
@@ -208,6 +209,8 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
 deploy/             Deployment tooling, test suites, pappusCast daemon
+  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
+  nucleus_paths.py  Python config module (imports GATE_HOME, ABG_SHARED, etc. from env)
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
   tier_test_*.py    Multi-tier test suite (observer, reviewer, compute)
   tier_test_all.sh  Unified test runner across all tiers + pappusCast health

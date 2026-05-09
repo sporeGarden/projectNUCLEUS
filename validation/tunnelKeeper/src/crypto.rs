@@ -1,7 +1,7 @@
 use chacha20poly1305::aead::{Aead, KeyInit, OsRng};
 use chacha20poly1305::{ChaCha20Poly1305, Nonce};
 use ed25519_dalek::SigningKey;
-use rand::RngCore;
+use rand_core::RngCore;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -21,9 +21,23 @@ pub enum CryptoError {
     Other(String),
 }
 
-const CLOUDFLARED_DIR: &str = "/home/irongate/.cloudflared";
-const ENCRYPTED_SUFFIX: &str = ".enc";
 const KEY_FILE: &str = ".tunnelkeeper.key";
+
+fn cloudflared_dir() -> PathBuf {
+    if let Ok(d) = std::env::var("CLOUDFLARED_DIR") {
+        PathBuf::from(d)
+    } else if let Ok(home) = std::env::var("HOME") {
+        PathBuf::from(home).join(".cloudflared")
+    } else {
+        PathBuf::from("/home").join(whoami()).join(".cloudflared")
+    }
+}
+
+fn whoami() -> String {
+    std::env::var("USER")
+        .or_else(|_| std::env::var("LOGNAME"))
+        .unwrap_or_else(|_| "nobody".to_string())
+}
 
 #[derive(Serialize, Deserialize)]
 struct EncryptedBlob {
@@ -34,7 +48,8 @@ struct EncryptedBlob {
 
 /// BearDog-pattern credential encryption: Ed25519 key → derived ChaCha20-Poly1305 key
 fn get_or_create_key() -> Result<[u8; 32], CryptoError> {
-    let key_path = PathBuf::from(CLOUDFLARED_DIR).join(KEY_FILE);
+    let cf_dir = cloudflared_dir();
+    let key_path = cf_dir.join(KEY_FILE);
 
     if key_path.exists() {
         let raw = fs::read(&key_path)?;
@@ -66,8 +81,7 @@ fn find_creds_file(explicit: Option<&Path>) -> Result<PathBuf, CryptoError> {
     if let Some(p) = explicit {
         return Ok(p.to_path_buf());
     }
-    // Auto-discover: look for *.json (not .enc) in cloudflared dir
-    let dir = PathBuf::from(CLOUDFLARED_DIR);
+    let dir = cloudflared_dir();
     for entry in fs::read_dir(&dir)? {
         let entry = entry?;
         let name = entry.file_name();
@@ -77,7 +91,8 @@ fn find_creds_file(explicit: Option<&Path>) -> Result<PathBuf, CryptoError> {
         }
     }
     Err(CryptoError::Other(format!(
-        "no credentials JSON found in {CLOUDFLARED_DIR}"
+        "no credentials JSON found in {}",
+        dir.display()
     )))
 }
 
@@ -126,7 +141,7 @@ pub fn encrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
         );
     } else {
         println!("Encrypted: {} → {}", path.display(), enc_path.display());
-        println!("Key stored at: {CLOUDFLARED_DIR}/{KEY_FILE}");
+        println!("Key stored at: {}/{KEY_FILE}", cloudflared_dir().display());
         println!(
             "Original credentials can be removed once encryption is verified."
         );
@@ -138,7 +153,7 @@ pub fn decrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
     let path = if let Some(p) = creds_path {
         p.to_path_buf()
     } else {
-        let dir = PathBuf::from(CLOUDFLARED_DIR);
+        let dir = cloudflared_dir();
         let mut found = None;
         for entry in fs::read_dir(&dir)? {
             let entry = entry?;
@@ -152,7 +167,7 @@ pub fn decrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
             }
         }
         found.ok_or_else(|| {
-            CryptoError::Other(format!("no .enc file found in {CLOUDFLARED_DIR}"))
+            CryptoError::Other(format!("no .enc file found in {}", dir.display()))
         })?
     };
 

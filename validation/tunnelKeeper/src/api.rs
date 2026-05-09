@@ -8,6 +8,8 @@ pub enum ApiError {
     Http(#[from] reqwest::Error),
     #[error("Cloudflare API error: {status} — {message}")]
     Cloudflare { status: u16, message: String },
+    #[error("invalid header value: {0}")]
+    InvalidHeader(#[from] reqwest::header::InvalidHeaderValue),
     #[error("{0}")]
     Other(String),
 }
@@ -49,25 +51,23 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(api_token: &str, account_id: &str) -> Self {
+    pub fn new(api_token: &str, account_id: &str) -> Result<Self, ApiError> {
         let mut headers = HeaderMap::new();
         headers.insert(
             AUTHORIZATION,
-            HeaderValue::from_str(&format!("Bearer {api_token}"))
-                .expect("valid bearer token"),
+            HeaderValue::from_str(&format!("Bearer {api_token}"))?,
         );
         headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
 
         let http = reqwest::Client::builder()
             .default_headers(headers)
-            .build()
-            .expect("HTTP client build");
+            .build()?;
 
-        Self {
+        Ok(Self {
             http,
             account_id: account_id.to_string(),
             base_url: "https://api.cloudflare.com/client/v4".to_string(),
-        }
+        })
     }
 
     pub async fn get_tunnel(&self, tunnel_id: &str) -> Result<TunnelInfo, ApiError> {

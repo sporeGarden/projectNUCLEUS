@@ -11,21 +11,33 @@
 # All values are overridable via environment variables.
 
 # --- Paths ---
+GATE_HOME="${GATE_HOME:-$HOME}"
 NUCLEUS_PROJECT_ROOT="${NUCLEUS_PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$NUCLEUS_PROJECT_ROOT/../../.." 2>/dev/null && pwd)}"
 PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-$ECOPRIMALS_ROOT/infra/plasmidBin}"
 WETSPRING_DIR="${WETSPRING_DIR:-$ECOPRIMALS_ROOT/springs/wetSpring}"
-ABG_SHARED="${ABG_SHARED:-/home/irongate/shared/abg}"
-JUPYTERHUB_CONFIG="${JUPYTERHUB_CONFIG:-/home/irongate/jupyterhub/jupyterhub_config.py}"
+ABG_SHARED="${ABG_SHARED:-$GATE_HOME/shared/abg}"
+JUPYTERHUB_DIR="${JUPYTERHUB_DIR:-$GATE_HOME/jupyterhub}"
+JUPYTERHUB_CONFIG="${JUPYTERHUB_CONFIG:-$JUPYTERHUB_DIR/jupyterhub_config.py}"
+SPOREPRINT_REPO="${SPOREPRINT_REPO:-$ECOPRIMALS_ROOT/infra/sporePrint}"
+CLOUDFLARED_DIR="${CLOUDFLARED_DIR:-$GATE_HOME/.cloudflared}"
 RUNTIME_DIR="${RUNTIME_DIR:-/tmp/biomeos}"
 
 # --- Network ---
 NUCLEUS_BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS:-127.0.0.1}"
 JUPYTERHUB_PORT="${JUPYTERHUB_PORT:-8000}"
+SPOREPRINT_LOCAL_PORT="${SPOREPRINT_LOCAL_PORT:-8880}"
 LAB_URL="${LAB_URL:-https://lab.primals.eco}"
 GIT_URL="${GIT_URL:-https://git.primals.eco}"
+SITE_URL="${SITE_URL:-https://primals.eco}"
 
-# --- Primal ports (Phase 59 canonical — primalSpring/docs/PRIMAL_GAPS.md) ---
+# --- Cloudflare / DNS ---
+CF_ZONE_NAME="${CF_ZONE_NAME:-primals.eco}"
+CF_TUNNEL_ID="${CF_TUNNEL_ID:-d4c15fb6-d047-40fe-82d6-e324a5593421}"
+CF_TUNNEL_CNAME="${CF_TUNNEL_CNAME:-${CF_TUNNEL_ID}.cfargotunnel.com}"
+CF_API_TOKEN_FILE="${CF_API_TOKEN_FILE:-$GATE_HOME/.cloudflared/cf_api_token}"
+
+# --- Primal ports (post-interstadial canonical) ---
 BEARDOG_PORT="${BEARDOG_PORT:-9100}"
 SONGBIRD_PORT="${SONGBIRD_PORT:-9200}"
 SQUIRREL_PORT="${SQUIRREL_PORT:-9300}"

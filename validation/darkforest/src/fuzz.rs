@@ -4,16 +4,18 @@ use std::net::TcpStream;
 use std::time::{Duration, Instant};
 
 pub fn run_primals(host: &str, rounds: u32, results: &mut Vec<CheckResult>) {
+    let primals = load_primals();
     println!("\n══ Protocol Fuzzing ══");
-    for p in PRIMALS {
+    for p in &primals {
         println!("\n── Fuzzing {}:{} ──", p.name, p.port);
-        fuzz_primal(p.name, p.port, host, rounds, results);
+        fuzz_primal(&p.name, p.port, host, rounds, results);
     }
 }
 
 pub fn run_hub(host: &str, results: &mut Vec<CheckResult>) {
+    let hub = hub_port();
     println!("\n── Fuzzing JupyterHub ──");
-    fuzz_jupyterhub(host, results);
+    fuzz_jupyterhub(host, hub, results);
 }
 
 fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &mut Vec<CheckResult>) {
@@ -171,14 +173,14 @@ fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut
     }
 }
 
-fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
+fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let suite = "fuzz.hub";
 
     let cookie_val = "A".repeat(50_000);
     let headers = format!("Cookie: jupyterhub-session-id={cookie_val}\r\n");
     let cb = CheckBuilder::new("FUZ-HUB-01", suite, Category::Fuzz, Severity::Medium)
         .remediation("Hub should handle oversized cookies gracefully (400 or 431)");
-    match http_get(host, HUB_PORT, "/hub/login", &headers, 5000) {
+    match http_get(host, hub_port, "/hub/login", &headers, 5000) {
         Some((code, _, _)) if [200, 302, 400, 403, 431].contains(&code) => {
             results.push(cb.pass(&format!("Hub handles oversized cookie (HTTP {code})"), &format!("HTTP {code}")));
         }
@@ -192,7 +194,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
     let body = format!("username={marker}%00evil&password=test");
     let cb = CheckBuilder::new("FUZ-HUB-02", suite, Category::Fuzz, Severity::Medium)
         .remediation("Sanitize username input, strip null bytes");
-    match http_post(host, HUB_PORT, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000) {
+    match http_post(host, hub_port, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000) {
         Some((200, ref rb)) if rb.contains(&marker) => {
             results.push(cb.fail("Null byte username accepted and reflected (HTTP 200)", &marker));
         }
@@ -209,7 +211,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
     let hdr = format!("Authorization: token {fake_tok}\r\n");
     let cb = CheckBuilder::new("FUZ-HUB-03", suite, Category::Auth, Severity::Critical)
         .remediation("Token validation must reject invalid tokens");
-    match http_get(host, HUB_PORT, "/hub/api/users", &hdr, 5000) {
+    match http_get(host, hub_port, "/hub/api/users", &hdr, 5000) {
         Some((200, _, _)) => results.push(cb.fail("Fake token accepted on /hub/api/users", "HTTP 200 with fake token")),
         Some((code, _, _)) => results.push(cb.pass(&format!("Fake token rejected (HTTP {code})"), &format!("HTTP {code}"))),
         None => results.push(cb.pass("Fake token rejected", "No response")),
@@ -217,7 +219,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
 
     for sqli in ["admin'--", "admin' OR '1'='1", r#"" OR ""="#, r#"admin"; DROP TABLE users;--"#] {
         let body = format!("username={sqli}&password=test");
-        let _ = http_post(host, HUB_PORT, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000);
+        let _ = http_post(host, hub_port, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000);
     }
     results.push(
         CheckBuilder::new("FUZ-HUB-04", suite, Category::Fuzz, Severity::High)
@@ -226,7 +228,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
 
     let cb = CheckBuilder::new("FUZ-HUB-05", suite, Category::Fuzz, Severity::High)
         .remediation("Escape or strip special chars from ?next parameter");
-    match http_get(host, HUB_PORT, r#"/hub/login?next="><script>alert(1)</script>"#, "", 5000) {
+    match http_get(host, hub_port, r#"/hub/login?next="><script>alert(1)</script>"#, "", 5000) {
         Some((_, _, body)) if body.contains("<script>alert(1)</script>") => {
             results.push(cb.fail("XSS in ?next parameter reflected", "Script tag found in response"));
         }
@@ -237,7 +239,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
     for method in ["PUT", "DELETE", "PATCH", "OPTIONS", "TRACE"] {
         let cb = CheckBuilder::new(&format!("FUZ-HUB-M-{}", method.to_lowercase()), suite, Category::Fuzz, Severity::Medium)
             .remediation("Restrict HTTP methods to GET/POST on API endpoints");
-        if let Some(code) = http_method(host, HUB_PORT, method, "/hub/api/users", 5000) {
+        if let Some(code) = http_method(host, hub_port, method, "/hub/api/users", 5000) {
             if code == 200 && (method == "DELETE" || method == "PUT") {
                 results.push(cb.fail(&format!("{method} /hub/api/users returns 200"), &format!("HTTP {code}")));
             } else {
@@ -248,7 +250,7 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
 
     let cb = CheckBuilder::new("FUZ-HUB-TRACE", suite, Category::Fuzz, Severity::Medium)
         .remediation("Block TRACE method to prevent XST attacks");
-    match http_method(host, HUB_PORT, "TRACE", "/hub/", 5000) {
+    match http_method(host, hub_port, "TRACE", "/hub/", 5000) {
         Some(200) => results.push(cb.fail("TRACE method echoes request — XST vulnerability", "HTTP 200")),
         Some(code) => results.push(cb.pass(&format!("TRACE method blocked (HTTP {code})"), &format!("HTTP {code}"))),
         None => results.push(cb.pass("TRACE method rejected", "No response")),
@@ -258,14 +260,15 @@ fn fuzz_jupyterhub(host: &str, results: &mut Vec<CheckResult>) {
         .remediation("Rate limiting or connection limits on Hub");
     let mut sockets = Vec::new();
     for _ in 0..50 {
-        let addr = format!("{host}:{HUB_PORT}");
-        if let Ok(s) = TcpStream::connect_timeout(&addr.parse().unwrap(), Duration::from_secs(2)) {
+        let addr = format!("{host}:{hub_port}");
+        let Ok(sock_addr) = addr.parse() else { break };
+        if let Ok(s) = TcpStream::connect_timeout(&sock_addr, Duration::from_secs(2)) {
             sockets.push(s);
         }
     }
     drop(sockets);
     std::thread::sleep(Duration::from_secs(1));
-    match http_get(host, HUB_PORT, "/hub/login", "", 5000) {
+    match http_get(host, hub_port, "/hub/login", "", 5000) {
         Some((code, _, _)) if code == 200 || code == 302 => {
             results.push(cb.pass("Hub survives 50 concurrent connections", &format!("HTTP {code}")));
         }

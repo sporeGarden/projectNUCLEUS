@@ -468,59 +468,34 @@ if [[ "$LAYER" == "all" || "$LAYER" == "darkforest" ]]; then
     log ""
     log "══ Layer 5: Dark Forest ══"
 
-    # 5a: Adversarial pen test
-    log ""
-    log "── 5a: Dark Forest Pen Test ──"
-
-    PENTEST_SCRIPT="$SCRIPT_DIR/darkforest_pentest.sh"
-    if [[ -x "$PENTEST_SCRIPT" ]]; then
-        PENTEST_OUT="$RESULTS_DIR/darkforest_pentest.txt"
-        TUNNEL_ARG=""
-        [[ -n "$TUNNEL_URL" ]] && TUNNEL_ARG="--tunnel-url $TUNNEL_URL"
-        bash "$PENTEST_SCRIPT" --suite all $TUNNEL_ARG 2>&1 | tee "$PENTEST_OUT" || true
-
-        DF_PEN_PASS=$(grep -c '^PASS|' "$PENTEST_OUT" 2>/dev/null || true)
-        DF_PEN_FAIL=$(grep -c '^FAIL|' "$PENTEST_OUT" 2>/dev/null || true)
-        DF_PEN_GAP=$(grep -c '^KNOWN_GAP|' "$PENTEST_OUT" 2>/dev/null || true)
-        DF_PEN_DF=$(grep -c '^DARK_FOREST|' "$PENTEST_OUT" 2>/dev/null || true)
-        : "${DF_PEN_PASS:=0}" "${DF_PEN_FAIL:=0}" "${DF_PEN_GAP:=0}" "${DF_PEN_DF:=0}"
-
-        PASS=$((PASS + DF_PEN_PASS))
-        FAIL=$((FAIL + DF_PEN_FAIL))
-
-        if [[ "$DF_PEN_FAIL" -eq 0 ]]; then
-            pass "Dark Forest pen test: $DF_PEN_PASS pass, $DF_PEN_GAP gaps, $DF_PEN_DF dark forest findings"
-        else
-            fail "Dark Forest pen test: $DF_PEN_FAIL failures out of $((DF_PEN_PASS + DF_PEN_FAIL)) assertions"
-        fi
-    else
-        warn "darkforest_pentest.sh not found at $PENTEST_SCRIPT"
+    # Rust darkforest binary (replaces legacy darkforest_pentest.sh + darkforest_fuzz.py)
+    DARKFOREST_BIN="$PROJECT_ROOT/validation/darkforest/target/release/darkforest"
+    if [[ ! -x "$DARKFOREST_BIN" ]]; then
+        DARKFOREST_BIN="$PROJECT_ROOT/validation/darkforest/target/debug/darkforest"
     fi
 
-    # 5b: Protocol fuzz
-    log ""
-    log "── 5b: Protocol Fuzz ──"
+    if [[ -x "$DARKFOREST_BIN" ]]; then
+        DF_OUT="$RESULTS_DIR/darkforest_all.txt"
+        DF_JSON="$RESULTS_DIR/darkforest_all.json"
+        log "Running Rust darkforest binary (all suites)..."
+        timeout 900 "$DARKFOREST_BIN" --suite all --output "$DF_JSON" 2>&1 | tee "$DF_OUT" || true
 
-    FUZZ_SCRIPT="$SCRIPT_DIR/darkforest_fuzz.py"
-    if [[ -f "$FUZZ_SCRIPT" ]]; then
-        FUZZ_OUT="$RESULTS_DIR/darkforest_fuzz.txt"
-        timeout 900 python3 -u "$FUZZ_SCRIPT" --rounds 2 2>&1 | tee "$FUZZ_OUT" || true
+        DF_PASS=$(grep -c '^PASS|' "$DF_OUT" 2>/dev/null || true)
+        DF_FAIL=$(grep -c '^FAIL|' "$DF_OUT" 2>/dev/null || true)
+        DF_GAP=$(grep -c '^KNOWN_GAP|' "$DF_OUT" 2>/dev/null || true)
+        DF_DF=$(grep -c '^DARK_FOREST|' "$DF_OUT" 2>/dev/null || true)
+        : "${DF_PASS:=0}" "${DF_FAIL:=0}" "${DF_GAP:=0}" "${DF_DF:=0}"
 
-        DF_FUZZ_PASS=$(grep -c '^PASS|' "$FUZZ_OUT" 2>/dev/null || true)
-        DF_FUZZ_FAIL=$(grep -c '^FAIL|' "$FUZZ_OUT" 2>/dev/null || true)
-        DF_FUZZ_DF=$(grep -c '^DARK_FOREST|' "$FUZZ_OUT" 2>/dev/null || true)
-        : "${DF_FUZZ_PASS:=0}" "${DF_FUZZ_FAIL:=0}" "${DF_FUZZ_DF:=0}"
+        PASS=$((PASS + DF_PASS))
+        FAIL=$((FAIL + DF_FAIL))
 
-        PASS=$((PASS + DF_FUZZ_PASS))
-        FAIL=$((FAIL + DF_FUZZ_FAIL))
-
-        if [[ "$DF_FUZZ_FAIL" -eq 0 ]]; then
-            pass "Protocol fuzz: $DF_FUZZ_PASS pass, $DF_FUZZ_DF dark forest findings"
+        if [[ "$DF_FAIL" -eq 0 ]]; then
+            pass "Dark Forest (Rust): $DF_PASS pass, $DF_GAP gaps, $DF_DF dark forest findings"
         else
-            fail "Protocol fuzz: $DF_FUZZ_FAIL failures out of $((DF_FUZZ_PASS + DF_FUZZ_FAIL)) assertions"
+            fail "Dark Forest (Rust): $DF_FAIL failures out of $((DF_PASS + DF_FAIL)) assertions"
         fi
     else
-        warn "darkforest_fuzz.py not found at $FUZZ_SCRIPT"
+        warn "darkforest binary not found — build with: cargo build --release -p darkforest"
     fi
 fi
 

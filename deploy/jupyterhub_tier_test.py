@@ -34,7 +34,10 @@ PASS_COUNT = 0
 FAIL_COUNT = 0
 SKIP_COUNT = 0
 
-HUB_URL = "http://127.0.0.1:8000"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from nucleus_paths import JUPYTER_BIN, JUPYTERHUB_DIR, JUPYTERHUB_PORT
+
+HUB_URL = f"http://127.0.0.1:{JUPYTERHUB_PORT}"
 
 TIER_USERS = {
     "compute": "tamison",
@@ -99,18 +102,18 @@ def get_admin_token():
     if token:
         return token
 
-    jhub_bin = "/home/irongate/miniforge3/envs/jupyterhub/bin/jupyterhub"
-    db_url = "sqlite:////home/irongate/jupyterhub/jupyterhub.sqlite"
+    jhub_bin = f"{JUPYTER_BIN}/jupyterhub"
+    db_url = f"sqlite:///{JUPYTERHUB_DIR}/jupyterhub.sqlite"
+    gate_user = Path(str(JUPYTERHUB_DIR)).parent.name
 
-    # Try as current user first, then via sudo -u irongate for root execution
     for cmd in [
-        [jhub_bin, "token", "irongate", f"--db={db_url}"],
-        ["sudo", "-u", "irongate", jhub_bin, "token", "irongate", f"--db={db_url}"],
+        [jhub_bin, "token", gate_user, f"--db={db_url}"],
+        ["sudo", "-u", gate_user, jhub_bin, "token", gate_user, f"--db={db_url}"],
     ]:
         try:
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=15,
-                cwd="/home/irongate/jupyterhub",
+                cwd=str(JUPYTERHUB_DIR),
             )
             token = result.stdout.strip()
             if token and len(token) > 10:

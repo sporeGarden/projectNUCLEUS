@@ -46,17 +46,16 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-ABG_SHARED = Path(os.environ.get("ABG_SHARED", "/home/irongate/shared/abg"))
-PUBLIC_ROOT = ABG_SHARED / "public"
+from nucleus_paths import ABG_SHARED, PUBLIC_ROOT, JUPYTER_BIN, JUPYTERHUB_PORT
+
 STATE_DIR = PUBLIC_ROOT / ".pappusCast"
 QUARANTINE_DIR = STATE_DIR / "quarantine"
 STATE_FILE = STATE_DIR / "last_publish.json"
 CHANGELOG_FILE = STATE_DIR / "changelog.jsonl"
 LOG_DIR = Path(__file__).resolve().parent / "tier_test_results"
 
-JUPYTER_BIN = "/home/irongate/miniforge3/envs/jupyterhub/bin"
 VOILA_USER = "voila"
-HUB_API = "http://127.0.0.1:8000/hub/api"
+HUB_API = f"http://127.0.0.1:{JUPYTERHUB_PORT}/hub/api"
 
 WATCHED_DIRS = ["commons", "showcase", "data", "pilot", "validation"]
 SKIP_NAMES = {".ipynb_checkpoints", "__pycache__", ".pappusCast", "envs",
@@ -228,7 +227,7 @@ def _voila_kernels() -> set:
         )
         specs = json.loads(result.stdout).get("kernelspecs", {})
         _KERNEL_CACHE = set(specs.keys())
-    except Exception:
+    except (subprocess.SubprocessError, json.JSONDecodeError, OSError):
         _KERNEL_CACHE = {"python3"}
     _KERNEL_CACHE_TS = time.time()
     return _KERNEL_CACHE
@@ -267,7 +266,7 @@ def validate_medium(abs_path: Path) -> tuple[bool, str]:
         return True, f"executed cleanly ({len(nb_out.get('cells', []))} cells)"
     except subprocess.TimeoutExpired:
         return False, "execution timed out (150s)"
-    except Exception as e:
+    except (subprocess.SubprocessError, json.JSONDecodeError, OSError) as e:
         return False, str(e)[:200]
 
 
@@ -296,7 +295,7 @@ def get_active_users() -> int:
                 1 for u in users
                 if u.get("servers", {}).get("", {}).get("ready")
             )
-    except Exception:
+    except (urllib.error.URLError, json.JSONDecodeError, OSError, ValueError):
         return 1
 
 
@@ -414,7 +413,7 @@ def export_static_html(rel_path: str) -> tuple[bool, str]:
         return True, str(out_file)
     except subprocess.TimeoutExpired:
         return False, "html export timed out"
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         return False, str(e)[:200]
 
 
@@ -688,7 +687,7 @@ def show_health():
             else:
                 checks.append({"check": "last_light", "status": "ok",
                                 "detail": f"{age_s:.0f}s ago"})
-        except Exception as e:
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
             checks.append({"check": "state_file", "status": "fail", "detail": str(e)})
             ok = False
     else:

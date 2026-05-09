@@ -16,11 +16,15 @@
 
 set -euo pipefail
 
-TOKEN_FILE="$HOME/.cloudflared/cf_api_token"
-ZONE_NAME="primals.eco"
-TUNNEL_ID="d4c15fb6-d047-40fe-82d6-e324a5593421"
-TUNNEL_CNAME="${TUNNEL_ID}.cfargotunnel.com"
-RECORD_NAME="primals.eco"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
+  || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
+
+TOKEN_FILE="${CF_API_TOKEN_FILE}"
+ZONE_NAME="${CF_ZONE_NAME}"
+TUNNEL_ID="${CF_TUNNEL_ID}"
+TUNNEL_CNAME="${CF_TUNNEL_CNAME}"
+RECORD_NAME="${CF_ZONE_NAME}"
 
 GHPAGES_IPS=("185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153")
 
@@ -233,7 +237,7 @@ do_verify() {
     info "Checking live origin..."
 
     local headers
-    headers=$(curl -sI --max-time 10 "https://primals.eco/" 2>/dev/null)
+    headers=$(curl -sI --max-time 10 "${SITE_URL}/" 2>/dev/null)
 
     local has_fastly
     has_fastly=$(echo "$headers" | grep -ci "fastly\|varnish\|x-served-by" || true)
@@ -241,7 +245,7 @@ do_verify() {
     has_cf=$(echo "$headers" | grep -ci "cf-ray" || true)
 
     local http_code
-    http_code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "https://primals.eco/" 2>/dev/null || echo "000")
+    http_code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${SITE_URL}/" 2>/dev/null || echo "000")
 
     echo ""
     info "  HTTP status: $http_code"
@@ -255,7 +259,7 @@ do_verify() {
     fi
 
     local local_status
-    local_status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:8880/" 2>/dev/null || echo "000")
+    local_status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://${NUCLEUS_BIND_ADDRESS}:${SPOREPRINT_LOCAL_PORT}/" 2>/dev/null || echo "000")
     info "  Local server: $([[ "$local_status" == "200" ]] && echo "UP" || echo "DOWN")"
 }
 

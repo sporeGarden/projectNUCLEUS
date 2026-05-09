@@ -124,27 +124,49 @@ pub fn iso_now() -> String {
 }
 
 pub struct Primal {
-    pub name: &'static str,
+    pub name: String,
     pub port: u16,
 }
 
-pub const PRIMALS: &[Primal] = &[
-    Primal { name: "barracuda", port: 9740 },
-    Primal { name: "beardog", port: 9100 },
-    Primal { name: "biomeos", port: 9800 },
-    Primal { name: "coralreef", port: 9730 },
-    Primal { name: "loamspine", port: 9700 },
-    Primal { name: "nestgate", port: 9500 },
-    Primal { name: "petaltongue", port: 9900 },
-    Primal { name: "rhizocrypt", port: 9601 },
-    Primal { name: "skunkbat", port: 9140 },
-    Primal { name: "songbird", port: 9200 },
-    Primal { name: "squirrel", port: 9300 },
-    Primal { name: "sweetgrass", port: 9850 },
-    Primal { name: "toadstool", port: 9400 },
+/// Compiled defaults — used when no env overrides are set
+const DEFAULT_PRIMALS: &[(&str, &str, u16)] = &[
+    ("barracuda",     "BARRACUDA_PORT",     9740),
+    ("beardog",       "BEARDOG_PORT",       9100),
+    ("biomeos",       "BIOMEOS_PORT",       9800),
+    ("coralreef",     "CORALREEF_PORT",     9730),
+    ("loamspine",     "LOAMSPINE_PORT",     9700),
+    ("nestgate",      "NESTGATE_PORT",      9500),
+    ("petaltongue",   "PETALTONGUE_PORT",   9900),
+    ("rhizocrypt",    "RHIZOCRYPT_PORT",    9601),
+    ("rhizocrypt-rpc","RHIZOCRYPT_RPC_PORT",9602),
+    ("skunkbat",      "SKUNKBAT_PORT",      9140),
+    ("songbird",      "SONGBIRD_PORT",      9200),
+    ("squirrel",      "SQUIRREL_PORT",      9300),
+    ("sweetgrass",    "SWEETGRASS_PORT",    9850),
+    ("toadstool",     "TOADSTOOL_PORT",     9400),
 ];
 
-pub const HUB_PORT: u16 = 8000;
+/// Loads primal list, honoring env-var overrides from nucleus_config.sh
+pub fn load_primals() -> Vec<Primal> {
+    DEFAULT_PRIMALS
+        .iter()
+        .map(|(name, env_key, default_port)| {
+            let port = std::env::var(env_key)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(*default_port);
+            Primal { name: (*name).to_string(), port }
+        })
+        .collect()
+}
+
+pub fn hub_port() -> u16 {
+    std::env::var("JUPYTERHUB_PORT")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(8000)
+}
+
 pub const COMPUTE_USER: &str = "tamison";
 pub const REVIEWER_USER: &str = "abgreviewer";
 pub const OBSERVER_USER: &str = "abg-test";

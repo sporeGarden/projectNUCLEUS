@@ -27,7 +27,8 @@ PASS_COUNT = 0
 FAIL_COUNT = 0
 RESULTS = []
 
-ABG_SHARED = Path("/home/irongate/shared/abg")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from nucleus_paths import ABG_SHARED, JUPYTER_BIN, JUPYTERHUB_DIR
 
 
 def report(status, test, detail):
@@ -118,8 +119,6 @@ def test_workspace(user):
 
 def test_notebook_execution(user):
     """Execute commons notebooks as the compute user using system jupyter."""
-    JUPYTER_BIN = "/home/irongate/miniforge3/envs/jupyterhub/bin"
-
     commons = ABG_SHARED / "commons"
     for nb_path in sorted(commons.glob("*.ipynb")):
         if ".ipynb_checkpoints" in str(nb_path):
@@ -167,7 +166,7 @@ def test_notebook_execution(user):
 def test_env_vars(user):
     """Check NUCLEUS_TIER — set by JupyterHub spawner, not login shell.
     We verify the JupyterHub config declares it rather than testing the shell."""
-    jh_config = Path("/home/irongate/jupyterhub/jupyterhub_config.py")
+    jh_config = JUPYTERHUB_DIR / "jupyterhub_config.py"
     if jh_config.exists():
         import re
         text = jh_config.read_text()

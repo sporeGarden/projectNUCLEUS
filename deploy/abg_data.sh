@@ -13,7 +13,7 @@
 #   bash abg_data.sh duplicate <file>      — check if file hash already exists
 #
 # Examples:
-#   bash abg_data.sh register /home/irongate/shared/abg/data/ncbi/SRR12345678
+#   bash abg_data.sh register $ABG_SHARED/data/ncbi/SRR12345678
 #   bash abg_data.sh check
 #   bash abg_data.sh search "soil microbiome"
 #   bash abg_data.sh list

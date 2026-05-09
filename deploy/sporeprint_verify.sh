@@ -13,12 +13,16 @@
 
 set -euo pipefail
 
-SPOREPRINT_REPO="/home/irongate/Development/ecoPrimals/infra/sporePrint"
-LOCAL_PORT=8880
-LOCAL_ADDR="127.0.0.1"
-ZOLA="/usr/local/bin/zola"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
+  || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
 
-EXTERNAL_URL="https://primals.eco"
+SPOREPRINT_REPO="${SPOREPRINT_REPO}"
+LOCAL_PORT="${SPOREPRINT_LOCAL_PORT}"
+LOCAL_ADDR="${NUCLEUS_BIND_ADDRESS}"
+ZOLA="${ZOLA:-/usr/local/bin/zola}"
+
+EXTERNAL_URL="${SITE_URL}"
 LOCAL_URL="http://${LOCAL_ADDR}:${LOCAL_PORT}"
 
 KEY_PATHS=(
@@ -174,7 +178,7 @@ else
     fail "cloudflared-tunnel.service ${TUNNEL_STATUS}"
 fi
 
-if rg -q 'hostname: primals.eco' "$HOME/.cloudflared/config.yml" 2>/dev/null; then
+if rg -q 'hostname: primals.eco' "${CLOUDFLARED_DIR}/config.yml" 2>/dev/null; then
     pass "primals.eco in tunnel ingress config"
 else
     fail "primals.eco NOT in tunnel ingress config"

@@ -163,7 +163,7 @@ Return which springs have validation binaries available on this gate.
         "checks_passing": 0
       }
     ],
-    "gate": "irongate",
+    "gate": "<active-gate>",
     "composition": "full",
     "primals_healthy": 13
   }

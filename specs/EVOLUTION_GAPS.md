@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-09 (dual-hosted primals.eco, encrypted DNS, sovereign gate serving)
+**Last updated**: 2026-05-09 (deep debt swept, gate-agnostic config, dual-hosted primals.eco, encrypted DNS)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
 **Multi-tier tests**: observer + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -17,11 +17,13 @@ Related specs:
 - [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
 
 **Rust evolution**: `validation/darkforest/` v0.2.0 — modular auditable security framework (939KB,
-zero runtime deps). 7 source modules: `check.rs` (structured types), `net.rs` (TCP/HTTP helpers),
-`pentest.rs` (3 threat actors), `fuzz.rs` (13 primals + JupyterHub), `crypto.rs` (13 crypto
-strength checks), `report.rs` (pipe + JSON output), `main.rs` (CLI + runner). Backward-compatible
-`PASS|FAIL|KNOWN_GAP|DARK_FOREST` pipe format, plus `--output json` for auditable structured reports
-with per-check severity, category, evidence, remediation, and timestamps.
+zero runtime deps). 7 source modules: `check.rs` (structured types + env-var-driven primal config),
+`net.rs` (TCP/HTTP helpers), `pentest.rs` (3 threat actors), `fuzz.rs` (14 primals + JupyterHub),
+`crypto.rs` (13 crypto strength checks, gate-agnostic paths), `report.rs` (pipe + JSON output),
+`main.rs` (CLI + runner). All ports and paths resolve from environment variables with compiled
+defaults — zero hardcoded gate paths. Backward-compatible `PASS|FAIL|KNOWN_GAP|DARK_FOREST` pipe
+format, plus `--output json` for auditable structured reports with per-check severity, category,
+evidence, remediation, and timestamps.
 
 ---
 
@@ -238,3 +240,4 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-09 | Dual-hosted primals.eco: Zola v0.22.1 builds sporePrint locally, served on port 8880 via `sporeprint-local.service`. Tunnel CNAME added to `~/.cloudflared/config.yml`. `sporeprint_dns.sh` manages DNS routing via Cloudflare API (sovereign/external switching). `sporeprint_verify.sh` checks both origins. H2-07 DONE. |
 | 2026-05-09 | DNS metadata leak closed: `/etc/systemd/resolved.conf` switched to DNS-over-TLS (1.1.1.1 primary, 9.9.9.9 fallback). ISP resolver bypassed. Fixes `.eco` TLD resolution. H2 Step 4 INTERMEDIATE. |
 | 2026-05-09 | ISP negative cache issue: AT&T resolver cached NXDOMAIN during A→CNAME gap, causing LAN devices (still on ISP DNS) to fail resolving primals.eco. Gate unaffected (DoT). Lesson: `sporeprint_dns.sh` must avoid delete-then-create gaps — update atomically. LAN-wide fix: change AT&T gateway DNS to 1.1.1.1. |
+| 2026-05-09 | **Deep debt sweep**: `nucleus_config.sh` centralized with `$GATE_HOME` indirection (all `/home/irongate` hardcoding removed from deploy scripts). `nucleus_paths.py` for Python. tunnelKeeper: `Client::new()` returns `Result`, tokio slimmed, `rand`→`rand_core`, `CLOUDFLARED_DIR` env-var-driven. darkforest: PRIMALS array env-var-driven with compiled fallback, rhizoCrypt RPC 9602 added, crypto/pentest paths gate-agnostic. `security_validation.sh` invokes Rust darkforest (replaces archived bash/python). `pappusCast.py` exception types narrowed. 96 ironGate display references scrubbed across 23 docs. Zero TODO/FIXME/HACK. |

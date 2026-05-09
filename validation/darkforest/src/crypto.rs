@@ -1,28 +1,63 @@
 use crate::check::*;
 use crate::net::*;
+use std::path::PathBuf;
 use std::time::SystemTime;
 
-const COOKIE_SECRET_PATH: &str = "/home/irongate/jupyterhub/jupyterhub_cookie_secret";
-const SQLITE_PATH: &str = "/home/irongate/jupyterhub/jupyterhub.sqlite";
-const CLOUDFLARED_DIR: &str = "/home/irongate/.cloudflared";
-const BEARDOG_PORT: u16 = 9100;
+fn gate_home() -> PathBuf {
+    PathBuf::from(std::env::var("GATE_HOME")
+        .or_else(|_| std::env::var("HOME"))
+        .unwrap_or_else(|_| "/home/nobody".to_string()))
+}
+
+fn cookie_secret_path() -> PathBuf {
+    std::env::var("JUPYTERHUB_DIR").map(PathBuf::from)
+        .unwrap_or_else(|_| gate_home().join("jupyterhub"))
+        .join("jupyterhub_cookie_secret")
+}
+
+fn sqlite_path() -> PathBuf {
+    std::env::var("JUPYTERHUB_DIR").map(PathBuf::from)
+        .unwrap_or_else(|_| gate_home().join("jupyterhub"))
+        .join("jupyterhub.sqlite")
+}
+
+fn cf_dir() -> PathBuf {
+    std::env::var("CLOUDFLARED_DIR").map(PathBuf::from)
+        .unwrap_or_else(|_| gate_home().join(".cloudflared"))
+}
+
+struct CryptoConfig {
+    hub_port: u16,
+    beardog_port: u16,
+    cookie_secret: PathBuf,
+    sqlite: PathBuf,
+    cloudflared_dir: PathBuf,
+}
 
 pub fn run(host: &str, results: &mut Vec<CheckResult>) {
+    let cfg = CryptoConfig {
+        hub_port: hub_port(),
+        beardog_port: std::env::var("BEARDOG_PORT")
+            .ok().and_then(|v| v.parse().ok()).unwrap_or(9100),
+        cookie_secret: cookie_secret_path(),
+        sqlite: sqlite_path(),
+        cloudflared_dir: cf_dir(),
+    };
     println!("\n══ Crypto Strength Validation ══\n");
 
-    cry_01_cookie_entropy(results);
-    cry_02_cookie_age(results);
-    cry_03_cookie_permissions(results);
+    cry_01_cookie_entropy(&cfg, results);
+    cry_02_cookie_age(&cfg, results);
+    cry_03_cookie_permissions(&cfg, results);
     cry_04_api_token_entropy(results);
     cry_05_shadow_hash_algorithm(results);
     cry_06_shadow_hash_strength(results);
-    cry_07_ionic_tamper_rejection(host, results);
-    cry_08_ionic_expiry_enforcement(host, results);
-    cry_09_btsp_cipher_negotiation(host, results);
-    cry_10_btsp_null_rejection(host, results);
+    cry_07_ionic_tamper_rejection(host, &cfg, results);
+    cry_08_ionic_expiry_enforcement(host, &cfg, results);
+    cry_09_btsp_cipher_negotiation(host, &cfg, results);
+    cry_10_btsp_null_rejection(host, &cfg, results);
     cry_11_master_key_present(results);
-    cry_12_cookie_signing_version(host, results);
-    cry_13_sensitive_file_permissions(results);
+    cry_12_cookie_signing_version(host, &cfg, results);
+    cry_13_sensitive_file_permissions(&cfg, results);
 }
 
 fn shannon_entropy(data: &[u8]) -> f64 {
@@ -44,14 +79,15 @@ fn shannon_entropy(data: &[u8]) -> f64 {
     entropy
 }
 
-fn cry_01_cookie_entropy(results: &mut Vec<CheckResult>) {
+fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-01: Cookie Secret Entropy ──");
     let cb = CheckBuilder::new("CRY-01", "crypto", Category::Crypto, Severity::Critical)
         .remediation("Regenerate cookie secret: deploy/rotate_cookie_secret.sh");
+    let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, content) = sudo_cmd("root", &format!("cat {} 2>/dev/null", COOKIE_SECRET_PATH));
+    let (code, content) = sudo_cmd("root", &format!("cat {} 2>/dev/null", secret_path));
     if code != 0 || content.trim().is_empty() {
-        results.push(cb.fail("Cookie secret file not readable or empty", COOKIE_SECRET_PATH));
+        results.push(cb.fail("Cookie secret file not readable or empty", &secret_path));
         return;
     }
 
@@ -82,14 +118,15 @@ fn cry_01_cookie_entropy(results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_02_cookie_age(results: &mut Vec<CheckResult>) {
+fn cry_02_cookie_age(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-02: Cookie Secret Age ──");
     let cb = CheckBuilder::new("CRY-02", "crypto", Category::Crypto, Severity::Medium)
         .remediation("Rotate monthly: sudo bash deploy/rotate_cookie_secret.sh");
+    let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%Y' {} 2>/dev/null", COOKIE_SECRET_PATH));
+    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%Y' {} 2>/dev/null", secret_path));
     if code != 0 {
-        results.push(cb.fail("Cannot stat cookie secret file", COOKIE_SECRET_PATH));
+        results.push(cb.fail("Cannot stat cookie secret file", &secret_path));
         return;
     }
 
@@ -115,14 +152,15 @@ fn cry_02_cookie_age(results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_03_cookie_permissions(results: &mut Vec<CheckResult>) {
+fn cry_03_cookie_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-03: Cookie Secret Permissions ──");
     let cb = CheckBuilder::new("CRY-03", "crypto", Category::Crypto, Severity::High)
         .remediation("chmod 600 and chown root the cookie secret file");
+    let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%a %U' {} 2>/dev/null", COOKIE_SECRET_PATH));
+    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%a %U' {} 2>/dev/null", secret_path));
     if code != 0 {
-        results.push(cb.fail("Cannot stat cookie secret file", COOKIE_SECRET_PATH));
+        results.push(cb.fail("Cannot stat cookie secret file", &secret_path));
         return;
     }
 
@@ -246,7 +284,7 @@ fn cry_06_shadow_hash_strength(results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_07_ionic_tamper_rejection(host: &str, results: &mut Vec<CheckResult>) {
+fn cry_07_ionic_tamper_rejection(host: &str, cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-07: Ionic Token Tamper Rejection ──");
     let cb = CheckBuilder::new("CRY-07", "crypto", Category::Crypto, Severity::Critical)
         .remediation("BearDog auth.verify_ionic must reject tampered signatures");
@@ -258,7 +296,7 @@ fn cry_07_ionic_tamper_rejection(host: &str, results: &mut Vec<CheckResult>) {
     let payload = format!(
         r#"{{"jsonrpc":"2.0","method":"auth.verify_ionic","params":{{"token":"{tampered}"}},"id":1}}"#
     );
-    if let Some((_, body)) = send_jsonrpc(host, BEARDOG_PORT, &payload, 5000) {
+    if let Some((_, body)) = send_jsonrpc(host, cfg.beardog_port, &payload, 5000) {
         if body.contains("\"error\"") || body.contains("-32001") || body.contains("-32602") {
             results.push(cb.pass("Tampered ionic token rejected by BearDog", &body[..120.min(body.len())]));
         } else if body.contains("\"result\"") && body.contains("true") {
@@ -267,11 +305,11 @@ fn cry_07_ionic_tamper_rejection(host: &str, results: &mut Vec<CheckResult>) {
             results.push(cb.pass("BearDog rejected tampered token (non-standard response)", &body[..120.min(body.len())]));
         }
     } else {
-        results.push(cb.pass("BearDog not reachable on :9100 (skip)", "Connection refused"));
+        results.push(cb.pass(&format!("BearDog not reachable on :{} (skip)", cfg.beardog_port), "Connection refused"));
     }
 }
 
-fn cry_08_ionic_expiry_enforcement(host: &str, results: &mut Vec<CheckResult>) {
+fn cry_08_ionic_expiry_enforcement(host: &str, cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-08: Ionic Token Expiry Enforcement ──");
     let cb = CheckBuilder::new("CRY-08", "crypto", Category::Crypto, Severity::High)
         .remediation("BearDog must reject expired tokens");
@@ -286,28 +324,27 @@ fn cry_08_ionic_expiry_enforcement(host: &str, results: &mut Vec<CheckResult>) {
     let payload = format!(
         r#"{{"jsonrpc":"2.0","method":"auth.verify_ionic","params":{{"token":"{expired}"}},"id":1}}"#
     );
-    if let Some((_, body)) = send_jsonrpc(host, BEARDOG_PORT, &payload, 5000) {
+    if let Some((_, body)) = send_jsonrpc(host, cfg.beardog_port, &payload, 5000) {
         if body.contains("\"error\"") || body.contains("-32") {
             results.push(cb.pass("Expired/tampered ionic token rejected by BearDog", &body[..120.min(body.len())]));
         } else if body.contains("\"result\"") && body.contains("true") {
             results.push(cb.fail("Expired ionic token ACCEPTED — expiry enforcement broken", &body[..120.min(body.len())]));
         } else {
-            // Non-standard response (no "result":true) counts as rejection
             results.push(cb.pass("BearDog rejected expired token (non-standard response)", &body[..120.min(body.len())]));
         }
     } else {
-        results.push(cb.pass("BearDog not reachable on :9100 (skip)", "Connection refused"));
+        results.push(cb.pass(&format!("BearDog not reachable on :{} (skip)", cfg.beardog_port), "Connection refused"));
     }
 }
 
-fn cry_09_btsp_cipher_negotiation(host: &str, results: &mut Vec<CheckResult>) {
+fn cry_09_btsp_cipher_negotiation(host: &str, _cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+    let sweetgrass_port: u16 = std::env::var("SWEETGRASS_PORT")
+        .ok().and_then(|v| v.parse().ok()).unwrap_or(9850);
     println!("── CRY-09: BTSP Cipher Negotiation ──");
     let cb = CheckBuilder::new("CRY-09", "crypto", Category::Crypto, Severity::High)
         .remediation("BTSP must negotiate chacha20_poly1305 in production");
 
-    // Attempt to connect to a BTSP port (sweetgrass 9850 uses BTSP) and send a
-    // plaintext probe — it should reject non-BTSP traffic.
-    if let Some(resp) = send_raw(host, 9850, b"HELLO PLAINTEXT\n", 3000) {
+    if let Some(resp) = send_raw(host, sweetgrass_port, b"HELLO PLAINTEXT\n", 3000) {
         let text = String::from_utf8_lossy(&resp);
         if text.contains("result") || text.contains("200") {
             results.push(cb.fail("BTSP port accepted plaintext — cipher negotiation bypassed", &text[..80.min(text.len())]));
@@ -319,13 +356,14 @@ fn cry_09_btsp_cipher_negotiation(host: &str, results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_10_btsp_null_rejection(host: &str, results: &mut Vec<CheckResult>) {
+fn cry_10_btsp_null_rejection(host: &str, _cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+    let rhizocrypt_port: u16 = std::env::var("RHIZOCRYPT_PORT")
+        .ok().and_then(|v| v.parse().ok()).unwrap_or(9601);
     println!("── CRY-10: BTSP Null Cipher Rejection ──");
     let cb = CheckBuilder::new("CRY-10", "crypto", Category::Crypto, Severity::High)
         .remediation("BTSP must reject null cipher in production mode");
 
-    // rhizocrypt also uses BTSP (port 9601)
-    if let Some(resp) = send_raw(host, 9601, b"HELLO PLAINTEXT\n", 3000) {
+    if let Some(resp) = send_raw(host, rhizocrypt_port, b"HELLO PLAINTEXT\n", 3000) {
         let text = String::from_utf8_lossy(&resp);
         if text.contains("result") {
             results.push(cb.fail("BTSP port accepted plaintext on rhizocrypt:9601", &text[..80.min(text.len())]));
@@ -343,7 +381,8 @@ fn cry_11_master_key_present(results: &mut Vec<CheckResult>) {
         .remediation("Set BEARDOG_MASTER_KEY env var for persistent key derivation");
 
     let (code, out) = sudo_cmd("root",
-        "grep -r 'BEARDOG_MASTER_KEY' /etc/systemd/system/beardog* /home/irongate/.config/systemd/user/beardog* 2>/dev/null | head -3");
+        &format!("grep -r 'BEARDOG_MASTER_KEY' /etc/systemd/system/beardog* {}/.config/systemd/user/beardog* 2>/dev/null | head -3",
+            gate_home().display()));
     if code == 0 && !out.trim().is_empty() && out.contains("BEARDOG_MASTER_KEY") {
         let has_value = out.contains('=') && !out.contains("BEARDOG_MASTER_KEY=\"\"") && !out.contains("BEARDOG_MASTER_KEY=\n");
         if has_value {
@@ -359,13 +398,12 @@ fn cry_11_master_key_present(results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_12_cookie_signing_version(host: &str, results: &mut Vec<CheckResult>) {
+fn cry_12_cookie_signing_version(host: &str, cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-12: Cookie Signing Version ──");
     let cb = CheckBuilder::new("CRY-12", "crypto", Category::Crypto, Severity::Medium)
         .remediation("Ensure Tornado >= 6.0 for HMAC-SHA256 signed cookies (v2 format)");
 
-    // Check the hub's login page Set-Cookie header for signed cookie format
-    if let Some((_, headers, _)) = http_get(host, HUB_PORT, "/hub/login", "", 5000) {
+    if let Some((_, headers, _)) = http_get(host, cfg.hub_port, "/hub/login", "", 5000) {
         let cookie_line = headers.lines().find(|l| l.to_lowercase().contains("set-cookie"));
         if let Some(cookie) = cookie_line {
             // Tornado v2 signed values use | as delimiter with timestamp
@@ -383,13 +421,16 @@ fn cry_12_cookie_signing_version(host: &str, results: &mut Vec<CheckResult>) {
     }
 }
 
-fn cry_13_sensitive_file_permissions(results: &mut Vec<CheckResult>) {
+fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-13: Sensitive File Permission Sweep ──");
 
-    let sensitive_files = [
-        (COOKIE_SECRET_PATH, "Cookie secret"),
-        (SQLITE_PATH, "JupyterHub database"),
-        ("/home/irongate/.cloudflared/config.yml", "Cloudflare tunnel config"),
+    let cookie_path = cfg.cookie_secret.display().to_string();
+    let sqlite_path = cfg.sqlite.display().to_string();
+    let cf_config_path = format!("{}/config.yml", cfg.cloudflared_dir.display());
+    let sensitive_files: Vec<(&str, &str)> = vec![
+        (&cookie_path, "Cookie secret"),
+        (&sqlite_path, "JupyterHub database"),
+        (&cf_config_path, "Cloudflare tunnel config"),
     ];
 
     for (path, label) in &sensitive_files {
@@ -418,7 +459,7 @@ fn cry_13_sensitive_file_permissions(results: &mut Vec<CheckResult>) {
     }
 
     // Tunnel credentials — any .json in .cloudflared/
-    let (code, creds_out) = sudo_cmd("root", &format!("ls -la {}/*.json 2>/dev/null", CLOUDFLARED_DIR));
+    let (code, creds_out) = sudo_cmd("root", &format!("ls -la {}/*.json 2>/dev/null", cfg.cloudflared_dir.display()));
     if code == 0 && !creds_out.trim().is_empty() {
         let cb = CheckBuilder::new("CRY-13-tunnel_creds", "crypto", Category::Crypto, Severity::Critical)
             .remediation("chmod 600 ~/.cloudflared/*.json");

@@ -30,11 +30,11 @@ PASS_COUNT = 0
 FAIL_COUNT = 0
 RESULTS = []
 
-PUBLIC_ROOT = Path("/home/irongate/shared/abg/public")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from nucleus_paths import PUBLIC_ROOT, JUPYTER_BIN, VOILA_PORT
+
 VOILA_USER = "voila"
-JUPYTER_BIN = "/home/irongate/miniforge3/envs/jupyterhub/bin"
-VOILA_PORT = 8867
-REDIRECT_PORT = 8866
+REDIRECT_PORT = VOILA_PORT
 
 
 def report(status, test, detail):

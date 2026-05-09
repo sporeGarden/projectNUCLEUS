@@ -27,7 +27,8 @@ PASS_COUNT = 0
 FAIL_COUNT = 0
 RESULTS = []
 
-ABG_SHARED = Path("/home/irongate/shared/abg")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from nucleus_paths import ABG_SHARED
 
 
 def report(status, test, detail):

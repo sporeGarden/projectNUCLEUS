@@ -57,7 +57,7 @@ What the operating system and network expose, independent of primal code.
 - Primals bind to `0.0.0.0` — this is how the Rust TCP listeners
   default. On a single-gate system with no external exposure (firewall
   + tunnel-only), this is acceptable. When the NucBox intake goes live,
-  primals on ironGate must rebind to `127.0.0.1` or the USB-C subnet.
+  primals on the active gate must rebind to `127.0.0.1` or the USB-C subnet.
 - JupyterHub correctly binds to `127.0.0.1:8000`
 - Family seed directory has mode `700`
 - JupyterHub cookie secret has mode `600`

@@ -1,8 +1,11 @@
 # Phase 59 Absorption — Downstream Evolution Handoff
 
+> **Fossil record**: Superseded by Phase 60 enforcement (`REVALIDATION_PHASE60_MAY08_2026.md`)
+> and post-interstadial completion. Retained as lineage record.
+
 **Date**: 2026-05-06
 **From**: primalSpring v0.9.24 (Phase 59 — Full Ecosystem Convergence)
-**For**: projectNUCLEUS team (ironGate)
+**For**: projectNUCLEUS team
 
 ---
 
@@ -99,7 +102,7 @@ Every primal's `capabilities.list` now returns `protocol` and `transport` fields
 - [x] Updated irongate.toml port table
 - [x] Added tcp_fallback_port fields to deploy graph nodes
 - [x] Added validate_deployment_readiness() pre-launch check
-- [x] Updated gate_manifest.toml with live irongate entry
+- [x] Updated gate_manifest.toml with live active-gate entry
 - [x] Updated README.md for Phase 59 convergence
 - [x] Updated graphs/README.md
 - [x] Added BIND_ADDRESS variable to deploy.sh for primal bind control

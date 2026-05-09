@@ -1,7 +1,7 @@
 # External Pipeline Validation — Phase 2a
 
 **Date**: 2026-05-06
-**System**: ironGate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
+**System**: active gate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
 **Composition**: 13/13 primals (full NUCLEUS, dynamically discovered from plasmidBin)
 **JupyterHub**: v5.4.5, PAM auth, LocalProcessSpawner
 **Tunnel**: cloudflared 2026.3.0 quick tunnel (trycloudflare.com)
@@ -15,7 +15,7 @@ The full external access path from browser to science compute:
 ```
 Browser → Cloudflare edge (TLS termination)
        → cloudflared quick tunnel (QUIC, X25519MLKEM768)
-       → ironGate:8000 (JupyterHub)
+       → the active gate:8000 (JupyterHub)
        → Primal composition (13 primals on localhost)
        → Provenance pipeline (rhizoCrypt → loamSpine → sweetGrass)
 ```
@@ -106,7 +106,7 @@ All primals dynamically discovered from `plasmidBin/primals/` and verified:
 - **CPU limit**: 8 cores per user
 - **Kernels**: Python (conda:bioinfo), R (conda:r-bioinfo), base Python
 - **Idle culling**: 1 hour
-- **Admin**: irongate
+- **Admin**: gate owner account
 
 ### ABG Notebook
 

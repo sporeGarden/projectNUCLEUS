@@ -35,9 +35,9 @@ generation and penetration testing framework for validation.
 | TLS termination | Cloudflare edge | Cloudflare |
 | CDN / caching | Cloudflare CDN | Cloudflare |
 | Static site | GitHub Pages (sporePrint repo, Zola) | GitHub |
-| Tunnel to ironGate | **Named tunnel `nucleus-lab`** (lab.primals.eco), stable systemd service | Cloudflare |
-| JupyterHub | System service on ironGate:8000, PAM auth, security headers, tunnel-only | — |
-| Primal composition | **13 primals** live on ironGate, systemd user service | — |
+| Tunnel to the active gate | **Named tunnel `nucleus-lab`** (lab.primals.eco), stable systemd service | Cloudflare |
+| JupyterHub | System service on the active gate:8000, PAM auth, security headers, tunnel-only | — |
+| Primal composition | **13 primals** live on the active gate, systemd user service | — |
 | Provenance pipeline | Full 9-phase pipeline operational (run 2: 26 events) | — |
 | Firewall | **UFW active**: deny-by-default, allow SSH + LAN + localhost | — |
 | Baselines | Hourly cron capturing CF tunnel metrics → `validation/baselines/daily/` | — |
@@ -45,7 +45,7 @@ generation and penetration testing framework for validation.
 
 ### Validated Results (Phase 2a — Current)
 
-- 13 primals deployed via `deploy.sh --composition full --gate irongate`
+- 13 primals deployed via `deploy.sh --composition full --gate <active-gate>`
 - Named Cloudflare tunnel (not quick tunnel) with systemd persistence
 - JupyterHub as system service with PAM auth and tiered ABG access
 - UFW deny-by-default (all primals now bind 127.0.0.1 natively since Phase 60)
@@ -53,17 +53,17 @@ generation and penetration testing framework for validation.
 - Five-layer pen test: **265 PASS, 0 FAIL, 0 KNOWN_GAP** (Phase 60 enforced mode, 2026-05-08)
 - All primals survive input fuzzing (7 payloads × 4 targets, zero crashes)
 - BTSP enforcement validated (sweetGrass/rhizoCrypt reject plaintext)
-- `irongate` user blocked from tunnel login via `post_auth_hook`
+- Local admin UNIX account blocked from tunnel login via `post_auth_hook`
 - Data registry scaffolded with `abg_data.sh` and manifest system
 - 235+ science checks pass across 11 wetSpring workloads
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 
 ### Hardware for Phase 2
 
-| Node | Role | Link to ironGate |
+| Node | Role | Link to the active gate |
 |------|------|-----------------|
 | GMKtec NucBox M6 (32 GB) | Intake / tunnel termination | USB-C ethernet (10.99.0.0/30) |
-| ironGate (i9-14900K, 96 GB DDR5) | Compute + provenance | Direct (USB-C point-to-point) |
+| The active gate (i9-14900K, 96 GB DDR5) | Compute + provenance | Direct (USB-C point-to-point) |
 
 The USB-C ethernet link creates a physically isolated two-node covalent
 bond. No switch, no LAN contamination, no accidental discovery of other
@@ -81,15 +81,15 @@ gates. Songbird BirdSong UDP multicast scopes to this link only.
 
 ```
 Browser → lab.primals.eco (Cloudflare DNS + CDN)
-       → cloudflared named tunnel (nucleus-lab) on ironGate
+       → cloudflared named tunnel (nucleus-lab) on the active gate
        → 127.0.0.1:8000 (JupyterHub system service)
 ```
 
 **Completed**:
-1. Named tunnel `nucleus-lab` created with `cloudflared` on ironGate
+1. Named tunnel `nucleus-lab` created with `cloudflared` on the active gate
 2. Three systemd services: NUCLEUS primals, JupyterHub (system), cloudflared tunnel
 3. PAM authentication with tiered ABG access (abg-compute, abg-admin, abg-pi)
-4. `irongate` blocked from tunnel login via `post_auth_hook`
+4. Local admin account blocked from tunnel login via `post_auth_hook`
 5. UFW deny-by-default, security headers applied
 6. Pen test: 24 PASS, 0 critical failures
 
@@ -123,7 +123,7 @@ Browser → lab.primals.eco (Cloudflare DNS + CDN)
 
 ```
 Browser → lab.primals.eco → cloudflared tunnel
-       → BearDog BTSP handshake (inside tunnel, on ironGate)
+       → BearDog BTSP handshake (inside tunnel, on the active gate)
        → JupyterHub (token-authenticated, scoped to ABG tier)
 ```
 
@@ -178,11 +178,11 @@ run notebooks but cannot call `nestgate.storage.list` or `beardog.auth.issue_ion
 
 ### Step 3a: sporePrint Content to NestGate
 
-**Goal**: Remove GitHub Pages dependency — primals.eco served entirely from ironGate.
+**Goal**: Remove GitHub Pages dependency — primals.eco served entirely from the active gate.
 
 ```
 Browser → primals.eco (Cloudflare DNS + CDN proxy)
-       → cloudflared tunnel → ironGate
+       → cloudflared tunnel → the active gate
        → petalTongue web mode → NestGate content-addressed store
 ```
 
@@ -236,7 +236,7 @@ Browser → primals.eco (Cloudflare DNS + CDN proxy)
   serves content without degradation while JupyterHub is under load
 
 **Dependency removed**: GitHub Pages. Cloudflare CDN still proxies but content
-originates from NestGate on ironGate.
+originates from NestGate on the active gate.
 
 ### Step 3b: BTSP Replaces Cloudflare TLS
 
@@ -244,7 +244,7 @@ originates from NestGate on ironGate.
 
 ```
 Browser → primals.eco (Cloudflare DNS-only, grey cloud)
-       → BearDog TLS termination on ironGate:443
+       → BearDog TLS termination on the active gate:443
        → ChaCha20-Poly1305 AEAD channel
        → petalTongue (content) + JupyterHub (compute)
 ```
@@ -290,11 +290,11 @@ public services. BearDog rate limiting + Dark Forest pattern sufficient.
 
 ### Step 3c: Songbird NAT Replaces cloudflared
 
-**Goal**: Remove `cloudflared` binary dependency — direct browser-to-ironGate path.
+**Goal**: Remove `cloudflared` binary dependency — direct browser path to the active gate.
 
 ```
 Browser → primals.eco (DNS-only, A record to public IP)
-       → BearDog TLS on ironGate:443
+       → BearDog TLS on the active gate:443
        → Songbird NAT traversal (if behind NAT/CGNAT)
        → petalTongue + JupyterHub
 ```
@@ -313,12 +313,12 @@ Browser → primals.eco (DNS-only, A record to public IP)
    - Relay only carries encrypted BTSP traffic — no content inspection
 3. **Connection fallback chain**:
    ```
-   Try 1: Direct TCP to ironGate public IP:443
+   Try 1: Direct TCP to the active gate public IP:443
    Try 2: Songbird UDP punch-through via STUN
    Try 3: TURN relay via VPS
    Try 4: (emergency) Re-enable cloudflared tunnel
    ```
-4. **Dynamic DNS** — if ironGate's IP changes (residential ISP), Songbird
+4. **Dynamic DNS** — if the active gate's IP changes (residential ISP), Songbird
    updates the DNS A record via Cloudflare API (DNS-only mode) or a sovereign
    DNS update mechanism.
 
@@ -369,14 +369,14 @@ Browser → sovereign DNS resolution
 
 **What to build** (Option 3 — Hybrid):
 1. **Authoritative DNS on VPS** — `knot-dns` serving `primals.eco` zone.
-   Records: A (ironGate IP), AAAA (if available), MX (future), CAA (Let's Encrypt).
+   Records: A (gate public IP), AAAA (if available), MX (future), CAA (Let's Encrypt).
    DNSSEC signed. Monitoring via skunkBat health check.
 2. **Registrar NS transfer** — update `primals.eco` registrar to point NS
    records at VPS IP instead of Cloudflare nameservers.
 3. **BTSP direct resolution** — ecosystem clients (BTSP-aware) resolve
    `primals.eco` via BearDog's built-in service discovery. No DNS needed.
 4. **Dynamic IP update** — Songbird notifies the authoritative DNS server
-   when ironGate's public IP changes (replaces Cloudflare API call from 3c).
+   when the active gate's public IP changes (replaces Cloudflare API call from 3c).
 
 **Shadow-run protocol** (14 days minimum — DNS requires longer validation):
 1. Both NS sets active: Cloudflare + self-hosted (secondary)

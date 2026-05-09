@@ -7,7 +7,11 @@
 #
 set -euo pipefail
 
-COOKIE_SECRET="/home/irongate/jupyterhub/jupyterhub_cookie_secret"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
+  || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
+
+COOKIE_SECRET="${JUPYTERHUB_DIR}/jupyterhub_cookie_secret"
 SERVICE="jupyterhub"
 
 if [[ $EUID -ne 0 ]]; then

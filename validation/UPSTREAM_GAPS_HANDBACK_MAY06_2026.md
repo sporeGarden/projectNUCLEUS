@@ -4,7 +4,7 @@
 # Upstream Gaps — Handback from projectNUCLEUS Absorption
 
 **Date**: 2026-05-06
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS
 **For**: primalSpring, primal teams
 
 Gaps discovered during Phase 59 downstream absorption. Document here and

@@ -4,7 +4,7 @@
 # Primal Deep Debt Audit — Upstream Handback
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS
 **For**: All primal teams, primalSpring
 **Scope**: Code quality audit across all 15 locally-cloned primal repos.
 Files >800 lines, unsafe code, bare `#[allow]`, hardcoded primal names,

@@ -183,15 +183,30 @@ These are not gaps — they are accepted constraints:
 Tracked here for visibility. Handed off via wateringHole. Not blocking
 Horizon 1 or local Horizon 2 work.
 
-| ID | What | Owner | Handoff |
-|----|------|-------|---------|
-| DF-2 | toadstool `TOADSTOOL_AUTH_MODE` env var mapping | toadStool team | `PROJECTNUCLEUS_UPSTREAM_GAPS_CONSOLIDATED_MAY08_2026.md` |
-| DF-3 | songbird/squirrel silent on `auth.mode` TCP | Each team | Same |
-| U1 | primalSpring `CHECKSUMS` stale | primalSpring | Same |
-| U2 | 5 deploy graphs missing `by_capability` | primalSpring | Same |
-| U3 | 8 profile graphs missing `bonding_policy` | primalSpring | Same |
-| U5 | sweetGrass port 39085 vs 9850 | sweetGrass | Same |
-| JH-11 | Cross-primal token federation | biomeOS/primalSpring | Same (Tier 4 — flagged, not actionable) |
+**Post-interstadial update (May 9, 2026)**: All 13 primals at zero debt.
+8/8 springs completed primordial extinction (eukaryotic UniBin). 9,317+ tests
+across the delta. Several previously open gaps resolved upstream.
+
+### Resolved (closed by upstream teams since last audit)
+
+| ID | What | Resolved by | When |
+|----|------|-------------|------|
+| DF-2 | toadstool `TOADSTOOL_AUTH_MODE` env var mapping | toadStool S233 — auth.mode env + eprintln→tracing | May 8 |
+| DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — CallerContext wired (TCP transport-aware) | May 8 |
+| U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical | May 8 |
+
+### Open
+
+| ID | What | Owner | Priority | Impact |
+|----|------|-------|----------|--------|
+| JH-11 | Cross-primal token federation | bearDog/biomeOS | **HIGH** | Blocks Tier 4 authenticated composition for all springs. Next stadial gate. |
+| GAP-06 | rhizoCrypt no UDS transport | rhizoCrypt | MEDIUM | Blocks provenance trio in 4 ludoSpring experiments |
+| GAP-03 | biomeOS cell graph live deploy not tested | biomeOS | MEDIUM | Blocks live cell deployment (ludospring_cell.toml) |
+| GAP-09 | biomeOS Neural API registration endpoint | biomeOS | MEDIUM | Blocks neural routing for game methods |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | primalSpring | LOW | Method registration for game composition |
+| U1 | primalSpring `CHECKSUMS` stale | primalSpring | LOW | Doc debt only |
+| U2 | 5 deploy graphs missing `by_capability` | primalSpring | LOW | Structural validation nit |
+| U3 | 8 profile graphs missing `bonding_policy` | primalSpring | LOW | Template debt |
 
 ---
 

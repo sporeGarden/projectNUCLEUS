@@ -64,15 +64,16 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Phase 60 absorbed, MethodGate enforced, open observer live (2026-05-09)**
+**Post-interstadial, sovereign hosting live (2026-05-09)**
 
 ### Infrastructure
 
-- All **13/13 NUCLEUS primals** deployed and healthy on the active gate
+- All **13/13 NUCLEUS primals** deployed and healthy on the active gate — zero debt across all primals
+- **8/8 springs** completed primordial extinction — eukaryotic UniBin, 9,317+ tests across the delta
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
-- 235+ wetSpring science checks passing across 11 workloads (8 Rust PASS, 2 Python RUN, 1 deferred FAIL)
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
+- **Sovereign hosting**: primals.eco dual-hosted (gate tunnel + GitHub Pages fallback), DNS-over-TLS, API-managed DNS switching
 
 ### Services (all persistent via systemd)
 
@@ -82,6 +83,7 @@ Gates connect to each other through chemical bonding patterns:
 | JupyterHub | `lab.primals.eco` (gated) | 8000 | Live, PAM auth + Cloudflare Access, reviewer/user tiers |
 | Forgejo | `git.primals.eco` | 3000 | Live, projectNUCLEUS mirrored |
 | pappusCast | — | — | Tiered auto-propagation daemon (workspace → observer) |
+| sporePrint (local) | `primals.eco` (tunnel) | 8880 | Live, Zola static build, 15-min rebuild timer |
 | Cloudflare Tunnel | — | outbound | Routes lab + git subdomains; Access gates reviewer/user |
 | 13 NUCLEUS primals | localhost | 9100–9900 | All healthy, user services |
 

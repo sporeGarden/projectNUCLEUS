@@ -7,7 +7,7 @@
 # permission leaks, and rendering failures.
 #
 # Usage:
-#     sudo bash deploy/tier_test_all.sh [--json] [--tier observer|reviewer|compute|hub|pappusCast|all]
+#     sudo bash deploy/tier_test_all.sh [--json] [--tier observer|reviewer|compute|hub|pappusCast|sporePrint|all]
 #
 # Outputs:
 #     deploy/tier_test_results/<timestamp>/
@@ -32,7 +32,7 @@ for arg in "$@"; do
     case "$arg" in
         --json) JSON_FLAG="--json" ;;
         --tier)  ;;
-        observer|reviewer|compute|hub|pappusCast|all) TIER="$arg" ;;
+        observer|reviewer|compute|hub|pappusCast|sporePrint|all) TIER="$arg" ;;
     esac
 done
 
@@ -106,6 +106,22 @@ if [[ "$TIER" == "all" || "$TIER" == "pappusCast" ]]; then
         echo "FAIL|pappusCast|health|unhealthy" >> "${RESULTS_DIR}/pappusCast.txt"
     fi
     echo "  → pappusCast: health check (exit=${pg_exit})"
+fi
+
+if [[ "$TIER" == "all" || "$TIER" == "sporePrint" ]]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  Running: sporePrint dual-origin verification"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    set +e
+    bash "${SCRIPT_DIR}/sporeprint_verify.sh" --tier-test 2>&1 | tee "${RESULTS_DIR}/sporePrint.txt"
+    sp_exit=$?
+    set -e
+    sp_pass=$(grep -c "^PASS|" "${RESULTS_DIR}/sporePrint.txt" 2>/dev/null) || sp_pass=0
+    sp_fail=$(grep -c "^FAIL|" "${RESULTS_DIR}/sporePrint.txt" 2>/dev/null) || sp_fail=0
+    TOTAL_PASS=$((TOTAL_PASS + sp_pass))
+    TOTAL_FAIL=$((TOTAL_FAIL + sp_fail))
+    echo "  → sporePrint: ${sp_pass} pass, ${sp_fail} fail (exit=${sp_exit})"
 fi
 
 # Write summary

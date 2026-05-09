@@ -4,10 +4,11 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-09 (open observer, pappusCast, tunnelKeeper, multi-tier tests)
+**Last updated**: 2026-05-09 (dual-hosted primals.eco, encrypted DNS, sovereign gate serving)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
-**Multi-tier tests**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
+**Multi-tier tests**: observer + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
+**Sovereign hosting**: primals.eco served from gate via Cloudflare tunnel (Zola build on port 8880)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -75,17 +76,31 @@ the calibrate → shadow-run → cutover protocol in `SOVEREIGNTY_VALIDATION_PRO
 **Not blocked by JH-11**: The authenticator only calls beardog (same-primal),
 not cross-primal methods. Cross-primal federation is Horizon 3.
 
-### Step 3a: sporePrint on NestGate (replaces GitHub Pages)
+### Step 3a: sporePrint on sovereign gate (replaces GitHub Pages)
 
-**Status**: Primal prerequisites resolved (Phase 60). Local pipeline not built.
+**Status**: INTERMEDIATE LIVE. Gate serves primals.eco via Zola build + Cloudflare tunnel.
+DNS switched to tunnel CNAME via `deploy/sporeprint_dns.sh sovereign`. Full primal path (NestGate + petalTongue) remains Phase 3.
+
+**Intermediate layer (operational May 9, 2026)**:
+- Zola v0.22.1 installed at `/usr/local/bin/zola`
+- `deploy/sporeprint_local.sh` pulls, builds, serves on `127.0.0.1:8880`
+- `sporeprint-local.service` + `sporeprint-rebuild.timer` (15-min pull/build)
+- Tunnel ingress: `primals.eco → http://127.0.0.1:8880` in `~/.cloudflared/config.yml`
+- `deploy/sporeprint_dns.sh` manages DNS via Cloudflare API (`sovereign`/`external`/`status`/`verify`)
+- `deploy/sporeprint_verify.sh` checks both origins, integrated into `tier_test_all.sh`
+
+**DNS sovereignty (operational May 9, 2026)**:
+- Gate resolves via DNS-over-TLS to 1.1.1.1 (Cloudflare) with Quad9 fallback
+- ISP resolver (AT&T) bypassed — no DNS metadata leak to ISP
+- `/etc/systemd/resolved.conf` configured with `DNSOverTLS=yes`
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
-| H2-05 | Build `deploy/publish_sporeprint.sh` | Medium | Zola build → NestGate `content.put` for each file → manifest creation |
+| H2-05 | ~~Build publish pipeline~~ → Build NestGate content pipeline | Medium | Zola build → NestGate `content.put` for each file → manifest creation. Intermediate: Zola + Python HTTP server operational |
 | H2-06 | Configure petalTongue web mode | Low | `--docroot` resolved Phase 60. Config: listen 9901, NestGate backend, sporeprint collection |
-| H2-07 | Cloudflare ingress route for `primals.eco` → petalTongue:9901 | Trivial | Add route to cloudflared config |
-| H2-08 | Shadow run: GitHub Pages vs NestGate/petalTongue (7 days) | Ops | benchScale `nestgate_content_parity.sh`. Compare TTFB, Lighthouse scores |
-| H2-09 | Cutover: disable GitHub Pages, petalTongue primary | — | 100% content parity, TTFB within 10% of GH Pages |
+| H2-07 | ~~Cloudflare ingress route~~ | **DONE** | `primals.eco` in tunnel config, DNS switchable via API |
+| H2-08 | Shadow run: Zola/tunnel vs NestGate/petalTongue (7 days) | Ops | benchScale `nestgate_content_parity.sh`. Compare TTFB, Lighthouse scores |
+| H2-09 | Cutover: petalTongue replaces Zola static server | — | 100% content parity, TTFB within 10% of Zola |
 
 ### Step 3b: BearDog TLS (replaces Cloudflare TLS)
 
@@ -110,13 +125,26 @@ not cross-primal methods. Cross-primal federation is Horizon 3.
 
 ### Step 4: Sovereign DNS (replaces Cloudflare NS)
 
-**Status**: Specified, not started.
+**Status**: INTERMEDIATE. Gate DNS queries encrypted (DoT). Full sovereignty not started.
+
+**Intermediate layer (operational May 9, 2026)**:
+- `/etc/systemd/resolved.conf`: `DNSOverTLS=yes`, primary 1.1.1.1, fallback 9.9.9.9
+- ISP (AT&T) resolver bypassed — AT&T sees encrypted traffic to 1.1.1.1, no query content
+- Fixes `.eco` TLD resolution failures on ISP resolver
+- Still trusts Cloudflare resolver — better than ISP, but not sovereign
+
+**Metadata leak analysis**:
+- **Closed**: ISP cannot see DNS query content (encrypted transport)
+- **Remaining**: Cloudflare (1.1.1.1) sees query content (trusted, not sovereign)
+- **Remaining**: Cloudflare proxy sees all HTTP traffic (tunnel terminates at their edge)
+- **Phase 3 closes all**: BTSP P2P resolution eliminates DNS, Songbird eliminates tunnel
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
 | H2-17 | `knot-dns` authoritative on VPS | Medium | DNSSEC, monitoring via skunkBat |
 | H2-18 | NS transfer from Cloudflare registrar | Ops | Update registrar to point NS at VPS |
 | H2-19 | BTSP direct resolution for ecosystem clients | Low | Bypass DNS for BTSP-aware tools |
+| H2-20 | Local recursive resolver (unbound) | Low | Eliminate Cloudflare DoT dependency for non-BTSP queries |
 
 ---
 
@@ -171,7 +199,7 @@ Horizon 1 or local Horizon 2 work.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — 7/7 resolved, 175 PASS 0 FAIL 6 DARK_FOREST (darkforest v0.2.0)
-Horizon 2 (sovereignty):          ██░░░░░░░░  Step 2a done, 2b ready, 3a close
+Horizon 2 (sovereignty):          █████░░░░░  Step 2a done, 2b ready, 3a INTERMEDIATE (gate serving), 4 INTERMEDIATE (DoT)
 Horizon 3 (primal-only):          █░░░░░░░░░  10 items, all blocked on H2
 Upstream (waiting):                ████████░░  7 items handed off, not blocking
 ```
@@ -192,3 +220,5 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-09 | Multi-tier test suite: `tier_test_observer.py` (structural, execution, HTTP), `tier_test_reviewer.py` (access, parse, no-write), `tier_test_compute.py` (venv, packages, kernels, execution). `tier_test_all.sh` runner. Identified and fixed: kernel mismatches, missing metadata, relative path errors, dashboard KeyError, package import issues. |
 | 2026-05-09 | `pappusCast` auto-propagation daemon: tiered validation (light/medium/heavy), adaptive rate limiting (scales with active users), snapshot architecture (copies not symlinks), quarantine for failures, changelog tracking. Python-first with Rust evolution path. |
 | 2026-05-09 | `tunnelKeeper` Rust crate: programmatic Cloudflare tunnel health checks, DNS resolution fallback chain, config file parsing. Integrated into darkforest A6 pen test. First step toward Rust-native Cloudflare interaction. |
+| 2026-05-09 | Dual-hosted primals.eco: Zola v0.22.1 builds sporePrint locally, served on port 8880 via `sporeprint-local.service`. Tunnel CNAME added to `~/.cloudflared/config.yml`. `sporeprint_dns.sh` manages DNS routing via Cloudflare API (sovereign/external switching). `sporeprint_verify.sh` checks both origins. H2-07 DONE. |
+| 2026-05-09 | DNS metadata leak closed: `/etc/systemd/resolved.conf` switched to DNS-over-TLS (1.1.1.1 primary, 9.9.9.9 fallback). ISP resolver bypassed. Fixes `.eco` TLD resolution. H2 Step 4 INTERMEDIATE. |

@@ -175,7 +175,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `infra/benchScale/` framework created — 5 parity scenarios, 3 pentest scripts
 - `specs/SOVEREIGNTY_VALIDATION_PROTOCOL.md` — master cutover document
 - `specs/TUNNEL_EVOLUTION.md` — updated with concrete implementation for Steps 2b→4
-- `specs/COMPLETE_DEPENDENCY_INVENTORY.md` — 35 dependencies across 6 clusters mapped
+- `specs/COMPLETE_DEPENDENCY_INVENTORY.md` — 40+ dependencies across 7 clusters mapped
 
 **Forgejo Calibration Instrument (2026-05-07)**:
 - Forgejo v15.0.0 installed as `forgejo.service` on port 3000
@@ -264,6 +264,28 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Full validation: **265 PASS, 0 FAIL, 0 KNOWN_GAP, 1 WARN, 5 DARK_FOREST**
 - Previous KNOWN_GAP (nestgate `storage.list`) is now PASS
 
+**darkforest v2.0 — Modular Rust Security Validator (2026-05-08)**:
+- Refactored `validation/darkforest/` into 7 modules: `check.rs`, `net.rs`, `pentest.rs`, `fuzz.rs`, `crypto.rs`, `report.rs`, `main.rs`
+- 13 cryptographic strength checks (CRY-01 → CRY-13): cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep
+- Structured JSON output (`--output <path>`) for auditable, machine-readable reports
+- **175 PASS, 0 FAIL, 6 DARK_FOREST** (authoritative count; supersedes `security_validation.sh` pipeline totals)
+- Legacy scripts (`deploy/darkforest_pentest.sh`, `deploy/darkforest_fuzz.py`) archived to `validation/archive/legacy/`
+
+**ABG Workspace Scaffolding (2026-05-08)**:
+- Pilot lifecycle: commons → pilot → projects → showcase, with `abg_accounts.sh create-pilot` subcommand
+- Per-user private scratch: `~/notebooks/scratch/` (chmod 700)
+- Reviewer showcase-only visibility: symlink-level isolation (reviewers see `~/notebooks/showcase/` instead of full `~/notebooks/shared/`)
+- Tier-appropriate `Welcome.ipynb` symlinked at login for all 4 tiers
+- Validation dashboard (`showcase/validation-dashboard.ipynb`) surfaces darkforest JSON via Voila
+- READMEs seeded in `data/`, `projects/`, `pilot/`, `validation/`
+
+**ABG Compute Usability (2026-05-08)**:
+- Per-user Python venvs (`~/.venv/bioinfo/`, `--system-site-packages` on shared bioinfo env)
+- Local wheelhouse (`/home/irongate/shared/abg/wheelhouse/`) for offline `%pip install`
+- `pre_spawn_hook` PATH priority for user venv binaries
+- `Getting-Started.ipynb` onboarding notebook in commons
+- `deploy/wheelhouse_sync.sh` admin utility for wheelhouse management
+
 **Upstream Gap Handbacks Delivered**:
 - `validation/PETALTONGUE_GAPS_HANDBACK.md` — 5 gaps (PT-1→PT-5)
 - `validation/NESTGATE_CONTENT_GAPS_HANDBACK.md` — 4 gaps (NG-1→NG-4)
@@ -279,7 +301,7 @@ Four tiers, modeled on scientific peer review (`deploy/abg_accounts.sh`):
 |------|-------|-----------|--------|-----------|----------------|-------|
 | admin | `abg-admin` | 48 GB / 16 cores | Yes | Yes | Yes (arbitrary) | Yes |
 | user | `abg-compute` | 32 GB / 8 cores | Yes | Yes | Yes (ToadStool) | Yes |
-| reviewer | `abg-reviewer` | 8 GB / 4 cores | **No** (NoKernelManager) | Yes | Contracts (Voila widgets) | No (550 fs) |
+| reviewer | `abg-reviewer` | 8 GB / 4 cores | **No** (NoKernelManager) | Yes (showcase only) | Contracts (Voila widgets) | No (550 fs) |
 | observer | `abg-observer` | 4 GB / 2 cores | **No** (NoKernelManager) | Yes (rendered) | No | No (550 fs) |
 
 **Reviewer = peer review / PI validation.** The reviewer sees code in JupyterLab
@@ -311,15 +333,28 @@ Replaced with mechanism-level enforcement at application and filesystem layers.
 
 ### ABG Shared Workspace
 
-All-visible shared space at `/home/irongate/shared/abg/` (see `specs/SHARED_WORKSPACE.md`):
+Shared space at `/home/irongate/shared/abg/` (see `specs/SHARED_WORKSPACE.md`):
 
 ```
-commons/     — scratch notebooks, experiments (all members)
-projects/    — per-project spaces (abg_accounts.sh create-project)
-data/        — shared datasets (NCBI, reference genomes)
-templates/   — starter notebooks and workload TOMLs
-showcase/    — polished work for external review (PIs, HPC admins)
+commons/     — group scratch (quick experiments, all members)
+pilot/       — structured experiments (hypothesis, criteria, timeline)
+projects/    — formal project spaces (abg_accounts.sh create-project)
+data/        — shared datasets (NCBI, reference genomes, calibration)
+templates/   — starter notebooks, workload TOMLs, tier-appropriate welcome notebooks
+showcase/    — polished work for external review (PIs, HPC admins) + Voila dashboards
+validation/  — surfaced darkforest JSON reports
 ```
+
+**Workspace lifecycle**: scratch → commons → pilot → projects → showcase → public
+
+**Per-user landing zone**: `~/notebooks/Welcome.ipynb` (tier-appropriate), `~/notebooks/scratch/`
+(chmod 700, private workspace for compute/admin), `~/notebooks/shared/` (symlink to full tree) or
+`~/notebooks/showcase/` (reviewer-only, symlink-level isolation).
+
+**Compute usability**: per-user Python venvs (`~/.venv/bioinfo/`, `--system-site-packages` on
+shared bioinfo), local wheelhouse at `/home/irongate/shared/abg/wheelhouse/` for offline
+`%pip install`, `pre_spawn_hook` PATH priority for user venv binaries, `Getting-Started.ipynb`
+onboarding notebook in commons.
 
 Google Doc model: all work visible to all members. Reviewers see showcase/ only.
 Work elevates from commons/ → projects/ → showcase/ → primals.eco/lab (public).

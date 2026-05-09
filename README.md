@@ -99,12 +99,14 @@ Gates connect to each other through chemical bonding patterns:
 - **All 14 primal ports bound `127.0.0.1`** (Phase 60 binaries ship PG-55 default). NestGate BTSP method-level auth, skunkBat anomaly detection
 - **Automated tier enforcement**: 62 assertions (44 OS-level + 18 JupyterHub API) validate all 4 ABG tiers (`deploy/tier_enforcement_test.sh`, `deploy/jupyterhub_tier_test.py`)
 - **Dark Forest hardening**: 5-layer security validation pipeline — **267 PASS, 0 FAIL, 0 KNOWN_GAP** (`deploy/security_validation.sh`)
-- **Pen test + fuzz + crypto validation**: **darkforest v0.2.0** (`validation/darkforest/`) — 939KB modular Rust binary. Pen test (3 threat actors) + protocol fuzzing (13 primals + JupyterHub) + crypto strength (13 checks: cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep). **177 PASS, 0 FAIL, 4 DARK_FOREST**. `--output json` for auditable structured reports
+- **Pen test + fuzz + crypto validation**: **darkforest v0.2.0** (`validation/darkforest/`) — 939KB modular Rust binary. Pen test (3 threat actors) + protocol fuzzing (13 primals + JupyterHub) + crypto strength (13 checks: cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep). **175 PASS, 0 FAIL, 6 DARK_FOREST**. `--output <path>` for auditable structured JSON reports
 - **DNS exfil closed**: iptables DNS rules restricted to local stub resolver (127.0.0.53), external DNS blocked for ABG UIDs
 - **Supply chain locked**: shared conda envs root-owned, 755 — compute users cannot plant malicious packages
 - **Version disclosure suppressed**: X-JupyterHub-Version and Server headers emptied; /hub/api/ version is JH-10 upstream gap
 - **Crontab restricted**: `/etc/crontab` set to 640 — ABG users cannot enumerate scheduled tasks
-- **Shared workspace boundaries**: `data/` and `projects/` restricted to `abg-compute` group — reviewer/observer cannot access
+- **Shared workspace boundaries**: `data/` and `projects/` restricted to `abg-compute` group — reviewer sees only `showcase/` (symlink-level isolation)
+- **ABG workspace scaffolding**: pilot/ lifecycle (commons → pilot → projects → showcase), per-user `scratch/` (chmod 700), tier-appropriate `Welcome.ipynb`, validation dashboard in Voila, READMEs in all shared directories
+- **ABG compute usability**: per-user Python venvs (`--system-site-packages` on shared bioinfo), local wheelhouse for offline `%pip install`, `pre_spawn_hook` PATH priority, Getting-Started.ipynb onboarding
 - skunkBat surveillance targets identified: JupyterHub auth events, NestGate writes, iptables DROPs, process enumeration
 
 ### Sovereignty Evolution
@@ -158,7 +160,9 @@ This proves the substrate works on our hardware.
 Deploy a usable system for ABG as validation of primalSpring patterns.
 NUC intake → ironGate JupyterHub → BTSP-secured access via primals.eco.
 Step 2a: Cloudflare Tunnel baseline captured (270ms p50, 15/15 external checks).
-ABG tiered access live (observer/compute/admin). Notebook elevation operational.
+ABG tiered access live (observer/compute/admin/reviewer). Notebook elevation operational.
+Workspace scaffolded: pilot lifecycle, per-user scratch, reviewer showcase-only visibility.
+Compute usability: per-user venvs, offline wheelhouse, tier-appropriate welcome notebooks.
 
 ### Phase 3: Self-Hosted sporePrint
 
@@ -179,17 +183,30 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ```
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling (deploy.sh, provenance_pipeline.sh, security_validation.sh)
+deploy/             Deployment tooling (deploy.sh, abg_accounts.sh, wheelhouse_sync.sh, security_validation.sh)
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
 validation/         Composition validation, security pen tests, upstream gap handbacks
+  darkforest/       Pure Rust security validator (v0.2.0 — pen test + fuzz + crypto)
   baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs)
-  archive/          Timestamped provenance runs and prior security scans
+  archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling
   benchScale/       Load generation and pen testing framework for sovereignty validation
 docs/               Architecture primers and external-facing docs
+```
+
+ABG shared workspace (`/home/irongate/shared/abg/`):
+
+```
+commons/            Group scratch — quick experiments
+pilot/              Structured experiments (hypothesis, decision criteria, timeline)
+projects/           Formal project spaces (notebooks, data, results)
+data/               Shared datasets (NCBI, reference genomes, calibration)
+templates/          Starter notebooks, workload TOMLs, welcome notebooks
+showcase/           Polished work for external review + Voila dashboards
+validation/         Surfaced darkforest JSON reports
 ```
 
 ## Relationship to Other Repos

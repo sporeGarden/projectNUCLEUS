@@ -14,12 +14,15 @@
 #   sudo bash abg_accounts.sh add <username> <tier>
 #   sudo bash abg_accounts.sh list
 #   sudo bash abg_accounts.sh remove <username>
+#   sudo bash abg_accounts.sh create-pilot <name>
 #   sudo bash abg_accounts.sh create-project <name>
+#   sudo bash abg_accounts.sh setup-env <username>
 #
 # Example:
 #   sudo bash abg_accounts.sh add jdoe compute
 #   sudo bash abg_accounts.sh add msmith observer
 #   sudo bash abg_accounts.sh add pi-garcia reviewer
+#   sudo bash abg_accounts.sh create-pilot scrna-feasibility
 #   sudo bash abg_accounts.sh create-project scrna-castleman
 
 set -euo pipefail
@@ -40,8 +43,8 @@ ensure_groups() {
 }
 
 ensure_shared_workspace() {
-    mkdir -p "$ABG_SHARED"/{commons,projects,data,templates,showcase}
-    chmod 2775 "$ABG_SHARED" "$ABG_SHARED"/{commons,projects,data,templates,showcase}
+    mkdir -p "$ABG_SHARED"/{commons,pilot,projects,data,templates,showcase,validation}
+    chmod 2775 "$ABG_SHARED" "$ABG_SHARED"/{commons,pilot,projects,data,templates,showcase,validation}
     echo "Shared workspace: $ABG_SHARED"
 }
 
@@ -55,11 +58,29 @@ setup_shared_dirs() {
 
     ln -sf "$SHARED_NOTEBOOKS/abg-wetspring-validation.ipynb" "$user_home/notebooks/" 2>/dev/null || true
 
-    ln -sf "$ABG_SHARED" "$user_home/notebooks/shared" 2>/dev/null || true
+    # Tier-aware shared workspace visibility:
+    #   reviewer  -> sees only showcase/ (read-only, no access to internal work)
+    #   everyone else -> sees full shared tree
+    rm -f "$user_home/notebooks/shared" "$user_home/notebooks/showcase" 2>/dev/null || true
+    if [[ "$tier" == "reviewer" ]]; then
+        ln -sf "$ABG_SHARED/showcase" "$user_home/notebooks/showcase" 2>/dev/null || true
+    else
+        ln -sf "$ABG_SHARED" "$user_home/notebooks/shared" 2>/dev/null || true
+    fi
 
+    # Per-user scratch space for compute/admin (private workspace, 700)
     if [[ "$tier" == "compute" || "$tier" == "admin" ]]; then
+        mkdir -p "$user_home/notebooks/scratch"
+        chown "$username:$username" "$user_home/notebooks/scratch"
+        chmod 700 "$user_home/notebooks/scratch"
         ln -sf "$PROJECT_ROOT/workloads" "$user_home/workloads" 2>/dev/null || true
         ln -sf "$SHARED_DATA" "$user_home/data" 2>/dev/null || true
+    fi
+
+    # Tier-appropriate welcome notebook
+    local welcome_src="$ABG_SHARED/templates/welcome-${tier}.ipynb"
+    if [[ -f "$welcome_src" ]]; then
+        ln -sf "$welcome_src" "$user_home/notebooks/Welcome.ipynb" 2>/dev/null || true
     fi
 
     chown -R "$username:$username" "$user_home/notebooks" "$user_home/results"
@@ -195,8 +216,8 @@ add_user() {
             echo "  - Manage other ABG users"
             ;;
         reviewer)
-            echo "  - View all shared workspace (read-only)"
-            echo "  - Browse notebooks, results, and project data"
+            echo "  - View showcase/ only (polished work ready for review)"
+            echo "  - Run Voila dashboards (server-side, no kernel access)"
             echo "  - NO workload submission"
             echo "  - NO code execution (kernels and terminals disabled)"
             echo "  - Intended for external PIs and HPC admins"
@@ -206,6 +227,57 @@ add_user() {
     echo ""
     echo "Next: Add to JupyterHub config and restart"
     echo "  Then: sudo passwd $username"
+}
+
+create_pilot() {
+    local pilot_name="$1"
+    local pilot_dir="$ABG_SHARED/pilot/$pilot_name"
+
+    if [[ -d "$pilot_dir" ]]; then
+        echo "Pilot '$pilot_name' already exists at $pilot_dir"
+        exit 1
+    fi
+
+    mkdir -p "$pilot_dir"/{notebooks,data}
+    chmod 2775 "$pilot_dir" "$pilot_dir"/{notebooks,data}
+
+    cat > "$pilot_dir/README.md" << PILOTEOF
+# Pilot: $pilot_name
+
+Created: $(date -Iseconds)
+Status: active
+
+## Hypothesis
+
+_What are you testing? What question does this answer?_
+
+## Decision Criteria
+
+_What result would promote this to a project? What would kill it?_
+
+## Timeline
+
+_When should this be reviewed? (suggest: 2 weeks from creation)_
+
+## Structure
+
+- notebooks/ — Experiment notebooks
+- data/ — Pilot-specific data (symlink to shared/data/ for large files)
+
+## Lifecycle
+
+commons/ (idea) -> **pilot/** (structured experiment) -> projects/ (formal) -> showcase/ (polished)
+
+To promote to a project:
+  sudo bash abg_accounts.sh create-project $pilot_name
+  cp -r $pilot_dir/notebooks/* \$ABG_SHARED/projects/$pilot_name/notebooks/
+PILOTEOF
+
+    echo "Created pilot: $pilot_name"
+    echo "  Path: $pilot_dir"
+    echo "  Subdirectories: notebooks/, data/"
+    echo ""
+    echo "Lifecycle: commons (idea) -> pilot (experiment) -> projects (formal) -> showcase (polished)"
 }
 
 create_project() {
@@ -309,7 +381,7 @@ generate_jupyterhub_config() {
 # --- Main ---
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: sudo bash $0 {add|list|remove|create-project|setup-env|config} [args...]"
+    echo "Usage: sudo bash $0 {add|list|remove|create-pilot|create-project|setup-env|config} [args...]"
     exit 1
 fi
 
@@ -335,6 +407,13 @@ case "$ACTION" in
     list)
         list_users
         echo ""
+        echo "=== Pilots ==="
+        if [[ -d "$ABG_SHARED/pilot" ]]; then
+            for d in "$ABG_SHARED/pilot"/*/; do
+                [[ -d "$d" ]] && echo "  - $(basename "$d")"
+            done
+        fi
+        echo ""
         echo "=== Projects ==="
         if [[ -d "$ABG_SHARED/projects" ]]; then
             for d in "$ABG_SHARED/projects"/*/; do
@@ -347,6 +426,10 @@ case "$ACTION" in
         remove_user "$1"
         generate_jupyterhub_config
         ;;
+    create-pilot)
+        [[ $# -lt 1 ]] && { echo "Usage: sudo bash $0 create-pilot <name>"; exit 1; }
+        create_pilot "$1"
+        ;;
     create-project)
         [[ $# -lt 1 ]] && { echo "Usage: sudo bash $0 create-project <name>"; exit 1; }
         create_project "$1"
@@ -356,7 +439,7 @@ case "$ACTION" in
         ;;
     *)
         echo "Unknown action: $ACTION"
-        echo "Usage: sudo bash $0 {add|list|remove|create-project|setup-env|config} [args...]"
+        echo "Usage: sudo bash $0 {add|list|remove|create-pilot|create-project|setup-env|config} [args...]"
         exit 1
         ;;
 esac

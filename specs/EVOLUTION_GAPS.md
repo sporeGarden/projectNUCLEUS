@@ -4,9 +4,9 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-08 (Rust v0.2.0 — modular auditable framework, crypto strength validation)
+**Last updated**: 2026-05-08 (workspace scaffolding, usability, darkforest revalidation)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
-**Rust validator**: 177 PASS, 0 FAIL, 4 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB)
+**Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -169,7 +169,7 @@ Horizon 1 or local Horizon 2 work.
 ## Scoring
 
 ```
-Horizon 1 (external security):    ██████████  COMPLETE — 7/7 resolved, 267 PASS 0 FAIL
+Horizon 1 (external security):    ██████████  COMPLETE — 7/7 resolved, 175 PASS 0 FAIL 6 DARK_FOREST (darkforest v0.2.0)
 Horizon 2 (sovereignty):          ██░░░░░░░░  Step 2a done, 2b ready, 3a close
 Horizon 3 (primal-only):          █░░░░░░░░░  10 items, all blocked on H2
 Upstream (waiting):                ████████░░  7 items handed off, not blocking
@@ -186,3 +186,4 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-08 | H1-04, H1-05 resolved. systemctl + python3 ACLs for ABG users. Voila home dir fix (500→200). Revalidation: **267 PASS, 0 FAIL**. Horizon 1 COMPLETE. |
 | 2026-05-08 | Pure Rust `darkforest` validator created. Replaces bash+python pen/fuzz tools. 863KB binary, 159 PASS 0 FAIL 3 DARK_FOREST. Primal ecosystem validated in Rust. |
 | 2026-05-08 | `darkforest` v0.2.0 — modular auditable framework. 7 source modules. 13 crypto strength checks (CRY-01→CRY-13). JSON report output (`--output json`). Per-check severity, evidence, remediation. **177 PASS, 0 FAIL, 4 DARK_FOREST**. Cloudflare config.yml fixed (664→600). |
+| 2026-05-08 | Workspace scaffolding: pilot lifecycle, per-user scratch, reviewer showcase-only visibility, welcome notebooks, validation dashboard. Compute usability: per-user venvs, wheelhouse, offline pip. darkforest revalidation post-scaffolding: **175 PASS, 0 FAIL, 6 DARK_FOREST** (2 new: reviewer-visibility items detected at filesystem level, remediated via symlink isolation). |

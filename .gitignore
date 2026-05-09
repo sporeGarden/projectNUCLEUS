@@ -3,6 +3,9 @@ validation/baselines/cron.log
 validation/baselines/daily/*.csv
 validation/baselines/daily/*.txt
 
+# Stale redirected output
+json
+
 # Python
 __pycache__/
 *.pyc

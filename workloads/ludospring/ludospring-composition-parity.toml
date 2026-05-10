@@ -1,0 +1,20 @@
+# ludoSpring — composition parity validation
+# Runs the 141-check composition parity suite (target: 130/141 = 92.2%)
+# Tests dual-path math dispatch (library vs IPC fallback)
+
+[metadata]
+name = "ludospring-composition-parity"
+description = "Composition parity suite — 141 checks covering IPC dispatch, provenance, game math"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "$SPRINGS_ROOT/ludoSpring/target/release/ludospring validate --tier composition"
+working_dir = "$SPRINGS_ROOT/ludoSpring"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

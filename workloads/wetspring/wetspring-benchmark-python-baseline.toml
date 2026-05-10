@@ -8,9 +8,9 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "/home/irongate/miniforge3/envs/bioinfo/bin/python3"
-args = ["/home/irongate/Development/ecoPrimals/springs/wetSpring/scripts/benchmark_python_baseline.py"]
-working_dir = "/home/irongate/Development/ecoPrimals/springs/wetSpring"
+command = "$GATE_HOME/miniforge3/envs/bioinfo/bin/python3"
+args = ["$SPRINGS_ROOT/wetSpring/scripts/benchmark_python_baseline.py"]
+working_dir = "$SPRINGS_ROOT/wetSpring"
 
 [resources]
 max_memory_bytes = 4294967296

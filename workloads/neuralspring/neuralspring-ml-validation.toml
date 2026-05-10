@@ -1,0 +1,20 @@
+# neuralSpring — ML surrogate + spectral validation
+# Validates Anderson coupling, Evoformer hooks, streaming formats
+# 1,450 workspace tests, zero clippy, pedantic + nursery lint level
+
+[metadata]
+name = "neuralspring-ml-validation"
+description = "ML surrogate validation — Anderson spectral, Evoformer, ESN, mixed GPU dispatch"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "$SPRINGS_ROOT/neuralSpring/target/release/neuralspring_unibin validate"
+working_dir = "$SPRINGS_ROOT/neuralSpring"
+
+[resources]
+max_memory_bytes = 8589934592
+max_cpu_percent = 90.0
+
+[security]
+isolation_level = "None"

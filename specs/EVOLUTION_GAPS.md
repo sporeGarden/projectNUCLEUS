@@ -197,7 +197,7 @@ These are not gaps — they are accepted constraints:
 
 **Post-interstadial update (May 10, 2026)**: Zero open upstream gaps. All 13 primals
 at zero debt. 8/8 springs completed primordial extinction (eukaryotic UniBin).
-primalSpring at 403 methods, 680 tests, zero clippy. All 7 Tier 3 code quality items resolved.
+primalSpring at 413 methods, 680 tests, zero clippy. All 7 Tier 3 code quality items resolved.
 
 See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HANDOFF_MAY10_2026.md`
 
@@ -209,7 +209,7 @@ See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HAND
 | GAP-03 | biomeOS cell graph live deploy | biomeOS v3.51 `composition.deploy` route alias | May 10 |
 | GAP-06 | rhizoCrypt no UDS transport | rhizoCrypt S66 — operational since S23, integration test added | May 10 |
 | GAP-09 | biomeOS Neural API registration | biomeOS v3.51 `method.register` endpoint | May 10 |
-| GAP-12 | ludoSpring IPC method registration | 18 `game.*` methods registered (403 canonical, zero drift) | May 10 |
+| GAP-12 | ludoSpring IPC method registration | 28 `game.*` methods registered (413 canonical, zero drift) | May 10 |
 | U1 | primalSpring CHECKSUMS stale | Regenerated (25 files, BLAKE3) | May 10 |
 | U2 | Deploy graphs missing `by_capability` | False positive — manifests, not node-bearing graphs | May 10 |
 | U3 | Profile graphs missing `bonding_policy` | 9/9 already have `bonding_policy` | May 10 |

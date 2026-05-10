@@ -10,8 +10,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "/home/irongate/Development/ecoPrimals/springs/wetSpring/target/release/validate_real_ncbi_pipeline"
-working_dir = "/home/irongate/Development/ecoPrimals/springs/wetSpring"
+command = "$SPRINGS_ROOT/wetSpring/target/release/validate_real_ncbi_pipeline"
+working_dir = "$SPRINGS_ROOT/wetSpring"
 
 [resources]
 max_memory_bytes = 2147483648

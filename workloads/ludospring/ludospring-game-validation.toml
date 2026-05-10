@@ -1,0 +1,20 @@
+# ludoSpring — game math + procedural generation validation
+# Validates Tier 1 structural scenarios via UniBin validate subcommand
+# 28 game.* methods registered in canonical registry (413 total)
+
+[metadata]
+name = "ludospring-game-validation"
+description = "Game math validation — procedural gen, raycasting, engagement metrics, Python parity"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "$SPRINGS_ROOT/ludoSpring/target/release/ludospring validate"
+working_dir = "$SPRINGS_ROOT/ludoSpring"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

@@ -1,7 +1,6 @@
 # healthSpring — PK/PD model validation
 # Validates pharmacokinetic models with Python cross-validation
-#
-# TODO: Update command path when healthSpring validation binaries are built
+# healthSpring UniBin `validate` subcommand is the canonical entry point
 
 [metadata]
 name = "healthspring-pk-validation"
@@ -10,8 +9,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "/home/irongate/Development/ecoPrimals/springs/healthSpring/target/release/validate_pk_models"
-working_dir = "/home/irongate/Development/ecoPrimals/springs/healthSpring"
+command = "$SPRINGS_ROOT/healthSpring/target/release/healthspring validate"
+working_dir = "$SPRINGS_ROOT/healthSpring"
 
 [resources]
 max_memory_bytes = 4294967296

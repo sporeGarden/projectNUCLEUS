@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # External Validation Pipeline — Phase 2a
 #
-# Tests the full external access path:
-#   Browser → primals.eco → cloudflared → JupyterHub → primals → provenance
+# Tests the full external access path (cell membrane model):
+#   Browser → lab.primals.eco → cloudflared (membrane) → JupyterHub → primals → provenance
+#   primals.eco is served externally via GitHub Pages CDN (extracellular layer)
 #
 # This script can be run in two modes:
 #   --local     Test localhost paths only (no tunnel required)
@@ -10,7 +11,7 @@
 #
 # Usage:
 #   bash external_validation.sh --local
-#   bash external_validation.sh --tunnel --hostname primals.eco
+#   bash external_validation.sh --tunnel --hostname lab.primals.eco
 #
 # Requires: curl, python3, nc, cloudflared (for --tunnel mode)
 

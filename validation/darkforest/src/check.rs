@@ -30,6 +30,7 @@ pub enum Category {
     Isolation,
     Fuzz,
     InfoLeak,
+    Observer,
 }
 
 #[derive(Debug, Clone, Serialize)]

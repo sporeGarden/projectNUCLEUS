@@ -4,11 +4,12 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-09 (deep debt swept, gate-agnostic config, dual-hosted primals.eco, encrypted DNS)
+**Last updated**: 2026-05-10 (post-interstadial: zero open upstream gaps, static observer, Rust observer tests)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
-**Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
-**Multi-tier tests**: observer + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
-**Sovereign hosting**: primals.eco served from gate via Cloudflare tunnel (Zola build on port 8880)
+**Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
+**Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
+**Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
+**Upstream status**: All upstream gaps resolved (primalSpring post-interstadial audit May 10, 2026)
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -16,14 +17,17 @@ Related specs:
 - [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) — replacement methodology
 - [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
 
-**Rust evolution**: `validation/darkforest/` v0.2.0 — modular auditable security framework (939KB,
-zero runtime deps). 7 source modules: `check.rs` (structured types + env-var-driven primal config),
+**Rust evolution**: `validation/darkforest/` v0.2.1 — modular auditable security framework (zero
+runtime deps). 8 source modules: `check.rs` (structured types + env-var-driven primal config),
 `net.rs` (TCP/HTTP helpers), `pentest.rs` (3 threat actors), `fuzz.rs` (14 primals + JupyterHub),
-`crypto.rs` (13 crypto strength checks, gate-agnostic paths), `report.rs` (pipe + JSON output),
-`main.rs` (CLI + runner). All ports and paths resolve from environment variables with compiled
-defaults — zero hardcoded gate paths. Backward-compatible `PASS|FAIL|KNOWN_GAP|DARK_FOREST` pipe
-format, plus `--output json` for auditable structured reports with per-check severity, category,
-evidence, remediation, and timestamps.
+`crypto.rs` (13 crypto strength checks, gate-agnostic paths), `observer.rs` (static HTML quality:
+theme, nav, links, tracebacks, source stripping, HTTP headers, directory blocking),
+`report.rs` (pipe + JSON output), `main.rs` (CLI + runner). All ports and paths resolve from
+environment variables with compiled defaults — zero hardcoded gate paths.
+
+**Observer surface**: Static pre-rendered HTML via pappusCast + `observer_server.py` on port 8866.
+Centralized dark theme (`observer_theme.css`). Validated by `darkforest --suite observer`
+(86 PASS, 0 FAIL — theme, nav, links, tracebacks, source stripping, headers, directory blocking).
 
 ---
 
@@ -78,18 +82,20 @@ the calibrate → shadow-run → cutover protocol in `SOVEREIGNTY_VALIDATION_PRO
 **Not blocked by JH-11**: The authenticator only calls beardog (same-primal),
 not cross-primal methods. Cross-primal federation is Horizon 3.
 
-### Step 3a: sporePrint on sovereign gate (replaces GitHub Pages)
+### Step 3a: sporePrint sovereign rendering (petalTongue replaces GitHub Pages)
 
-**Status**: INTERMEDIATE LIVE. Gate serves primals.eco via Zola build + Cloudflare tunnel.
-DNS switched to tunnel CNAME via `deploy/sporeprint_dns.sh sovereign`. Full primal path (NestGate + petalTongue) remains Phase 3.
+**Status**: CELL MEMBRANE LIVE. `primals.eco` permanently on GitHub Pages CDN (extracellular).
+`lab/git.primals.eco` via tunnel replicas (membrane). Full primal path (NestGate + petalTongue)
+remains Phase 3 target for sovereign extracellular rendering.
 
-**Intermediate layer (operational May 9, 2026)**:
-- Zola v0.22.1 installed at `/usr/local/bin/zola`
-- `deploy/sporeprint_local.sh` pulls, builds, serves on `127.0.0.1:8880`
-- `sporeprint-local.service` + `sporeprint-rebuild.timer` (15-min pull/build)
-- Tunnel ingress: `primals.eco → http://127.0.0.1:8880` in `~/.cloudflared/config.yml`
-- `deploy/sporeprint_dns.sh` manages DNS via Cloudflare API (`sovereign`/`external`/`status`/`verify`)
-- `deploy/sporeprint_verify.sh` checks both origins, integrated into `tier_test_all.sh`
+**Cell membrane architecture (operational May 10, 2026)**:
+- `primals.eco` DNS permanently set to GitHub Pages A records (extracellular)
+- `lab.primals.eco` + `git.primals.eco` via Cloudflare tunnel replica pool (membrane)
+- `deploy/gate_provision.sh` provisions new membrane replicas
+- `deploy/gate_watchdog.sh` monitors membrane health (logs for skunkBat, no DNS swapping)
+- `tunnelKeeper v0.2.0` reports replica count, edge colos, unique origins
+- `sporeprint-local.service` demoted to dev/preview (not production path)
+- `deploy/sporeprint_dns.sh` emergency use only (sovereign/external switching)
 
 **DNS sovereignty (operational May 9, 2026)**:
 - Gate resolves via DNS-over-TLS to 1.1.1.1 (Cloudflare) with Quad9 fallback
@@ -106,24 +112,31 @@ DNS switched to tunnel CNAME via `deploy/sporeprint_dns.sh sovereign`. Full prim
 
 ### Step 3b: BearDog TLS (replaces Cloudflare TLS)
 
-**Status**: Blocked on BearDog X.509/ACME support.
+**Status**: Upstream shipped. Ready for local shadow run.
+
+bearDog Wave 100 shipped rustls X.509 TLS termination + per-IP sliding-window rate
+limiter (sovereignty horizons H2-10/H2-11). Local work: shadow run + cutover.
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
-| H2-10 | BearDog TLS listener with X.509 + ACME | High | Upstream: BearDog needs Let's Encrypt client, SNI routing, cert auto-renewal |
-| H2-11 | BearDog rate limiting | Medium | Upstream: connection + request rate limiting to replace Cloudflare DDoS protection |
-| H2-12 | Shadow run on port 8443 alongside Cloudflare 443 | Ops | benchScale `btsp_tls_parity.sh` |
+| H2-10 | ~~BearDog TLS listener~~ | — | **RESOLVED** — bearDog Wave 100: rustls X.509 termination, SNI routing, cert auto-renewal |
+| H2-11 | ~~BearDog rate limiting~~ | — | **RESOLVED** — bearDog Wave 100: per-IP sliding-window rate limiter |
+| H2-12 | Shadow run on port 8443 alongside Cloudflare 443 | Ops | benchScale `btsp_tls_parity.sh` — now unblocked |
 
 ### Step 3c: Songbird NAT (replaces cloudflared)
 
-**Status**: Blocked on Songbird STUN/TURN production hardening.
+**Status**: Upstream shipped. Ready for local integration.
+
+songbird Wave 196-197 shipped full NAT traversal chain: STUN wire-compliant (RFC 5389),
+RFC 5766 TURN client, Cloudflare DDNS, 5-tier `ConnectionFallbackChain`. Local work:
+VPS relay provisioning + integration testing.
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
-| H2-13 | Songbird STUN client for NAT punch-through | High | Upstream: Songbird team |
-| H2-14 | Self-hosted STUN/TURN VPS relay | Medium | ~$5/mo Hetzner/OVH, BearDog key-authenticated |
-| H2-15 | Dynamic DNS update mechanism | Low | Songbird notifies DNS when IP changes |
-| H2-16 | Connection fallback chain (direct → STUN → TURN → cloudflared emergency) | Medium | Local |
+| H2-13 | ~~Songbird STUN client~~ | — | **RESOLVED** — songbird Wave 196: STUN wire-compliant (RFC 5389) |
+| H2-14 | Self-hosted STUN/TURN VPS relay | Medium | ~$5/mo Hetzner/OVH, BearDog key-authenticated — now unblocked |
+| H2-15 | ~~Dynamic DNS update~~ | — | **RESOLVED** — songbird Wave 197: Cloudflare DDNS integration |
+| H2-16 | ~~Connection fallback chain~~ | — | **RESOLVED** — songbird Wave 197: 5-tier `ConnectionFallbackChain` (direct → STUN → TURN → cloudflared → offline) |
 
 ### Step 4: Sovereign DNS (replaces Cloudflare NS)
 
@@ -163,8 +176,8 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | H3-04 | GitHub repos (source hosting) | Forgejo primary, GitHub mirror | Calibration — Forgejo installed, not primary | Forgejo Actions working |
 | H3-05 | Docker Hub / ghcr.io | NestGate OCI blob store | Gap — ToadStool config-swappable | NestGate content pipeline |
 | H3-06 | Anthropic / OpenAI | Ollama + barraCuda WGSL inference | Partial — Ollama works locally | barraCuda shader maturity |
-| H3-07 | JH-11 cross-primal token federation | biomeOS composition forwarding with `_resource_envelope` | Gap — upstream architectural decision | biomeOS federation design |
-| H3-08 | JH-5 cross-primal audit forwarding | skunkBat → rhizoCrypt DAG + sweetGrass braids | Gap — local ring buffer only | JH-11 federation path |
+| H3-07 | JH-11 cross-primal token federation | biomeOS composition forwarding with `_resource_envelope` | **UNBLOCKED** — bearDog `auth.public_key` + biomeOS `BearDogVerifier` live | Local: wire `CompositionContext` |
+| H3-08 | JH-5 cross-primal audit forwarding | skunkBat → rhizoCrypt DAG + sweetGrass braids | **UNBLOCKED** — skunkBat Phase 2 complete (7 event kinds) | Local: wire into deploy graphs |
 | H3-09 | conda/pip/crates.io | Vendored deps, private registry | Low priority — offline modes exist | Not blocking |
 | H3-10 | NCBI / UniProt / KEGG | Local mirror + `abg_data.sh` provenance | Partial — data registry operational | Not blocking (data, not service) |
 
@@ -180,45 +193,53 @@ These are not gaps — they are accepted constraints:
 
 ---
 
-## Upstream Dependencies (waiting on primal teams)
+## Upstream Dependencies (primal teams)
 
-Tracked here for visibility. Handed off via wateringHole. Not blocking
-Horizon 1 or local Horizon 2 work.
+**Post-interstadial update (May 10, 2026)**: Zero open upstream gaps. All 13 primals
+at zero debt. 8/8 springs completed primordial extinction (eukaryotic UniBin).
+primalSpring at 403 methods, 680 tests, zero clippy. All 7 Tier 3 code quality items resolved.
 
-**Post-interstadial update (May 9, 2026)**: All 13 primals at zero debt.
-8/8 springs completed primordial extinction (eukaryotic UniBin). 9,317+ tests
-across the delta. Several previously open gaps resolved upstream.
+See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HANDOFF_MAY10_2026.md`
 
-### Resolved (closed by upstream teams since last audit)
+### All Resolved
 
 | ID | What | Resolved by | When |
 |----|------|-------------|------|
-| DF-2 | toadstool `TOADSTOOL_AUTH_MODE` env var mapping | toadStool S233 — auth.mode env + eprintln→tracing | May 8 |
+| JH-11 | Cross-primal token federation | bearDog Wave 99 `auth.public_key` + biomeOS v3.51 `BearDogVerifier` | May 10 |
+| GAP-03 | biomeOS cell graph live deploy | biomeOS v3.51 `composition.deploy` route alias | May 10 |
+| GAP-06 | rhizoCrypt no UDS transport | rhizoCrypt S66 — operational since S23, integration test added | May 10 |
+| GAP-09 | biomeOS Neural API registration | biomeOS v3.51 `method.register` endpoint | May 10 |
+| GAP-12 | ludoSpring IPC method registration | 18 `game.*` methods registered (403 canonical, zero drift) | May 10 |
+| U1 | primalSpring CHECKSUMS stale | Regenerated (25 files, BLAKE3) | May 10 |
+| U2 | Deploy graphs missing `by_capability` | False positive — manifests, not node-bearing graphs | May 10 |
+| U3 | Profile graphs missing `bonding_policy` | 9/9 already have `bonding_policy` | May 10 |
+| DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — auth.mode env + eprintln→tracing | May 8 |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — CallerContext wired (TCP transport-aware) | May 8 |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical | May 8 |
 
-### Open
+### Absorption Targets (local work, now unblocked)
 
-| ID | What | Owner | Priority | Impact |
-|----|------|-------|----------|--------|
-| JH-11 | Cross-primal token federation | bearDog/biomeOS | **HIGH** | Blocks Tier 4 authenticated composition for all springs. Next stadial gate. |
-| GAP-06 | rhizoCrypt no UDS transport | rhizoCrypt | MEDIUM | Blocks provenance trio in 4 ludoSpring experiments |
-| GAP-03 | biomeOS cell graph live deploy not tested | biomeOS | MEDIUM | Blocks live cell deployment (ludospring_cell.toml) |
-| GAP-09 | biomeOS Neural API registration endpoint | biomeOS | MEDIUM | Blocks neural routing for game methods |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | primalSpring | LOW | Method registration for game composition |
-| U1 | primalSpring `CHECKSUMS` stale | primalSpring | LOW | Doc debt only |
-| U2 | 5 deploy graphs missing `by_capability` | primalSpring | LOW | Structural validation nit |
-| U3 | 8 profile graphs missing `bonding_policy` | primalSpring | LOW | Template debt |
+These are not upstream gaps — they are composition patterns we should absorb
+from the resolved upstream work. All local, actionable now.
+
+| Target | What to wire | Source |
+|--------|-------------|--------|
+| `composition.deploy(graph)` | Transition from `deploy.sh`/systemd to graph-driven germination | biomeOS v3.51, primalSpring `graphs/fragments/*.toml` |
+| `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 |
+| `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 |
+| Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution |
+| skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 |
+| Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked |
 
 ---
 
 ## Scoring
 
 ```
-Horizon 1 (external security):    ██████████  COMPLETE — 7/7 resolved, 175 PASS 0 FAIL 6 DARK_FOREST (darkforest v0.2.0)
-Horizon 2 (sovereignty):          █████░░░░░  Step 2a done, 2b ready, 3a INTERMEDIATE (gate serving), 4 INTERMEDIATE (DoT)
-Horizon 3 (primal-only):          █░░░░░░░░░  10 items, all blocked on H2
-Upstream (waiting):                ████████░░  7 items handed off, not blocking
+Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
+Horizon 2 (sovereignty):          ███████░░░  2a done, 2b ready, 3a INTERMEDIATE, 3b/3c UPSTREAM SHIPPED (shadow run ready), 4 INTERMEDIATE (DoT)
+Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
+Upstream (waiting):                ██████████  ZERO OPEN — all 11 gaps resolved by primal teams (May 10)
 ```
 
 ---
@@ -241,3 +262,7 @@ Upstream (waiting):                ████████░░  7 items hande
 | 2026-05-09 | DNS metadata leak closed: `/etc/systemd/resolved.conf` switched to DNS-over-TLS (1.1.1.1 primary, 9.9.9.9 fallback). ISP resolver bypassed. Fixes `.eco` TLD resolution. H2 Step 4 INTERMEDIATE. |
 | 2026-05-09 | ISP negative cache issue: AT&T resolver cached NXDOMAIN during A→CNAME gap, causing LAN devices (still on ISP DNS) to fail resolving primals.eco. Gate unaffected (DoT). Lesson: `sporeprint_dns.sh` must avoid delete-then-create gaps — update atomically. LAN-wide fix: change AT&T gateway DNS to 1.1.1.1. |
 | 2026-05-09 | **Deep debt sweep**: `nucleus_config.sh` centralized with `$GATE_HOME` indirection (all `/home/irongate` hardcoding removed from deploy scripts). `nucleus_paths.py` for Python. tunnelKeeper: `Client::new()` returns `Result`, tokio slimmed, `rand`→`rand_core`, `CLOUDFLARED_DIR` env-var-driven. darkforest: PRIMALS array env-var-driven with compiled fallback, rhizoCrypt RPC 9602 added, crypto/pentest paths gate-agnostic. `security_validation.sh` invokes Rust darkforest (replaces archived bash/python). `pappusCast.py` exception types narrowed. 96 ironGate display references scrubbed across 23 docs. Zero TODO/FIXME/HACK. |
+| 2026-05-10 | Static observer surface: Voila replaced with pre-rendered HTML via pappusCast + `observer_server.py` on port 8866. Centralized dark theme (`observer_theme.css`). Navigation bar injected. Voila link rewriting. `observer-static.service` replaces `voila-public.service`. |
+| 2026-05-10 | darkforest v0.2.1: `observer.rs` module — 9 check groups (OBS-01→OBS-09) for static surface validation: theme CSS, nav bar, Voila link remnants, tracebacks, source stripping, HTTP 200 root, security headers, directory blocking. 86 PASS, 0 FAIL. Observer tier test migrated from Python to Rust in `tier_test_all.sh`. |
+| 2026-05-10 | **Post-interstadial gap closure**: All 11 upstream gaps resolved by primal teams (JH-11, GAP-03/06/09/12, U1-U3, DF-2/3, U5). H2-10/11 (bearDog TLS + rate limiting) shipped. H2-13/15/16 (songbird NAT chain) shipped. H3-07/H3-08 unblocked. 6 absorption targets identified for local wiring. |
+| 2026-05-10 | **Cell membrane architecture**: Architectural inversion — `primals.eco` permanently on GitHub Pages CDN (extracellular), `lab/git.primals.eco` via tunnel replicas (membrane), sovereign compute inside (intracellular). `gate_provision.sh` provisions replicas. `gate_watchdog.sh` monitors membrane health. `tunnelKeeper v0.2.0` reports replica count + edge colos. `sporeprint-local.service` demoted to dev. Key insight: accept uncontrolled extracellular, total control intracellular, selective permeability at the membrane. |

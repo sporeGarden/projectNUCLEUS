@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-# gate_switch.sh — Switch the active gate for lab.primals.eco
+# gate_switch.sh — Switch the primary gate for lab.primals.eco
 #
-# Transfers the compute surface (JupyterHub, Voila, pappusCast) from the
-# current gate to a target gate, while keeping the static observer and
-# sporePrint always-on layers untouched.
+# Transfers the compute surface (JupyterHub, observer, pappusCast) from
+# the current primary gate to a target gate. The cloudflared tunnel
+# replica on this gate is NOT stopped — it continues serving the static
+# sporePrint site as a replica. Only compute services are migrated.
+#
+# In a multi-gate replica setup, all gates run cloudflared replicas
+# serving primals.eco. This script only moves the "primary" designation
+# (JupyterHub, observer, pappusCast) to a new gate.
 #
 # Prerequisites:
 #   - SSH key access to target gate
-#   - cloudflared installed on target gate
+#   - cloudflared installed on target gate (gate_provision.sh)
 #   - ABG_SHARED available on target (via NestGate rsync or local mount)
 #   - deploy.sh present on target gate
 #
@@ -108,7 +113,7 @@ fi
 
 log "Phase 3: Stopping local compute services"
 
-for svc in jupyterhub voila-public pappusCast voila-redirect; do
+for svc in jupyterhub observer-static pappusCast; do
     if systemctl is-active --quiet "$svc" 2>/dev/null; then
         run_or_print sudo systemctl stop "$svc"
         log "  Stopped $svc"
@@ -138,24 +143,26 @@ if [[ -n "$REMOTE_DEPLOY" ]]; then
     log "  Services deployed via deploy.sh"
 else
     warn "  Manual service startup required on $TARGET"
-    warn "  Start: jupyterhub, voila-public, pappusCast, voila-redirect"
+    warn "  Start: jupyterhub, observer-static, pappusCast"
 fi
 
-# ── Phase 6: Update Cloudflare tunnel to point to target ─────────────────
+# ── Phase 6: Ensure target gate has full tunnel config ────────────────────
 
-log "Phase 6: Updating Cloudflare tunnel routing"
+log "Phase 6: Tunnel replica configuration on target"
 
-# The tunnel credential stays on the active gate; transfer it
 CF_CRED_DIR="${CLOUDFLARED_DIR}"
 if [[ -d "$CF_CRED_DIR" ]]; then
     run_or_print rsync -az "$CF_CRED_DIR/" "$TARGET:$CF_CRED_DIR/"
     log "  Tunnel credentials synced"
 fi
 
-# Start cloudflared on target, stop locally
-run_or_print ssh "$TARGET" "sudo systemctl enable --now cloudflared-tunnel 2>/dev/null || cloudflared tunnel run nucleus-lab &"
-run_or_print sudo systemctl stop cloudflared-tunnel 2>/dev/null || true
-log "  Tunnel routing transferred to $TARGET"
+# Ensure cloudflared is running on target with full config (all routes)
+run_or_print ssh "$TARGET" "sudo systemctl enable --now cloudflared-replica 2>/dev/null || cloudflared tunnel run nucleus-lab &"
+log "  Target gate has cloudflared replica running"
+
+# Local cloudflared stays running as a membrane replica — NOT stopped.
+# It continues routing lab/git.primals.eco in the tunnel pool.
+log "  Local cloudflared replica: kept running (membrane failover)"
 
 # ── Phase 7: Trigger pappusCast full sync on target ──────────────────────
 
@@ -184,10 +191,11 @@ fi
 
 echo
 log "Gate switch complete:"
-log "  Source gate: $(hostname)"
-log "  Target gate: $TARGET"
+log "  Source gate: $(hostname) (now membrane-only replica)"
+log "  Target gate: $TARGET (now primary — compute + membrane)"
 log "  Static HTML: preserved in .pappusCast/html_export/"
-log "  sporePrint:  unaffected (GitHub Pages)"
+log "  primals.eco: extracellular (GitHub Pages CDN, no gate dependency)"
+log "  Membrane:    lab/git.primals.eco served by all tunnel replicas"
 log "  Compute:     now active on $TARGET"
 
 if $DRY_RUN; then

@@ -51,7 +51,7 @@ warn() { log "  [WARN] $*"; WARN=$((WARN + 1)); }
 info() { log "  [INFO] $*"; INFO=$((INFO + 1)); }
 
 rpc_skunkbat() {
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 9140 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "${SKUNKBAT_PORT}" 2>/dev/null
 }
 
 log "═══════════════════════════════════════════════════════════"
@@ -178,7 +178,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then
     log ""
     log "── 2a: Unauthenticated API Probe ──"
 
-    for pair in "beardog:9100" "toadstool:9400" "nestgate:9500" "rhizocrypt:9602" "loamspine:9700" "sweetgrass:9850" "skunkbat:9140"; do
+    for pair in "beardog:${BEARDOG_PORT}" "toadstool:${TOADSTOOL_PORT}" "nestgate:${NESTGATE_PORT}" "rhizocrypt:${RHIZOCRYPT_RPC_PORT}" "loamspine:${LOAMSPINE_PORT}" "sweetgrass:${SWEETGRASS_PORT}" "skunkbat:${SKUNKBAT_PORT}"; do
         name="${pair%%:*}"
         port="${pair#*:}"
 
@@ -219,7 +219,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then
     log ""
     log "── 2b: Input Fuzzing (Malformed Requests) ──"
 
-    FUZZ_TARGETS="beardog:9100 toadstool:9400 nestgate:9500 skunkbat:9140"
+    FUZZ_TARGETS="beardog:${BEARDOG_PORT} toadstool:${TOADSTOOL_PORT} nestgate:${NESTGATE_PORT} skunkbat:${SKUNKBAT_PORT}"
     FUZZ_PAYLOADS=(
         'not json at all'
         '{"jsonrpc":"2.0"}'
@@ -258,7 +258,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then
     log "── 2c: Method Enumeration ──"
 
     HIDDEN_METHODS=("admin.shutdown" "system.exec" "debug.dump" "internal.config" "shell.exec" "eval" "rpc.discover")
-    for target in "beardog:9100" "toadstool:9400" "nestgate:9500"; do
+    for target in "beardog:${BEARDOG_PORT}" "toadstool:${TOADSTOOL_PORT}" "nestgate:${NESTGATE_PORT}"; do
         name="${target%%:*}"
         port="${target#*:}"
         found=0
@@ -278,7 +278,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "at" ]]; then
     log ""
     log "── 2d: BTSP Enforcement ──"
 
-    for pair in "sweetgrass:9850" "rhizocrypt:9601"; do
+    for pair in "sweetgrass:${SWEETGRASS_PORT}" "rhizocrypt:${RHIZOCRYPT_PORT}"; do
         name="${pair%%:*}"
         port="${pair#*:}"
         resp=$(printf 'PLAINTEXT PROBE\n' | nc -w 2 "$TARGET_HOST" "$port" 2>/dev/null) || resp=""

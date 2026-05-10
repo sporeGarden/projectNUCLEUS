@@ -1,0 +1,16 @@
+[Unit]
+Description=cloudflared tunnel replica (nucleus-lab)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=irongate
+Group=irongate
+ExecStart=/home/irongate/bin/cloudflared tunnel --config /home/irongate/.cloudflared/config.yml run nucleus-lab
+Restart=always
+RestartSec=5
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

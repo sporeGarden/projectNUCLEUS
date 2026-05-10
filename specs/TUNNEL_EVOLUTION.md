@@ -25,37 +25,48 @@ generation and penetration testing framework for validation.
 
 ---
 
-## Where We Are (2026-05-07)
+## Where We Are (2026-05-10)
+
+### Cell Membrane Model
+
+The infrastructure uses a **cell membrane architecture**: the public face
+(primals.eco) lives permanently on GitHub Pages + Cloudflare CDN
+(extracellular). The tunnel is a membrane carrying only inward-bound
+traffic to sovereign compute. Inside the membrane, the gate has total
+control.
+
+This delineation produces clean data for skunkBat: every tunnel event is
+an authenticated membrane crossing, not CDN noise. External/internal
+traffic separation is structural, not policy-based.
 
 ### Infrastructure
 
-| Component | Current State | External Dependency |
-|-----------|--------------|---------------------|
-| DNS | Cloudflare nameservers for `primals.eco` | Cloudflare |
-| TLS termination | Cloudflare edge | Cloudflare |
-| CDN / caching | Cloudflare CDN | Cloudflare |
-| Static site | GitHub Pages (sporePrint repo, Zola) | GitHub |
-| Tunnel to the active gate | **Named tunnel `nucleus-lab`** (lab.primals.eco), stable systemd service | Cloudflare |
-| JupyterHub | System service on the active gate:8000, PAM auth, security headers, tunnel-only | — |
-| Primal composition | **13 primals** live on the active gate, systemd user service | — |
-| Provenance pipeline | Full 9-phase pipeline operational (run 2: 26 events) | — |
-| Firewall | **UFW active**: deny-by-default, allow SSH + LAN + localhost | — |
-| Baselines | Hourly cron capturing CF tunnel metrics → `validation/baselines/daily/` | — |
-| benchScale | Framework created: 5 scenarios, 3 pentest tools | — |
+| Component | Current State | Layer |
+|-----------|--------------|-------|
+| Public site | **primals.eco → GitHub Pages + Cloudflare CDN** (permanent) | Extracellular |
+| DNS | Cloudflare nameservers, A records to GitHub Pages IPs | Extracellular |
+| TLS termination | Cloudflare edge (public) / tunnel (membrane) | Both |
+| Membrane channels | **lab.primals.eco, git.primals.eco → tunnel** | Membrane |
+| Tunnel replicas | Named tunnel `nucleus-lab` with multi-gate replicas | Membrane |
+| Membrane watchdog | `gate_watchdog.sh` — logs state transitions every 30s | Membrane |
+| JupyterHub | System service on primary gate:8000, PAM auth | Intracellular |
+| Primal composition | **13 primals** on primary gate, systemd user service | Intracellular |
+| Provenance pipeline | Full 9-phase pipeline operational | Intracellular |
+| Firewall | **UFW active**: deny-by-default | Intracellular |
+| benchScale | 5 scenarios, 3 pentest tools | Intracellular |
 
 ### Validated Results (Phase 2a — Current)
 
+- **Cell membrane architecture**: public face on CDN, tunnel as membrane only
 - 13 primals deployed via `deploy.sh --composition full --gate <active-gate>`
-- Named Cloudflare tunnel (not quick tunnel) with systemd persistence
+- Named Cloudflare tunnel with multi-gate replicas (membrane failover)
+- `gate_provision.sh` provisions replica gates via SSH
+- `gate_watchdog.sh` membrane health monitor (30s interval, logs for skunkBat)
+- `tunnelKeeper v0.2.0` health command reports replica count, unique origins, edge colos
 - JupyterHub as system service with PAM auth and tiered ABG access
-- UFW deny-by-default (all primals now bind 127.0.0.1 natively since Phase 60)
-- Security headers: X-Frame-Options DENY, X-Content-Type-Options nosniff, X-XSS-Protection, Referrer-Policy same-origin, Server disclosure suppressed
-- Five-layer pen test: **265 PASS, 0 FAIL, 0 KNOWN_GAP** (Phase 60 enforced mode, 2026-05-08)
-- All primals survive input fuzzing (7 payloads × 4 targets, zero crashes)
+- UFW deny-by-default (all primals bind 127.0.0.1 since Phase 60)
+- Five-layer pen test: **265 PASS, 0 FAIL, 0 KNOWN_GAP** (Phase 60 enforced mode)
 - BTSP enforcement validated (sweetGrass/rhizoCrypt reject plaintext)
-- Local admin UNIX account blocked from tunnel login via `post_auth_hook`
-- Data registry scaffolded with `abg_data.sh` and manifest system
-- 235+ science checks pass across 11 wetSpring workloads
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 
 ### Hardware for Phase 2
@@ -423,14 +434,21 @@ For each component replacement:
 
 ## Dependency Elimination Tracker
 
-| Dependency | Introduced | Primal Replacement | Status | Removed |
-|-----------|-----------|-------------------|--------|---------|
-| GitHub Pages | Day 0 | NestGate + petalTongue | Planned (Step 3a) — benchScale scenario ready | — |
-| Cloudflare CDN | Day 0 | NestGate content-addressing | Planned (Step 3a) — replaced alongside GH Pages | — |
-| Cloudflare TLS | Day 0 | BearDog BTSP Phase 3 | Planned (Step 3b) — benchScale parity test ready | — |
-| Cloudflare Tunnel | Step 2a | Songbird NAT traversal | **Active** — named tunnel, baseline capture running | — |
-| Cloudflare DNS | Day 0 | Self-hosted authoritative + BTSP DoH | Planned (Step 4) — hybrid approach specified | — |
-| PAM passwords | Step 2a | BearDog ionic tokens | Planned (Step 2b) — authenticator plugin specified | — |
+In the cell membrane model, dependencies are classified by layer:
+
+| Dependency | Layer | Primal Replacement | Status |
+|-----------|-------|-------------------|--------|
+| GitHub Pages | Extracellular | NestGate + petalTongue | **Load-bearing** — primals.eco primary. Replace last. |
+| Cloudflare CDN | Extracellular | NestGate content-addressing | **Load-bearing** — fronts GitHub Pages |
+| Cloudflare Tunnel | Membrane | Songbird NAT traversal | **Active** — membrane channels for lab/git |
+| Cloudflare TLS | Membrane | BearDog BTSP | Planned (Step 3b) — replace at membrane layer |
+| Cloudflare DNS | Extracellular | Self-hosted authoritative | Planned (Step 4) — replace at extracellular layer |
+| PAM passwords | Intracellular | BearDog ionic tokens | Planned (Step 2b) — ion channel selectivity |
+
+Replacement order follows the membrane model: intracellular first (ionic
+tokens), then membrane (Songbird transport, BearDog TLS), then
+extracellular last (NestGate content, sovereign DNS). Each layer can be
+replaced independently.
 
 ---
 

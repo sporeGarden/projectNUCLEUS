@@ -1,0 +1,35 @@
+# cloudflared config — FULL gate (primary, all membrane channels)
+#
+# Cell membrane config for the primary gate. Carries all inward-bound
+# traffic to sovereign compute and services. The public face (primals.eco)
+# lives on GitHub Pages + Cloudflare CDN, entirely outside the membrane.
+#
+# Used on the primary gate that runs JupyterHub, observer, and Forgejo.
+
+tunnel: nucleus-lab
+credentials-file: __CREDENTIALS_FILE__
+
+ingress:
+  # JupyterHub core routes (authenticated compute access)
+  - hostname: lab.primals.eco
+    path: /hub/.*
+    service: http://127.0.0.1:8000
+  - hostname: lab.primals.eco
+    path: /user/.*
+    service: http://127.0.0.1:8000
+  - hostname: lab.primals.eco
+    path: /services/.*
+    service: http://127.0.0.1:8000
+  - hostname: lab.primals.eco
+    path: /api/.*
+    service: http://127.0.0.1:8000
+
+  # Static observer surface (pre-rendered notebooks)
+  - hostname: lab.primals.eco
+    service: http://127.0.0.1:8866
+
+  # Forgejo (sovereign git)
+  - hostname: git.primals.eco
+    service: http://127.0.0.1:3000
+
+  - service: http_status:404

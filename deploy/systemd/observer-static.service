@@ -1,0 +1,18 @@
+[Unit]
+Description=Static Observer Surface (pre-rendered notebook HTML)
+After=network.target
+Documentation=https://github.com/sporeGarden/projectNUCLEUS
+
+[Service]
+Type=simple
+User=voila
+Group=voila
+Environment=GATE_HOME=/home/irongate
+Environment=ABG_SHARED=/home/irongate/shared/abg
+ExecStart=/home/irongate/miniforge3/envs/jupyterhub/bin/python3 \
+    /home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS/deploy/observer_server.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

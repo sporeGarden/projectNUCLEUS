@@ -13,7 +13,17 @@ pub struct HealthReport {
     pub connectivity: ConnectivityHealth,
     pub dns: DnsHealth,
     pub config: ConfigHealth,
+    pub replicas: ReplicaHealth,
     pub overall: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ReplicaHealth {
+    pub available: bool,
+    pub active_connectors: usize,
+    pub unique_origins: usize,
+    pub edge_colos: Vec<String>,
+    pub tunnel_status: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -55,13 +65,18 @@ pub async fn run(
     let connectivity = check_connectivity(&config).await;
     let dns = check_dns(&config);
     let config_health = check_config(&config);
+    let replicas = check_replicas(api_token, &config).await;
 
     let overall = if process.running
         && connectivity.local_reachable
         && dns.resolves
         && config_health.valid
     {
-        "healthy".to_string()
+        if replicas.available && replicas.unique_origins < 2 {
+            "healthy (single replica — no failover)".to_string()
+        } else {
+            "healthy".to_string()
+        }
     } else {
         let mut issues = Vec::new();
         if !process.running {
@@ -85,25 +100,9 @@ pub async fn run(
         connectivity,
         dns,
         config: config_health,
-        overall: overall.clone(),
+        replicas,
+        overall,
     };
-
-    // If we have an API token, also check remote tunnel status
-    if let Some(token) = api_token {
-        if let Some(info) = try_cf_api_check(token, &config).await {
-            if !json {
-                println!("CF Edge status: {}", info.status);
-                println!(
-                    "Connections: {}",
-                    info.connections
-                        .iter()
-                        .filter_map(|c| c.colo_name.as_deref())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                );
-            }
-        }
-    }
 
     if json {
         println!(
@@ -115,6 +114,55 @@ pub async fn run(
     }
 
     Ok(())
+}
+
+async fn check_replicas(api_token: Option<&str>, config: &TunnelConfig) -> ReplicaHealth {
+    let Some(token) = api_token else {
+        return ReplicaHealth {
+            available: false,
+            active_connectors: 0,
+            unique_origins: 0,
+            edge_colos: Vec::new(),
+            tunnel_status: None,
+        };
+    };
+
+    match try_cf_api_check(token, config).await {
+        Some(info) => {
+            let active: Vec<_> = info
+                .connections
+                .iter()
+                .filter(|c| c.is_pending_reconnect != Some(true))
+                .collect();
+
+            let mut origins: Vec<String> = active
+                .iter()
+                .filter_map(|c| c.origin_ip.clone())
+                .collect();
+            origins.sort();
+            origins.dedup();
+
+            let colos: Vec<String> = active
+                .iter()
+                .filter_map(|c| c.colo_name.clone())
+                .collect();
+
+            ReplicaHealth {
+                available: true,
+                active_connectors: active.len(),
+                unique_origins: origins.len(),
+                edge_colos: colos,
+                tunnel_status: Some(info.status),
+            }
+        }
+        None => ReplicaHealth {
+            available: false,
+            active_connectors: 0,
+            unique_origins: 0,
+            edge_colos: Vec::new(),
+            tunnel_status: None,
+        },
+    }
 }
 
 async fn try_cf_api_check(token: &str, config: &TunnelConfig) -> Option<api::TunnelInfo> {
@@ -305,5 +353,26 @@ fn print_report(report: &HealthReport) {
             "MISSING/EMPTY"
         }
     );
+    println!("├─ Replicas");
+    if report.replicas.available {
+        println!(
+            "│   Status: {}",
+            report
+                .replicas
+                .tunnel_status
+                .as_deref()
+                .unwrap_or("unknown")
+        );
+        println!("│   Connectors: {}", report.replicas.active_connectors);
+        println!("│   Unique origins: {}", report.replicas.unique_origins);
+        if !report.replicas.edge_colos.is_empty() {
+            println!("│   Edge colos: {}", report.replicas.edge_colos.join(", "));
+        }
+        if report.replicas.unique_origins < 2 {
+            println!("│   WARNING: No failover — only 1 origin serving the tunnel");
+        }
+    } else {
+        println!("│   (no API token — replica check skipped)");
+    }
     println!("└──────────────────────────────────────────────");
 }

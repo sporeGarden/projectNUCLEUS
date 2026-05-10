@@ -88,7 +88,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Step 2b operational (2026-05-09) — open observer, pappusCast, multi-tier testing, tunnelKeeper
+**Status**: Step 2b operational (2026-05-10) — cell membrane architecture, static observer, pappusCast, multi-tier testing, tunnelKeeper v0.2.0
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -212,12 +212,13 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **JH-6 found**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by NoKernelManager
 - **JH-7 found**: Voila executes notebooks as hub user — mitigated by restricting to curated showcase only
 
-**Voila Dashboard Service (2026-05-08)**:
-- Voila 0.5.12 installed as JupyterHub managed service on port 8866
-- Serves curated showcase notebooks at `/services/voila/` with dark theme, source stripping
-- All ABG users can access dashboards via JupyterHub OAuth (no code exposure)
-- Baseline captured: ~600ms render, 33–51KB output, accessible via tunnel
-- Calibration instrument for petalTongue sovereignty replacement
+**Voila Dashboard Service (2026-05-08, replaced 2026-05-10)**:
+- Voila 0.5.12 originally served dynamic notebooks on port 8866 (every visit = kernel launch)
+- **Replaced by static observer**: pappusCast pre-renders all notebooks to HTML via
+  `nbconvert --execute --to html --no-input`; `observer_server.py` serves from disk on :8866
+- Zero compute per visit, instant page loads, bot-safe, inter-notebook navigation
+- Voila remains available for reviewer/user tiers behind JupyterHub auth
+- Switchover: `deploy/switch_to_static_observer.sh` / `switch_to_voila_observer.sh`
 
 **Dark Forest Security Hardening (2026-05-08)**:
 - Pure Rust `validation/darkforest/` v0.2.0 — modular pen test + fuzz + crypto validator
@@ -277,7 +278,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Per-user private scratch: `~/notebooks/scratch/` (chmod 700)
 - Reviewer showcase-only visibility: symlink-level isolation (reviewers see `~/notebooks/showcase/` instead of full `~/notebooks/shared/`)
 - Tier-appropriate `Welcome.ipynb` symlinked at login for all 4 tiers
-- Validation dashboard (`showcase/validation-dashboard.ipynb`) surfaces darkforest JSON via Voila
+- Validation dashboard (`showcase/validation-dashboard.ipynb`) surfaces darkforest JSON via static HTML
 - READMEs seeded in `data/`, `projects/`, `pilot/`, `validation/`
 
 **ABG Compute Usability (2026-05-08)**:
@@ -298,9 +299,9 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 
 **Open Observer Landing**:
 - Observer is the default landing page — no credentials, no login
-- Voila renders public surface at `lab.primals.eco` (source stripped, internal directories blocked)
-- Root redirect to `Welcome.ipynb` via lightweight Python HTTP proxy
-- All notebooks have `metadata.title` for clean Voila rendering
+- Static pre-rendered HTML at `lab.primals.eco` (source stripped, inter-notebook nav, index page)
+- Originally served by Voila (dynamic); replaced by `observer_server.py` serving pappusCast HTML exports
+- All notebooks have `metadata.title` for clean rendering and navigation
 - Admin templates and internal paths return 404
 
 **pappusCast Auto-Propagation**:
@@ -338,6 +339,16 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
 - Zero TODO/FIXME/HACK remaining, zero clippy warnings
 
+**Cell Membrane Architecture (2026-05-10)**:
+- Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)
+- `lab.primals.eco` + `git.primals.eco` routed through Cloudflare tunnel replicas (membrane layer)
+- Sovereign compute, primals, and data remain internal (intracellular layer)
+- `deploy/gate_provision.sh` provisions remote hosts as membrane replicas (sub-second failover)
+- `deploy/gate_watchdog.sh` monitors membrane health, logs state for skunkBat audit (no DNS swapping)
+- `tunnelKeeper v0.2.0` reports replica count, unique origins, and edge colos
+- `sporeprint-local.service` demoted from production to development preview tool
+- Key insight: accept that the extracellular world (CDN, DNS) is uncontrolled; inside the membrane, total sovereign control. The boundary enables future ionic/weak bonding as gated channels.
+
 ### ABG Tiered Access Model
 
 Three tiers, simplified from four. Observer is open; reviewer and user are gated
@@ -345,19 +356,19 @@ by Cloudflare Access + PAM:
 
 | Tier | Access | Capabilities | Surface |
 |------|--------|-------------|---------|
-| **observer** | Open, unauthenticated | Read-only rendered notebooks, data, dashboards | Voila public surface |
-| **reviewer** | Cloudflare Access + PAM | Read + run Voila contracts (showcase-only view) | JupyterHub |
+| **observer** | Open, unauthenticated | Read-only rendered notebooks, data, dashboards | Static pre-rendered HTML |
+| **reviewer** | Cloudflare Access + PAM | Read + run notebooks (showcase-only view) | JupyterHub |
 | **user** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub |
 
 Admin (gate owner account) owns infrastructure. Users do science. Reviewers validate.
 Observers see everything rendered but interact with nothing.
 
 **Reviewer = peer review / PI validation.** Sees code in JupyterLab (read-only),
-runs pipelines via Voila compute contracts. No arbitrary code execution.
+runs pipelines in showcase notebooks. No arbitrary code execution.
 
-**Observer = public window.** View-only rendered output plus provenance chains.
-No execution whatsoever. The entire project is functionally exposed but not
-interactable — science as read-only artifact.
+**Observer = public window.** Pre-rendered HTML — no kernel launches, no compute
+per visit. View-only rendered output plus provenance chains. The entire project
+is functionally exposed but not interactable — science as read-only artifact.
 
 **Admin/user separation.** The system owner has both an admin account (local gate owner,
 hardware control) and a user account (ABG member, does science). In later stages,
@@ -385,7 +396,7 @@ pilot/       — structured experiments (hypothesis, criteria, timeline)
 projects/    — formal project spaces (abg_accounts.sh create-project)
 data/        — shared datasets (NCBI, reference genomes, calibration)
 templates/   — starter notebooks, workload TOMLs, tier-appropriate welcome notebooks
-showcase/    — polished work for external review (PIs, HPC admins) + Voila dashboards
+showcase/    — polished work for external review (PIs, HPC admins) + dashboards
 validation/  — surfaced darkforest JSON reports
 ```
 
@@ -455,13 +466,14 @@ Curated in projectNUCLEUS/graphs/ (canonical source: primalSpring/graphs/):
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Blocked on upstream gaps (petalTongue PT-1, NestGate NG-1) — gap handbacks delivered
+**Status**: Upstream gaps delivered (petalTongue PT-1→PT-5, NestGate NG-1→NG-4 all shipped). Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced.
 **Bonding**: Covalent core + public weak endpoint
 **New Primals**: petalTongue (UI), BTSP Phase 3
 
-projectNUCLEUS takes short-term ownership of sporePrint. The site
-evolves from GitHub Pages → NestGate-backed content → petalTongue
-rendering, each step validated against Cloudflare CDN baselines.
+The membrane layer (Cloudflare Tunnel) is the sovereignty target. The
+extracellular layer (GitHub Pages CDN for primals.eco) remains until
+petalTongue can serve sovereign content at parity. Each step validated
+against CDN baselines.
 
 ### Gap Discovery (2026-05-07)
 
@@ -494,13 +506,11 @@ Phase 3 execution. These are documented as upstream handbacks:
 ### Convergence Path
 
 ```
-Now:     GitHub Pages + Cloudflare CDN  →  static Zola site
-Phase 2: + Cloudflare Tunnel            →  JupyterHub for ABG (/compute)
-Phase 3a: sporePrint content → NestGate  →  remove GitHub Pages dependency
-Phase 3b: petalTongue replaces Zola      →  dynamic site + compute dashboard
-Phase 3c: BTSP replaces Cloudflare TLS   →  Cloudflare reduced to DNS-only
-Phase 3d: Songbird NAT replaces CF tunnel → self-hosted, Cloudflare optional
-Phase 4:  sovereign DNS                  →  zero external dependencies
+Now:     primals.eco on GitHub Pages CDN (extracellular), lab/git via tunnel (membrane)
+Phase 3a: NestGate serves sporePrint content → petalTongue rendering (sovereign extracellular)
+Phase 3b: BTSP replaces Cloudflare TLS    →  membrane encryption is sovereign
+Phase 3c: Songbird NAT replaces CF tunnel →  membrane channels are sovereign
+Phase 4:  sovereign DNS                   →  zero external dependencies
 ```
 
 ### What This Eliminates (progressively)

@@ -1,0 +1,17 @@
+[Unit]
+Description=sporePrint local preview (dev/preview only — primals.eco served by GitHub Pages CDN)
+After=network.target
+Documentation=https://github.com/sporeGarden/projectNUCLEUS
+
+[Service]
+Type=simple
+User=irongate
+Group=irongate
+Environment=GATE_HOME=/home/irongate
+WorkingDirectory=/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS
+ExecStart=/usr/bin/bash deploy/sporeprint_local.sh serve
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

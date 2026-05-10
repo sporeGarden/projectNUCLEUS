@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Observer Tier Test — Voila Public Surface Validation
+Observer Tier Test — Static Pre-Rendered Surface Validation
 
-Executes every notebook in the public Voila tree as the voila user,
-verifying each renders without errors. Also checks HTTP accessibility,
-source stripping, and redirect behavior.
+Validates the static observer surface: notebook execution as voila user,
+rendered HTML quality (theme, nav, links, tracebacks), source stripping,
+security headers, and directory blocking.
 
 Usage:
     sudo python3 tier_test_observer.py [--json]
@@ -19,6 +19,7 @@ Exit code: number of FAILs (0 = all pass)
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -144,60 +145,96 @@ def test_notebook_metadata():
 
 
 def test_redirect():
-    """Verify the root redirect sends / to Welcome.ipynb."""
-    test_name = "redirect:root"
+    """Verify the root serves index.html with 200."""
+    test_name = "root:index"
     try:
-        req = urllib.request.Request(
-            f"http://127.0.0.1:{REDIRECT_PORT}/",
-            method="GET",
-        )
-        req.add_header("Host", "lab.primals.eco")
+        req = urllib.request.Request(f"http://127.0.0.1:{REDIRECT_PORT}/")
         with urllib.request.urlopen(req, timeout=10) as resp:
-            if resp.status == 200 and "voila/render/Welcome" in resp.url:
-                report("PASS", test_name, f"Redirected to {resp.url}")
+            body = resp.read().decode(errors="replace")
+            if resp.status == 200 and "NUCLEUS Observer" in body:
+                report("PASS", test_name, "Root serves index.html with NUCLEUS Observer heading")
             else:
-                report("FAIL", test_name, f"Got status {resp.status}, url={resp.url}")
-    except urllib.error.HTTPError as e:
-        if e.code in (301, 302, 307, 308):
-            loc = e.headers.get("Location", "")
-            if "Welcome" in loc:
-                report("PASS", test_name, f"Redirect to {loc}")
-            else:
-                report("FAIL", test_name, f"Redirect to unexpected: {loc}")
-        else:
-            report("FAIL", test_name, f"HTTP error {e.code}")
+                report("FAIL", test_name, f"Got status {resp.status}, missing expected content")
     except Exception as e:
         report("FAIL", test_name, str(e)[:150])
 
 
 def test_source_stripping():
-    """Fetch a rendered page from Voila and verify no Python source is exposed."""
+    """Fetch a rendered page and verify no Python source is exposed."""
     test_name = "source_strip"
-    try:
-        url = f"http://127.0.0.1:{VOILA_PORT}/voila/render/Welcome.ipynb"
-        req = urllib.request.Request(url)
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            body = resp.read().decode(errors="replace")
-            import re
-            code_blocks = re.findall(r'<pre[^>]*>.*?(?:import |def |class |print\()', body, re.DOTALL)
-            if code_blocks:
-                report("FAIL", test_name, f"Found {len(code_blocks)} code blocks with Python source in rendered HTML")
+    html_dir = PUBLIC_ROOT / ".pappusCast" / "html_export"
+    html_files = sorted(html_dir.rglob("*.html"))
+    if not html_files:
+        report("FAIL", test_name, "No HTML files in html_export/")
+        return
+    for html_file in html_files:
+        if html_file.name == "index.html":
+            continue
+        rel = html_file.relative_to(html_dir)
+        try:
+            body = html_file.read_text(encoding="utf-8", errors="replace")
+            code_inputs = re.findall(
+                r'<div class="jp-InputArea[^"]*"[^>]*>\s*'
+                r'<div class="jp-InputPrompt[^"]*"[^>]*>',
+                body,
+            )
+            if code_inputs:
+                report("FAIL", f"source:{rel}", f"Found {len(code_inputs)} code input cells visible (should use --no-input)")
             else:
-                report("PASS", test_name, "No Python source code visible in rendered HTML")
-    except Exception as e:
-        report("FAIL", test_name, str(e)[:150])
+                report("PASS", f"source:{rel}", "No Python source code visible")
+        except Exception as e:
+            report("FAIL", f"source:{rel}", str(e)[:150])
+
+
+def test_static_html_quality():
+    """Validate rendered HTML files: theme, nav, no broken Voila links, no error outputs."""
+    html_dir = PUBLIC_ROOT / ".pappusCast" / "html_export"
+    html_files = sorted(html_dir.rglob("*.html"))
+    if not html_files:
+        report("FAIL", "html_quality", "No HTML files found")
+        return
+    for html_file in html_files:
+        if html_file.name == "index.html":
+            continue
+        rel = html_file.relative_to(html_dir)
+        try:
+            body = html_file.read_text(encoding="utf-8", errors="replace")
+        except OSError as e:
+            report("FAIL", f"read:{rel}", str(e)[:150])
+            continue
+
+        if "jp-layout-color0: #0d1117" in body:
+            report("PASS", f"theme:{rel}", "Dark theme CSS injected")
+        else:
+            report("FAIL", f"theme:{rel}", "Missing dark theme CSS override")
+
+        if '<nav ' in body and 'index.html' in body:
+            report("PASS", f"nav:{rel}", "Navigation bar present with Home link")
+        else:
+            report("FAIL", f"nav:{rel}", "Missing navigation bar or Home link")
+
+        voila_links = re.findall(r'href="/voila/render/', body)
+        if voila_links:
+            report("FAIL", f"links:{rel}", f"{len(voila_links)} broken Voila links remaining")
+        else:
+            report("PASS", f"links:{rel}", "No legacy Voila links")
+
+        traceback_count = body.count("Traceback (most recent call last)")
+        if traceback_count > 0:
+            report("FAIL", f"errors:{rel}", f"{traceback_count} traceback(s) in rendered output")
+        else:
+            report("PASS", f"errors:{rel}", "No tracebacks in rendered output")
 
 
 def test_no_internal_dirs():
-    """Verify internal directories are not accessible via Voila tree API."""
-    test_name = "no_internal_dirs"
-    blocked = ["envs", "wheelhouse", "templates", ".ipynb_checkpoints"]
+    """Verify internal directories are not served by the static observer."""
+    blocked = ["envs", "wheelhouse", "templates", ".ipynb_checkpoints", ".pappusCast"]
     for d in blocked:
         try:
-            url = f"http://127.0.0.1:{VOILA_PORT}/voila/tree/{d}"
+            url = f"http://127.0.0.1:{REDIRECT_PORT}/{d}/"
             req = urllib.request.Request(url)
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                report("FAIL", f"dir_blocked:{d}", f"Accessible at /voila/tree/{d} (status {resp.status})")
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                report("FAIL", f"dir_blocked:{d}", f"Accessible at /{d}/ (status {resp.status})")
         except urllib.error.HTTPError as e:
             if e.code in (403, 404):
                 report("PASS", f"dir_blocked:{d}", f"Blocked (HTTP {e.code})")
@@ -207,13 +244,35 @@ def test_no_internal_dirs():
             report("PASS", f"dir_blocked:{d}", f"Not accessible: {e}")
 
 
+def test_response_headers():
+    """Verify security headers on the static observer."""
+    test_name = "headers"
+    try:
+        req = urllib.request.Request(f"http://127.0.0.1:{REDIRECT_PORT}/")
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            checks = {
+                "X-Robots-Tag": "noai",
+                "X-Content-Type-Options": "nosniff",
+                "X-Frame-Options": "DENY",
+                "Referrer-Policy": "no-referrer",
+            }
+            for header, expected in checks.items():
+                actual = resp.headers.get(header, "")
+                if expected in actual:
+                    report("PASS", f"header:{header}", f"{header}: {actual}")
+                else:
+                    report("FAIL", f"header:{header}", f"Expected '{expected}', got '{actual}'")
+    except Exception as e:
+        report("FAIL", test_name, str(e)[:150])
+
+
 def main():
     parser = argparse.ArgumentParser(description="Observer Tier Test")
     parser.add_argument("--json", action="store_true", help="JSON output")
     args = parser.parse_args()
 
     print("═══════════════════════════════════════════════════")
-    print("  Observer Tier Test — Public Voila Surface")
+    print("  Observer Tier Test — Static Pre-Rendered Surface")
     print(f"  Date: {time.strftime('%Y-%m-%dT%H:%M:%S%z')}")
     print(f"  Root: {PUBLIC_ROOT}")
     print("═══════════════════════════════════════════════════")
@@ -231,9 +290,13 @@ def main():
     for nb in notebooks:
         test_notebook_execution(nb)
 
+    print("\n── Static HTML Quality ──")
+    test_static_html_quality()
+
     print("\n── HTTP Behavior ──")
     test_redirect()
     test_source_stripping()
+    test_response_headers()
     test_no_internal_dirs()
 
     print()

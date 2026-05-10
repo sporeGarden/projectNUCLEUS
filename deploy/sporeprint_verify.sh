@@ -103,13 +103,14 @@ check_url() {
 
 # ── Section 1: Local server health ─────────────────────────────────────
 
-[[ "$MODE" == "human" ]] && echo -e "\n${GREEN}── Local sovereign server ──${NC}"
+[[ "$MODE" == "human" ]] && echo -e "\n${GREEN}── Local preview server (dev only) ──${NC}"
 
 LOCAL_SERVICE=$(systemctl --user is-active sporeprint-local.service 2>/dev/null || echo "inactive")
 if [[ "$LOCAL_SERVICE" == "active" ]]; then
-    pass "sporeprint-local.service active"
+    pass "sporeprint-local.service active (dev preview)"
 else
-    fail "sporeprint-local.service ${LOCAL_SERVICE}"
+    # Not a failure in production — primals.eco served by GitHub Pages CDN
+    warn "sporeprint-local.service ${LOCAL_SERVICE} (dev preview only, not required)"
 fi
 
 check_url "${LOCAL_URL}/" "local:8880 /"
@@ -178,10 +179,12 @@ else
     fail "cloudflared-tunnel.service ${TUNNEL_STATUS}"
 fi
 
-if rg -q 'hostname: primals.eco' "${CLOUDFLARED_DIR}/config.yml" 2>/dev/null; then
-    pass "primals.eco in tunnel ingress config"
+# Cell membrane model: primals.eco is extracellular (GitHub Pages CDN),
+# tunnel only routes lab/git subdomains (membrane channels)
+if rg -q 'hostname: lab.primals.eco' "${CLOUDFLARED_DIR}/config.yml" 2>/dev/null; then
+    pass "lab.primals.eco in tunnel ingress config (membrane)"
 else
-    fail "primals.eco NOT in tunnel ingress config"
+    fail "lab.primals.eco NOT in tunnel ingress config"
 fi
 
 # ── Summary ────────────────────────────────────────────────────────────

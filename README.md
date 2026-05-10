@@ -64,29 +64,32 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Post-interstadial, deep debt swept, sovereign hosting live (2026-05-09)**
+**Post-interstadial, cell membrane architecture, zero open upstream gaps (2026-05-10)**
 
 ### Infrastructure
 
 - All **13/13 NUCLEUS primals** deployed and healthy on the active gate — zero debt across all primals
 - **8/8 springs** completed primordial extinction — eukaryotic UniBin, 9,317+ tests across the delta
+- **Zero open upstream gaps** — all 11 gaps resolved by primal teams (JH-11, GAP-03/06/09/12, U1-U3, DF-2/3, U5)
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
-- **Sovereign hosting**: primals.eco dual-hosted (gate tunnel + GitHub Pages fallback), DNS-over-TLS, API-managed DNS switching
-- **Deep debt swept**: gate-agnostic config (`$GATE_HOME`), idiomatic Rust error handling, env-var-driven port/path resolution across all Rust + Python + Bash, 96 ironGate display references scrubbed, zero TODO/FIXME/HACK
+- **Cell membrane architecture**: primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
+- **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
+- **Deep debt swept**: gate-agnostic config (`$GATE_HOME`), env-var-driven port/path resolution, zero TODO/FIXME/HACK
+- **Sovereignty unblocked upstream**: bearDog TLS + rate limiting (H2-10/11), songbird full NAT chain (H2-13-16), JH-11 token federation, skunkBat Phase 2 audit logging — all shipped
 
 ### Services (all persistent via systemd)
 
-| Service | URL | Port | Status |
-|---------|-----|------|--------|
-| Voila (observer) | `lab.primals.eco` | 8866 | Live, open/unauthenticated, public science surface |
-| JupyterHub | `lab.primals.eco` (gated) | 8000 | Live, PAM auth + Cloudflare Access, reviewer/user tiers |
-| Forgejo | `git.primals.eco` | 3000 | Live, projectNUCLEUS mirrored |
-| pappusCast | — | — | Tiered auto-propagation daemon (workspace → observer) |
-| sporePrint (local) | `primals.eco` (tunnel) | 8880 | Live, Zola static build, 15-min rebuild timer |
-| Cloudflare Tunnel | — | outbound | Routes lab + git subdomains; Access gates reviewer/user |
-| 13 NUCLEUS primals | localhost | 9100–9900 | All healthy, user services |
+| Service | URL | Port | Layer | Status |
+|---------|-----|------|-------|--------|
+| primals.eco | `primals.eco` | — | Extracellular | GitHub Pages + Cloudflare CDN (always on, no gate) |
+| Observer (static) | `lab.primals.eco` | 8866 | Membrane | Pre-rendered HTML, open/unauthenticated |
+| JupyterHub | `lab.primals.eco` (gated) | 8000 | Membrane | PAM auth + Cloudflare Access, reviewer/user tiers |
+| Forgejo | `git.primals.eco` | 3000 | Membrane | Sovereign git mirror |
+| pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
+| Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
+| 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
 
@@ -95,8 +98,8 @@ Reviewer and user tiers are gated by Cloudflare Access + PAM.
 
 | Tier | Access | Capabilities | Surface |
 |------|--------|-------------|---------|
-| **Observer** | Open — no login | Read-only rendered notebooks, data, dashboards | Voila at `lab.primals.eco` |
-| **Reviewer** | Cloudflare Access + PAM | Read + run Voila contracts | JupyterHub (showcase-only view) |
+| **Observer** | Open — no login | Read-only rendered notebooks, data, dashboards | Static HTML at `lab.primals.eco` |
+| **Reviewer** | Cloudflare Access + PAM | Read + run notebooks (showcase) | JupyterHub (showcase-only view) |
 | **User** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub (full workspace) |
 
 ### Auto-Propagation (pappusCast)
@@ -109,17 +112,19 @@ to the public observer surface on an adaptive schedule:
 - **Heavy** (~6 hours): Medium + diff, changelog, full regression
 - **Adaptive rate limiting**: publish interval scales with active JupyterHub users
 - **Snapshot architecture**: public/ holds managed copies, not live symlinks
-- **Evolution path**: Python (now) → Rust binary → pappusCast primal
-- **Static HTML export**: Heavy tier renders all public notebooks to `.pappusCast/html_export/` as always-on fallback
+- **Evolution path**: Python (now) → Rust binary → pappusCast primal. Static observer = primary surface since 2026-05-10
+- **Static HTML observer**: Medium + Heavy tiers render all public notebooks to `.pappusCast/html_export/` — served directly as the observer surface (replaces dynamic Voila). `pappusCast.py export` for manual regeneration
 
-### Gate Portability
+### Gate Portability (Cell Membrane)
 
-The compute surface is gate-portable — it can migrate between physical gates
-without downtime for the static observer layer. See `specs/GATE_PORTABILITY.md`.
+Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
-- **Always-on**: Static HTML exports + sporePrint (GitHub Pages) persist regardless of gate
-- **Gate-portable**: `deploy/gate_switch.sh <target>` transfers compute services to any gate
-- **Bonding isolation**: Observer surface is gate-anonymous (no gate names, no internal topology)
+- **Extracellular**: `primals.eco` on GitHub Pages CDN — always on, zero gate dependency
+- **Membrane**: `lab/git.primals.eco` via Cloudflare tunnel with multi-gate replicas (sub-second failover)
+- **Intracellular**: sovereign compute, primals, data — total control inside the gate
+- **Gate-portable**: `deploy/gate_switch.sh <target>` migrates compute; replicas stay in membrane pool
+- **Provisioning**: `deploy/gate_provision.sh <host>` adds a new membrane replica (friend's house, etc.)
+- **Membrane watchdog**: `deploy/gate_watchdog.sh` logs membrane health for skunkBat audit
 
 ### Security
 
@@ -137,27 +142,28 @@ without downtime for the static observer layer. See `specs/GATE_PORTABILITY.md`.
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
 - **All 14 primal ports bound `127.0.0.1`** (Phase 60 PG-55 default)
-- **darkforest v0.2.0**: modular Rust security validator — **175 PASS, 0 FAIL, 6 DARK_FOREST** (`validation/darkforest/`). Env-var-driven config with compiled fallback — 14 primal ports resolve from `nucleus_config.sh` env vars at startup
-- **tunnelKeeper**: Rust crate for Cloudflare tunnel health/management (`validation/tunnelKeeper/`). Error-propagating API client, slimmed tokio features, `rand_core` replaces `rand`, gate-agnostic credential paths
+- **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL)
+- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Replica count, unique origins, edge colo detection. Error-propagating API client, gate-agnostic credential paths
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 - **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 
 ### Sovereignty Evolution
 
+- **Cell membrane architecture**: extracellular (CDN) / membrane (tunnel) / intracellular (sovereign) separation
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
 - **Cloudflare baselines capturing** hourly via cron (DNS, TCP, TLS, TTFB, total latency)
-- **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies (`deploy/cloudflare/access_setup.sh`)
-- **tunnelKeeper** (`validation/tunnelKeeper/`): Rust crate for programmatic tunnel health checks, DNS resolution, config validation — first step toward Rust-native Cloudflare interaction
+- **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies
+- **tunnelKeeper v0.2.0**: Rust crate for tunnel health, replica count, membrane monitoring
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts
 - **Forgejo calibration instrument** installed — baseline for RootPulse parity targets
 - **6 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-11), primal deep debt, consolidated upstream gaps
 
-### sporePrint
+### sporePrint (Extracellular)
 
-- Public observer surface live at `lab.primals.eco` (Voila — open, no login)
+- `primals.eco` served permanently by GitHub Pages + Cloudflare CDN (extracellular surface)
 - 15+ notebooks across commons/, showcase/, data/, pilot/, validation/
 - Auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
-- Live Science API spec: 6 JSON-RPC methods (`specs/LIVE_SCIENCE_API.md`)
+- Local preview via `deploy/sporeprint_local.sh` (dev tool, not production path)
 
 ## Quick Start
 
@@ -184,10 +190,11 @@ This proves the substrate works on our hardware.
 
 Deploy a usable system for ABG as validation of primalSpring patterns.
 Step 2a: Cloudflare Tunnel baseline captured (270ms p50, 15/15 external checks).
-Step 2b: Open observer landing (Voila, no credentials). Reviewer/user gated via
-Cloudflare Access + PAM. pappusCast auto-propagation daemon live (tiered validation,
-adaptive rate limiting, snapshot architecture). Multi-tier test suite validates all
-access levels. tunnelKeeper Rust crate for Cloudflare interaction evolution.
+Step 2b: Open observer landing (static HTML, no credentials). Reviewer/user gated via
+Cloudflare Access + PAM. Cell membrane architecture live: `primals.eco` on GitHub
+Pages CDN (extracellular), `lab/git.primals.eco` via tunnel replicas (membrane),
+sovereign compute inside (intracellular). pappusCast auto-propagation, multi-tier
+test suite, tunnelKeeper v0.2.0 replica monitoring.
 
 ### Phase 3: Self-Hosted sporePrint
 
@@ -208,13 +215,17 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ```
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling, test suites, pappusCast daemon
+deploy/             Deployment tooling, test suites, pappusCast daemon, membrane infrastructure
   nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
   nucleus_paths.py  Python config module (imports GATE_HOME, ABG_SHARED, etc. from env)
+  observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
-  tier_test_*.py    Multi-tier test suite (observer, reviewer, compute)
+  gate_provision.sh Provision new membrane replicas (tunnel-only gates)
+  gate_watchdog.sh  Membrane health monitor (lab/git endpoints, logs for skunkBat)
+  gate_switch.sh    Migrate compute services between gates
   tier_test_all.sh  Unified test runner across all tiers + pappusCast health
   cloudflare/       Cloudflare Access setup and tunnel configuration
+  cloudflared/      Tunnel config templates (config-full.yml, config-static.yml)
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
@@ -250,7 +261,7 @@ public/             Managed snapshot copies for observer surface (pappusCast-man
 | **primalSpring** | syntheticChemistry | Upstream — defines composition patterns that projectNUCLEUS deploys and validates |
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
-| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — live with notebooks, spring science hubs, auto-refresh CI; Phase 3 target: self-hosted on NUCLEUS |
+| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — extracellular layer on GitHub Pages CDN; Phase 3 target: petalTongue self-hosted rendering |
 | **foundation** | sporeGarden | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
 | **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
 | **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |

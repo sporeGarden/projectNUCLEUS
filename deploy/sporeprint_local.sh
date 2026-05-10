@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # sporeprint_local.sh — Pull, build, and serve sporePrint locally
 #
-# Provides a sovereign copy of primals.eco on port 8880.
-# Cloudflare tunnel routes to it as failover when GitHub Pages is down,
-# or as primary when the gate is the authoritative origin.
+# Development and preview tool for the sporePrint static site.
+# NOT in the production path — primals.eco is served by GitHub Pages
+# + Cloudflare CDN (extracellular). This script is for local preview,
+# testing Zola builds, and verifying content before pushing to git.
 #
 # Modes:
-#   build   — git pull + zola build (called by timer)
-#   serve   — serve public/ on 127.0.0.1:8880 (called by service)
+#   build   — git pull + zola build
+#   serve   — serve public/ on 127.0.0.1:8880 (local preview)
 #   once    — pull + build + serve (one-shot for testing)
 #
 # Evolution: bash (now) → Rust (petalTongue absorbs) → primal

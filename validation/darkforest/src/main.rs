@@ -2,6 +2,7 @@ mod check;
 mod crypto;
 mod fuzz;
 mod net;
+mod observer;
 mod pentest;
 mod report;
 
@@ -17,7 +18,7 @@ use std::time::Instant;
     version
 )]
 struct Cli {
-    /// Test suite: all, pentest, fuzz, crypto, external, compute, readonly
+    /// Test suite: all, pentest, fuzz, crypto, external, compute, readonly, observer
     #[arg(long, default_value = "all")]
     suite: String,
 
@@ -79,6 +80,12 @@ fn main() {
     if run_crypto {
         let before = results.len();
         crypto::run(host, &mut results);
+        report::print_pipe(&results[before..]);
+    }
+
+    if matches!(cli.suite.as_str(), "all" | "observer") {
+        let before = results.len();
+        observer::run(host, &mut results);
         report::print_pipe(&results[before..]);
     }
 

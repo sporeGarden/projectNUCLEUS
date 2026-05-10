@@ -1,0 +1,13 @@
+[Unit]
+Description=sporePrint rebuild (git pull + zola build)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=irongate
+Group=irongate
+Environment=GATE_HOME=/home/irongate
+WorkingDirectory=/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS
+ExecStart=/usr/bin/bash deploy/sporeprint_local.sh build
+TimeoutStartSec=120

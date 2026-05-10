@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 # sporeprint_dns.sh — Manage primals.eco DNS routing via Cloudflare API
 #
-# Switches primals.eco between GitHub Pages (external) and the sovereign
-# gate (tunnel) without touching the Cloudflare dashboard.
+# Cell membrane model: primals.eco lives permanently on GitHub Pages
+# (extracellular). This script is retained for emergency use only —
+# the 'sovereign' command can temporarily route primals.eco through
+# the tunnel if GitHub Pages has an extended outage.
+#
+# Normal operation: primals.eco → GitHub Pages (always)
+#                   lab/git.primals.eco → tunnel (membrane)
 #
 # Usage:
 #   sporeprint_dns.sh status       — show current DNS state
-#   sporeprint_dns.sh sovereign    — route through tunnel to gate
-#   sporeprint_dns.sh external     — route to GitHub Pages
+#   sporeprint_dns.sh sovereign    — route through tunnel (emergency only)
+#   sporeprint_dns.sh external     — route to GitHub Pages (normal state)
 #   sporeprint_dns.sh verify       — check which origin is actually serving
 #
 # Requires: ~/.cloudflared/cf_api_token (Cloudflare API token with DNS edit)

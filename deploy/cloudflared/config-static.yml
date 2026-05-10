@@ -1,0 +1,23 @@
+# cloudflared config — REPLICA gate (observer + git only)
+#
+# Membrane config for replica gates. Provides failover for the observer
+# surface and Forgejo. JupyterHub routes are included but will 502 on
+# replicas where JupyterHub isn't running — Cloudflare retries on
+# another replica that has it.
+#
+# primals.eco is NOT routed through the tunnel. It lives permanently
+# on GitHub Pages + Cloudflare CDN (extracellular).
+
+tunnel: nucleus-lab
+credentials-file: __CREDENTIALS_FILE__
+
+ingress:
+  # Static observer surface (pre-rendered notebooks)
+  - hostname: lab.primals.eco
+    service: http://127.0.0.1:8866
+
+  # Forgejo (sovereign git)
+  - hostname: git.primals.eco
+    service: http://127.0.0.1:3000
+
+  - service: http_status:404

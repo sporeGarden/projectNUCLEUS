@@ -1,0 +1,205 @@
+/*
+ * NUCLEUS Observer Theme — centralized visual identity
+ *
+ * Injected into all pre-rendered notebook HTML by pappusCast.
+ * Designed as a petalTongue-ready stylesheet: when petalTongue replaces
+ * the static observer, this file becomes the canonical theme contract.
+ *
+ * Color palette: GitHub Dark-inspired, accessible contrast ratios.
+ */
+
+:root {
+  /* Layout */
+  --jp-layout-color0: #0d1117;
+  --jp-layout-color1: #161b22;
+  --jp-layout-color2: #21262d;
+  --jp-layout-color3: #30363d;
+  --jp-layout-color4: #484f58;
+
+  /* Content text */
+  --jp-content-font-color0: #e6edf3;
+  --jp-content-font-color1: #c9d1d9;
+  --jp-content-font-color2: #8b949e;
+  --jp-content-font-color3: #6e7681;
+
+  /* UI font */
+  --jp-ui-font-color0: #e6edf3;
+  --jp-ui-font-color1: #c9d1d9;
+  --jp-ui-font-color2: #8b949e;
+  --jp-ui-font-color3: #6e7681;
+
+  /* Brand / accent */
+  --jp-brand-color0: #58a6ff;
+  --jp-brand-color1: #388bfd;
+  --jp-brand-color2: #1f6feb;
+
+  /* Borders */
+  --jp-border-color0: #30363d;
+  --jp-border-color1: #21262d;
+  --jp-border-color2: #161b22;
+
+  /* Cell editor */
+  --jp-cell-editor-background: #161b22;
+  --jp-cell-editor-border-color: #30363d;
+  --jp-cell-editor-active-background: #1c2128;
+
+  /* Input */
+  --jp-input-background: #0d1117;
+  --jp-input-active-background: #161b22;
+
+  /* Scrollbar */
+  --jp-scrollbar-background-color: #161b22;
+  --jp-scrollbar-thumb-color: #30363d;
+
+  /* Code mirror */
+  --jp-mirror-editor-keyword-color: #ff7b72;
+  --jp-mirror-editor-atom-color: #79c0ff;
+  --jp-mirror-editor-number-color: #79c0ff;
+  --jp-mirror-editor-def-color: #d2a8ff;
+  --jp-mirror-editor-variable-color: #c9d1d9;
+  --jp-mirror-editor-variable-2-color: #ffa657;
+  --jp-mirror-editor-variable-3-color: #79c0ff;
+  --jp-mirror-editor-punctuation-color: #c9d1d9;
+  --jp-mirror-editor-property-color: #79c0ff;
+  --jp-mirror-editor-operator-color: #c9d1d9;
+  --jp-mirror-editor-comment-color: #8b949e;
+  --jp-mirror-editor-string-color: #a5d6ff;
+  --jp-mirror-editor-string-2-color: #a5d6ff;
+  --jp-mirror-editor-meta-color: #c9d1d9;
+  --jp-mirror-editor-qualifier-color: #d2a8ff;
+  --jp-mirror-editor-builtin-color: #ffa657;
+  --jp-mirror-editor-bracket-color: #8b949e;
+  --jp-mirror-editor-tag-color: #7ee787;
+  --jp-mirror-editor-attribute-color: #79c0ff;
+  --jp-mirror-editor-header-color: #d2a8ff;
+  --jp-mirror-editor-quote-color: #7ee787;
+  --jp-mirror-editor-link-color: #a5d6ff;
+  --jp-mirror-editor-error-color: #f85149;
+}
+
+html, body {
+  background-color: #0d1117 !important;
+  color: #c9d1d9 !important;
+}
+
+/* Output areas */
+.jp-OutputArea-output {
+  color: #c9d1d9;
+}
+
+.jp-RenderedHTMLCommon {
+  color: #c9d1d9;
+}
+
+.jp-RenderedHTMLCommon a {
+  color: #58a6ff;
+}
+
+.jp-RenderedHTMLCommon a:hover {
+  color: #a5d6ff;
+}
+
+/* Tables */
+.jp-RenderedHTMLCommon table {
+  border-color: #30363d;
+}
+
+.jp-RenderedHTMLCommon th {
+  background-color: #161b22;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+
+.jp-RenderedHTMLCommon td {
+  border-color: #30363d;
+}
+
+.jp-RenderedHTMLCommon tr:nth-child(even) {
+  background-color: #161b22;
+}
+
+/* Pandas DataFrames */
+.dataframe {
+  border-color: #30363d !important;
+}
+
+.dataframe th {
+  background-color: #161b22 !important;
+  color: #e6edf3 !important;
+  border-color: #30363d !important;
+}
+
+.dataframe td {
+  background-color: #0d1117 !important;
+  color: #c9d1d9 !important;
+  border-color: #30363d !important;
+}
+
+.dataframe tr:hover td {
+  background-color: #1c2128 !important;
+}
+
+/* Matplotlib / image outputs — ensure dark surroundings */
+.jp-RenderedImage img,
+.jp-OutputArea-output img {
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+/* Pre/code blocks */
+pre {
+  background-color: #161b22 !important;
+  color: #c9d1d9 !important;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+code {
+  background-color: #21262d;
+  color: #c9d1d9;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+/* Headings */
+.jp-RenderedHTMLCommon h1,
+.jp-RenderedHTMLCommon h2,
+.jp-RenderedHTMLCommon h3,
+.jp-RenderedHTMLCommon h4 {
+  color: #e6edf3;
+}
+
+/* Horizontal rules */
+.jp-RenderedHTMLCommon hr {
+  border-color: #30363d;
+}
+
+/* Blockquotes */
+.jp-RenderedHTMLCommon blockquote {
+  border-left-color: #388bfd;
+  color: #8b949e;
+  background-color: #161b22;
+  padding: 8px 16px;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Highlight overrides for code syntax in dark mode */
+.highlight .hll { background-color: #1c2128; }
+.highlight { background: #161b22; color: #c9d1d9; }
+
+/* Notebook wrapper */
+.jp-Notebook {
+  background-color: #0d1117;
+}
+
+/* Footer that appears on some nbconvert outputs */
+.jp-Cell {
+  background-color: transparent;
+}
+
+/* Selection */
+::selection {
+  background-color: #264f78;
+  color: #e6edf3;
+}

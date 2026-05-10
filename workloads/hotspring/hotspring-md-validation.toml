@@ -1,7 +1,6 @@
 # hotSpring — Sarkas Yukawa MD validation
 # Validates paper-parity molecular dynamics on consumer GPU
-#
-# TODO: Update command path when hotSpring validation binaries are built
+# hotSpring UniBin `validate` subcommand is the canonical entry point
 
 [metadata]
 name = "hotspring-md-validation"
@@ -10,8 +9,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "/home/irongate/Development/ecoPrimals/springs/hotSpring/target/release/validate_sarkas_md"
-working_dir = "/home/irongate/Development/ecoPrimals/springs/hotSpring"
+command = "$SPRINGS_ROOT/hotSpring/target/release/hotspring validate"
+working_dir = "$SPRINGS_ROOT/hotSpring"
 
 [resources]
 max_memory_bytes = 8589934592

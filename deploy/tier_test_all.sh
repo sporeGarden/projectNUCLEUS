@@ -74,8 +74,28 @@ echo "║  Tier: ${TIER}                                    ║"
 echo "║  Output: ${RESULTS_DIR}                           ║"
 echo "╚═══════════════════════════════════════════════════╝"
 
+DARKFOREST="${SCRIPT_DIR}/../validation/darkforest/target/release/darkforest"
+
 if [[ "$TIER" == "all" || "$TIER" == "observer" ]]; then
-    run_test "observer" "${SCRIPT_DIR}/tier_test_observer.py"
+    if [[ -x "$DARKFOREST" ]]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  Running: observer tier test (darkforest --suite observer)"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        set +e
+        "$DARKFOREST" --suite observer 2>&1 | tee "${RESULTS_DIR}/observer.txt"
+        local_exit=$?
+        set -e
+        obs_pass=$(grep -c "^PASS|" "${RESULTS_DIR}/observer.txt" 2>/dev/null) || obs_pass=0
+        obs_fail=$(grep -c "^FAIL|" "${RESULTS_DIR}/observer.txt" 2>/dev/null) || obs_fail=0
+        TOTAL_PASS=$((TOTAL_PASS + obs_pass))
+        TOTAL_FAIL=$((TOTAL_FAIL + obs_fail))
+        echo "  → observer: ${obs_pass} pass, ${obs_fail} fail (exit=${local_exit})"
+    else
+        echo ""
+        echo "  WARNING: darkforest binary not found at ${DARKFOREST}"
+        echo "  Build with: cd validation/darkforest && cargo build --release"
+    fi
 fi
 
 if [[ "$TIER" == "all" || "$TIER" == "reviewer" ]]; then
@@ -112,7 +132,7 @@ fi
 if [[ "$TIER" == "all" || "$TIER" == "sporePrint" ]]; then
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "  Running: sporePrint dual-origin verification"
+    echo "  Running: sporePrint membrane verification"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     set +e
     bash "${SCRIPT_DIR}/sporeprint_verify.sh" --tier-test 2>&1 | tee "${RESULTS_DIR}/sporePrint.txt"

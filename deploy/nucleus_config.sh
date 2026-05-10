@@ -13,7 +13,7 @@
 # --- Paths ---
 GATE_HOME="${GATE_HOME:-$HOME}"
 NUCLEUS_PROJECT_ROOT="${NUCLEUS_PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$NUCLEUS_PROJECT_ROOT/../../.." 2>/dev/null && pwd)}"
+ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$NUCLEUS_PROJECT_ROOT/../.." 2>/dev/null && pwd)}"
 PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-$ECOPRIMALS_ROOT/infra/plasmidBin}"
 WETSPRING_DIR="${WETSPRING_DIR:-$ECOPRIMALS_ROOT/springs/wetSpring}"
 ABG_SHARED="${ABG_SHARED:-$GATE_HOME/shared/abg}"

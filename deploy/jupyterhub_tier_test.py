@@ -148,7 +148,7 @@ def api_request(path, method="GET", data=None, token=None, user_token=None):
     except urllib.error.HTTPError as e:
         try:
             err_body = json.loads(e.read().decode())
-        except Exception:
+        except (json.JSONDecodeError, OSError):
             err_body = {"error": str(e)}
         return e.code, err_body
     except urllib.error.URLError as e:

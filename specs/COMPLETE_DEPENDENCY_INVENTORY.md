@@ -140,13 +140,13 @@ must prove parity before the external is removed.
 
 | Cluster | Dependencies | Critical Path? | Sovereignty Priority | Calibration Instrument |
 |---------|-------------|---------------|---------------------|----------------------|
-| 1. Cloudflare | 6 | Yes | High — Steps 2b-4 | benchScale baselines (capturing) |
-| 2. GitHub | ~15 distinct | Yes (Pages, Releases) | High — Step 3a, Forgejo | Forgejo (planned) |
+| 1. Cloudflare | 6 | Yes (membrane layer) | High — Steps 2b-4 | benchScale baselines (capturing) |
+| 2. GitHub | ~15 distinct | Yes (extracellular layer) | High — Step 3a, Forgejo | Forgejo (planned) |
 | 3. Package Registries | 4 channels | No | Low — vendor when needed | N/A |
 | 4. Container Registries | 3 registries | No | Low — config swap | N/A |
 | 5. AI/ML APIs | 3 providers | No (optional) | Low — Ollama works | N/A |
 | 6. Science Data APIs | 3 sources | No (data, not service) | Low — cache + provenance | `abg_data.sh` registry |
-| 7. Internal Primal Gaps | 5 gaps (1 critical) | **Yes** (prerequisite) | **Critical** — blocks Steps 2b-3b | JupyterHub deployment |
+| 7. Internal Primal Gaps | 6 gaps (1 critical) | **No longer blocking** | **Resolved** — JH-0→JH-5 all resolved/enforced | JupyterHub deployment |
 
 ---
 
@@ -159,16 +159,17 @@ Cluster 3 (Registries):  ██░░░░░░░░ ~20% mapped, vendor esca
 Cluster 4 (Containers):  ██░░░░░░░░ ~20% mapped, config swap path known
 Cluster 5 (AI APIs):     ██████░░░░ ~60% mapped, Ollama fallback working
 Cluster 6 (Science):     █████░░░░░ ~50% mapped, data registry operational
-Cluster 7 (Internal):    ████████░░ ~80% resolved, JH-0→JH-5 adopted/enforced (Phase 60)
+Cluster 7 (Internal):    █████████░ ~90% resolved, JH-0→JH-5+JH-11 adopted/enforced, MethodGate 11/13
 ```
 
 ---
 
 ## Cluster 7 — Internal Primal Gaps (Discovered via JupyterHub Deployment)
 
-**Status (2026-05-08)**: 5/6 gaps resolved or adopted by primalSpring Phase 60.
-MethodGate enforced, ionic tokens live, resource envelopes enforced, audit log operational.
-See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results.
+**Status (2026-05-11)**: All 6 gaps resolved. MethodGate enforced on 11/13 primals
+(toadStool + squirrel pending — low priority, localhost-only). Ionic tokens live,
+resource envelopes enforced, audit log operational, cross-primal token federation resolved (JH-11).
+See `validation/REVALIDATION_PHASE60_MAY08_2026.md` and `specs/EVOLUTION_GAPS.md` for current state.
 
 > Original gap discovery documented below. These were found by deploying
 > JupyterHub as a real multi-user service and observing where the primal
@@ -177,24 +178,25 @@ See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results.
 
 | Gap | Severity | Owner | Blocks | Description |
 |-----|----------|-------|--------|-------------|
-| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | **ENFORCED** — MethodGate on 13/13 primals, 10/13 confirmed enforced via TCP. `-32001 PERMISSION_DENIED` on unauthenticated calls. |
+| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | **ENFORCED** — MethodGate on 11/13 primals (toadStool + squirrel pending), 10/13 confirmed enforced via TCP. `-32001 PERMISSION_DENIED` on unauthenticated calls. |
 | JH-1: BearDog identity management | High | BearDog | Step 2b (BTSP auth) | **RESOLVED** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` live. Ed25519-signed scoped tokens. |
 | JH-2: Token-carried resource envelope | High | biomeOS + ToadStool | neuralAPI enforcement | **RESOLVED** — biomeOS v3.48 enforces `timeout_ms`, ToadStool S232 enforces `mem_mb`, `cpu_cores`. |
 | JH-3: Composition hot-reload | Medium | biomeOS | Rolling primal updates | **RESOLVED** — `composition.reload` ships in biomeOS v3.47. |
 | JH-4: Token issuance UX | Medium | BearDog + primalSpring | Non-technical user onboarding | **RESOLVED** — `auth.issue_session` with purpose-based presets (`jupyterhub`, `desktop`, `admin`). |
-| JH-5: Log aggregation + provenance | Medium | skunkBat | Unified security monitoring | **Phase 2 COMPLETE** — `security.audit_log` ring buffer live. Cross-primal forwarding deferred. |
+| JH-5: Log aggregation + provenance | Medium | skunkBat | Unified security monitoring | **Phase 2 COMPLETE** — `security.audit_log` ring buffer live. Cross-primal forwarding (JH-5 Phase 3) wired but not exercised end-to-end. |
+| JH-11: Cross-primal token federation | Medium | biomeOS/BearDog | Cross-gate auth | **RESOLVED** — BearDog `auth.public_key` + biomeOS `BearDogVerifier`. |
 
 **Sovereignty Progress**:
 
 ```
-Cluster 7 (Internal):   █░░░░░░░░░ ~10% — gaps identified, zero implemented
+Cluster 7 (Internal):   █████████░ ~90% — all gaps resolved, MethodGate 11/13 enforced
 ```
 
-**Relationship to other clusters**: Cluster 7 is a prerequisite for Cluster 1
-(Cloudflare) and Cluster 2 (GitHub) sovereignty. Without RPC capability
-enforcement (JH-0), removing Cloudflare's perimeter protection (Step 3b)
-exposes all primal endpoints to unauthenticated access. Without identity
-management (JH-1), BTSP auth (Step 2b) cannot replace PAM.
+**Relationship to other clusters**: Cluster 7 is the prerequisite for Cluster 1
+(Cloudflare) and Cluster 2 (GitHub) sovereignty. RPC capability enforcement
+(JH-0) is now enforced on 11/13 primals — sufficient for Step 2b. Identity
+management (JH-1) is resolved — BTSP auth (Step 2b) can replace PAM.
+Remaining gap: toadStool + squirrel MethodGate (low priority, localhost only).
 
 ---
 
@@ -216,3 +218,4 @@ management (JH-1), BTSP auth (Step 2b) cannot replace PAM.
 |------|--------|
 | 2026-05-07 | Initial inventory. 6 clusters, ~35 distinct dependencies mapped. |
 | 2026-05-07 | Added Cluster 7 — Internal Primal Gaps. 5 gaps (1 critical) from JupyterHub deployment patterns. |
+| 2026-05-11 | Reconciled Cluster 7: all gaps resolved, MethodGate corrected to 11/13, JH-11 added, progress bars updated. Cluster summary updated — internal gaps no longer blocking. |

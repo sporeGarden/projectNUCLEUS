@@ -198,16 +198,20 @@ To reproduce this validation:
 
 ### What Is Not Yet Secure
 
-| Gap | Risk | Mitigation Timeline |
-|-----|------|---------------------|
-| ToadStool security incomplete | Warns "incomplete cryptographic verification" | ToadStool team evolution |
-| Workload isolation = None | Workloads execute as host user | Phase 2: cgroups + namespaces |
-| Single witness | No multi-witness or certificate chain | Phase 2b: BearDog co-sign |
-| NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | Acceptable for localhost; awareness needed if TCP is exposed externally |
-| JupyterHub plain HTTP | No BTSP on localhost | Phase 2a: Cloudflare tunnel (external TLS) |
-| ~~No ionic token scoping~~ | **RESOLVED Phase 60**: BearDog ionic tokens live, MethodGate enforced, scope-checked | Enforced 2026-05-08 |
+| Gap | Risk | Mitigation Timeline | Status |
+|-----|------|---------------------|--------|
+| ToadStool security incomplete | Warns "incomplete cryptographic verification" | ToadStool team evolution | Open (upstream) |
+| Workload isolation = None | Workloads execute as host user | Phase 2: cgroups + namespaces | Open |
+| Single witness | No multi-witness or certificate chain | Phase 2b: BearDog co-sign | Open |
+| NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | MethodGate on 11/13 primals mitigates; toadStool + squirrel pending | Mitigated |
+| ~~JupyterHub plain HTTP~~ | ~~No BTSP on localhost~~ | ~~Phase 2a: Cloudflare tunnel (external TLS)~~ | **RESOLVED** — cell membrane (tunnel TLS) |
+| ~~No ionic token scoping~~ | ~~Tokens advisory, not enforcing~~ | ~~Phase 60: MethodGate enforcement~~ | **RESOLVED** — Phase 60 (2026-05-08) |
+| ~~Cross-primal token federation~~ | ~~No cross-gate token verification~~ | ~~JH-11~~ | **RESOLVED** — BearDog `auth.public_key` + biomeOS `BearDogVerifier` |
+| toadStool/squirrel MethodGate | No pre-dispatch auth gate on 2 primals | Upstream handback — low priority (localhost-only) | Open (upstream) |
 
-**Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. The previous gap (7 rebound, 6 need upstream `--bind`) is fully closed. See `validation/PHASE59_ABSORPTION_MAY06_2026.md`.
+**Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. Fully closed.
+**Resolved (Phase 60)**: MethodGate enforced on 11/13 primals. toadStool + squirrel pending (upstream handback).
+**Resolved (2026-05-10)**: Cell membrane architecture — external TLS via Cloudflare tunnel for lab/git subdomains.
 
 ### Security Evolution Path
 

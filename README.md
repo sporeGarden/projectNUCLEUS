@@ -64,20 +64,22 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Post-interstadial, cell membrane architecture, zero open upstream gaps (2026-05-10)**
+**Post-interstadial, cell membrane architecture, deep debt evolution sweep complete (2026-05-11)**
 
 ### Infrastructure
 
 - All **13/13 NUCLEUS primals** deployed and healthy on the active gate — zero debt across all primals
-- **8/8 springs** completed primordial extinction — eukaryotic UniBin, 9,317+ tests across the delta
+- **8/8 springs** completed primordial extinction — eukaryotic UniBin, 12,900+ tests across the delta
 - **Zero open upstream gaps** — all 11 gaps resolved by primal teams (JH-11, GAP-03/06/09/12, U1-U3, DF-2/3, U5)
 - BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
 - **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
 - Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
 - **Cell membrane architecture**: primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
-- **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
-- **Deep debt swept**: gate-agnostic config (`$GATE_HOME`), env-var-driven port/path resolution, zero TODO/FIXME/HACK
+- **Static observer surface**: pre-rendered HTML via pappusCast (modular: 7 Python modules), centralized dark theme, Rust-validated (darkforest `--suite observer`)
+- **Deep debt evolution sweep**: pappusCast refactored (953L→7 modules), zero hardcoded paths in Rust/systemd, gate-agnostic config via `EnvironmentFile` + `$GATE_HOME`, specs reconciled, upstream handbacks delivered
+- **MethodGate**: 11/13 primals enforced (toadStool + squirrel pending — upstream handback delivered)
 - **Sovereignty unblocked upstream**: bearDog TLS + rate limiting (H2-10/11), songbird full NAT chain (H2-13-16), JH-11 token federation, skunkBat Phase 2 audit logging — all shipped
+- **Next priority**: NestGate content pipeline (H2-05) — required for sovereign content serving and full data/compute chains
 
 ### Services (all persistent via systemd)
 

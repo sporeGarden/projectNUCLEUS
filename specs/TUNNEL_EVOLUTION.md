@@ -189,7 +189,12 @@ run notebooks but cannot call `nestgate.storage.list` or `beardog.auth.issue_ion
 
 ### Step 3a: sporePrint Content to NestGate
 
-**Goal**: Remove GitHub Pages dependency — primals.eco served entirely from the active gate.
+**Goal**: Replace GitHub Pages with sovereign content serving — primals.eco served from NestGate + petalTongue.
+
+**Cell membrane context (2026-05-10)**: In the current cell membrane architecture,
+`primals.eco` lives on GitHub Pages (extracellular layer). Step 3a replaces this
+with sovereign content serving, moving primals.eco from extracellular to membrane.
+The CDN remains as a cache/fallback until parity is confirmed.
 
 ```
 Browser → primals.eco (Cloudflare DNS + CDN proxy)

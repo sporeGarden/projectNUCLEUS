@@ -1,3 +1,5 @@
+# Template: paths below are for the active gate. gate_provision.sh
+# rewrites User/Group and paths when installing on replicas.
 [Unit]
 Description=sporePrint local preview (dev/preview only — primals.eco served by GitHub Pages CDN)
 After=network.target
@@ -7,8 +9,8 @@ Documentation=https://github.com/sporeGarden/projectNUCLEUS
 Type=simple
 User=irongate
 Group=irongate
-Environment=GATE_HOME=/home/irongate
-WorkingDirectory=/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS
+EnvironmentFile=-/etc/projectnucleus/gate.env
+WorkingDirectory=${GATE_HOME}/Development/ecoPrimals/sporeGarden/projectNUCLEUS
 ExecStart=/usr/bin/bash deploy/sporeprint_local.sh serve
 Restart=always
 RestartSec=5

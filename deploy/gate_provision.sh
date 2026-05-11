@@ -202,9 +202,17 @@ else
 fi
 log "  config.yml deployed"
 
-# ── Phase 5: Install systemd service ─────────────────────────────────────
+# ── Phase 5: Install gate.env + systemd service ──────────────────────────
 
-log "Phase 5: systemd service"
+log "Phase 5: gate.env + systemd service"
+
+if $DRY_RUN; then
+    echo "  [dry-run] Would install: /etc/projectnucleus/gate.env"
+else
+    ssh_cmd "sudo mkdir -p /etc/projectnucleus"
+    echo "GATE_HOME=${REMOTE_HOME}" | ssh "$TARGET" "sudo tee /etc/projectnucleus/gate.env > /dev/null"
+fi
+log "  gate.env installed (GATE_HOME=${REMOTE_HOME})"
 
 CF_SERVICE="[Unit]
 Description=cloudflared tunnel membrane replica (${TUNNEL_NAME})

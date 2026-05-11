@@ -84,7 +84,7 @@ def test_kernels(user):
                 with open(kdir / "kernel.json") as f:
                     spec = json.load(f)
                 report("PASS", f"kernel:{k}", f"display_name={spec.get('display_name','?')}")
-            except Exception as e:
+            except (json.JSONDecodeError, OSError) as e:
                 report("FAIL", f"kernel:{k}", f"kernel.json unreadable: {e}")
         else:
             report("FAIL", f"kernel:{k}", f"{kdir} missing")
@@ -159,7 +159,7 @@ def test_notebook_execution(user):
                 report("FAIL", test_name, f"exit={result.returncode}: {snippet}")
         except subprocess.TimeoutExpired:
             report("FAIL", test_name, "Timed out after 90s")
-        except Exception as e:
+        except (subprocess.SubprocessError, json.JSONDecodeError, OSError) as e:
             report("FAIL", test_name, str(e)[:150])
 
 

@@ -1,3 +1,5 @@
+# Template: paths below are for the active gate. gate_provision.sh
+# rewrites User/Group and paths when installing on replicas.
 [Unit]
 Description=sporePrint rebuild (git pull + zola build)
 After=network-online.target
@@ -7,7 +9,7 @@ Wants=network-online.target
 Type=oneshot
 User=irongate
 Group=irongate
-Environment=GATE_HOME=/home/irongate
-WorkingDirectory=/home/irongate/Development/ecoPrimals/sporeGarden/projectNUCLEUS
+EnvironmentFile=-/etc/projectnucleus/gate.env
+WorkingDirectory=${GATE_HOME}/Development/ecoPrimals/sporeGarden/projectNUCLEUS
 ExecStart=/usr/bin/bash deploy/sporeprint_local.sh build
 TimeoutStartSec=120

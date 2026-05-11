@@ -349,6 +349,17 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `sporeprint-local.service` demoted from production to development preview tool
 - Key insight: accept that the extracellular world (CDN, DNS) is uncontrolled; inside the membrane, total sovereign control. The boundary enables future ionic/weak bonding as gated channels.
 
+**Deep Debt Evolution Sweep (2026-05-11)**:
+- `pappusCast.py` (953L) smart-refactored into 7 modules: `pappuscast/{config,state,tiers,publisher,export,daemon}.py` + thin CLI entry point (146L)
+- Zero hardcoded `/home/irongate` in Rust code: `pentest.rs` (12 hits) and `crypto.rs` (1 hit) → `gate_home()` env-var pattern
+- 4 systemd units → `EnvironmentFile=/etc/projectnucleus/gate.env` + `${GATE_HOME}` substitution; `gate_provision.sh` installs env file on replicas
+- `tier_test_observer.py` → `validation/archive/legacy/` (superseded by darkforest `--suite observer`)
+- `except Exception` blocks narrowed in `tier_test_compute.py` and `jupyterhub_tier_test.py`
+- Spec reconciliation: `COMPLETE_DEPENDENCY_INVENTORY.md` (Cluster 7 → ~90%, JH-11 added), `VALIDATION_RESULTS.md` (security table updated), `TUNNEL_EVOLUTION.md` (Step 3a cell membrane context)
+- Upstream handback delivered: toadStool/squirrel MethodGate insertion points, barraCuda crypto delegation to bearDog IPC, squirrel `LocalProcessProvider` → toadStool dispatch
+- MethodGate claim corrected: 11/13 (toadStool + squirrel pending)
+- **Next priority**: NestGate content pipeline for sovereign data/compute chains
+
 ### ABG Tiered Access Model
 
 Three tiers, simplified from four. Observer is open; reviewer and user are gated

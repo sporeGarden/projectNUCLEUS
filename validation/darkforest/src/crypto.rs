@@ -3,7 +3,7 @@ use crate::net::*;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-fn gate_home() -> PathBuf {
+pub(crate) fn gate_home() -> PathBuf {
     PathBuf::from(std::env::var("GATE_HOME")
         .or_else(|_| std::env::var("HOME"))
         .unwrap_or_else(|_| "/home/nobody".to_string()))
@@ -189,8 +189,9 @@ fn cry_04_api_token_entropy(results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("CRY-04", "crypto", Category::Crypto, Severity::High)
         .remediation("JupyterHub generates UUID4 tokens by default — ensure no custom overrides");
 
+    let db = gate_home().join("jupyterhub/jupyterhub.sqlite");
     let (code, out) = sudo_cmd("root",
-        "sqlite3 /home/irongate/jupyterhub/jupyterhub.sqlite \"SELECT prefix FROM api_tokens LIMIT 5\" 2>/dev/null");
+        &format!("sqlite3 {} \"SELECT prefix FROM api_tokens LIMIT 5\" 2>/dev/null", db.display()));
     if code != 0 || out.trim().is_empty() {
         results.push(cb.pass("No API tokens in database or database not accessible", "Empty result"));
         return;

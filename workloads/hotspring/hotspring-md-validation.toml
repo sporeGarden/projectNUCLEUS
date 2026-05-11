@@ -10,7 +10,7 @@ version = "0.2.0"
 [execution]
 type = "native"
 command = "$SPRINGS_ROOT/hotSpring/barracuda/target/release/hotspring_unibin"
-args = ["validate", "--scenario", "sarkas_yukawa_md"]
+args = ["validate", "--scenario", "sarkas-yukawa-md"]
 working_dir = "$SPRINGS_ROOT/hotSpring"
 
 [resources]

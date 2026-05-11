@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-10 (post-interstadial: zero open upstream gaps, static observer, Rust observer tests)
+**Last updated**: 2026-05-11 (interstadial exit criteria defined — 5 pillars, stadial boundary, lithoSpore integration, ABG WCM milestone)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -241,6 +241,60 @@ from the resolved upstream work. All local, actionable now.
 
 ---
 
+## Interstadial / Stadial Phase Tagging
+
+Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
+
+### Interstadial Targets (pre-wire — shadow runs can begin)
+
+| ID | Target | Pillar | Status |
+|----|--------|--------|--------|
+| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | Ready to build |
+| H2-05→09 | NestGate + petalTongue content pipeline | P2 (NUCLEUS) | Intermediate (cell membrane live) |
+| H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | Ready (upstream shipped) |
+| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | Ready (upstream shipped) |
+| ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Mapped, not exercised |
+| LITHO-INT | lithoSpore workload integration (after Phase 2) | P4 (lithoSpore) | Workload TOMLs exist |
+| FND-4/7 | Foundation Threads 4+7 workloads running | P2 (NUCLEUS) | Thread 1 validated only |
+
+### Stadial Targets (external validation drives cutover)
+
+| ID | Target | External Driver | Status |
+|----|--------|-----------------|--------|
+| H2-12→cutover | BearDog TLS cutover from Cloudflare | Cloudflare baselines | Awaiting interstadial shadow |
+| H2-14→cutover | Songbird NAT replaces cloudflared | VPS relay parity | Awaiting interstadial integration |
+| H2-09 | petalTongue replaces Zola/GitHub Pages | Content parity | Awaiting interstadial pipeline |
+| H3-01→06 | Primal-only replacements | GitHub → Forgejo, crates.io | Future |
+| LITHO-EXT | lithoSpore USB to Barrick Lab | External deployment | Phase 5 (after spring reproductions) |
+| UPSTREAM-CRATES | wgsl-precision, proc-sysinfo extraction | crates.io community | Q2 2026 |
+
+### ABG Whole-Cell Model (WCM) Composition Milestone
+
+Thread 1 WCM compositions must be exercised through NUCLEUS deploy graphs
+with the provenance trio (rhizoCrypt + LoamSpine + sweetGrass) producing
+verifiable output. This is Pillar 3 of the interstadial exit criteria.
+
+Current state:
+- `ABG_WHOLE_CELL_REBUILD.md` maps compositions but not all are exercised
+- Provenance trio validated on ironGate (Nest Atomic, 9 primals)
+- Thread 1 workloads running (genome fetch/hash, KEGG)
+- Remaining: drive WCM compositions through NUCLEUS `composition.deploy(graph)`
+
+### lithoSpore Integration
+
+lithoSpore (`sporeGarden/lithoSpore`) is a projectNUCLEUS subsystem — the
+first Targeted GuideStone artifact.
+
+- Workload TOMLs: `litho-validate-tier2.toml`, `litho-validate-tier3.toml`
+- Integration point: after lithoSpore Phase 2 (spring reproductions), NUCLEUS
+  dispatches lithoSpore workloads via `composition.deploy(graph)`
+- USB deployment: Tier 3 deploy graph (`graphs/ltee_guidestone.toml`) composes
+  NUCLEUS primals around lithoSpore science modules
+- Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data
+- Stadial target: USB to Barrick Lab (Phase 5)
+
+---
+
 ## Scoring
 
 ```
@@ -248,6 +302,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          ███████░░░  2a done, 2b ready, 3a INTERMEDIATE, 3b/3c UPSTREAM SHIPPED (shadow run ready), 4 INTERMEDIATE (DoT)
 Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
 Upstream (waiting):                ██████████  ZERO OPEN — all 11 gaps resolved by primal teams (May 10)
+Interstadial exit:                ███░░░░░░░  Criteria defined, shadow runs not yet running
 ```
 
 ---
@@ -276,3 +331,4 @@ Upstream (waiting):                ██████████  ZERO OPEN —
 | 2026-05-10 | **Cell membrane architecture**: Architectural inversion — `primals.eco` permanently on GitHub Pages CDN (extracellular), `lab/git.primals.eco` via tunnel replicas (membrane), sovereign compute inside (intracellular). `gate_provision.sh` provisions replicas. `gate_watchdog.sh` monitors membrane health. `tunnelKeeper v0.2.0` reports replica count + edge colos. `sporeprint-local.service` demoted to dev. Key insight: accept uncontrolled extracellular, total control intracellular, selective permeability at the membrane. |
 | 2026-05-11 | **Cross-ecosystem audit**: MethodGate claim corrected to 11/13 (toadStool + squirrel pending). skunkBat added to `node_atomic_compute.toml`, `nest_atomic.toml`, and `deploy.sh` composition lists. `deploy.sh` confirmed as nohup-loop, not `composition.deploy` — graph-driven germination is key absorption target. foundation integration is docs-only (no code path). 4 new absorption targets added. Spring readiness: all 7 workloads gate-agnostic, barraCuda version skew across springs (0.3.7–0.3.13), airSpring `barracuda` not optional. |
 | 2026-05-11 | **River delta Push 2 verified**: 8/8 springs confirmed skunkBat Rust IPC (airSpring, groundSpring, hotSpring, wetSpring all added `skunkbat.rs`), 8/8 `method.register`, 8/8 CI cross-sync 413. 12,900+ tests. 3 new healthSpring workloads pulled. BearDog TLS shadow run (H2-12) and Songbird NAT VPS relay (H2-14) added as operational targets. plasmidBin binary workflow target added. airSpring `barracuda` still required (Tier 4 pending). |
+| 2026-05-11 | **Interstadial exit criteria**: 5 pillars defined (Primal Sovereignty, NUCLEUS Deployments, ABG Hosting, lithoSpore, River Delta). H2/H3 items tagged interstadial vs stadial. ABG WCM composition milestone added. lithoSpore integration section (workload TOMLs, deploy graph, Phase 2 dependency). Stadial boundary: external validation drives cutover. |

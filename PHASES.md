@@ -257,7 +257,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Enforced Mode Activation (2026-05-08)**:
 - Switched `NUCLEUS_AUTH_MODE` from `permissive` to `enforced` — default for all deployments
 - `deploy.sh` now exports `*_AUTH_MODE=enforced` env vars for all 13 primals
-- **JH-0 FULLY RESOLVED**: 10/13 primals confirmed enforced via TCP `auth.mode`. All unauthenticated RPC calls return `-32001 PERMISSION_DENIED`
+- **JH-0 FULLY RESOLVED**: 10/13 primals confirmed enforced via TCP at this date (now 13/13). All unauthenticated RPC calls return `-32001 PERMISSION_DENIED`
 - **Ionic token flow validated**: `identity.create` → `auth.issue_session(purpose="jupyterhub")` → scoped Ed25519 token → `_bearer_token` in RPC params → MethodGate accepts → method dispatches
 - **Scope rejection confirmed**: Token with `crypto.*` scope can call `capabilities.list` but token verified on nestgate can't call `storage.list` (wrong scope)
 - **Cross-primal gap (JH-11)**: Beardog-issued tokens not verifiable by other primals — each MethodGate validates independently. biomeOS composition forwarding is the intended cross-primal path
@@ -357,7 +357,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `except Exception` blocks narrowed in `tier_test_compute.py` and `jupyterhub_tier_test.py`
 - Spec reconciliation: `COMPLETE_DEPENDENCY_INVENTORY.md` (Cluster 7 → ~90%, JH-11 added), `VALIDATION_RESULTS.md` (security table updated), `TUNNEL_EVOLUTION.md` (Step 3a cell membrane context)
 - Upstream handback delivered: toadStool/squirrel MethodGate insertion points, barraCuda crypto delegation to bearDog IPC, squirrel `LocalProcessProvider` → toadStool dispatch
-- MethodGate claim corrected: 11/13 (toadStool + squirrel pending)
+- MethodGate was 11/13 at time of sweep (toadStool + squirrel pending) — now **13/13** (upstream resolved)
 - **Next priority**: NestGate content pipeline for sovereign data/compute chains
 
 ### ABG Tiered Access Model

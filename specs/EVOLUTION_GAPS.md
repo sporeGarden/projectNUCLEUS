@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-11 (interstadial exit criteria defined — 5 pillars, stadial boundary, lithoSpore integration, ABG WCM milestone)
+**Last updated**: 2026-05-11 (MethodGate 13/13, interstadial exit criteria, deep debt sweep, foundation + lithoSpore integration)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -231,9 +231,9 @@ from the resolved upstream work. All local, actionable now.
 | Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
 | ~~skunkBat in smaller compositions~~ | ~~Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml`~~ | **DONE** (May 11) | ~~High~~ |
 | skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 | Medium |
-| ~~MethodGate parity~~ | **RESOLVED** — squirrel shipped `method_gate.rs` (JH-0 + JH-2). 13/13 at primalSpring gate. | May 11 | ~~Low~~ |
-| foundation integration | Wire provenance results to `sporeGarden/foundation/` (currently docs-only, no code path) | Foundation repo | Low |
-| systemd unit portability | Parameterize remaining `/home/irongate` in systemd units via `%h` or `EnvironmentFile` | Deep debt sweep | Low |
+| ~~MethodGate parity~~ | **RESOLVED** — squirrel shipped `method_gate.rs` (JH-0 + JH-2). 13/13 at primalSpring gate. | **DONE** (May 11) | ~~Low~~ |
+| ~~foundation integration~~ | Wire provenance results to `sporeGarden/foundation/` — **Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created; THREAD_INDEX hygiene done; paper 02 thread fix** | **DONE** (May 11) | ~~Low~~ |
+| ~~systemd unit portability~~ | ~~Parameterize `/home/irongate` in systemd units~~ — **DONE** via `EnvironmentFile` + `gate.env.template` | **DONE** (May 11, deep debt sweep) | ~~Low~~ |
 | BearDog TLS shadow run (H2-12) | Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days | bearDog Wave 100 shipped, benchScale ready | High (ops) |
 | Songbird NAT VPS relay (H2-14) | Provision ~$5/mo VPS, deploy BearDog-authenticated STUN/TURN relay | songbird Wave 196/197 shipped | Medium (ops) |
 | plasmidBin binary workflow | Update workload TOMLs to support fetched binaries (plasmidBin `fetch.sh` → `$PLASMIDBIN_DIR/springs/`) | Springs shipping release binaries | Medium |
@@ -332,3 +332,4 @@ Interstadial exit:                ███░░░░░░░  Criteria defin
 | 2026-05-11 | **Cross-ecosystem audit**: MethodGate corrected to 12/13 (squirrel pending; toadStool has full JH-0 + JH-2 method_gate.rs). skunkBat added to `node_atomic_compute.toml`, `nest_atomic.toml`, and `deploy.sh` composition lists. `deploy.sh` confirmed as nohup-loop, not `composition.deploy` — graph-driven germination is key absorption target. foundation integration is docs-only (no code path). 4 new absorption targets added. Spring readiness: all 7 workloads gate-agnostic, barraCuda version skew across springs (0.3.7–0.3.13), airSpring `barracuda` not optional. |
 | 2026-05-11 | **River delta Push 2 verified**: 8/8 springs confirmed skunkBat Rust IPC (airSpring, groundSpring, hotSpring, wetSpring all added `skunkbat.rs`), 8/8 `method.register`, 8/8 CI cross-sync 413. 12,900+ tests. 3 new healthSpring workloads pulled. BearDog TLS shadow run (H2-12) and Songbird NAT VPS relay (H2-14) added as operational targets. plasmidBin binary workflow target added. airSpring `barracuda` still required (Tier 4 pending). |
 | 2026-05-11 | **Interstadial exit criteria**: 5 pillars defined (Primal Sovereignty, NUCLEUS Deployments, ABG Hosting, lithoSpore, River Delta). H2/H3 items tagged interstadial vs stadial. ABG WCM composition milestone added. lithoSpore integration section (workload TOMLs, deploy graph, Phase 2 dependency). Stadial boundary: external validation drives cutover. |
+| 2026-05-11 | **MethodGate 13/13 + foundation integration**: toadStool + squirrel resolved upstream. Deep debt evolution sweep committed. foundation Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created. THREAD_INDEX v1.2.0 hygiene. publish_sporeprint.sh stub created for H2-05. 3 absorption targets closed. |

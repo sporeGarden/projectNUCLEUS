@@ -203,14 +203,14 @@ To reproduce this validation:
 | ToadStool security incomplete | Warns "incomplete cryptographic verification" | ToadStool team evolution | Open (upstream) |
 | Workload isolation = None | Workloads execute as host user | Phase 2: cgroups + namespaces | Open |
 | Single witness | No multi-witness or certificate chain | Phase 2b: BearDog co-sign | Open |
-| NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | MethodGate on 11/13 primals mitigates; toadStool + squirrel pending | Mitigated |
+| NestGate TCP fallback ungated | TCP fallback (Tier 5, localhost) dispatches all methods ungated | MethodGate on 13/13 primals mitigates | Mitigated |
 | ~~JupyterHub plain HTTP~~ | ~~No BTSP on localhost~~ | ~~Phase 2a: Cloudflare tunnel (external TLS)~~ | **RESOLVED** — cell membrane (tunnel TLS) |
 | ~~No ionic token scoping~~ | ~~Tokens advisory, not enforcing~~ | ~~Phase 60: MethodGate enforcement~~ | **RESOLVED** — Phase 60 (2026-05-08) |
 | ~~Cross-primal token federation~~ | ~~No cross-gate token verification~~ | ~~JH-11~~ | **RESOLVED** — BearDog `auth.public_key` + biomeOS `BearDogVerifier` |
 | toadStool/squirrel MethodGate | No pre-dispatch auth gate on 2 primals | Upstream handback — low priority (localhost-only) | Open (upstream) |
 
 **Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. Fully closed.
-**Resolved (Phase 60)**: MethodGate enforced on 11/13 primals. toadStool + squirrel pending (upstream handback).
+**Resolved (Phase 60+)**: MethodGate enforced on 13/13 primals. toadStool + squirrel resolved upstream after deep debt handback.
 **Resolved (2026-05-10)**: Cell membrane architecture — external TLS via Cloudflare tunnel for lab/git subdomains.
 
 ### Security Evolution Path

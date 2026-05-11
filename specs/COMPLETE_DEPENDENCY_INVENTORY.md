@@ -159,14 +159,14 @@ Cluster 3 (Registries):  ██░░░░░░░░ ~20% mapped, vendor esca
 Cluster 4 (Containers):  ██░░░░░░░░ ~20% mapped, config swap path known
 Cluster 5 (AI APIs):     ██████░░░░ ~60% mapped, Ollama fallback working
 Cluster 6 (Science):     █████░░░░░ ~50% mapped, data registry operational
-Cluster 7 (Internal):    █████████░ ~90% resolved, JH-0→JH-5+JH-11 adopted/enforced, MethodGate 11/13
+Cluster 7 (Internal):    ██████████ 100% resolved, JH-0→JH-5+JH-11 adopted/enforced, MethodGate 13/13
 ```
 
 ---
 
 ## Cluster 7 — Internal Primal Gaps (Discovered via JupyterHub Deployment)
 
-**Status (2026-05-11)**: All 6 gaps resolved. MethodGate enforced on 11/13 primals
+**Status (2026-05-11)**: All 6 gaps resolved. MethodGate enforced on 13/13 primals
 (toadStool + squirrel pending — low priority, localhost-only). Ionic tokens live,
 resource envelopes enforced, audit log operational, cross-primal token federation resolved (JH-11).
 See `validation/REVALIDATION_PHASE60_MAY08_2026.md` and `specs/EVOLUTION_GAPS.md` for current state.
@@ -178,7 +178,7 @@ See `validation/REVALIDATION_PHASE60_MAY08_2026.md` and `specs/EVOLUTION_GAPS.md
 
 | Gap | Severity | Owner | Blocks | Description |
 |-----|----------|-------|--------|-------------|
-| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | **ENFORCED** — MethodGate on 11/13 primals (toadStool + squirrel pending), 10/13 confirmed enforced via TCP. `-32001 PERMISSION_DENIED` on unauthenticated calls. |
+| JH-0: RPC dispatcher capability check | **Critical** | All primal teams | Secure multi-user compositions | **ENFORCED** — MethodGate on 13/13 primals, all confirmed enforced via TCP. `-32001 PERMISSION_DENIED` on unauthenticated calls. |
 | JH-1: BearDog identity management | High | BearDog | Step 2b (BTSP auth) | **RESOLVED** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` live. Ed25519-signed scoped tokens. |
 | JH-2: Token-carried resource envelope | High | biomeOS + ToadStool | neuralAPI enforcement | **RESOLVED** — biomeOS v3.48 enforces `timeout_ms`, ToadStool S232 enforces `mem_mb`, `cpu_cores`. |
 | JH-3: Composition hot-reload | Medium | biomeOS | Rolling primal updates | **RESOLVED** — `composition.reload` ships in biomeOS v3.47. |
@@ -189,12 +189,12 @@ See `validation/REVALIDATION_PHASE60_MAY08_2026.md` and `specs/EVOLUTION_GAPS.md
 **Sovereignty Progress**:
 
 ```
-Cluster 7 (Internal):   █████████░ ~90% — all gaps resolved, MethodGate 11/13 enforced
+Cluster 7 (Internal):   ██████████ 100% — all gaps resolved, MethodGate 13/13 enforced
 ```
 
 **Relationship to other clusters**: Cluster 7 is the prerequisite for Cluster 1
 (Cloudflare) and Cluster 2 (GitHub) sovereignty. RPC capability enforcement
-(JH-0) is now enforced on 11/13 primals — sufficient for Step 2b. Identity
+(JH-0) is now enforced on 13/13 primals — complete for Step 2b. Identity
 management (JH-1) is resolved — BTSP auth (Step 2b) can replace PAM.
 Remaining gap: toadStool + squirrel MethodGate (low priority, localhost only).
 
@@ -219,3 +219,4 @@ Remaining gap: toadStool + squirrel MethodGate (low priority, localhost only).
 | 2026-05-07 | Initial inventory. 6 clusters, ~35 distinct dependencies mapped. |
 | 2026-05-07 | Added Cluster 7 — Internal Primal Gaps. 5 gaps (1 critical) from JupyterHub deployment patterns. |
 | 2026-05-11 | Reconciled Cluster 7: all gaps resolved, MethodGate corrected to 11/13, JH-11 added, progress bars updated. Cluster summary updated — internal gaps no longer blocking. |
+| 2026-05-11 | MethodGate updated to 13/13 — toadStool + squirrel resolved upstream. Cluster 7 at 100%. |

@@ -77,7 +77,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Cell membrane architecture**: primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
 - **Static observer surface**: pre-rendered HTML via pappusCast (modular: 7 Python modules), centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **Deep debt evolution sweep**: pappusCast refactored (953L→7 modules), zero hardcoded paths in Rust/systemd, gate-agnostic config via `EnvironmentFile` + `$GATE_HOME`, specs reconciled, upstream handbacks delivered
-- **MethodGate**: 11/13 primals enforced (toadStool + squirrel pending — upstream handback delivered)
+- **MethodGate**: 13/13 primals enforced — toadStool + squirrel resolved upstream (was 11/13 at deep debt sweep)
 - **Sovereignty unblocked upstream**: bearDog TLS + rate limiting (H2-10/11), songbird full NAT chain (H2-13-16), JH-11 token federation, skunkBat Phase 2 audit logging — all shipped
 - **Next priority**: NestGate content pipeline (H2-05) — required for sovereign content serving and full data/compute chains
 
@@ -137,7 +137,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Reviewer/user lockdown**: NoKernelManager blocks kernel creation for reviewers, no terminals, filesystem read-only (chmod 550 root-owned)
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
-- **MethodGate (JH-0) ENFORCED**: 11/13 primals ship MethodGate (toadStool + squirrel pending). 10/13 confirmed enforced via TCP. Unauthenticated calls return `-32001 PERMISSION_DENIED`
+- **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. All confirmed enforced via TCP. Unauthenticated calls return `-32001 PERMISSION_DENIED`
 - **Ionic tokens (JH-1) LIVE**: BearDog Ed25519-signed scoped tokens with expiry and JTI
 - **Resource envelopes (JH-2)**: biomeOS v3.48 + ToadStool S232 enforce limits on all dispatch paths
 - **Composition reload (JH-3)**: biomeOS `composition.reload` — hot-swap single primal without full restart

@@ -231,7 +231,7 @@ from the resolved upstream work. All local, actionable now.
 | Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
 | ~~skunkBat in smaller compositions~~ | ~~Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml`~~ | **DONE** (May 11) | ~~High~~ |
 | skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 | Medium |
-| MethodGate parity | squirrel missing MethodGate pre-dispatch check (toadStool done — full JH-0 + JH-2) — hand back to squirrel team | Primal audit May 11 | Low (upstream) |
+| ~~MethodGate parity~~ | **RESOLVED** — squirrel shipped `method_gate.rs` (JH-0 + JH-2). 13/13 at primalSpring gate. | May 11 | ~~Low~~ |
 | foundation integration | Wire provenance results to `sporeGarden/foundation/` (currently docs-only, no code path) | Foundation repo | Low |
 | systemd unit portability | Parameterize remaining `/home/irongate` in systemd units via `%h` or `EnvironmentFile` | Deep debt sweep | Low |
 | BearDog TLS shadow run (H2-12) | Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days | bearDog Wave 100 shipped, benchScale ready | High (ops) |

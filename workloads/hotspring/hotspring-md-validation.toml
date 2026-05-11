@@ -5,11 +5,12 @@
 [metadata]
 name = "hotspring-md-validation"
 description = "Sarkas Yukawa OCP molecular dynamics — paper parity, 0.000% energy drift"
-version = "0.1.0"
+version = "0.2.0"
 
 [execution]
 type = "native"
-command = "$SPRINGS_ROOT/hotSpring/target/release/hotspring validate"
+command = "$SPRINGS_ROOT/hotSpring/barracuda/target/release/hotspring_unibin"
+args = ["validate", "--scenario", "sarkas_yukawa_md"]
 working_dir = "$SPRINGS_ROOT/hotSpring"
 
 [resources]

@@ -222,14 +222,18 @@ See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HAND
 These are not upstream gaps — they are composition patterns we should absorb
 from the resolved upstream work. All local, actionable now.
 
-| Target | What to wire | Source |
-|--------|-------------|--------|
-| `composition.deploy(graph)` | Transition from `deploy.sh`/systemd to graph-driven germination | biomeOS v3.51, primalSpring `graphs/fragments/*.toml` |
-| `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 |
-| `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 |
-| Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution |
-| skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 |
-| Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked |
+| Target | What to wire | Source | Priority |
+|--------|-------------|--------|----------|
+| `composition.deploy(graph)` | Transition from `deploy.sh` nohup loop to graph-driven germination | biomeOS v3.51 `composition.deploy` route alias | High |
+| `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 | Medium |
+| `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 | Medium |
+| Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
+| skunkBat in smaller compositions | Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml` (currently only in `nucleus_complete.toml`) | Local graph gap | High |
+| skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 | Medium |
+| MethodGate parity | toadStool + squirrel missing MethodGate pre-dispatch check — hand back to primal teams | Primal audit May 11 | Low (upstream) |
+| foundation integration | Wire provenance results to `sporeGarden/foundation/` (currently docs-only, no code path) | Foundation repo | Low |
+| systemd unit portability | Parameterize remaining `/home/irongate` in systemd units via `%h` or `EnvironmentFile` | Deep debt sweep | Low |
+| Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked | Future |
 
 ---
 
@@ -266,3 +270,4 @@ Upstream (waiting):                ██████████  ZERO OPEN —
 | 2026-05-10 | darkforest v0.2.1: `observer.rs` module — 9 check groups (OBS-01→OBS-09) for static surface validation: theme CSS, nav bar, Voila link remnants, tracebacks, source stripping, HTTP 200 root, security headers, directory blocking. 86 PASS, 0 FAIL. Observer tier test migrated from Python to Rust in `tier_test_all.sh`. |
 | 2026-05-10 | **Post-interstadial gap closure**: All 11 upstream gaps resolved by primal teams (JH-11, GAP-03/06/09/12, U1-U3, DF-2/3, U5). H2-10/11 (bearDog TLS + rate limiting) shipped. H2-13/15/16 (songbird NAT chain) shipped. H3-07/H3-08 unblocked. 6 absorption targets identified for local wiring. |
 | 2026-05-10 | **Cell membrane architecture**: Architectural inversion — `primals.eco` permanently on GitHub Pages CDN (extracellular), `lab/git.primals.eco` via tunnel replicas (membrane), sovereign compute inside (intracellular). `gate_provision.sh` provisions replicas. `gate_watchdog.sh` monitors membrane health. `tunnelKeeper v0.2.0` reports replica count + edge colos. `sporeprint-local.service` demoted to dev. Key insight: accept uncontrolled extracellular, total control intracellular, selective permeability at the membrane. |
+| 2026-05-11 | **Cross-ecosystem audit**: MethodGate claim corrected to 11/13 (toadStool + squirrel pending). skunkBat absent from smaller composition graphs — added to absorption targets. `deploy.sh` confirmed as nohup-loop, not `composition.deploy` — graph-driven germination is key absorption target. foundation integration is docs-only (no code path). 4 new absorption targets added. Spring readiness: all 7 workloads gate-agnostic, barraCuda version skew across springs (0.3.7–0.3.13), airSpring `barracuda` not optional. |

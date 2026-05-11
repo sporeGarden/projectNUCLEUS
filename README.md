@@ -135,7 +135,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Reviewer/user lockdown**: NoKernelManager blocks kernel creation for reviewers, no terminals, filesystem read-only (chmod 550 root-owned)
 - **Shared notebooks immutable**: compute users can run but not save back (chmod 444, per-user results dirs)
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
-- **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. 10/13 confirmed enforced via TCP. All unauthenticated calls return `-32001 PERMISSION_DENIED`
+- **MethodGate (JH-0) ENFORCED**: 11/13 primals ship MethodGate (toadStool + squirrel pending). 10/13 confirmed enforced via TCP. Unauthenticated calls return `-32001 PERMISSION_DENIED`
 - **Ionic tokens (JH-1) LIVE**: BearDog Ed25519-signed scoped tokens with expiry and JTI
 - **Resource envelopes (JH-2)**: biomeOS v3.48 + ToadStool S232 enforce limits on all dispatch paths
 - **Composition reload (JH-3)**: biomeOS `composition.reload` — hot-swap single primal without full restart

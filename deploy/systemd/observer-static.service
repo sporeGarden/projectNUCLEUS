@@ -1,3 +1,5 @@
+# Template: paths below are for the active gate. gate_provision.sh
+# rewrites User/Group and paths when installing on replicas.
 [Unit]
 Description=Static Observer Surface (pre-rendered notebook HTML)
 After=network.target

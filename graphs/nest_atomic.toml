@@ -21,7 +21,7 @@ name = "nest_atomic"
 description = "Tower + NestGate (storage) + provenance trio (rhizoCrypt + loamSpine + sweetGrass) — the neutron"
 version = "2.0.0"
 particle = "neutron"
-node_count = 6
+node_count = 7
 includes = ["tower_atomic", "provenance_trio"]
 
 [[fragment.nodes]]
@@ -95,3 +95,15 @@ capabilities = [
     "braid.create", "braid.commit", "braid.get",
     "anchoring.anchor", "anchoring.verify",
 ]
+
+[[fragment.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+tcp_fallback_port = 9140
+capabilities = ["security.audit_log", "security.threat_detect"]

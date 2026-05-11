@@ -65,8 +65,8 @@ done
 primals_for_composition() {
     case "$1" in
         tower) echo "beardog songbird" ;;
-        node)  echo "beardog songbird toadstool barracuda coralreef" ;;
-        nest)  echo "beardog songbird nestgate rhizocrypt loamspine sweetgrass" ;;
+        node)  echo "beardog songbird toadstool barracuda coralreef skunkbat" ;;
+        nest)  echo "beardog songbird nestgate rhizocrypt loamspine sweetgrass skunkbat" ;;
         full)
             # Discover all available primal binaries from plasmidBin.
             # Boot order: beardog first (security), songbird second (network),

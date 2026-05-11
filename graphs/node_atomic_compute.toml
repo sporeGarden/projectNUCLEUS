@@ -107,3 +107,15 @@ by_capability = "shader"
 security_model = "btsp"
 tcp_fallback_port = 9730
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.validate"]
+
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 6
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+tcp_fallback_port = 9140
+capabilities = ["security.audit_log", "security.threat_detect"]

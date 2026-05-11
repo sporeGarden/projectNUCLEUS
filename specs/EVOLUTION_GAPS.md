@@ -195,9 +195,10 @@ These are not gaps — they are accepted constraints:
 
 ## Upstream Dependencies (primal teams)
 
-**Post-interstadial update (May 10, 2026)**: Zero open upstream gaps. All 13 primals
-at zero debt. 8/8 springs completed primordial extinction (eukaryotic UniBin).
-primalSpring at 413 methods, 680 tests, zero clippy. All 7 Tier 3 code quality items resolved.
+**River delta Push 2 (May 11, 2026)**: Zero open upstream gaps. All 13 primals
+at zero debt. 8/8 springs: skunkBat Rust IPC, `method.register`, CI cross-sync 413,
+`composition.status`, NUCLEUS workload TOMLs. 12,900+ tests, zero clippy.
+primalSpring at 413 methods. Non-compositional validation layer complete.
 
 See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HANDOFF_MAY10_2026.md`
 
@@ -228,11 +229,14 @@ from the resolved upstream work. All local, actionable now.
 | `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 | Medium |
 | `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 | Medium |
 | Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
-| skunkBat in smaller compositions | Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml` (currently only in `nucleus_complete.toml`) | Local graph gap | High |
+| ~~skunkBat in smaller compositions~~ | ~~Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml`~~ | **DONE** (May 11) | ~~High~~ |
 | skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 | Medium |
 | MethodGate parity | toadStool + squirrel missing MethodGate pre-dispatch check — hand back to primal teams | Primal audit May 11 | Low (upstream) |
 | foundation integration | Wire provenance results to `sporeGarden/foundation/` (currently docs-only, no code path) | Foundation repo | Low |
 | systemd unit portability | Parameterize remaining `/home/irongate` in systemd units via `%h` or `EnvironmentFile` | Deep debt sweep | Low |
+| BearDog TLS shadow run (H2-12) | Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days | bearDog Wave 100 shipped, benchScale ready | High (ops) |
+| Songbird NAT VPS relay (H2-14) | Provision ~$5/mo VPS, deploy BearDog-authenticated STUN/TURN relay | songbird Wave 196/197 shipped | Medium (ops) |
+| plasmidBin binary workflow | Update workload TOMLs to support fetched binaries (plasmidBin `fetch.sh` → `$PLASMIDBIN_DIR/springs/`) | Springs shipping release binaries | Medium |
 | Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked | Future |
 
 ---
@@ -270,4 +274,5 @@ Upstream (waiting):                ██████████  ZERO OPEN —
 | 2026-05-10 | darkforest v0.2.1: `observer.rs` module — 9 check groups (OBS-01→OBS-09) for static surface validation: theme CSS, nav bar, Voila link remnants, tracebacks, source stripping, HTTP 200 root, security headers, directory blocking. 86 PASS, 0 FAIL. Observer tier test migrated from Python to Rust in `tier_test_all.sh`. |
 | 2026-05-10 | **Post-interstadial gap closure**: All 11 upstream gaps resolved by primal teams (JH-11, GAP-03/06/09/12, U1-U3, DF-2/3, U5). H2-10/11 (bearDog TLS + rate limiting) shipped. H2-13/15/16 (songbird NAT chain) shipped. H3-07/H3-08 unblocked. 6 absorption targets identified for local wiring. |
 | 2026-05-10 | **Cell membrane architecture**: Architectural inversion — `primals.eco` permanently on GitHub Pages CDN (extracellular), `lab/git.primals.eco` via tunnel replicas (membrane), sovereign compute inside (intracellular). `gate_provision.sh` provisions replicas. `gate_watchdog.sh` monitors membrane health. `tunnelKeeper v0.2.0` reports replica count + edge colos. `sporeprint-local.service` demoted to dev. Key insight: accept uncontrolled extracellular, total control intracellular, selective permeability at the membrane. |
-| 2026-05-11 | **Cross-ecosystem audit**: MethodGate claim corrected to 11/13 (toadStool + squirrel pending). skunkBat absent from smaller composition graphs — added to absorption targets. `deploy.sh` confirmed as nohup-loop, not `composition.deploy` — graph-driven germination is key absorption target. foundation integration is docs-only (no code path). 4 new absorption targets added. Spring readiness: all 7 workloads gate-agnostic, barraCuda version skew across springs (0.3.7–0.3.13), airSpring `barracuda` not optional. |
+| 2026-05-11 | **Cross-ecosystem audit**: MethodGate claim corrected to 11/13 (toadStool + squirrel pending). skunkBat added to `node_atomic_compute.toml`, `nest_atomic.toml`, and `deploy.sh` composition lists. `deploy.sh` confirmed as nohup-loop, not `composition.deploy` — graph-driven germination is key absorption target. foundation integration is docs-only (no code path). 4 new absorption targets added. Spring readiness: all 7 workloads gate-agnostic, barraCuda version skew across springs (0.3.7–0.3.13), airSpring `barracuda` not optional. |
+| 2026-05-11 | **River delta Push 2 verified**: 8/8 springs confirmed skunkBat Rust IPC (airSpring, groundSpring, hotSpring, wetSpring all added `skunkbat.rs`), 8/8 `method.register`, 8/8 CI cross-sync 413. 12,900+ tests. 3 new healthSpring workloads pulled. BearDog TLS shadow run (H2-12) and Songbird NAT VPS relay (H2-14) added as operational targets. plasmidBin binary workflow target added. airSpring `barracuda` still required (Tier 4 pending). |

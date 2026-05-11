@@ -16,6 +16,13 @@
 #   well-known env root (e.g., ECOPRIMALS_ROOT) and wrapping execution
 #   with a script that resolves them. Or use `which <binary>` for PATH
 #   binaries and avoid hardcoding /home/<user>/... paths.
+#
+# plasmidBin binaries:
+#   When springs ship release binaries to plasmidBin, prefer:
+#     command = "$PLASMIDBIN_DIR/springs/<spring>/target/release/<binary>"
+#   Until then, source-build path:
+#     command = "$SPRINGS_ROOT/<spring>/target/release/<binary>"
+#   toadStool does not expand env vars — the dispatch wrapper resolves them.
 
 [metadata]
 name = "your-workload-name"

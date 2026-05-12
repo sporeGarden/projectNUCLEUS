@@ -1,11 +1,19 @@
 # hotSpring — Sarkas Yukawa MD validation
 # Validates paper-parity molecular dynamics on consumer GPU
 # hotSpring UniBin `validate` subcommand is the canonical entry point
+#
+# Compute ladder:
+#   Tier 0 (CPU):      This workload — CPU-only Sarkas MD (IPC-first default)
+#   Tier 1 (GPU):      hotspring-gpu-sovereign-dispatch — wgpu/Vulkan
+#   Tier 2 (Sovereign): hotspring-sovereign-roundtrip — direct BAR0
 
 [metadata]
 name = "hotspring-md-validation"
 description = "Sarkas Yukawa OCP molecular dynamics — paper parity, 0.000% energy drift"
-version = "0.2.0"
+version = "0.3.0"
+spring = "hotSpring"
+compute_tier = "cpu"
+ladder = ["cpu", "gpu", "sovereign"]
 
 [execution]
 type = "native"

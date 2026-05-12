@@ -145,9 +145,8 @@ run_tier_tests() {
             "curl -sf --max-time 5 https://github.com -o /dev/null"
     fi
 
-    # --- Network: localhost primals (JH-0 MethodGate adopted, permissive mode) ---
-    # MethodGate is live on 9/13 primals (Phase 60). Permissive mode logs but allows.
-    # Set NUCLEUS_AUTH_MODE=enforced to activate scope-based rejection.
+    # --- Network: localhost primals (JH-0 MethodGate enforced, 13/13) ---
+    # MethodGate enforced on 13/13 primals. Unauthenticated calls return -32001.
     local rpc_result
     rpc_result=$(sudo -u "$user" bash -c "echo '{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}' | timeout 3 nc -q1 127.0.0.1 ${BEARDOG_PORT} 2>/dev/null" || echo "")
     if echo "$rpc_result" | grep -q '"permissive"' 2>/dev/null; then

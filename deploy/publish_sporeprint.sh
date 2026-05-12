@@ -13,8 +13,7 @@
 # Usage:
 #   bash publish_sporeprint.sh [--dry-run] [--version TAG]
 #
-# Status: STUB — awaiting NestGate content.put implementation (H2-05).
-#   When NestGate ships content.put, this script becomes the publish pipeline.
+# Status: READY — NestGate content.put shipped (Session 60, H2-05 DONE).
 #   See specs/TUNNEL_EVOLUTION.md Step 3a for the full design.
 
 set -euo pipefail

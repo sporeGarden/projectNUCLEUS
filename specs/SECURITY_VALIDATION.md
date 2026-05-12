@@ -4,12 +4,12 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-05-08)
+## Current State (2026-05-11)
 
-**265 PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh`
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh`
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
-- **MethodGate enforced**: 10/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
+- **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
 - **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default)
 - **Ionic tokens live**: Ed25519-signed, scope-checked, expiry-verified
 - **UFW active**, hidepid=2, iptables outbound DROP for ABG UIDs, DNS exfil closed

@@ -166,9 +166,9 @@ Cluster 7 (Internal):    ██████████ 100% resolved, JH-0→JH
 
 ## Cluster 7 — Internal Primal Gaps (Discovered via JupyterHub Deployment)
 
-**Status (2026-05-11)**: All 6 gaps resolved. MethodGate enforced on 13/13 primals
-(toadStool + squirrel pending — low priority, localhost-only). Ionic tokens live,
-resource envelopes enforced, audit log operational, cross-primal token federation resolved (JH-11).
+**Status (2026-05-11)**: All 6 gaps resolved. MethodGate enforced on 13/13 primals.
+Ionic tokens live, resource envelopes enforced, audit log operational,
+cross-primal token federation resolved (JH-11).
 See `validation/REVALIDATION_PHASE60_MAY08_2026.md` and `specs/EVOLUTION_GAPS.md` for current state.
 
 > Original gap discovery documented below. These were found by deploying
@@ -196,7 +196,7 @@ Cluster 7 (Internal):   ██████████ 100% — all gaps resolve
 (Cloudflare) and Cluster 2 (GitHub) sovereignty. RPC capability enforcement
 (JH-0) is now enforced on 13/13 primals — complete for Step 2b. Identity
 management (JH-1) is resolved — BTSP auth (Step 2b) can replace PAM.
-Remaining gap: toadStool + squirrel MethodGate (low priority, localhost only).
+All internal primal gaps are resolved.
 
 ---
 

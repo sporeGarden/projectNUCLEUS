@@ -83,7 +83,9 @@ Gates connect to each other through chemical bonding patterns:
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order (`--graph-deploy` in `deploy.sh`)
 - **lithoSpore Tier 1 PASS**: Modules 1+2 (Wiser 2013 + Barrick 2009) — 8/8 + 7/7 checks, groundSpring B2/B1 expected values cross-validated. Pillar 4 exit gate **MET**.
 - **Shadow run infrastructure staged**: `shadow_run_orchestrator.sh` ties NestGate content, BearDog TLS, Songbird NAT parity tests. Baselines + reports dirs ready.
-- **Next priorities**: Run shadow parity tests against live infrastructure, lithoSpore Tier 2 (Rust), modules 3–7 as spring reproductions land
+- **Deep debt evolution sweep COMPLETE (2026-05-11)**: deploy.sh modularized (primal start + health check extracted), darkforest pentest.rs/crypto.rs split into submodules, tunnelKeeper clone optimization, all hardcoded paths scrubbed, foundation scripts fully wired
+- **lithoSpore Tier 2 (Rust) WIRED**: Pure Rust curve fitting (Nelder-Mead) for fitness module, Kimura fixation + Poisson accumulation for mutations module. First liveSpore.json entry seeded
+- **Next priorities**: Run shadow parity tests against live infrastructure, modules 3–7 as spring reproductions land
 
 ### Services (all persistent via systemd)
 
@@ -147,7 +149,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Composition reload (JH-3)**: biomeOS `composition.reload` — hot-swap single primal without full restart
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
-- **All 14 primal ports bound `127.0.0.1`** (Phase 60 PG-55 default)
+- **All primal ports bound `127.0.0.1`** — 13 primals + auxiliary ports (Phase 60 PG-55 default)
 - **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL)
 - **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Replica count, unique origins, edge colo detection. Error-propagating API client, gate-agnostic credential paths
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
@@ -237,7 +239,7 @@ workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
 validation/         Composition validation, security pen tests, upstream gap handbacks
-  darkforest/       Pure Rust security validator (v0.2.0 — pen test + fuzz + crypto)
+  darkforest/       Pure Rust security validator (v0.2.1 — pen test + fuzz + crypto, modular submodules)
   tunnelKeeper/     Rust crate for Cloudflare tunnel health/management
   baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts

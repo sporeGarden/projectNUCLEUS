@@ -32,6 +32,7 @@ GATE=""
 FAMILY_NAME="${NUCLEUS_FAMILY_NAME:-$(hostname -s)-sovereign}"
 STOP=false
 STATUS=false
+GRAPH_DEPLOY=false
 
 BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS}"
 
@@ -43,6 +44,7 @@ usage() {
     echo "  --gate NAME          Gate name (matches gates/<name>.toml)"
     echo "  --family-name NAME   Family name for seed init (default: \$(hostname)-sovereign)"
     echo "  --plasmidbin DIR     Path to plasmidBin (default: auto-detect)"
+    echo "  --graph-deploy       Use graph-driven deploy (composition.deploy pattern)"
     echo "  --stop               Stop all running primals"
     echo "  --status             Show status of running primals"
     echo "  --help               Show this help"
@@ -54,6 +56,7 @@ while [[ $# -gt 0 ]]; do
         --gate)         GATE="$2"; shift 2 ;;
         --family-name)  FAMILY_NAME="$2"; shift 2 ;;
         --plasmidbin)   PLASMIDBIN_DIR="$2"; shift 2 ;;
+        --graph-deploy) GRAPH_DEPLOY=true; shift ;;
         --stop)         STOP=true; shift ;;
         --status)       STATUS=true; shift ;;
         --help)         usage; exit 0 ;;
@@ -283,6 +286,38 @@ echo "  Previous instances stopped."
 echo ""
 
 # ── Phase 3: Start primals ────────────────────────────────────────────────
+
+if $GRAPH_DEPLOY; then
+    echo "=== Phase 3: Graph-driven deploy (composition.deploy pattern) ==="
+    source "$SCRIPT_DIR/deploy_graph.sh"
+
+    export FAMILY_ID="$FAMILY_ID"
+    export NODE_ID="$NODE_ID"
+    export ECOPRIMALS_PLASMID_BIN="$PLASMIDBIN_DIR"
+    export XDG_RUNTIME_DIR="$RUNTIME_DIR"
+    export BEARDOG_AUTH_MODE="$NUCLEUS_AUTH_MODE"
+    export BEARDOG_FAMILY_SEED="$BEACON_SEED"
+
+    if deploy_from_graph "$GRAPH_FILE" "$PLASMIDBIN_DIR" "$RUNTIME_DIR" "$BIND_ADDRESS" "$FAMILY_ID"; then
+        echo ""
+        echo "╔══════════════════════════════════════════════╗"
+        echo "║  Graph deploy complete. Gate is live.        ║"
+        echo "╚══════════════════════════════════════════════╝"
+    else
+        echo ""
+        echo "WARNING: Graph deploy had failures. Check logs in /tmp/"
+    fi
+
+    echo ""
+    echo "  Family ID:   $FAMILY_ID"
+    echo "  Node ID:     $NODE_ID"
+    echo "  Graph:       $GRAPH_FILE"
+    echo "  Composition: $COMPOSITION (graph-driven)"
+    echo ""
+    echo "  To stop:   bash $0 --stop"
+    echo "  To check:  bash $0 --status"
+    exit 0
+fi
 
 echo "=== Phase 3: Start primals ==="
 

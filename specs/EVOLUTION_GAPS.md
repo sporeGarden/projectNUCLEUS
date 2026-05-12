@@ -225,7 +225,7 @@ from the resolved upstream work. All local, actionable now.
 
 | Target | What to wire | Source | Priority |
 |--------|-------------|--------|----------|
-| `composition.deploy(graph)` | Transition from `deploy.sh` nohup loop to graph-driven germination | biomeOS v3.51 `composition.deploy` route alias | High |
+| `composition.deploy(graph)` | `deploy_graph.sh` created — `--graph-deploy` reads TOML, starts in dependency order | biomeOS v3.51 `composition.deploy` route alias | **WIRED** |
 | `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 | Medium |
 | `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 | Medium |
 | Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
@@ -286,8 +286,8 @@ lithoSpore (`sporeGarden/lithoSpore`) is a projectNUCLEUS subsystem — the
 first Targeted GuideStone artifact.
 
 - Workload TOMLs: `litho-validate-tier2.toml`, `litho-validate-tier3.toml`
-- Integration point: after lithoSpore Phase 2 (spring reproductions), NUCLEUS
-  dispatches lithoSpore workloads via `composition.deploy(graph)`
+- **Phase 2 in progress**: groundSpring B2/B1 integrated, modules 1+2 Tier 1 PASS
+- Integration point: NUCLEUS dispatches lithoSpore workloads via `composition.deploy(graph)`
 - USB deployment: Tier 3 deploy graph (`graphs/ltee_guidestone.toml`) composes
   NUCLEUS primals around lithoSpore science modules
 - Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data
@@ -334,3 +334,4 @@ Interstadial exit:                ███░░░░░░░  Criteria defin
 | 2026-05-11 | **Interstadial exit criteria**: 5 pillars defined (Primal Sovereignty, NUCLEUS Deployments, ABG Hosting, lithoSpore, River Delta). H2/H3 items tagged interstadial vs stadial. ABG WCM composition milestone added. lithoSpore integration section (workload TOMLs, deploy graph, Phase 2 dependency). Stadial boundary: external validation drives cutover. |
 | 2026-05-11 | **MethodGate 13/13 + foundation integration**: toadStool + squirrel resolved upstream. Deep debt evolution sweep committed. foundation Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created. THREAD_INDEX v1.2.0 hygiene. publish_sporeprint.sh stub created for H2-05. 3 absorption targets closed. |
 | 2026-05-11 | **Stadial-ready — NestGate Session 60 + full debt resolution**: NestGate shipped `content.*` transport parity (8 methods, 4 transports). H2-05 DONE. H2-06/08/09 UNBLOCKED. H3-02/05 UNBLOCKED. All per-primal debt closed (toadStool env contract, squirrel RemoteComputeProvider, barraCuda crypto→bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3, petalTongue SPA+CORS). L1 CLEAN: 13/13 structural+semantic. primalSpring Wave 7-9: 413 methods, 301 exercised. Compute trio (toadStool/coralReef/barraCuda) evolving HOW/WHERE/WHAT in parallel — doesn't block us. |
+| 2026-05-11 | **lithoSpore Tier 1 PASS + composition.deploy + shadow prep**: lithoSpore modules 1+2 Tier 1 Python baselines ported from groundSpring B2/B1 (8/8 + 7/7 PASS). Fetch scripts created (`fetch_wiser_2013.sh`, `fetch_barrick_2009.sh`). Expected values from groundSpring cross-validated. Rust crates wired to dispatch Python Tier 1. `ltee-cli validate` dispatches live modules. `composition.deploy(graph)` absorbed: `deploy_graph.sh` reads graph TOML, starts primals in dependency order with health checks (`--graph-deploy` flag in `deploy.sh`). Shadow run orchestrator created (`shadow_run_orchestrator.sh`) — ties NestGate content, BearDog TLS, Songbird NAT parity tests together. Pillar 4 interstadial exit gate MET (2+ modules PASS at Tier 1). |

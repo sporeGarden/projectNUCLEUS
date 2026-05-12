@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — zero upstream debt, all Pillars 1-3 unblocked (2026-05-11)**
+**Stadial-ready — Pillar 4 exit gate MET, composition.deploy wired, shadow runs staged (2026-05-11)**
 
 ### Infrastructure
 
@@ -80,7 +80,10 @@ Gates connect to each other through chemical bonding patterns:
 - **Deep debt evolution sweep**: pappusCast refactored, zero hardcoded paths, gate-agnostic systemd, specs reconciled
 - **MethodGate**: 13/13 primals enforced
 - **Sovereignty unblocked upstream**: bearDog TLS (H2-10/11), songbird NAT chain (H2-13-16), JH-11 federation, skunkBat Phase 2, NestGate content pipeline — all shipped
-- **Next priorities**: Shadow runs (H2-08 content parity, H2-3b BearDog TLS, H2-3c Songbird NAT), `composition.deploy(graph)` absorption, lithoSpore Tier 1
+- **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order (`--graph-deploy` in `deploy.sh`)
+- **lithoSpore Tier 1 PASS**: Modules 1+2 (Wiser 2013 + Barrick 2009) — 8/8 + 7/7 checks, groundSpring B2/B1 expected values cross-validated. Pillar 4 exit gate **MET**.
+- **Shadow run infrastructure staged**: `shadow_run_orchestrator.sh` ties NestGate content, BearDog TLS, Songbird NAT parity tests. Baselines + reports dirs ready.
+- **Next priorities**: Run shadow parity tests against live infrastructure, lithoSpore Tier 2 (Rust), modules 3–7 as spring reproductions land
 
 ### Services (all persistent via systemd)
 

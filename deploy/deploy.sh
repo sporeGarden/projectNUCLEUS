@@ -350,162 +350,10 @@ export BARRACUDA_AUTH_MODE="$NUCLEUS_AUTH_MODE"
 
 BEARDOG_SOCKET="$RUNTIME_DIR/biomeos/beardog-$FAMILY_ID.sock"
 
+source "$SCRIPT_DIR/deploy_primal_start.sh"
+
 for p in $PRIMALS; do
-    case "$p" in
-        beardog)
-            echo "  Starting beardog (UDS + TCP $BEARDOG_PORT)..."
-            export BEARDOG_FAMILY_SEED="$BEACON_SEED"
-            nohup "$PLASMIDBIN_DIR/primals/beardog" server \
-                --socket "$BEARDOG_SOCKET" \
-                --family-id "$FAMILY_ID" \
-                --listen "$BIND_ADDRESS:$BEARDOG_PORT" \
-                > /tmp/beardog.log 2>&1 &
-            echo "    PID: $!"
-            sleep 2
-            ;;
-
-        songbird)
-            echo "  Starting songbird (HTTP $SONGBIRD_PORT)..."
-            export BEARDOG_SOCKET="$BEARDOG_SOCKET"
-            export BEARDOG_MODE=direct
-            export SONGBIRD_SECURITY_PROVIDER=beardog
-            nohup "$PLASMIDBIN_DIR/primals/songbird" server \
-                --port "$SONGBIRD_PORT" \
-                --socket "$RUNTIME_DIR/biomeos/songbird-$FAMILY_ID.sock" \
-                > /tmp/songbird.log 2>&1 &
-            echo "    PID: $!"
-            sleep 2
-            ;;
-
-        toadstool)
-            echo "  Starting toadstool (TCP $TOADSTOOL_PORT)..."
-            export TOADSTOOL_FAMILY_ID="$FAMILY_ID"
-            export TOADSTOOL_NODE_ID="$NODE_ID"
-            export TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1
-            nohup "$PLASMIDBIN_DIR/primals/toadstool" server \
-                --port "$TOADSTOOL_PORT" \
-                --family-id "$FAMILY_ID" \
-                > /tmp/toadstool.log 2>&1 &
-            echo "    PID: $!"
-            sleep 2
-            ;;
-
-        barracuda)
-            echo "  Starting barracuda (TCP $BARRACUDA_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/barracuda" server \
-                --bind "$BIND_ADDRESS:$BARRACUDA_PORT" \
-                > /tmp/barracuda.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        coralreef)
-            echo "  Starting coralreef (RPC $CORALREEF_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/coralreef" server \
-                --rpc-bind "$BIND_ADDRESS:$CORALREEF_PORT" \
-                > /tmp/coralreef.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        nestgate)
-            echo "  Starting nestgate (UDS + TCP $NESTGATE_PORT)..."
-            export NESTGATE_FAMILY_ID="$FAMILY_ID"
-            export NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 32 /dev/urandom | base64)}"
-            nohup "$PLASMIDBIN_DIR/primals/nestgate" daemon \
-                --socket-only \
-                --port "$NESTGATE_PORT" \
-                --bind "$BIND_ADDRESS" \
-                > /tmp/nestgate.log 2>&1 &
-            echo "    PID: $!"
-            sleep 2
-            ;;
-
-        rhizocrypt)
-            echo "  Starting rhizocrypt (TCP $RHIZOCRYPT_PORT, JSON-RPC $((RHIZOCRYPT_PORT+1)))..."
-            export FAMILY_SEED="$BEACON_SEED"
-            nohup "$PLASMIDBIN_DIR/primals/rhizocrypt" server \
-                --port "$RHIZOCRYPT_PORT" \
-                --host "$BIND_ADDRESS" \
-                > /tmp/rhizocrypt.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        loamspine)
-            echo "  Starting loamspine (TCP $LOAMSPINE_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/loamspine" server \
-                --port "$LOAMSPINE_PORT" \
-                --bind-address "$BIND_ADDRESS" \
-                > /tmp/loamspine.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        sweetgrass)
-            echo "  Starting sweetgrass (TCP $SWEETGRASS_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/sweetgrass" server \
-                --port "$SWEETGRASS_PORT" \
-                --http-address "$BIND_ADDRESS:$((SWEETGRASS_PORT + 1))" \
-                > /tmp/sweetgrass.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        squirrel)
-            echo "  Starting squirrel (TCP $SQUIRREL_PORT)..."
-            export CAPABILITY_REGISTRY_SOCKET="$RUNTIME_DIR/biomeos/neural-api-$FAMILY_ID.sock"
-            nohup "$PLASMIDBIN_DIR/primals/squirrel" server \
-                --port "$SQUIRREL_PORT" \
-                --bind "$BIND_ADDRESS" \
-                > /tmp/squirrel.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        skunkbat)
-            echo "  Starting skunkbat (TCP $SKUNKBAT_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/skunkbat" server \
-                --port "$SKUNKBAT_PORT" \
-                > /tmp/skunkbat.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        biomeos)
-            echo "  Starting biomeos neural-api (TCP $BIOMEOS_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/biomeos" neural-api \
-                --port "$BIOMEOS_PORT" \
-                --family-id "$FAMILY_ID" \
-                --btsp-optional \
-                > /tmp/biomeos.log 2>&1 &
-            echo "    PID: $!"
-            sleep 2
-            ;;
-
-        petaltongue)
-            echo "  Starting petaltongue server (TCP $PETALTONGUE_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/petaltongue" server \
-                --port "$PETALTONGUE_PORT" \
-                > /tmp/petaltongue.log 2>&1 &
-            echo "    PID: $!"
-            sleep 1
-            ;;
-
-        *)
-            # Unknown primal — attempt standard server --port pattern
-            local primal_bin="$PLASMIDBIN_DIR/primals/$p"
-            if [[ -x "$primal_bin" ]]; then
-                echo "  Starting $p (discovered, attempting server --port)..."
-                nohup "$primal_bin" server --port 0 \
-                    > "/tmp/$p.log" 2>&1 &
-                echo "    PID: $! (port auto-assigned — check /tmp/$p.log)"
-                sleep 1
-            else
-                echo "  SKIP $p — no binary found"
-            fi
-            ;;
-    esac
+    start_primal "$p"
 done
 
 echo ""
@@ -514,53 +362,13 @@ echo ""
 
 echo "=== Phase 4: Verify ==="
 
-port_for_primal() {
-    case "$1" in
-        beardog)     echo "$BEARDOG_PORT" ;;
-        songbird)    echo "$SONGBIRD_PORT" ;;
-        toadstool)   echo "$TOADSTOOL_PORT" ;;
-        barracuda)   echo "$BARRACUDA_PORT" ;;
-        coralreef)   echo "$CORALREEF_PORT" ;;
-        nestgate)    echo "$NESTGATE_PORT" ;;
-        rhizocrypt)  echo "$RHIZOCRYPT_PORT" ;;
-        loamspine)   echo "$LOAMSPINE_PORT" ;;
-        sweetgrass)  echo "$SWEETGRASS_PORT" ;;
-        squirrel)    echo "$SQUIRREL_PORT" ;;
-        skunkbat)    echo "$SKUNKBAT_PORT" ;;
-        biomeos)     echo "$BIOMEOS_PORT" ;;
-        petaltongue) echo "$PETALTONGUE_PORT" ;;
-        *)           echo "" ;;
-    esac
-}
+source "$SCRIPT_DIR/deploy_health_check.sh"
 
-rpc_health_check() {
-    local port="$1"
-    curl -sf --max-time 3 "http://127.0.0.1:$port" \
-        -X POST -H 'Content-Type: application/json' \
-        -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' 2>/dev/null
-}
-
-ALL_OK=true
-for p in $PRIMALS; do
-    pid=$(pgrep -f "$PLASMIDBIN_DIR/primals/$p" 2>/dev/null | head -1) || true
-    if [[ -z "$pid" ]]; then
-        echo "  $p: NOT RUNNING — check /tmp/$p.log"
-        ALL_OK=false
-        continue
-    fi
-
-    port=$(port_for_primal "$p")
-    if [[ -n "$port" ]]; then
-        resp=$(rpc_health_check "$port") || resp=""
-        if [[ -n "$resp" ]]; then
-            echo "  $p: PID $pid, TCP $port — HEALTHY"
-        else
-            echo "  $p: PID $pid, TCP $port — running (health probe pending)"
-        fi
-    else
-        echo "  $p: PID $pid — running"
-    fi
-done
+if verify_primals "$PRIMALS"; then
+    ALL_OK=true
+else
+    ALL_OK=false
+fi
 
 echo ""
 

@@ -18,10 +18,19 @@ Exit code: number of FAILs (0 = all pass)
 import argparse
 import json
 import os
+import pwd
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+
+def user_home(username: str) -> Path:
+    """Resolve a user's home directory via passwd, not hardcoded /home/."""
+    try:
+        return Path(pwd.getpwnam(username).pw_dir)
+    except KeyError:
+        return Path(f"/home/{username}")
 
 PASS_COUNT = 0
 FAIL_COUNT = 0
@@ -52,7 +61,7 @@ def sudo_run(user, cmd, timeout=30):
 
 def test_venv(user):
     """Check that the bioinfo venv exists and key packages import."""
-    home = Path(f"/home/{user}")
+    home = user_home(user)
     venv = home / ".venv" / "bioinfo"
 
     if venv.exists():
@@ -73,7 +82,7 @@ def test_venv(user):
 
 def test_kernels(user):
     """Check that the user has expected kernelspecs."""
-    home = Path(f"/home/{user}")
+    home = user_home(user)
     kernel_dir = home / ".local" / "share" / "jupyter" / "kernels"
 
     expected = ["bioinfo"]
@@ -92,7 +101,7 @@ def test_kernels(user):
 
 def test_workspace(user):
     """Verify personal workspace writability and shared ABG read-only."""
-    home = Path(f"/home/{user}")
+    home = user_home(user)
 
     personal_dirs = ["notebooks", "results"]
     for d in personal_dirs:

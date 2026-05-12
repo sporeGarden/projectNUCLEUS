@@ -14,7 +14,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-GATE_HOME="${GATE_HOME:-$(getent passwd irongate | cut -d: -f6 2>/dev/null || echo /home/irongate)}"
+GATE_HOME="${GATE_HOME:-$(getent passwd "$(whoami)" | cut -d: -f6 2>/dev/null || echo "$HOME")}"
 export GATE_HOME HOME="$GATE_HOME"
 source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null || true
 

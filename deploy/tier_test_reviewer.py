@@ -18,10 +18,19 @@ Exit code: number of FAILs (0 = all pass)
 import argparse
 import json
 import os
+import pwd
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+
+def user_home(username: str) -> Path:
+    """Resolve a user's home directory via passwd, not hardcoded /home/."""
+    try:
+        return Path(pwd.getpwnam(username).pw_dir)
+    except KeyError:
+        return Path(f"/home/{username}")
 
 PASS_COUNT = 0
 FAIL_COUNT = 0
@@ -110,7 +119,7 @@ def test_no_write(user):
             report("FAIL", f"no_write:{target.name}", f"Write succeeded at {target}")
             sudo_run(user, ["rm", "-f", str(test_file)])
 
-    home = Path(f"/home/{user}")
+    home = user_home(user)
     if home.exists():
         test_file = home / f".reviewer_test_{os.getpid()}"
         result = sudo_run(user, ["touch", str(test_file)])
@@ -123,7 +132,7 @@ def test_no_write(user):
 
 def test_no_venv(user):
     """Reviewer should NOT have a bioinfo venv (compute users only)."""
-    venv = Path(f"/home/{user}/.venv/bioinfo")
+    venv = user_home(user) / ".venv" / "bioinfo"
     if not venv.exists():
         report("PASS", "no_venv", "No bioinfo venv (correct for reviewer)")
     else:
@@ -132,7 +141,7 @@ def test_no_venv(user):
 
 def test_home_structure(user):
     """Check reviewer home directory exists with minimal structure."""
-    home = Path(f"/home/{user}")
+    home = user_home(user)
     if home.exists():
         report("PASS", "home:exists", f"{home} exists")
     else:

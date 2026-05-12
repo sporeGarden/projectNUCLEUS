@@ -135,16 +135,16 @@ async fn check_replicas(api_token: Option<&str>, config: &TunnelConfig) -> Repli
                 .filter(|c| c.is_pending_reconnect != Some(true))
                 .collect();
 
-            let mut origins: Vec<String> = active
+            let mut origins: Vec<&str> = active
                 .iter()
-                .filter_map(|c| c.origin_ip.clone())
+                .filter_map(|c| c.origin_ip.as_deref())
                 .collect();
-            origins.sort();
+            origins.sort_unstable();
             origins.dedup();
 
             let colos: Vec<String> = active
                 .iter()
-                .filter_map(|c| c.colo_name.clone())
+                .filter_map(|c| c.colo_name.as_deref().map(str::to_owned))
                 .collect();
 
             ReplicaHealth {

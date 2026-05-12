@@ -44,6 +44,14 @@ pub struct TunnelConnection {
     pub opened_at: Option<String>,
 }
 
+fn cf_error_message(errors: &[CfError]) -> String {
+    errors
+        .iter()
+        .map(|e| e.message.as_str())
+        .collect::<Vec<_>>()
+        .join("; ")
+}
+
 pub struct Client {
     http: reqwest::Client,
     account_id: String,
@@ -80,12 +88,7 @@ impl Client {
         let body: CfResponse<TunnelInfo> = resp.json().await?;
 
         if !body.success {
-            let msg = body
-                .errors
-                .iter()
-                .map(|e| e.message.clone())
-                .collect::<Vec<_>>()
-                .join("; ");
+            let msg = cf_error_message(&body.errors);
             return Err(ApiError::Cloudflare {
                 status,
                 message: msg,
@@ -109,12 +112,7 @@ impl Client {
         let body: CfResponse<serde_json::Value> = resp.json().await?;
 
         if !body.success {
-            let msg = body
-                .errors
-                .iter()
-                .map(|e| e.message.clone())
-                .collect::<Vec<_>>()
-                .join("; ");
+            let msg = cf_error_message(&body.errors);
             return Err(ApiError::Cloudflare {
                 status,
                 message: msg,
@@ -144,12 +142,7 @@ impl Client {
         let body: CfResponse<serde_json::Value> = resp.json().await?;
 
         if !body.success {
-            let msg = body
-                .errors
-                .iter()
-                .map(|e| e.message.clone())
-                .collect::<Vec<_>>()
-                .join("; ");
+            let msg = cf_error_message(&body.errors);
             return Err(ApiError::Cloudflare {
                 status,
                 message: msg,
@@ -169,12 +162,7 @@ impl Client {
         let body: CfResponse<Vec<serde_json::Value>> = resp.json().await?;
 
         if !body.success {
-            let msg = body
-                .errors
-                .iter()
-                .map(|e| e.message.clone())
-                .collect::<Vec<_>>()
-                .join("; ");
+            let msg = cf_error_message(&body.errors);
             return Err(ApiError::Cloudflare {
                 status,
                 message: msg,

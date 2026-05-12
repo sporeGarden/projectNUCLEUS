@@ -114,17 +114,7 @@ pub async fn sync(
         let ingress_payload: Vec<serde_json::Value> = config
             .ingress
             .iter()
-            .map(|r| {
-                let mut m = serde_json::Map::new();
-                if let Some(h) = &r.hostname {
-                    m.insert("hostname".into(), serde_json::Value::String(h.clone()));
-                }
-                if let Some(p) = &r.path {
-                    m.insert("path".into(), serde_json::Value::String(p.clone()));
-                }
-                m.insert("service".into(), serde_json::Value::String(r.service.clone()));
-                serde_json::Value::Object(m)
-            })
+            .filter_map(|r| serde_json::to_value(r).ok())
             .collect();
 
         client

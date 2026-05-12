@@ -12,6 +12,10 @@ type = "native"
 command = "$SPRINGS_ROOT/neuralSpring/target/release/neuralspring_unibin validate"
 working_dir = "$SPRINGS_ROOT/neuralSpring"
 
+[execution.env]
+# Tier 2: structured JSON output for pipeline ingestion
+PRIMALSPRING_JSON = "1"
+
 [resources]
 max_memory_bytes = 8589934592
 max_cpu_percent = 90.0

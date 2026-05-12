@@ -12,6 +12,9 @@ type = "native"
 command = "$SPRINGS_ROOT/neuralSpring/target/release/neuralspring_unibin certify"
 working_dir = "$SPRINGS_ROOT/neuralSpring"
 
+[execution.env]
+PRIMALSPRING_JSON = "1"
+
 [resources]
 max_memory_bytes = 2147483648
 max_cpu_percent = 50.0

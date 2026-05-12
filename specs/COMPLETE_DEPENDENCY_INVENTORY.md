@@ -53,21 +53,21 @@ must prove parity before the external is removed.
 | `EmbarkStudios/cargo-deny-action` | CI | Security audit workflows | Local `cargo deny` | Trivial |
 | `codecov/codecov-action` | CI | Coverage upload (ionChannel, benchScale, nestGate) | Self-hosted coverage HTML | Low priority |
 | `peter-evans/repository-dispatch` | CI | sporePrint cross-repo auto-refresh (26 repos) | Internal webhook / Squirrel RPC | Gap |
-| `shalzz/zola-deploy-action` | CI | sporePrint deploy | Local Zola build + NestGate publish | Gap (needs NestGate content.put) |
-| `actions/deploy-pages` | CI | sporePrint to GitHub Pages | petalTongue web serving from NestGate | Gap (needs petalTongue web router) |
+| `shalzz/zola-deploy-action` | CI | sporePrint deploy | Local Zola build + NestGate publish | **UNBLOCKED** — NestGate `content.put` shipped (Session 60). `publish_sporeprint.sh` ready. |
+| `actions/deploy-pages` | CI | sporePrint to GitHub Pages | petalTongue web serving from NestGate | **UNBLOCKED** — petalTongue `backend=nestgate` + SPA shipped. Wire for production. |
 
 ### 2c. GitHub Pages
 
 | Dependency | Phase | Where Referenced | Primal Replacement | Status |
 |-----------|-------|-----------------|-------------------|--------|
-| GitHub Pages hosting | Runtime | `primals.eco` static site (sporePrint Zola output) | NestGate + petalTongue web | Specified (Step 3a), gaps documented |
+| GitHub Pages hosting | Runtime | `primals.eco` static site (sporePrint Zola output) | NestGate + petalTongue web | **UNBLOCKED** — NestGate content pipeline + petalTongue `backend=nestgate` both shipped. Shadow run (H2-08) next. |
 
 ### 2d. GitHub Releases & API
 
 | Dependency | Phase | Where Referenced | Primal Replacement | Status |
 |-----------|-------|-----------------|-------------------|--------|
-| GitHub Releases (binary hosting) | Runtime | `plasmidBin/fetch.sh`, `primalSpring/tools/fetch_primals.sh` | NestGate blob storage + manifest | Gap |
-| GitHub REST API (release metadata) | Dev/CI | Same fetch scripts | NestGate manifest query | Gap |
+| GitHub Releases (binary hosting) | Runtime | `plasmidBin/fetch.sh`, `primalSpring/tools/fetch_primals.sh` | NestGate blob storage + manifest | **UNBLOCKED** — NestGate `content.put` + `content.resolve` shipped. Wire fetch scripts. |
+| GitHub REST API (release metadata) | Dev/CI | Same fetch scripts | NestGate manifest query | **UNBLOCKED** — NestGate `content.collections` + `content.resolve` shipped. |
 | `SPOREPRINT_DISPATCH_TOKEN` | CI | GitHub secret store | Local secret management | Gap |
 | `SPOREPRINT_REFRESH_PAT` | CI | GitHub secret store | Local secret management | Gap |
 | RustSec advisory DB | Dev | `deny.toml` in 32 workspaces | Vendored advisory DB or internal feed | Low priority |
@@ -220,3 +220,4 @@ Remaining gap: toadStool + squirrel MethodGate (low priority, localhost only).
 | 2026-05-07 | Added Cluster 7 — Internal Primal Gaps. 5 gaps (1 critical) from JupyterHub deployment patterns. |
 | 2026-05-11 | Reconciled Cluster 7: all gaps resolved, MethodGate corrected to 11/13, JH-11 added, progress bars updated. Cluster summary updated — internal gaps no longer blocking. |
 | 2026-05-11 | MethodGate updated to 13/13 — toadStool + squirrel resolved upstream. Cluster 7 at 100%. |
+| 2026-05-11 | NestGate Session 60: `content.*` transport parity shipped. GitHub Pages, Releases, REST API dependencies all UNBLOCKED (NestGate `content.put/get/resolve/collections`). petalTongue `backend=nestgate` + SPA UNBLOCKED. All L1 primal debt resolved. |

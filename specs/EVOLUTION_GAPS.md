@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-11 (MethodGate 13/13, interstadial exit criteria, deep debt sweep, foundation + lithoSpore integration)
+**Last updated**: 2026-05-11 (Stadial-ready — NestGate content pipeline shipped, zero upstream debt, all Pillars 1-3 unblocked)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -104,10 +104,10 @@ remains Phase 3 target for sovereign extracellular rendering.
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
-| H2-05 | ~~Build publish pipeline~~ → Build NestGate content pipeline | Medium | Zola build → NestGate `content.put` for each file → manifest creation. Intermediate: Zola + Python HTTP server operational |
-| H2-06 | Configure petalTongue web mode | Low | `--docroot` resolved Phase 60. Config: listen 9901, NestGate backend, sporeprint collection |
+| H2-05 | ~~Build NestGate content pipeline~~ | **DONE** | NestGate Session 60: `content.put/get/exists/list/publish/resolve/promote/collections` on all 4 transports. `publish_sporeprint.sh` ready to wire. |
+| H2-06 | Configure petalTongue web mode | Low | `--docroot` resolved Phase 60. `backend=nestgate` **UNBLOCKED** — SPA + CORS shipped. Wire `content.get`/`content.resolve` for production. |
 | H2-07 | ~~Cloudflare ingress route~~ | **DONE** | `primals.eco` in tunnel config, DNS switchable via API |
-| H2-08 | Shadow run: Zola/tunnel vs NestGate/petalTongue (7 days) | Ops | benchScale `nestgate_content_parity.sh`. Compare TTFB, Lighthouse scores |
+| H2-08 | Shadow run: Zola/tunnel vs NestGate/petalTongue (7 days) | Ops | **UNBLOCKED** — `nestgate_content_parity.sh` ready. Compare TTFB, Lighthouse scores. |
 | H2-09 | Cutover: petalTongue replaces Zola static server | — | 100% content parity, TTFB within 10% of Zola |
 
 ### Step 3b: BearDog TLS (replaces Cloudflare TLS)
@@ -171,10 +171,10 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | ID | External Service | Primal Replacement | Status | Blocks |
 |----|-----------------|-------------------|--------|--------|
 | H3-01 | JupyterHub (notebook UX) | petalTongue dashboards + biomeOS dispatch | Gap — no notebook execution in petalTongue | Horizon 2 complete |
-| H3-02 | GitHub Releases (plasmidBin) | NestGate blob storage + manifest queries | Gap — `fetch.sh` hardcodes GitHub URLs | Step 3a (NestGate content pipeline) |
+| H3-02 | GitHub Releases (plasmidBin) | NestGate blob storage + manifest queries | **UNBLOCKED** — NestGate `content.put` shipped (Session 60). Wire `fetch.sh` to NestGate. | Local: update fetch URLs |
 | H3-03 | GitHub Actions (CI/CD) | Forgejo Actions or self-hosted runners | Gap — 74 workflow files to port | Forgejo primary adoption |
 | H3-04 | GitHub repos (source hosting) | Forgejo primary, GitHub mirror | Calibration — Forgejo installed, not primary | Forgejo Actions working |
-| H3-05 | Docker Hub / ghcr.io | NestGate OCI blob store | Gap — ToadStool config-swappable | NestGate content pipeline |
+| H3-05 | Docker Hub / ghcr.io | NestGate OCI blob store | **UNBLOCKED** — NestGate `content.put` shipped. Wire toadStool config. | Local: OCI store wiring |
 | H3-06 | Anthropic / OpenAI | Ollama + barraCuda WGSL inference | Partial — Ollama works locally | barraCuda shader maturity |
 | H3-07 | JH-11 cross-primal token federation | biomeOS composition forwarding with `_resource_envelope` | **UNBLOCKED** — bearDog `auth.public_key` + biomeOS `BearDogVerifier` live | Local: wire `CompositionContext` |
 | H3-08 | JH-5 cross-primal audit forwarding | skunkBat → rhizoCrypt DAG + sweetGrass braids | **UNBLOCKED** — skunkBat Phase 2 complete (7 event kinds) | Local: wire into deploy graphs |
@@ -333,3 +333,4 @@ Interstadial exit:                ███░░░░░░░  Criteria defin
 | 2026-05-11 | **River delta Push 2 verified**: 8/8 springs confirmed skunkBat Rust IPC (airSpring, groundSpring, hotSpring, wetSpring all added `skunkbat.rs`), 8/8 `method.register`, 8/8 CI cross-sync 413. 12,900+ tests. 3 new healthSpring workloads pulled. BearDog TLS shadow run (H2-12) and Songbird NAT VPS relay (H2-14) added as operational targets. plasmidBin binary workflow target added. airSpring `barracuda` still required (Tier 4 pending). |
 | 2026-05-11 | **Interstadial exit criteria**: 5 pillars defined (Primal Sovereignty, NUCLEUS Deployments, ABG Hosting, lithoSpore, River Delta). H2/H3 items tagged interstadial vs stadial. ABG WCM composition milestone added. lithoSpore integration section (workload TOMLs, deploy graph, Phase 2 dependency). Stadial boundary: external validation drives cutover. |
 | 2026-05-11 | **MethodGate 13/13 + foundation integration**: toadStool + squirrel resolved upstream. Deep debt evolution sweep committed. foundation Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created. THREAD_INDEX v1.2.0 hygiene. publish_sporeprint.sh stub created for H2-05. 3 absorption targets closed. |
+| 2026-05-11 | **Stadial-ready — NestGate Session 60 + full debt resolution**: NestGate shipped `content.*` transport parity (8 methods, 4 transports). H2-05 DONE. H2-06/08/09 UNBLOCKED. H3-02/05 UNBLOCKED. All per-primal debt closed (toadStool env contract, squirrel RemoteComputeProvider, barraCuda crypto→bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3, petalTongue SPA+CORS). L1 CLEAN: 13/13 structural+semantic. primalSpring Wave 7-9: 413 methods, 301 exercised. Compute trio (toadStool/coralReef/barraCuda) evolving HOW/WHERE/WHAT in parallel — doesn't block us. |

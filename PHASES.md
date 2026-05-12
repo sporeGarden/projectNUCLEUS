@@ -358,7 +358,14 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Spec reconciliation: `COMPLETE_DEPENDENCY_INVENTORY.md` (Cluster 7 → ~90%, JH-11 added), `VALIDATION_RESULTS.md` (security table updated), `TUNNEL_EVOLUTION.md` (Step 3a cell membrane context)
 - Upstream handback delivered: toadStool/squirrel MethodGate insertion points, barraCuda crypto delegation to bearDog IPC, squirrel `LocalProcessProvider` → toadStool dispatch
 - MethodGate was 11/13 at time of sweep (toadStool + squirrel pending) — now **13/13** (upstream resolved)
-- **Next priority**: NestGate content pipeline for sovereign data/compute chains
+
+**NestGate Session 60 + Full Debt Resolution (2026-05-11)**:
+- NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
+- H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
+- All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
+- primalSpring at Wave 7-9: 413 methods, 301 exercised (72%), 22 scenarios, 77 graphs, semantic contract tests
+- L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
+- **Next priorities**: shadow runs (content parity, BearDog TLS, Songbird NAT), `composition.deploy(graph)`, lithoSpore Tier 1
 
 ### ABG Tiered Access Model
 

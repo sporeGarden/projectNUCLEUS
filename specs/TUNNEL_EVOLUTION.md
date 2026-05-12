@@ -202,11 +202,10 @@ Browser → primals.eco (Cloudflare DNS + CDN proxy)
        → petalTongue web mode → NestGate content-addressed store
 ```
 
-**What to build**:
-1. **NestGate content ingestion pipeline** — script that builds sporePrint
-   with Zola, then pushes rendered HTML/CSS/JS to NestGate via
-   `nestgate.content.put` RPC. Each file stored by its BLAKE3 hash.
-   To be created at `deploy/publish_sporeprint.sh`.
+**What to build** (NestGate `content.*` shipped Session 60 — all 8 methods on all 4 transports):
+1. **NestGate content ingestion pipeline** — `deploy/publish_sporeprint.sh` **CREATED**.
+   Builds sporePrint with Zola, pushes rendered HTML/CSS/JS to NestGate via
+   `content.put` RPC. Each file stored by its BLAKE3 hash.
    ```bash
    # Build and publish flow
    cd infra/sporePrint && zola build

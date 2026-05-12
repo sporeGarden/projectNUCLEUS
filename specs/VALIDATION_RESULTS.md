@@ -207,11 +207,12 @@ To reproduce this validation:
 | ~~JupyterHub plain HTTP~~ | ~~No BTSP on localhost~~ | ~~Phase 2a: Cloudflare tunnel (external TLS)~~ | **RESOLVED** — cell membrane (tunnel TLS) |
 | ~~No ionic token scoping~~ | ~~Tokens advisory, not enforcing~~ | ~~Phase 60: MethodGate enforcement~~ | **RESOLVED** — Phase 60 (2026-05-08) |
 | ~~Cross-primal token federation~~ | ~~No cross-gate token verification~~ | ~~JH-11~~ | **RESOLVED** — BearDog `auth.public_key` + biomeOS `BearDogVerifier` |
-| toadStool/squirrel MethodGate | No pre-dispatch auth gate on 2 primals | Upstream handback — low priority (localhost-only) | Open (upstream) |
+| ~~toadStool/squirrel MethodGate~~ | ~~No pre-dispatch auth gate on 2 primals~~ | ~~Upstream handback~~ | **RESOLVED** — 13/13 MethodGate |
 
 **Resolved (primalSpring Phase 59)**: All 13/13 primals default `127.0.0.1` bind. Fully closed.
 **Resolved (Phase 60+)**: MethodGate enforced on 13/13 primals. toadStool + squirrel resolved upstream after deep debt handback.
 **Resolved (2026-05-10)**: Cell membrane architecture — external TLS via Cloudflare tunnel for lab/git subdomains.
+**Resolved (2026-05-11)**: NestGate Session 60 — `content.*` transport parity on all 4 surfaces. All per-primal composition debt closed. L1 CLEAN.
 
 ### Security Evolution Path
 

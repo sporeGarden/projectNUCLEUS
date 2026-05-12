@@ -101,7 +101,7 @@ family = "beta"
 
 [[graph.nodes]]
 name = "neuralspring_beta"
-binary = "neuralspring_primal"
+binary = "neuralspring"
 order = 6
 required = true
 depends_on = ["beardog_beta", "songbird_beta"]

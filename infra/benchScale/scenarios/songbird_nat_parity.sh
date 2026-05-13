@@ -17,7 +17,7 @@ set -euo pipefail
 #     [--samples 20] [--duration 300]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 CF_URL="${LAB_URL}/hub/login"

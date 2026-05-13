@@ -9,7 +9,7 @@ set -euo pipefail
 #   ./cloudflare_tunnel_baseline.sh [--samples N] [--url URL] [--output DIR]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 BASELINES_DIR="$SCRIPT_DIR/../baselines"
 SAMPLES=10

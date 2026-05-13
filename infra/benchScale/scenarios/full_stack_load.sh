@@ -15,7 +15,7 @@ set -euo pipefail
 #   ./full_stack_load.sh [--multiplier 2] [--duration 60] [--target hub|primals|all]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 MULTIPLIER=2

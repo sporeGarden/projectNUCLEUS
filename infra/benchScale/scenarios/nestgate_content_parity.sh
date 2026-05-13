@@ -19,7 +19,7 @@ set -euo pipefail
 #     [--samples 10]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 GHPAGES_URL="https://primals.eco"

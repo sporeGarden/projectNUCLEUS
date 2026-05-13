@@ -32,6 +32,8 @@ with open('$graph_file', 'rb') as f:
     graph = tomllib.load(f)
 
 nodes = graph.get('graph', {}).get('nodes', [])
+if not nodes:
+    nodes = graph.get('fragment', {}).get('nodes', [])
 nodes.sort(key=lambda n: n.get('order', 999))
 
 for node in nodes:

@@ -18,7 +18,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../../deploy/nucleus_config.sh"
+source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 BASELINES_DIR="$SCRIPT_DIR/../baselines"
 REPORTS_DIR="$SCRIPT_DIR/../reports"

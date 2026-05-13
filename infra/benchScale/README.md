@@ -14,7 +14,7 @@ structured reports.
 ./scenarios/cloudflare_tunnel_baseline.sh
 
 # Compare BTSP TLS against Cloudflare baseline
-./scenarios/btsp_tls_parity.sh --baseline baselines/cloudflare_tunnel_7day.toml
+./scenarios/btsp_tls_parity.sh --baseline baselines/tunnel_baseline_YYYYMMDD-HHMMSS.toml
 
 # Run full-stack synthetic load at 2x peak
 ./scenarios/full_stack_load.sh --multiplier 2
@@ -38,7 +38,9 @@ benchScale/
 │   ├── btsp_tls_parity.sh
 │   ├── nestgate_content_parity.sh
 │   ├── songbird_nat_parity.sh
-│   └── full_stack_load.sh
+│   ├── dot_sovereign_parity.sh
+│   ├── full_stack_load.sh
+│   └── shadow_run_orchestrator.sh
 ├── pentest/            # Security testing tools
 │   ├── three_layer_scan.sh
 │   ├── fuzz_jsonrpc.py

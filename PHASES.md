@@ -58,13 +58,15 @@ science workloads.
 - Validation logs: Reproducible evidence of composition correctness
 - Provenance manifests: BLAKE3 hashes, Merkle roots, braid IDs
 
-### Known Gaps (from COMPOSITION_GAPS.md)
+### Known Gaps (Phase 1 — fossil record)
 
-- Sandbox overrides working_dir to /tmp (absolute paths required)
-- GPU build breakage (wgpu submit_and_poll → submit_and_map API drift)
-- toadStool does not expand environment variables in workload TOMLs
-- Python runs as native subprocess (no toadStool introspection)
-- `wetspring-exp001-python-baseline` FAIL (missing dependencies — wetSpring issue)
+Phase 1 gaps that are now resolved or accepted:
+
+- ~~Sandbox overrides working_dir to /tmp~~ — absolute paths standard in workload TOMLs
+- GPU build breakage (wgpu API drift) — barraCuda v0.4.0 resolved, coralReef Sprint 7 stable
+- ~~toadStool env var expansion~~ — toadStool S233 resolved (env contract)
+- Python runs as native subprocess — accepted for Tier 1 baselines
+- ~~`wetspring-exp001-python-baseline` FAIL~~ — resolved upstream
 
 ### Security Posture (Phase 59 — Zero Open Gaps)
 
@@ -88,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Step 2b operational (2026-05-10) — cell membrane architecture, static observer, pappusCast, multi-tier testing, tunnelKeeper v0.2.0
+**Status**: Interstadial exit executing (2026-05-13) — BearDog TLS shadow LIVE :8443, BTSP dual-auth plugin BUILT, Songbird OPS-READY, provenance trio reconciled, cell membrane architecture, static observer, 415-method registry
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -241,7 +243,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
 - **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
 - **GAP-11 CLOSED**: barraCuda 18/18 methods (71 total JSON-RPC methods)
-- **Registry**: 389 methods across 82 domains
+- **Registry**: 415 methods across 13 primals (was 389 at Phase 60 absorption)
 - **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
 
 **Phase 60 Revalidation (2026-05-08)**:
@@ -363,9 +365,9 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 7-9: 413 methods, 301 exercised (72%), 22 scenarios, 77 graphs, semantic contract tests
+- primalSpring at Wave 7-9+: 415 methods, 301+ exercised, 22 scenarios, 77 graphs, semantic contract tests. `biomeos.spring_status` IMPLEMENTED (v3.54). 76 routing misroutes fixed. `s_routing_consistency` scenario prevents drift.
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
-- **Next priorities**: shadow runs (content parity, BearDog TLS, Songbird NAT), `composition.deploy(graph)`, lithoSpore Tier 1
+- **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, Songbird relay OPS-READY, `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 
 ### ABG Tiered Access Model
 
@@ -484,7 +486,7 @@ Curated in projectNUCLEUS/graphs/ (canonical source: primalSpring/graphs/):
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Upstream gaps delivered (petalTongue PT-1→PT-5, NestGate NG-1→NG-4 all shipped). Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced.
+**Status**: Upstream gaps ALL SHIPPED (petalTongue PT-1→PT-5, NestGate NG-1→NG-4). Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced. BearDog TLS shadow LIVE on :8443 (10ms vs 120ms Cloudflare). Songbird relay OPS-READY (Wave 202).
 **Bonding**: Covalent core + public weak endpoint
 **New Primals**: petalTongue (UI), BTSP Phase 3
 

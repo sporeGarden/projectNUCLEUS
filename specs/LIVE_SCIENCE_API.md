@@ -153,8 +153,8 @@ Submit a workload for execution (compute trio IPC contract, Wave 8).
 
 ## Resolved / Implemented — Method Status (May 13, 2026)
 
-| Proposed | Resolution | Notes |
-|----------|-----------|-------|
+| Method | Status | Notes |
+|--------|--------|-------|
 | `biomeos.spring_status` | **IMPLEMENTED** (v3.54) | Binary discovery + workload counts for Tier 2 notebooks. Also available via `capabilities.list` per primal |
 | `nestgate.artifact_query` | **Resolved** | `content.get` (by BLAKE3 hash) and `content.resolve` (by collection+path) — both SHIPPED in Session 60. Provenance chain via `dag.session.get` on rhizoCrypt |
 | `rhizocrypt.dag_summary` | **Resolved** | `dag.session.get` (returns full session state) and `dag.session.list` (enumeration) — both SHIPPED. No separate summary method needed |

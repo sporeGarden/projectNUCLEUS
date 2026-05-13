@@ -585,8 +585,8 @@ $(if [[ -n "$TUNNEL_URL" ]]; then echo "**Tunnel**: $TUNNEL_URL"; fi)
 - \`skunkbat_detections.json\` — skunkBat detections during scan
 - \`tier_os_results.txt\` — OS-level tier enforcement test output
 - \`tier_api_results.txt\` — JupyterHub API tier enforcement test output
-- \`darkforest_pentest.txt\` — adversarial pen test output
-- \`darkforest_fuzz.txt\` — protocol fuzz output
+- \`darkforest_all.txt\` — Rust darkforest validator output (pen test + fuzz + crypto)
+- \`darkforest_all.json\` — structured JSON report
 EOF
 
 log "  Report: $RESULTS_DIR/SECURITY_RESULTS.md"

@@ -228,6 +228,26 @@ Get a summary of a DAG session.
 
 ---
 
+## Wire Notes (May 13 audit)
+
+**bearDog signing**: `auth.sign` expects base64-encoded `message` param, not raw bytes.
+
+**skunkBat audit pipeline**: Use `security.audit_log` (not `defense.audit`). Full chain:
+`skunkBat → rhizoCrypt` (DAG provenance) `→ sweetGrass` (braid attribution). JH-5 Phase 3
+operational. Wire into deploy graphs via H3-08.
+
+**NestGate domain separation**: `content.*` (CAS: put/get/exists/list/publish/resolve/promote/collections)
+and `storage.*` (blob store) are **separate domains** — intentional, not a bug. CAS operates on
+content-addressed hashes; storage operates on opaque blob keys.
+
+**BTSP auth pipeline**: 13/13 primals ship `auth.public_key` → Ed25519 → cross-primal verify via
+bearDog federation. Wire through `BearDogVerifier` in biomeOS `CompositionContext`.
+
+**composition.deploy.shadow**: biomeOS v3.53 — dry-run graph validation before live deploy.
+Local implementation in `deploy_graph.sh` `shadow_deploy()` function.
+
+---
+
 ## Evolution Path
 
 ```

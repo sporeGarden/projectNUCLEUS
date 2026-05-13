@@ -9,8 +9,12 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "$SPRINGS_ROOT/healthSpring/target/release/healthspring validate"
+command = "$SPRINGS_ROOT/healthSpring/target/release/healthspring validate --format json"
 working_dir = "$SPRINGS_ROOT/healthSpring"
+
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
 
 [resources]
 max_memory_bytes = 4294967296

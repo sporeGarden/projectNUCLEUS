@@ -16,6 +16,10 @@ working_dir = "$SPRINGS_ROOT/neuralSpring"
 [execution.env]
 NEURALSPRING_JSON = "1"
 
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
+
 [resources]
 max_memory_bytes = 4294967296
 max_cpu_percent = 80.0

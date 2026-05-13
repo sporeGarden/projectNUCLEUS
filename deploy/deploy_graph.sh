@@ -162,6 +162,124 @@ start_primal_from_graph() {
     echo $!
 }
 
+shadow_deploy() {
+    local graph_file="$1"
+    local plasmidbin_dir="$2"
+    local bind_address="${3:-127.0.0.1}"
+
+    if [[ ! -f "$graph_file" ]]; then
+        echo "ERROR: Graph file not found: $graph_file" >&2
+        return 1
+    fi
+
+    echo "╔══════════════════════════════════════════════════════╗"
+    echo "║  composition.deploy.shadow — Dry-Run Validation     ║"
+    echo "╚══════════════════════════════════════════════════════╝"
+    echo ""
+    echo "  Graph: $graph_file"
+    echo ""
+
+    local nodes_valid=0
+    local nodes_missing=0
+    local nodes_skipped=0
+    local dep_errors=0
+
+    local all_names=()
+
+    while IFS='|' read -r name binary order port required spawn deps caps health; do
+        all_names+=("$name")
+
+        if [[ "$spawn" == "false" ]]; then
+            echo "  [$order] $name — external (skip)"
+            nodes_skipped=$((nodes_skipped + 1))
+            continue
+        fi
+
+        local bin_path="$plasmidbin_dir/primals/$binary"
+        local status="OK"
+        local issues=()
+
+        if [[ ! -x "$bin_path" ]]; then
+            issues+=("binary missing: $bin_path")
+            status="MISSING"
+        fi
+
+        if [[ "$port" -gt 0 ]]; then
+            if ss -tlnp 2>/dev/null | grep -q ":$port "; then
+                issues+=("port $port already in use")
+                status="CONFLICT"
+            fi
+        fi
+
+        if [[ -n "$deps" ]]; then
+            IFS=',' read -ra dep_list <<< "$deps"
+            for dep in "${dep_list[@]}"; do
+                local dep_found=false
+                for prev in "${all_names[@]}"; do
+                    [[ "$prev" == "$dep" ]] && dep_found=true
+                done
+                if [[ "$dep_found" == "false" ]]; then
+                    issues+=("dependency '$dep' not in graph")
+                    [[ "$required" == "true" ]] && status="DEP_FAIL"
+                fi
+            done
+        fi
+
+        if [[ "$status" == "OK" ]]; then
+            echo "  [$order] $name (TCP $port, caps: $caps) — VALID"
+            nodes_valid=$((nodes_valid + 1))
+        else
+            echo "  [$order] $name — $status"
+            for issue in "${issues[@]}"; do
+                echo "    ! $issue"
+            done
+            nodes_missing=$((nodes_missing + 1))
+        fi
+
+    done < <(parse_graph_nodes "$graph_file")
+
+    # Validate workload TOMLs via toadstool.validate if toadStool is running
+    local toadstool_port=9400
+    if curl -sf --max-time 2 "http://$bind_address:$toadstool_port" \
+        -X POST -H 'Content-Type: application/json' \
+        -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' >/dev/null 2>&1; then
+        echo ""
+        echo "  toadStool reachable on :$toadstool_port — validating workloads..."
+        local workloads_dir
+        workloads_dir="$(cd "$(dirname "$graph_file")/../workloads" 2>/dev/null && pwd || true)"
+        if [[ -d "$workloads_dir" ]]; then
+            local wl_valid=0 wl_fail=0
+            for wl in "$workloads_dir"/**/*.toml; do
+                [[ "$wl" == *templates* ]] && continue
+                local resp
+                resp=$(curl -sf --max-time 5 "http://$bind_address:$toadstool_port" \
+                    -X POST -H 'Content-Type: application/json' \
+                    -d "{\"jsonrpc\":\"2.0\",\"method\":\"toadstool.validate\",\"params\":{\"workload_path\":\"$wl\",\"dry_run\":true},\"id\":1}" 2>/dev/null || true)
+                if echo "$resp" | grep -q '"valid":true' 2>/dev/null; then
+                    wl_valid=$((wl_valid + 1))
+                else
+                    wl_fail=$((wl_fail + 1))
+                    echo "    WARN: $(basename "$wl") — validation failed or timeout"
+                fi
+            done
+            echo "  Workloads: $wl_valid valid, $wl_fail issues"
+        fi
+    else
+        echo ""
+        echo "  toadStool not reachable — skipping workload pre-flight"
+    fi
+
+    echo ""
+    echo "  Shadow summary: $nodes_valid valid, $nodes_missing issues, $nodes_skipped external"
+
+    if [[ $nodes_missing -gt 0 ]]; then
+        echo "  ⚠ Fix issues before live deploy"
+        return 1
+    fi
+    echo "  ✓ Graph ready for live deploy"
+    return 0
+}
+
 deploy_from_graph() {
     local graph_file="$1"
     local plasmidbin_dir="$2"

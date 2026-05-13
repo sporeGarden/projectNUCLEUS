@@ -4,12 +4,13 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-11 (Stadial-ready — NestGate content pipeline shipped, zero upstream debt, all Pillars 1-3 unblocked)
+**Last updated**: 2026-05-13 (Atomic deployment phase — 13/13 primals zero debt, 8/8 springs zero debt, Tower LIVE, Nest ready, Node in progress)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
 **Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
-**Upstream status**: All upstream gaps resolved (primalSpring post-interstadial audit May 10, 2026)
+**Upstream status**: All upstream gaps resolved. 13/13 primals zero code debt, 8/8 delta springs zero debt (8,486+ tests). Tower atomic LIVE (ludoSpring 6/6). Nest atomic ready (GAP-36 resolved). Node atomic AMD live, NV FECS-gated.
+**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -195,10 +196,12 @@ These are not gaps — they are accepted constraints:
 
 ## Upstream Dependencies (primal teams)
 
-**River delta Push 2 (May 11, 2026)**: Zero open upstream gaps. All 13 primals
-at zero debt. 8/8 springs: skunkBat Rust IPC, `method.register`, CI cross-sync 413,
-`composition.status`, NUCLEUS workload TOMLs. 12,900+ tests, zero clippy.
-primalSpring at 413 methods. Non-compositional validation layer complete.
+**River delta Push 3 (May 13, 2026)**: Zero open upstream gaps. 13/13 primals at zero
+code debt. 8/8 delta springs at zero debt, 8,486+ tests. Tower atomic LIVE (ludoSpring 6/6).
+Nest atomic ready. Node atomic AMD live, NV FECS-gated. `toadstool.validate` S250 (74 methods).
+`barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53.
+`content.put/get` NestGate Session 60 (4-surface parity). BTSP auth pipeline live (13/13 primals).
+skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 springs (`--format json`).
 
 See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HANDOFF_MAY10_2026.md`
 
@@ -226,16 +229,19 @@ from the resolved upstream work. All local, actionable now.
 | Target | What to wire | Source | Priority |
 |--------|-------------|--------|----------|
 | `composition.deploy(graph)` | `deploy_graph.sh` created — `--graph-deploy` reads TOML, starts in dependency order | biomeOS v3.51 `composition.deploy` route alias | **WIRED** |
+| ~~`composition.deploy.shadow`~~ | `shadow_deploy()` in `deploy_graph.sh` — dry-run graph validation, port conflict detection, toadstool.validate pre-flight | biomeOS v3.53 | **WIRED** (May 13) |
+| ~~toadstool.validate workloads~~ | 12 validation workload TOMLs wired: `[output] schema = "toadstool-validate-v1"` + `--format json` across all 7 springs | toadStool S250 | **WIRED** (May 13) |
+| ~~DoT parity baseline~~ | `dot_sovereign_parity.sh` + orchestrator integration — DNS timing, DoT status, sovereign resolver comparison | H2-4 / H2-17→20 | **WIRED** (May 13) |
 | `composition.status` | Wire `{ active_users, primal_health, resource_pressure }` into monitoring | biomeOS v3.51 | Medium |
 | `method.register` | Dynamic spring method registration (no manual biomeOS config) | biomeOS v3.51 | Medium |
 | Tier 4 rewiring | IPC-first defaults, `barracuda` optional, feature-gate imports, `CompositionContext` | JH-11 resolution | Medium |
 | ~~skunkBat in smaller compositions~~ | ~~Add skunkBat node to `node_atomic_compute.toml` and `nest_atomic.toml`~~ | **DONE** (May 11) | ~~High~~ |
-| skunkBat audit forwarding | Wire skunkBat into deploy graphs for cross-primal audit → rhizoCrypt DAG + sweetGrass braid | skunkBat Phase 2 + JH-5 | Medium |
+| skunkBat audit forwarding | Wire skunkBat `security.audit_log` → rhizoCrypt DAG + sweetGrass braid in deploy graphs | skunkBat Phase 2 + JH-5 Phase 3 | Medium |
 | ~~MethodGate parity~~ | **RESOLVED** — squirrel shipped `method_gate.rs` (JH-0 + JH-2). 13/13 at primalSpring gate. | **DONE** (May 11) | ~~Low~~ |
 | ~~foundation integration~~ | Wire provenance results to `sporeGarden/foundation/` — **Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created; THREAD_INDEX hygiene done; paper 02 thread fix** | **DONE** (May 11) | ~~Low~~ |
 | ~~systemd unit portability~~ | ~~Parameterize `/home/irongate` in systemd units~~ — **DONE** via `EnvironmentFile` + `gate.env.template` | **DONE** (May 11, deep debt sweep) | ~~Low~~ |
-| BearDog TLS shadow run (H2-12) | Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days | bearDog Wave 100 shipped, benchScale ready | High (ops) |
-| Songbird NAT VPS relay (H2-14) | Provision ~$5/mo VPS, deploy BearDog-authenticated STUN/TURN relay | songbird Wave 196/197 shipped | Medium (ops) |
+| BearDog TLS shadow run (H2-12) | Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days — `deploy_beardog_tls_shadow.sh` staged | bearDog Wave 100 shipped, benchScale ready | High (ops) |
+| Songbird NAT VPS relay (H2-14) | Provision ~$5/mo VPS, deploy BearDog-authenticated STUN/TURN relay — `deploy_songbird_relay.sh` staged | songbird Wave 202 OPS-READY | Medium (ops) |
 | plasmidBin binary workflow | Update workload TOMLs to support fetched binaries (plasmidBin `fetch.sh` → `$PLASMIDBIN_DIR/springs/`) | Springs shipping release binaries | Medium |
 | Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked | Future |
 
@@ -249,14 +255,16 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | ID | Target | Pillar | Status |
 |----|--------|--------|--------|
-| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | Ready to build — BearDog authenticator shipped |
+| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | Ready to build — BearDog authenticator + BTSP pipeline shipped |
 | H2-05 | NestGate content pipeline | P2 (NUCLEUS) | **DONE** (Session 60) — `publish_sporeprint.sh` READY |
 | H2-06→09 | petalTongue content serving + extracellular | P2 (NUCLEUS) | UNBLOCKED — NestGate `content.*` live |
-| H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | Ready — Wave 100, deploy script needed |
-| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | **OPS-READY** — Wave 202, systemd + creds + guide shipped |
-| TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **UNBLOCKED** — S250 implemented, wire notebooks |
+| H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | **STAGED** — `deploy_beardog_tls_shadow.sh` + `btsp_tls_parity.sh` ready |
+| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | **OPS-READY** — Wave 202, `deploy_songbird_relay.sh` + systemd + creds shipped |
+| H2-17→20 | DoT sovereign DNS | P2 (NUCLEUS) | **BASELINE WIRED** — `dot_sovereign_parity.sh` ready, sovereign resolver pending |
+| TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **WIRED** — S250 implemented, 12 workload TOMLs with `toadstool-validate-v1` schema |
+| SHADOW | composition.deploy.shadow | P2 (NUCLEUS) | **WIRED** — `shadow_deploy()` in `deploy_graph.sh`, biomeOS v3.53 |
 | ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Mapped, not exercised |
-| LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | Tier 1+2 PASS (modules 1+2), workload TOMLs exist |
+| LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | Tier 1+2 PASS (4/7 modules), workload TOMLs exist |
 | FND-10 | Foundation 10/10 threads active | P5 (Foundation) | **DONE** — all threads seeded, TOML-driven fetch |
 
 ### Stadial Targets (external validation drives cutover)
@@ -288,12 +296,13 @@ lithoSpore (`sporeGarden/lithoSpore`) is a projectNUCLEUS subsystem — the
 first Targeted GuideStone artifact.
 
 - Workload TOMLs: `litho-validate-tier2.toml`, `litho-validate-tier3.toml`
-- **Phase 2 in progress**: groundSpring B2/B1 integrated, modules 1+2 Tier 1 PASS
+- **Phase 2 active**: 4/7 modules PASS Tier 2 (Rust) — modules 1, 2, 6, 7 live
+- 6 of 7 scaffold modules have upstream data READY for ingestion (B3, B4, B5, B6, B7 + neuralSpring B1)
 - Integration point: NUCLEUS dispatches lithoSpore workloads via `composition.deploy(graph)`
 - USB deployment: Tier 3 deploy graph (`graphs/ltee_guidestone.toml`) composes
   NUCLEUS primals around lithoSpore science modules
-- Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data
-- Stadial target: USB to Barrick Lab (Phase 5)
+- Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data — **EXCEEDED** (4 modules Tier 2)
+- Stadial target: USB to Barrick Lab (Phase 5) — GuideStone Phase 1 DONE (architecture + queue seeding)
 
 ---
 
@@ -301,10 +310,10 @@ first Targeted GuideStone artifact.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
-Horizon 2 (sovereignty):          ███████░░░  2a done, 2b ready, 3a INTERMEDIATE, 3b/3c UPSTREAM SHIPPED (shadow run ready), 4 INTERMEDIATE (DoT)
+Horizon 2 (sovereignty):          ████████░░  2a done, 2b ready, 3a LIVE, 3b/3c shadow-staged + deploy scripts, 4 INTERMEDIATE (DoT baseline wired)
 Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
-Upstream (waiting):                ██████████  ZERO OPEN — all 11 gaps resolved by primal teams (May 10)
-Interstadial exit:                ███░░░░░░░  Criteria defined, shadow runs not yet running
+Upstream (waiting):                ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt (May 13)
+Interstadial exit:                █████░░░░░  Shadow infrastructure wired, deploy.shadow + toadstool.validate + DoT parity ready, ops execution pending
 ```
 
 ---
@@ -340,3 +349,4 @@ Interstadial exit:                ███░░░░░░░  Criteria defin
 | 2026-05-11 | **Deep debt evolution sweep COMPLETE (all three products)**: foundation: THREAD_INDEX v1.3.0 fixed (4 threads), 7 workload TOMLs gate-agnostic, `fetch_sources.sh` covers 10/10 threads via TOML manifests, `foundation_validate.sh` Phase 6 target comparison added. projectNUCLEUS: zero hardcoded paths, `deploy.sh` modularized (`deploy_primal_start.sh` + `deploy_health_check.sh`), darkforest `pentest.rs` split into 3 submodules, `crypto.rs` split into 3 submodules, tunnelKeeper 9/11 `.clone()` eliminated. lithoSpore: Tier 2 Rust wired for modules 1+2 (Nelder-Mead curve fitting, Kimura fixation, Poisson accumulation), `cmd_refresh` stub evolved to real implementation, 9 `expect()` calls replaced with `match`, first `liveSpore.json` entry seeded. All stale MethodGate references reconciled to 13/13. `publish_sporeprint.sh` status STUB→READY. |
 | 2026-05-12 | **May 12 upstream absorption — zero sentinel blockers**: `toadstool.validate` IMPLEMENTED (S250) — Tier 2 Science API unblocked. `barracuda.precision.route` IMPLEMENTED (649 tests). Songbird VPS relay OPS-READY (Wave 202) — TURN server + CLI + systemd + credentials + deployment guide shipped. coralReef Sprint 7 FECS stability proof (4,790 tests). plasmidBin pipeline hardened: auto-harvest + BLAKE3 post-validate + idempotent. Local `specs/LIVE_SCIENCE_API.md` rewritten to match upstream contract (`workload_path`/`dry_run` params, not old `workload`/`format`). Shadow deploy scripts created: `deploy_beardog_tls_shadow.sh` (H2-12), `deploy_songbird_relay.sh` (H2-14). Interstadial targets table updated: H2-05 DONE, H2-14 OPS-READY, TIER-2 UNBLOCKED, FND-10 DONE. `fetch_primals.sh` updated to verify BLAKE3 checksums from plasmidBin `checksums.toml`. |
 | 2026-05-13 | **Deep debt resolution — hardcoded path elimination + doc drift fix**: 7 workload TOMLs (airspring x6, groundspring x1) evolved from `${SPRINGS_ROOT:-/home/eastgate/...}` fallbacks to bare `$SPRINGS_ROOT` (matching all other workloads). `deploy_songbird_relay.sh` `SONGBIRD_SRC` evolved from `/home/irongate/...` to `${ECOPRIMALS_ROOT}` pattern. foundation `specs/EVOLUTION_GAPS.md` (194L stale copy, May 09) replaced with cross-reference to projectNUCLEUS canonical. Upstream flag: barraCuda `registry_tests.rs` asserts 71 methods but `REGISTERED_METHODS` has 72 after Sprint 58 `precision.route` — noted in `PRIMAL_DEEP_DEBT_HANDBACK.md` addendum. |
+| 2026-05-13 | **Atomic deployment phase absorption**: `composition.deploy.shadow` wired — `shadow_deploy()` in `deploy_graph.sh` does dry-run graph validation (binary existence, port conflicts, dependency ordering, toadstool.validate pre-flight). 12 validation workload TOMLs across all 7 springs wired with `[output] schema = "toadstool-validate-v1"` + `--format json` for Tier 2 notebook integration. `dot_sovereign_parity.sh` created — DNS-over-TLS vs sovereign resolver timing/accuracy comparison (H2-4/H2-17→20), integrated into `shadow_run_orchestrator.sh`. Wire notes added to `LIVE_SCIENCE_API.md`: bearDog base64 signing, skunkBat `security.audit_log` path, NestGate `content.*` vs `storage.*` domain separation, BTSP auth pipeline, composition.deploy.shadow. River delta Push 3 absorbed. Interstadial exit score advanced. |

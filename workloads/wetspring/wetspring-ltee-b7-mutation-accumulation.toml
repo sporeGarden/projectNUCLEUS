@@ -35,6 +35,10 @@ max_disk_bytes = 53687091200
 [security]
 isolation_level = "None"
 
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
+
 [outputs]
 expected_values = "experiments/results/ltee_b7_expected_values.json"
 mutation_curves = "experiments/results/ltee_b7_mutation_curves.json"

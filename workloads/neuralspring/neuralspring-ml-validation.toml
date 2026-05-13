@@ -9,12 +9,16 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "$SPRINGS_ROOT/neuralSpring/target/release/neuralspring_unibin validate"
+command = "$SPRINGS_ROOT/neuralSpring/target/release/neuralspring_unibin validate --format json"
 working_dir = "$SPRINGS_ROOT/neuralSpring"
 
 [execution.env]
 # Tier 2: structured JSON output for pipeline ingestion
 PRIMALSPRING_JSON = "1"
+
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
 
 [resources]
 max_memory_bytes = 8589934592

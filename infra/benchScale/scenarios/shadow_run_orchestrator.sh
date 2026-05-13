@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # shadow_run_orchestrator.sh — Run all shadow parity tests in sequence
 #
-# Orchestrates the three shadow runs that gate interstadial exit:
+# Orchestrates the four shadow runs that gate interstadial exit:
 #   1. NestGate content parity vs GitHub Pages (H2-05/3a)
 #   2. BearDog BTSP TLS vs Cloudflare (H2-3b/H2-12)
 #   3. Songbird NAT vs cloudflared tunnel (H2-3c/H2-14)
+#   4. DoT sovereign DNS parity (H2-4/H2-17→20)
 #
 # Usage:
 #   ./shadow_run_orchestrator.sh [--baseline-only] [--parity-only] [--all]
@@ -134,6 +135,23 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
     else
         echo "  SKIP: SONGBIRD_RELAY_URL not set"
         echo "  Provision VPS relay (~\$5/mo), set SONGBIRD_RELAY_URL, then re-run"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+        echo ""
+    fi
+
+    # 4. DoT sovereign DNS parity
+    echo "--- H2-4/H2-17→20: DoT Sovereign DNS Parity ---"
+    run_test "DoT Baseline" \
+        "$SCRIPT_DIR/dot_sovereign_parity.sh" \
+        --baseline-only
+
+    SOVEREIGN_RESOLVER="${SOVEREIGN_RESOLVER:-}"
+    if [[ -n "$SOVEREIGN_RESOLVER" ]]; then
+        run_test "DoT Sovereign Parity" \
+            "$SCRIPT_DIR/dot_sovereign_parity.sh" \
+            --parity
+    else
+        echo "  SKIP: SOVEREIGN_RESOLVER not set (H2-17 knot-dns not deployed yet)"
         SKIP_COUNT=$((SKIP_COUNT + 1))
         echo ""
     fi

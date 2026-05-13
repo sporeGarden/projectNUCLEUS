@@ -21,8 +21,12 @@ lithoSpore_module = "ltee-anderson"
 [execution]
 type = "native"
 command = "$SPRINGS_ROOT/hotSpring/barracuda/target/release/hotspring_unibin"
-args = ["validate", "--scenario", "ltee-anderson"]
+args = ["validate", "--scenario", "ltee-anderson", "--format", "json"]
 working_dir = "$SPRINGS_ROOT/hotSpring"
+
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
 
 [resources]
 max_memory_bytes = 2147483648

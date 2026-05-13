@@ -18,8 +18,12 @@ ladder = ["cpu", "gpu", "sovereign"]
 [execution]
 type = "native"
 command = "$SPRINGS_ROOT/hotSpring/barracuda/target/release/hotspring_unibin"
-args = ["validate", "--scenario", "sarkas-yukawa-md"]
+args = ["validate", "--scenario", "sarkas-yukawa-md", "--format", "json"]
 working_dir = "$SPRINGS_ROOT/hotSpring"
+
+[output]
+format = "json"
+schema = "toadstool-validate-v1"
 
 [resources]
 max_memory_bytes = 8589934592

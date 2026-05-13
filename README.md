@@ -77,10 +77,13 @@ Gates connect to each other through chemical bonding patterns:
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
-- **Shadow run infrastructure staged**: `deploy_beardog_tls_shadow.sh` (H2-12), `deploy_songbird_relay.sh` (H2-14), `shadow_run_orchestrator.sh` (ties all parity tests)
+- **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 10ms RPC latency vs 120ms Cloudflare baseline. `btsp_tls_parity.sh` ready for 7-day comparison
+- **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
+- **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
+- **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)
 - **Deep debt evolution COMPLETE**: deploy.sh modularized, darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
-- **lithoSpore Tier 2 (Rust) WIRED**: Nelder-Mead curve fitting, Kimura fixation, Poisson accumulation. liveSpore.json seeded
-- **Next priorities**: Execute shadow parity tests, modules 3–7 as spring reproductions land
+- **lithoSpore 5/7 modules PASS Tier 2** (46/46 checks): Rust validation for fitness, mutations, alleles, citrate, breseq. Modules 5 (biobricks) and 7 (anderson) await upstream data
+- **Proposed API methods RESOLVED**: `biomeos.spring_status`, `nestgate.artifact_query`, `rhizocrypt.dag_summary` all covered by existing shipped methods
 
 ### Services (all persistent via systemd)
 
@@ -154,7 +157,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 - **Cell membrane architecture**: extracellular (CDN) / membrane (tunnel) / intracellular (sovereign) separation
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
-- **Cloudflare baselines capturing** hourly via cron (DNS, TCP, TLS, TTFB, total latency)
+- **Cloudflare baselines captured**: tunnel reachable 100%, TTFB p50 110ms / TLS p50 65ms (hourly cron)
 - **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies
 - **tunnelKeeper v0.2.0**: Rust crate for tunnel health, replica count, membrane monitoring
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts

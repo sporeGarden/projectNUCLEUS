@@ -16,4 +16,9 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Build artifacts
+**/target/
+
+# Test results
 deploy/tier_test_results/

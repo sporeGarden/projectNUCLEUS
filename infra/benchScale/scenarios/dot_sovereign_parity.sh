@@ -45,6 +45,20 @@ echo "  Iterations per domain: $ITERATIONS"
 echo "  Timestamp: $(timestamp)"
 echo ""
 
+resolve_domain() {
+    local server_arg="$1"
+    local domain="$2"
+    if [[ -n "$server_arg" ]]; then
+        dig +short "$server_arg" "$domain" A 2>/dev/null | head -1
+    elif command -v resolvectl &>/dev/null; then
+        resolvectl query "$domain" 2>/dev/null | grep -oP '\d+\.\d+\.\d+\.\d+' | head -1
+    elif command -v dig &>/dev/null; then
+        dig +short @127.0.0.53 "$domain" A 2>/dev/null | head -1
+    else
+        getent hosts "$domain" 2>/dev/null | awk '{print $1}' | head -1
+    fi
+}
+
 measure_dns() {
     local resolver_label="$1"
     local server_arg="$2"
@@ -55,7 +69,9 @@ measure_dns() {
     for _ in $(seq 1 "$ITERATIONS"); do
         local start_ns end_ns elapsed_ms
         start_ns=$(date +%s%N)
-        if dig +short $server_arg "$domain" A >/dev/null 2>&1; then
+        local result
+        result=$(resolve_domain "$server_arg" "$domain")
+        if [[ -n "$result" ]]; then
             end_ns=$(date +%s%N)
             elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
             total_ms=$((total_ms + elapsed_ms))
@@ -106,9 +122,15 @@ done
 echo ""
 
 dnssec_status="unknown"
-if resolvectl status 2>/dev/null | grep -q "DNSOverTLS.*yes"; then
+dot_lines=$(resolvectl status 2>/dev/null | grep "DNSOverTLS" || true)
+if echo "$dot_lines" | grep -q "+DNSOverTLS"; then
     dnssec_status="dot_active"
-    echo "  DoT: ACTIVE (systemd-resolved)"
+    dot_server=$(resolvectl status 2>/dev/null | grep "Current DNS Server" | head -1 | awk '{print $NF}')
+    echo "  DoT: ACTIVE (systemd-resolved → ${dot_server:-unknown})"
+elif echo "$dot_lines" | grep -qi "yes\|opportunistic"; then
+    dnssec_status="dot_active"
+    dot_server=$(resolvectl status 2>/dev/null | grep "Current DNS Server" | head -1 | awk '{print $NF}')
+    echo "  DoT: ACTIVE (systemd-resolved → ${dot_server:-unknown})"
 else
     dnssec_status="dot_inactive"
     echo "  DoT: NOT ACTIVE"

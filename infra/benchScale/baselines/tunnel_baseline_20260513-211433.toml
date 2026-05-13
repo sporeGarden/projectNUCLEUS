@@ -1,0 +1,23 @@
+# Cloudflare Tunnel Baseline — 20260513-211433
+# Generated: 2026-05-13T21:14:55Z
+
+[metadata]
+target = "https://lab.primals.eco/hub/login"
+samples = 10
+uptime_pct = 0
+tunnel_reachable_pct = 100.0
+generated_at = "2026-05-13T21:14:55Z"
+
+[latency_ms]
+ttfb_p50 = 110.42
+ttfb_p95 = 125.97
+ttfb_p99 = 125.97
+tls_p50  = 65.47
+tls_p95  = 85.36
+tls_p99  = 85.36
+total_p50 = 110.46
+total_p95 = 126.14
+total_p99 = 126.14
+
+[throughput]
+avg_bytes_per_sec = 133

@@ -149,82 +149,16 @@ Submit a workload for execution (compute trio IPC contract, Wave 8).
 
 ---
 
-## biomeos.spring_status
+## Resolved — Covered by Existing Methods (May 13, 2026)
 
-Return which springs have validation binaries available on this gate.
+The following proposed methods are **not needed** — existing shipped methods cover
+their use cases:
 
-**Owner**: biomeOS
-**Transport**: Newline-delimited JSON-RPC on port 9800
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "biomeos.spring_status",
-  "params": {},
-  "id": 1
-}
-```
-
-**Response**:
-
-```json
-{
-  "result": {
-    "springs": [
-      {
-        "name": "wetspring",
-        "binaries": 8,
-        "workloads": 11,
-        "last_validated": "2026-05-06T18:30:00Z",
-        "checks_passing": 235
-      }
-    ],
-    "gate": "<active-gate>",
-    "composition": "full",
-    "primals_healthy": 13
-  }
-}
-```
-
----
-
-## nestgate.artifact_query
-
-Query provenance for a content-addressed artifact.
-
-**Owner**: NestGate (Session 60)
-**Transport**: Newline-delimited JSON-RPC on port 9500
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "nestgate.artifact_query",
-  "params": {
-    "hash": "b106aa1d1bb45430d00d605626e10488119f9e4f9f315a738939049a6da9ceec"
-  },
-  "id": 1
-}
-```
-
----
-
-## rhizocrypt.dag_summary
-
-Get a summary of a DAG session.
-
-**Owner**: rhizoCrypt
-**Transport**: Newline-delimited JSON-RPC on port 9602
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "rhizocrypt.dag_summary",
-  "params": {
-    "session_id": "019dfe5d-c17f-7a93-889e-01bf813ee7f8"
-  },
-  "id": 1
-}
-```
+| Proposed | Resolution | Use Instead |
+|----------|-----------|-------------|
+| `biomeos.spring_status` | **Resolved** | `capabilities.list` on each primal via Songbird discovery; biomeOS orchestration already tracks primal health through the deploy graph |
+| `nestgate.artifact_query` | **Resolved** | `content.get` (by BLAKE3 hash) and `content.resolve` (by collection+path) — both SHIPPED in Session 60. Provenance chain via `dag.session.get` on rhizoCrypt |
+| `rhizocrypt.dag_summary` | **Resolved** | `dag.session.get` (returns full session state) and `dag.session.list` (enumeration) — both SHIPPED. No separate summary method needed |
 
 ---
 
@@ -262,7 +196,7 @@ Each tier adds capability without removing previous tiers.
 
 ---
 
-## Implementation Status (May 12, 2026)
+## Implementation Status (May 13, 2026)
 
 | Method | Owner | Status | Notes |
 |--------|-------|--------|-------|
@@ -273,9 +207,9 @@ Each tier adds capability without removing previous tiers.
 | `shader.compile.wgsl` | coralReef | **WIRED** (Sprint 7) | WGSL→PTX/SPIR-V |
 | `content.put/get` | nestGate | **SHIPPED** (Session 60) | Content-addressed storage |
 | `dag.session.create` | rhizoCrypt | **SHIPPED** | Provenance pipeline |
-| `biomeos.spring_status` | biomeOS | Proposed | Spring discovery |
-| `nestgate.artifact_query` | nestGate | Proposed | Provenance queries |
-| `rhizocrypt.dag_summary` | rhizoCrypt | Proposed | DAG inspection |
+| `biomeos.spring_status` | biomeOS | **Resolved** | Covered by `capabilities.list` + deploy graph |
+| `nestgate.artifact_query` | nestGate | **Resolved** | Use `content.get`/`content.resolve` (Session 60) |
+| `rhizocrypt.dag_summary` | rhizoCrypt | **Resolved** | Use `dag.session.get`/`dag.session.list` |
 
 ## Adoption Path
 

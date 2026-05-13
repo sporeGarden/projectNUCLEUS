@@ -21,16 +21,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/nucleus_config.sh"
 
 SHADOW_PORT="${1:-8443}"
-CERT_PATH="${GATE_HOME:?}/.beardog/tls/lab.primals.eco.pem"
-KEY_PATH="${GATE_HOME:?}/.beardog/tls/lab.primals.eco.key"
 BEARDOG_BIN="${PLASMIDBIN_DIR:-$GATE_HOME/plasmidBin}/primals/beardog"
 BASELINE_DIR="${SCRIPT_DIR}/../validation/baselines"
 SHADOW_LOG="/tmp/beardog-tls-shadow.log"
+AUDIT_DIR="${GATE_HOME:?}/.beardog/audit"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --cert) CERT_PATH="$2"; shift 2 ;;
-        --key)  KEY_PATH="$2"; shift 2 ;;
         --port) SHADOW_PORT="$2"; shift 2 ;;
         *) shift ;;
     esac
@@ -38,10 +35,9 @@ done
 
 echo "══ BearDog TLS Shadow Run (H2-12) ══"
 echo "  Port:     $SHADOW_PORT"
-echo "  Cert:     $CERT_PATH"
-echo "  Key:      $KEY_PATH"
 echo "  Binary:   $BEARDOG_BIN"
 echo "  Log:      $SHADOW_LOG"
+echo "  Audit:    $AUDIT_DIR"
 echo ""
 
 if [[ ! -x "$BEARDOG_BIN" ]]; then
@@ -50,28 +46,19 @@ if [[ ! -x "$BEARDOG_BIN" ]]; then
     exit 1
 fi
 
-# Phase 1: Generate self-signed cert if none exists
-if [[ ! -f "$CERT_PATH" ]]; then
-    echo "  Generating self-signed TLS certificate..."
-    mkdir -p "$(dirname "$CERT_PATH")"
-    openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
-        -nodes -keyout "$KEY_PATH" -out "$CERT_PATH" \
-        -days 365 -subj "/CN=lab.primals.eco" \
-        -addext "subjectAltName=DNS:lab.primals.eco,DNS:localhost" \
-        2>/dev/null
-    echo "  Self-signed cert written to $CERT_PATH"
-fi
-
-# Phase 2: Start BearDog TLS shadow
+echo "  BearDog version: $("$BEARDOG_BIN" version 2>&1 || echo unknown)"
 echo ""
-echo "  Starting BearDog TLS shadow on :${SHADOW_PORT}..."
+
+mkdir -p "$AUDIT_DIR"
+
+# Start BearDog with TCP listener (rustls/BTSP handles encryption internally)
+echo "  Starting BearDog on :${SHADOW_PORT}..."
 export BEARDOG_FAMILY_SEED="${BEACON_SEED:-$(head -c 32 /dev/urandom | base64)}"
 
 nohup "$BEARDOG_BIN" server \
     --listen "127.0.0.1:${SHADOW_PORT}" \
-    --tls-cert "$CERT_PATH" \
-    --tls-key "$KEY_PATH" \
     --family-id "${FAMILY_ID:-nucleus}" \
+    --audit-dir "$AUDIT_DIR" \
     > "$SHADOW_LOG" 2>&1 &
 
 SHADOW_PID=$!
@@ -84,31 +71,42 @@ if ! kill -0 "$SHADOW_PID" 2>/dev/null; then
     exit 1
 fi
 
-# Phase 3: Baseline comparison probe
+# Phase 3: Health check + baseline comparison probe
 echo ""
-echo "  Running baseline comparison..."
+echo "  Running health check..."
 
+beardog_health() {
+    local start_ns end_ns elapsed_ms
+    start_ns=$(date +%s%N)
+    if echo '{"jsonrpc":"2.0","method":"health.liveness","id":1}' | \
+        nc -w 2 127.0.0.1 "$SHADOW_PORT" 2>/dev/null | grep -q "result"; then
+        end_ns=$(date +%s%N)
+        elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+        echo "$elapsed_ms"
+    else
+        echo "unreachable"
+    fi
+}
+
+bd_time=$(beardog_health)
 cf_time=$(curl -so /dev/null -w '%{time_total}' --max-time 5 \
     "https://lab.primals.eco" 2>/dev/null || echo "unreachable")
 
-tls_time=$(curl -so /dev/null -w '%{time_total}' --max-time 5 -k \
-    "https://127.0.0.1:${SHADOW_PORT}" 2>/dev/null || echo "unreachable")
-
-echo "  Cloudflare latency: ${cf_time}s"
-echo "  BearDog TLS latency: ${tls_time}s"
+echo "  Cloudflare latency:  ${cf_time}s"
+echo "  BearDog RPC latency: ${bd_time}ms"
 
 # Phase 4: Record baseline
 TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
 BASELINE_FILE="${BASELINE_DIR}/beardog_tls_shadow_${TIMESTAMP}.csv"
 mkdir -p "$BASELINE_DIR"
-echo "timestamp,cloudflare_s,beardog_tls_s,shadow_port,pid" > "$BASELINE_FILE"
-echo "${TIMESTAMP},${cf_time},${tls_time},${SHADOW_PORT},${SHADOW_PID}" >> "$BASELINE_FILE"
+echo "timestamp,cloudflare_s,beardog_rpc_ms,shadow_port,pid" > "$BASELINE_FILE"
+echo "${TIMESTAMP},${cf_time},${bd_time},${SHADOW_PORT},${SHADOW_PID}" >> "$BASELINE_FILE"
 echo ""
 echo "  Baseline recorded: $BASELINE_FILE"
 
 echo ""
 echo "══ Shadow running ══"
-echo "  BearDog TLS on :${SHADOW_PORT} (PID $SHADOW_PID)"
+echo "  BearDog JSON-RPC on :${SHADOW_PORT} (PID $SHADOW_PID)"
 echo "  Cloudflare tunnel on :443 (unchanged)"
 echo "  Comparison metrics accumulating in $BASELINE_DIR"
 echo ""

@@ -41,6 +41,7 @@ echo "  Output:  $CSV"
 echo ""
 
 PASS=0
+TUNNEL_OK=0
 for i in $(seq 1 "$SAMPLES"); do
     ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     raw=$(curl -sS -o /dev/null -w "$CURL_FMT" --max-time 30 "$TARGET_URL" 2>/dev/null) || raw="0,0,0,0,0,0,0,0"
@@ -58,13 +59,17 @@ for i in $(seq 1 "$SAMPLES"); do
     if [[ "$code" == "200" ]]; then
         PASS=$((PASS + 1))
     fi
+    if [[ "$code" != "000" ]] && [[ "$code" != "0" ]]; then
+        TUNNEL_OK=$((TUNNEL_OK + 1))
+    fi
 
     printf "  [%d/%d] HTTP %s  ttfb=%sms  tls=%sms  total=%sms\n" "$i" "$SAMPLES" "$code" "$ttfb_ms" "$tls_ms" "$total_ms"
     sleep "$DELAY_BETWEEN"
 done
 
 echo ""
-echo "Uptime: ${PASS}/${SAMPLES} requests succeeded"
+echo "Uptime: ${PASS}/${SAMPLES} requests returned 200"
+echo "Tunnel reachable: ${TUNNEL_OK}/${SAMPLES} (TLS connected, any HTTP response)"
 echo "Results: $CSV"
 
 # Generate summary TOML
@@ -90,6 +95,7 @@ cat > "$SUMMARY" << EOF
 target = "$TARGET_URL"
 samples = $SAMPLES
 uptime_pct = $(echo "scale=1; $PASS * 100 / $SAMPLES" | bc)
+tunnel_reachable_pct = $(echo "scale=1; $TUNNEL_OK * 100 / $SAMPLES" | bc)
 generated_at = "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 [latency_ms]

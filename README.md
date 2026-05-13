@@ -64,28 +64,23 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — Pillar 4 exit gate MET, composition.deploy wired, shadow runs staged (2026-05-11)**
+**Stadial-ready — zero hardcoded paths, zero upstream debt (2026-05-13)**
 
 ### Infrastructure
 
-- All **13/13 NUCLEUS primals** deployed and healthy on the active gate — **zero debt** across all primals (L1 clean)
-- **8/8 springs** at Tier 4 IPC-first — 13,100+ tests across the delta, LTEE reproductions active
-- **Zero open upstream gaps** — all per-primal debt closed including NestGate Session 60 transport parity
-- BTSP Phase 3 AEAD (ChaCha20-Poly1305), Wire Standard L3, discovery escalation — all converged
-- **5-tier discovery hierarchy**: Songbird IPC → biomeOS Neural → UDS convention → socket registry → TCP probing
-- Full provenance chain operational: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
-- **Cell membrane architecture**: primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
-- **NestGate content pipeline SHIPPED** (Session 60): `content.put/get/exists/list/publish/resolve/promote/collections` on all 4 transports. `publish_sporeprint.sh` ready. H2-05 **DONE**, H2-06–09 **UNBLOCKED**.
-- **Static observer surface**: pre-rendered HTML via pappusCast (modular: 7 Python modules), centralized dark theme, Rust-validated (darkforest `--suite observer`)
-- **Deep debt evolution sweep**: pappusCast refactored, zero hardcoded paths, gate-agnostic systemd, specs reconciled
-- **MethodGate**: 13/13 primals enforced
-- **Sovereignty unblocked upstream**: bearDog TLS (H2-10/11), songbird NAT chain (H2-13-16), JH-11 federation, skunkBat Phase 2, NestGate content pipeline — all shipped
-- **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order (`--graph-deploy` in `deploy.sh`)
-- **lithoSpore Tier 1 PASS**: Modules 1+2 (Wiser 2013 + Barrick 2009) — 8/8 + 7/7 checks, groundSpring B2/B1 expected values cross-validated. Pillar 4 exit gate **MET**.
-- **Shadow run infrastructure staged**: `shadow_run_orchestrator.sh` ties NestGate content, BearDog TLS, Songbird NAT parity tests. Baselines + reports dirs ready.
-- **Deep debt evolution sweep COMPLETE (2026-05-11)**: deploy.sh modularized (primal start + health check extracted), darkforest pentest.rs/crypto.rs split into submodules, tunnelKeeper clone optimization, all hardcoded paths scrubbed, foundation scripts fully wired
-- **lithoSpore Tier 2 (Rust) WIRED**: Pure Rust curve fitting (Nelder-Mead) for fitness module, Kimura fixation + Poisson accumulation for mutations module. First liveSpore.json entry seeded
-- **Next priorities**: Run shadow parity tests against live infrastructure, modules 3–7 as spring reproductions land
+- All **13/13 NUCLEUS primals** deployed and healthy — **zero debt** (L1 clean, MethodGate enforced)
+- **8/8 springs** at Tier 4 IPC-first — 13,100+ tests, LTEE reproductions active
+- **Zero open upstream gaps** — NestGate Session 60, all per-primal debt closed
+- BTSP Phase 3 AEAD, Wire Standard L3, 5-tier discovery hierarchy — all converged
+- Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
+- **Cell membrane architecture**: primals.eco on CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
+- **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
+- **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
+- **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
+- **Shadow run infrastructure staged**: `deploy_beardog_tls_shadow.sh` (H2-12), `deploy_songbird_relay.sh` (H2-14), `shadow_run_orchestrator.sh` (ties all parity tests)
+- **Deep debt evolution COMPLETE**: deploy.sh modularized, darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
+- **lithoSpore Tier 2 (Rust) WIRED**: Nelder-Mead curve fitting, Kimura fixation, Poisson accumulation. liveSpore.json seeded
+- **Next priorities**: Execute shadow parity tests, modules 3–7 as spring reproductions land
 
 ### Services (all persistent via systemd)
 

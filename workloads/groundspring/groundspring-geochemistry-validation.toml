@@ -9,8 +9,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "${SPRINGS_ROOT:-/home/eastgate/Development/ecoPrimals/springs}/groundSpring/target/release/groundspring_unibin validate"
-working_dir = "${SPRINGS_ROOT:-/home/eastgate/Development/ecoPrimals/springs}/groundSpring"
+command = "$SPRINGS_ROOT/groundSpring/target/release/groundspring_unibin validate"
+working_dir = "$SPRINGS_ROOT/groundSpring"
 
 [resources]
 max_memory_bytes = 4294967296

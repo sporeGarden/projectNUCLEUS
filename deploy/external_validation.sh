@@ -243,7 +243,7 @@ if [[ "$MODE" == "tunnel" ]]; then
 
             log ""
             log "  Tunnel URL for ABG testing: $TUNNEL_URL"
-            log "  Login with ironGate system credentials."
+            log "  Login with gate system credentials."
             log ""
             log "  Keeping tunnel alive for manual testing..."
             log "  Press Ctrl+C or kill $TUNNEL_PID to stop."
@@ -291,7 +291,7 @@ $(if [[ $FAIL_COUNT -eq 0 ]]; then echo "All checks passed."; else echo "$FAIL_C
 
 ## Environment
 
-- ironGate: $(uname -n) ($(uname -m))
+- Gate: $(uname -n) ($(uname -m))
 - Kernel: $(uname -r)
 - Date: $(date -Iseconds)
 $(if [[ "$MODE" == "tunnel" ]] && [[ -f "$RESULTS_DIR/tunnel_url.txt" ]]; then echo "- Tunnel URL: $(cat "$RESULTS_DIR/tunnel_url.txt")"; fi)

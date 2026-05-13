@@ -8,8 +8,8 @@ version = "0.1.0"
 
 [execution]
 type = "native"
-command = "${SPRINGS_ROOT:-/home/eastgate/Development/ecoPrimals/springs}/airSpring/target/release/validate_soil_physics"
-working_dir = "${SPRINGS_ROOT:-/home/eastgate/Development/ecoPrimals/springs}/airSpring"
+command = "$SPRINGS_ROOT/airSpring/target/release/validate_soil_physics"
+working_dir = "$SPRINGS_ROOT/airSpring"
 
 [resources]
 max_memory_bytes = 8589934592

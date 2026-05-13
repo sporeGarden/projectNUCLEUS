@@ -39,7 +39,7 @@ if [[ -z "$SONGBIRD_URL" ]]; then
     echo "Usage: $0 --songbird-url <URL> [--cf-url URL] [--samples N]" >&2
     echo ""
     echo "Songbird NAT traversal must be running and reachable."
-    echo "This scenario is a stub until Songbird NAT is implemented (Step 3c)."
+    echo "Deploy via: deploy/deploy_songbird_relay.sh --host <vps-ip> (H2-14, Wave 202)"
     exit 1
 fi
 

@@ -249,3 +249,17 @@ is the correct pattern.
 | petalTongue | 1 | web_mode — borderline |
 | loamSpine | 1 | Test file |
 | **Total** | **17** | |
+
+---
+
+## Addendum: May 13, 2026 — Registry Count Drift
+
+**Primal**: barraCuda
+**File**: `crates/barracuda-core/src/ipc/methods_tests/registry_tests.rs`
+**Issue**: `assert_eq!(REGISTERED_METHODS.len(), 71)` but the actual
+`REGISTERED_METHODS` slice in `methods/mod.rs` contains **72 entries**
+after Sprint 58 added `precision.route`. The test passes locally only if
+the test file was not updated alongside the method registration.
+
+**Action**: Update the assertion to `72` (or derive the expected count
+from the slice itself to prevent future drift).

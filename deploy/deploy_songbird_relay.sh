@@ -24,7 +24,7 @@ VPS_HOST=""
 VPS_USER="root"
 RELAY_PORT="3478"
 SONGBIRD_BIN="${PLASMIDBIN_DIR:-$GATE_HOME/plasmidBin}/primals/songbird"
-SONGBIRD_SRC="/home/irongate/Development/ecoPrimals/primals/songBird"
+SONGBIRD_SRC="${ECOPRIMALS_ROOT:-$GATE_HOME/Development/ecoPrimals}/primals/songBird"
 DRY_RUN=false
 
 while [[ $# -gt 0 ]]; do

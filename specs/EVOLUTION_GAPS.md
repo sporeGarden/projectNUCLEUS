@@ -249,13 +249,15 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | ID | Target | Pillar | Status |
 |----|--------|--------|--------|
-| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | Ready to build |
-| H2-05→09 | NestGate + petalTongue content pipeline | P2 (NUCLEUS) | Intermediate (cell membrane live) |
-| H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | Ready (upstream shipped) |
-| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | Ready (upstream shipped) |
+| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | Ready to build — BearDog authenticator shipped |
+| H2-05 | NestGate content pipeline | P2 (NUCLEUS) | **DONE** (Session 60) — `publish_sporeprint.sh` READY |
+| H2-06→09 | petalTongue content serving + extracellular | P2 (NUCLEUS) | UNBLOCKED — NestGate `content.*` live |
+| H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | Ready — Wave 100, deploy script needed |
+| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | **OPS-READY** — Wave 202, systemd + creds + guide shipped |
+| TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **UNBLOCKED** — S250 implemented, wire notebooks |
 | ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Mapped, not exercised |
-| LITHO-INT | lithoSpore workload integration (after Phase 2) | P4 (lithoSpore) | Workload TOMLs exist |
-| FND-4/7 | Foundation Threads 4+7 workloads running | P2 (NUCLEUS) | Thread 1 validated only |
+| LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | Tier 1+2 PASS (modules 1+2), workload TOMLs exist |
+| FND-10 | Foundation 10/10 threads active | P5 (Foundation) | **DONE** — all threads seeded, TOML-driven fetch |
 
 ### Stadial Targets (external validation drives cutover)
 
@@ -336,3 +338,4 @@ Interstadial exit:                ███░░░░░░░  Criteria defin
 | 2026-05-11 | **Stadial-ready — NestGate Session 60 + full debt resolution**: NestGate shipped `content.*` transport parity (8 methods, 4 transports). H2-05 DONE. H2-06/08/09 UNBLOCKED. H3-02/05 UNBLOCKED. All per-primal debt closed (toadStool env contract, squirrel RemoteComputeProvider, barraCuda crypto→bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3, petalTongue SPA+CORS). L1 CLEAN: 13/13 structural+semantic. primalSpring Wave 7-9: 413 methods, 301 exercised. Compute trio (toadStool/coralReef/barraCuda) evolving HOW/WHERE/WHAT in parallel — doesn't block us. |
 | 2026-05-11 | **lithoSpore Tier 1 PASS + composition.deploy + shadow prep**: lithoSpore modules 1+2 Tier 1 Python baselines ported from groundSpring B2/B1 (8/8 + 7/7 PASS). Fetch scripts created (`fetch_wiser_2013.sh`, `fetch_barrick_2009.sh`). Expected values from groundSpring cross-validated. Rust crates wired to dispatch Python Tier 1. `ltee-cli validate` dispatches live modules. `composition.deploy(graph)` absorbed: `deploy_graph.sh` reads graph TOML, starts primals in dependency order with health checks (`--graph-deploy` flag in `deploy.sh`). Shadow run orchestrator created (`shadow_run_orchestrator.sh`) — ties NestGate content, BearDog TLS, Songbird NAT parity tests together. Pillar 4 interstadial exit gate MET (2+ modules PASS at Tier 1). |
 | 2026-05-11 | **Deep debt evolution sweep COMPLETE (all three products)**: foundation: THREAD_INDEX v1.3.0 fixed (4 threads), 7 workload TOMLs gate-agnostic, `fetch_sources.sh` covers 10/10 threads via TOML manifests, `foundation_validate.sh` Phase 6 target comparison added. projectNUCLEUS: zero hardcoded paths, `deploy.sh` modularized (`deploy_primal_start.sh` + `deploy_health_check.sh`), darkforest `pentest.rs` split into 3 submodules, `crypto.rs` split into 3 submodules, tunnelKeeper 9/11 `.clone()` eliminated. lithoSpore: Tier 2 Rust wired for modules 1+2 (Nelder-Mead curve fitting, Kimura fixation, Poisson accumulation), `cmd_refresh` stub evolved to real implementation, 9 `expect()` calls replaced with `match`, first `liveSpore.json` entry seeded. All stale MethodGate references reconciled to 13/13. `publish_sporeprint.sh` status STUB→READY. |
+| 2026-05-12 | **May 12 upstream absorption — zero sentinel blockers**: `toadstool.validate` IMPLEMENTED (S250) — Tier 2 Science API unblocked. `barracuda.precision.route` IMPLEMENTED (649 tests). Songbird VPS relay OPS-READY (Wave 202) — TURN server + CLI + systemd + credentials + deployment guide shipped. coralReef Sprint 7 FECS stability proof (4,790 tests). plasmidBin pipeline hardened: auto-harvest + BLAKE3 post-validate + idempotent. Local `specs/LIVE_SCIENCE_API.md` rewritten to match upstream contract (`workload_path`/`dry_run` params, not old `workload`/`format`). Shadow deploy scripts created: `deploy_beardog_tls_shadow.sh` (H2-12), `deploy_songbird_relay.sh` (H2-14). Interstadial targets table updated: H2-05 DONE, H2-14 OPS-READY, TIER-2 UNBLOCKED, FND-10 DONE. `fetch_primals.sh` updated to verify BLAKE3 checksums from plasmidBin `checksums.toml`. |

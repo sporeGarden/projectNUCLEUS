@@ -210,7 +210,10 @@ health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "btsp"
 tcp_fallback_port = 9700
-capabilities = ["session.commit", "entry.append"]
+capabilities = [
+    "spine.create", "spine.get", "spine.seal",
+    "entry.append", "entry.get", "certificate.mint",
+]
 
 [[graph.nodes]]
 name = "sweetgrass"
@@ -223,8 +226,8 @@ by_capability = "attribution"
 security_model = "btsp"
 tcp_fallback_port = 9850
 capabilities = [
-    "provenance.create_braid", "provenance.lineage",
-    "provenance.graph",
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
 ]
 
 # ═══════════════════════════════════════════════════════════════

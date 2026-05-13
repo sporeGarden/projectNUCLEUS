@@ -63,7 +63,7 @@ capabilities = ["dehydration"]
 name = "capability_call"
 
 [nodes.operation.params]
-capability = "dag.dehydrate"
+capability = "dag.dehydration.trigger"
 params = { session_id = "${SESSION_ID}" }
 
 [nodes.constraints]
@@ -127,7 +127,7 @@ capabilities = ["permanent_storage"]
 name = "capability_call"
 
 [nodes.operation.params]
-capability = "commit.session"
+capability = "spine.seal"
 params = { summary = "${SIGNED_SUMMARY}", content_hash = "${CONTENT_STORED}" }
 
 [nodes.constraints]
@@ -148,7 +148,7 @@ capabilities = ["attribution"]
 name = "capability_call"
 
 [nodes.operation.params]
-capability = "provenance.create_braid"
+capability = "braid.create"
 params = { commit_ref = "${COMMIT_REF}", agents = "${AGENT_SUMMARIES}" }
 
 [nodes.constraints]

@@ -82,8 +82,11 @@ Gates connect to each other through chemical bonding patterns:
 - **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
 - **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)
 - **Deep debt evolution COMPLETE**: deploy.sh modularized, darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
-- **lithoSpore 5/7 modules PASS Tier 2** (46/46 checks): Rust validation for fitness, mutations, alleles, citrate, breseq. Modules 5 (biobricks) and 7 (anderson) await upstream data
-- **Proposed API methods RESOLVED**: `biomeos.spring_status`, `nestgate.artifact_query`, `rhizocrypt.dag_summary` all covered by existing shipped methods
+- **lithoSpore 6/7 modules PASS Tier 2** (51/51 checks): Rust validation for fitness, mutations, alleles, citrate, breseq, anderson. Module 5 (biobricks) awaits upstream B6 data
+- **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh`
+- **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
+- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **415 methods**
+- **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 
 ### Services (all persistent via systemd)
 

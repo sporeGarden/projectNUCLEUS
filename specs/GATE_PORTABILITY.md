@@ -23,6 +23,7 @@ The infrastructure follows a cell membrane model: the public internet
 ├─────────────────────────────────────────────────────────┤
 │  External Membrane (cellMembrane fieldMouse — VPS)      │
 │  ├── Channel 2 (Relay)       Songbird TURN :3478  LIVE  │
+│  ├── Channel 2b (RustDesk)   hbbs+hbbr :21116-17  LIVE  │
 │  ├── Channel 1 (Signal)      knot-dns :53       future  │
 │  ├── Channel 3 (Surface)     BearDog TLS :443   future  │
 │  └── Dark Forest             Provider sees only noise   │

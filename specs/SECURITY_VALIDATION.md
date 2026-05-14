@@ -41,53 +41,65 @@ trusted hardware). External substrate requires its own threat model.
 |-----------|-------|-------------|
 | VPS | `membrane-relay`, 157.230.3.183, Debian 12 x64, DigitalOcean nyc1 | Provider has hypervisor access |
 | Channel 2 | Songbird TURN relay, UDP :3478 | Public relay endpoint |
-| SSH | Key-only, ed25519, fail2ban active | Management surface |
-| Firewall | UFW: 22/tcp + 3478/tcp+udp, default deny | Minimal surface |
-| Composition | Relay only (Phase 0 — Tower not yet deployed) | Static, no biomeOS |
+| Channel 2b | RustDesk sovereign relay (hbbs :21116, hbbr :21117) | Remote desktop relay |
+| SSH | Key-only, ed25519, fail2ban active, multi-gate managed | Management surface |
+| Firewall | UFW: 22/tcp + 3478/tcp+udp + 21115-21117/tcp + 21116/udp, default deny | Expanded surface |
+| Composition | Relay + RustDesk (Phase 0.5 — Tower not yet deployed) | Static, no biomeOS |
 
 ### Threat Model: External Substrate
 
 | Threat | Severity | Mitigation (current) | Mitigation (future) |
 |--------|----------|---------------------|-------------------|
-| Provider reads disk | HIGH | TURN credentials in `/etc/songbird/relay-credentials` (plaintext) | BearDog Vault encrypts at rest (Phase 2) |
-| Provider reads memory | HIGH | Relay processes only encrypted BTSP bytes (opaque to observer) | Unchanged — BTSP handles this by design |
+| Provider reads disk | HIGH | TURN credentials in `/etc/songbird/relay-credentials` (plaintext). RustDesk ed25519 key at `/opt/membrane/rustdesk/` | BearDog Vault encrypts at rest (Phase 2) |
+| Provider reads memory | HIGH | Relay processes only encrypted bytes (BTSP for Songbird, e2e for RustDesk — opaque to observer) | Unchanged — encryption handles this by design |
 | Provider snapshots VM | MEDIUM | No family seeds on VPS (relay mode, no BearDog yet) | BingoCube challenge on boot |
-| Unauthorized relay abuse | HIGH | Credential-authenticated TURN (username + HMAC key) | BearDog BTSP handshake for relay access |
-| SSH brute force | MEDIUM | fail2ban (5 attempts, 1h ban), key-only auth | Rotate keys periodically |
+| Unauthorized relay abuse (TURN) | HIGH | Credential-authenticated TURN (username + HMAC key) | BearDog BTSP handshake for relay access |
+| Unauthorized relay abuse (RustDesk) | MEDIUM | RustDesk key-authenticated (hbbs public key required by clients) | BearDog BTSP handshake |
+| RustDesk ID enumeration | LOW | RustDesk IDs are random numeric; key required for connection | Accept — IDs are not secrets |
+| SSH brute force | MEDIUM | fail2ban (5 attempts, 1h ban), key-only auth, multi-gate managed | Rotate keys periodically via `deploy_membrane.sh keys` |
 | TURN amplification/abuse | MEDIUM | Authenticated relay (no anonymous TURN) | SkunkBat defense audit (Tower Phase 1) |
-| VPS compromise → pivot inward | HIGH | Relay is stateless — no inbound initiation. LAN gates connect outward only | BTSP mutual auth on all relay connections |
+| VPS compromise → pivot inward | HIGH | Relays are stateless — no inbound initiation. LAN gates connect outward only | BTSP mutual auth on all relay connections |
 | Credential exposure in repo | HIGH | `cellMembrane` repo is private, `.gitignore` covers `*.age`, tokens, keys | BearDog `secrets.store` eliminates files |
-| Provider-level network sniffing | LOW | All relayed traffic is BTSP-encrypted end-to-end | Unchanged |
+| Provider-level network sniffing | LOW | All relayed traffic is end-to-end encrypted (BTSP + RustDesk) | Unchanged |
 
 ### Hardening Verification (May 14, 2026)
 
-Verified via SSH from ironGate:
+Verified via SSH from ironGate. Two sweeps: initial (relay-only) and post-RustDesk.
 
 | Check | Result | Evidence |
 |-------|--------|----------|
 | SSH access (key-only) | **PASS** | `Permission denied (publickey)` for password auth |
 | songbird-relay active | **PASS** | `systemctl is-active songbird-relay` → `active` (PID 3110) |
+| hbbs-membrane active | **PASS** | `systemctl is-active hbbs-membrane` → `active` (PID 6156) |
+| hbbr-membrane active | **PASS** | `systemctl is-active hbbr-membrane` → `active` (PID 6188) |
 | fail2ban sshd jail | **PASS** | 13 failed attempts caught, 0 banned (working correctly) |
-| Firewall posture | **PASS** | UFW: 22/tcp + 3478/tcp+udp only, default deny |
+| Firewall posture | **PASS** | UFW: 22/tcp + 3478/tcp+udp + 21115-21117/tcp + 21116/udp, default deny |
 | TURN relay (UDP) | **PASS** | `nc -z -u 157.230.3.183 3478` → reachable |
+| RustDesk ID server | **PASS** | hbbs listening on :21115, :21116, :21118 |
+| RustDesk relay server | **PASS** | hbbr listening on :21117, :21119 |
 | journald persistence | **PASS** | `/var/log/journal/` exists |
 | exim4 removed | **PASS** | No mail service in `ss -tlnp` |
-| No unexpected listeners | **PASS** | Only sshd(:22), systemd-resolved(:53 localhost), songbird(:3478 UDP) |
-| Disk/memory headroom | **PASS** | 14% disk, 105Mi/457Mi RAM — healthy margins |
+| droplet-agent purged | **PASS** | `systemctl is-active droplet-agent` → `inactive` |
+| No unexpected listeners | **PASS** | Only sshd, systemd-resolved, songbird, hbbs, hbbr |
+| Disk/memory headroom | **PASS** | 14% disk, 103Mi/457Mi RAM — healthy margins |
 
 ### What the Provider Sees (Dark Forest Analysis)
 
 | Layer | Provider observation | Actual content |
 |-------|---------------------|---------------|
-| Network | UDP packets to/from :3478 | BTSP-encrypted relay bytes — opaque |
-| Binaries | `/opt/membrane/songbird` | Static musl ELF — public, published in plasmidBin |
-| Config | `/etc/songbird/relay-credentials` | HMAC shared secret — **currently plaintext** |
-| systemd | `songbird-relay.service` | Public template from plasmidBin |
-| Firewall | UFW rules | Port list — standard TURN + SSH |
-| Logs | journald entries | Operational metadata — connection counts, errors |
+| Network (Songbird) | UDP packets to/from :3478 | BTSP-encrypted relay bytes — opaque |
+| Network (RustDesk) | TCP/UDP packets to/from :21115-21117 | RustDesk e2e-encrypted session bytes — opaque |
+| Binaries | `/opt/membrane/songbird`, `/opt/membrane/rustdesk/hbbs`, `hbbr` | Static binaries — public or downloadable |
+| Songbird config | `/etc/songbird/relay-credentials` | HMAC shared secret — **currently plaintext** |
+| RustDesk config | `/opt/membrane/rustdesk/id_ed25519`, `id_ed25519.pub` | Server identity key pair |
+| systemd | `songbird-relay.service`, `hbbs-membrane.service`, `hbbr-membrane.service` | Public templates from plasmidBin |
+| Firewall | UFW rules | Port list — TURN + RustDesk + SSH |
+| Logs | journald entries | Operational metadata — connection counts, errors, IDs |
 
-**Current gap**: TURN credentials are plaintext on disk. Provider can read them
-via hypervisor access and relay traffic through the TURN server. Mitigation
+**Current gap**: TURN credentials and RustDesk identity keys are plaintext on disk.
+Provider can read them via hypervisor access. For TURN: provider could abuse relay
+allocation (but relayed content is BTSP-encrypted). For RustDesk: provider could
+impersonate the relay server (but clients validate the public key). Mitigation
 roadmap: `share_credentials.sh` encrypts with `age` (Phase 1), BearDog Vault
 encrypts at rest (Phase 2), BingoCube eliminates credential files entirely (Phase 3).
 
@@ -110,22 +122,28 @@ runs against `--host` (localhost) and uses TCP-only networking (`net.rs`).
 | MEM-08 | Credential file permissions | `stat /etc/songbird/relay-credentials` → 600/root | HIGH |
 | MEM-09 | Songbird binary integrity | BLAKE3 hash vs plasmidBin checksum | MEDIUM |
 | MEM-10 | No unexpected listening ports | `ss -tlnp` + `ss -ulnp` audit via SSH | HIGH |
+| MEM-11 | RustDesk hbbs/hbbr services active | `systemctl is-active hbbs-membrane hbbr-membrane` via SSH | MEDIUM |
+| MEM-12 | RustDesk relay key matches expected | Compare `/opt/membrane/rustdesk/id_ed25519.pub` hash | MEDIUM |
+| MEM-13 | RustDesk ports reachable (21116 TCP) | TCP probe from gate | MEDIUM |
 
 **Additional darkforest gaps (non-membrane):**
 
 | ID | Check | Current status |
 |----|-------|---------------|
 | BearDog TLS :8443 | Shadow running — not in primal port list or fuzz targets | Should add to fuzz suite |
+| RustDesk on gate (local) | Client connects to cellMembrane relay — local firewall should allow outbound 21116-21117 | Verify gate-side config |
 | sporePrint local :8880 | Dev preview server — not tested | Low priority (localhost only) |
 | SweetGrass BTSP :9851 | In `nucleus_config.sh` — not in darkforest primal list | Should verify or remove |
 
 ### Escalation Ladder (Security Posture by Phase)
 
 ```
-Phase 0 (current): Relay only — TURN credentials plaintext on disk
-  └── Dark Forest: provider sees credentials, but relayed traffic is BTSP-encrypted
-  └── Risk: provider could abuse relay allocation. Impact: relay traffic interception
-     (but content is BTSP-encrypted, so provider sees only encrypted bytes)
+Phase 0.5 (current): Relay + RustDesk + multi-gate SSH
+  └── Dark Forest: provider sees credentials on disk, but relayed traffic
+     is end-to-end encrypted (BTSP for Songbird, native e2e for RustDesk)
+  └── Risk: provider could abuse TURN allocation or impersonate RustDesk relay.
+     Impact: relayed content still encrypted, but connections could be MitM'd
+     if client doesn't validate the RustDesk public key
   └── Verification: ironGate SSH + manual checks ← WE ARE HERE
 
 Phase 1: age-encrypted credentials on VPS

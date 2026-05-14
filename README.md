@@ -77,7 +77,7 @@ Gates connect to each other through chemical bonding patterns:
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
-- **cellMembrane LIVE (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN relay :3478) active. Hardened (fail2ban, UFW 22+3478 only, exim4 purged). Owned by ironGate/projectNUCLEUS (May 14 handoff). Private ops repo: `sporeGarden/cellMembrane`
+- **cellMembrane LIVE (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN :3478) + Channel 2b (RustDesk sovereign relay :21116-21117) active. Hardened (fail2ban, UFW, exim4+droplet-agent purged). Multi-gate SSH key management. Phase 0.5. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 10ms RPC latency vs 120ms Cloudflare baseline. `btsp_tls_parity.sh` ready for 7-day comparison
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
 - **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
@@ -100,7 +100,7 @@ Gates connect to each other through chemical bonding patterns:
 | Forgejo | `git.primals.eco` | 3000 | Membrane | Sovereign git mirror |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
-| cellMembrane | 157.230.3.183 | 3478 | External Membrane | Songbird TURN relay (Channel 2). DigitalOcean nyc1 fieldMouse |
+| cellMembrane | 157.230.3.183 | 3478, 21116 | External Membrane | Songbird TURN (Ch2) + RustDesk sovereign relay (Ch2b). DigitalOcean nyc1 fieldMouse |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model

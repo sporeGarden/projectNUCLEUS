@@ -55,7 +55,7 @@ traffic separation is structural, not policy-based.
 | Membrane channels | **lab.primals.eco, git.primals.eco → tunnel** | Membrane |
 | Tunnel replicas | Named tunnel `nucleus-lab` with multi-gate replicas | Membrane |
 | Membrane watchdog | `gate_watchdog.sh` — logs state transitions every 30s | Membrane |
-| **cellMembrane VPS** | **157.230.3.183, Songbird TURN :3478, DigitalOcean nyc1** | **External Membrane** |
+| **cellMembrane VPS** | **157.230.3.183, Songbird TURN :3478 + RustDesk :21116-17, DigitalOcean nyc1** | **External Membrane** |
 | **BearDog TLS shadow** | **:8443 alongside Cloudflare :443 (shadow run active)** | Membrane |
 | JupyterHub | System service on primary gate:8000, PAM auth | Intracellular |
 | Primal composition | **13 primals** on primary gate, systemd user service | Intracellular |

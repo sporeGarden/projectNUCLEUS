@@ -1,0 +1,13 @@
+# Songbird NAT Relay Probe — 20260514-145746
+# Generated: 2026-05-14T14:57:56Z
+
+[metadata]
+mode = "relay_probe"
+turn_server = "157.230.3.183:3478"
+samples = 10
+generated_at = "2026-05-14T14:57:56Z"
+
+[relay]
+reachable_count = 0
+total_probes = 10
+reachable_pct = 0

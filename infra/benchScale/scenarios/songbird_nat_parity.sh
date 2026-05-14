@@ -41,19 +41,30 @@ TURN_PORT="${TURN_SERVER##*:}"
 
 probe_turn_relay() {
     local host="$1" port="$2" attempts="${3:-5}"
-    local pass=0
+    local pass=0 udp_pass=0
     echo "--- TURN Relay Reachability ($host:$port) ---"
     for i in $(seq 1 "$attempts"); do
+        local tcp_ok=false udp_ok=false
         if nc -z -w 3 "$host" "$port" 2>/dev/null; then
+            tcp_ok=true
+        fi
+        if nc -z -u -w 3 "$host" "$port" 2>/dev/null; then
+            udp_ok=true
+            udp_pass=$((udp_pass + 1))
+        fi
+        if $tcp_ok || $udp_ok; then
             pass=$((pass + 1))
-            printf "  [TURN %d/%d] TCP :%s reachable\n" "$i" "$attempts" "$port"
+            local proto=""
+            $tcp_ok && proto="TCP"
+            $udp_ok && proto="${proto:+$proto+}UDP"
+            printf "  [TURN %d/%d] :%s reachable (%s)\n" "$i" "$attempts" "$port" "$proto"
         else
-            printf "  [TURN %d/%d] TCP :%s UNREACHABLE\n" "$i" "$attempts" "$port"
+            printf "  [TURN %d/%d] :%s UNREACHABLE\n" "$i" "$attempts" "$port"
         fi
         sleep 1
     done
     local pct=$(( pass * 100 / attempts ))
-    echo "  TURN reachability: $pass/$attempts ($pct%)"
+    echo "  TURN reachability: $pass/$attempts ($pct%) [UDP: $udp_pass/$attempts]"
     echo "$pass,$attempts,$pct"
 }
 

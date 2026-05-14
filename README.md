@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — cellMembrane LIVE, zero upstream debt (2026-05-14)**
+**Stadial-ready — 13/13 primals LIVE, provenance pipeline validated (2026-05-14)**
 
 ### Infrastructure
 
@@ -78,7 +78,9 @@ Gates connect to each other through chemical bonding patterns:
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
 - **cellMembrane LIVE (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN :3478) + Channel 2b (RustDesk sovereign relay :21116-21117) active. Hardened (fail2ban, UFW, exim4+droplet-agent purged). Multi-gate SSH key management. Phase 0.5. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
-- **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 10ms RPC latency vs 120ms Cloudflare baseline. `btsp_tls_parity.sh` ready for 7-day comparison
+- **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 2ms RPC latency vs 102ms Cloudflare baseline (51x). `btsp_tls_parity.sh` ready for 7-day comparison
+- **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
+- **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
 - **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
 - **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)

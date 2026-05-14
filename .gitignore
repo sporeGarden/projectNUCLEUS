@@ -22,3 +22,9 @@ Thumbs.db
 
 # Test results
 deploy/tier_test_results/
+
+# Provenance run stdout logs (regenerable, keep manifests + braids)
+validation/provenance-run-*/*.stdout
+
+# Archived provenance runs (fossil record on disk, not in git)
+validation/archive/provenance-run-*/

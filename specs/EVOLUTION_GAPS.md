@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-14 (cellMembrane handoff — ironGate owns VPS ops, Channel 2 LIVE, NAT shadow run unblocked)
+**Last updated**: 2026-05-14 (13/13 primals LIVE, provenance pipeline validated, BTSP dual-auth shadow ACTIVE)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -243,7 +243,7 @@ See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HAND
 | GAP-03 | biomeOS cell graph live deploy | biomeOS v3.51 `composition.deploy` route alias | May 10 |
 | GAP-06 | rhizoCrypt no UDS transport | rhizoCrypt S66 — operational since S23, integration test added | May 10 |
 | GAP-09 | biomeOS Neural API registration | biomeOS v3.51 `method.register` endpoint | May 10 |
-| GAP-12 | ludoSpring IPC method registration | 28 `game.*` methods registered (415 canonical, zero drift) | May 13 |
+| GAP-12 | ludoSpring IPC method registration | 28 `game.*` methods registered (418 canonical, zero drift) | May 13 |
 | U1 | primalSpring CHECKSUMS stale | Regenerated (25 files, BLAKE3) | May 10 |
 | U2 | Deploy graphs missing `by_capability` | False positive — manifests, not node-bearing graphs | May 10 |
 | U3 | Profile graphs missing `bonding_policy` | 9/9 already have `bonding_policy` | May 10 |
@@ -285,7 +285,7 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | ID | Target | Pillar | Status |
 |----|--------|--------|--------|
-| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | **BUILT** — `jupyterhub_btsp_auth.py` + `deploy_btsp_auth_shadow.sh`. Dual-auth mode with PAM fallback. Awaiting shadow run start |
+| H2-01→04 | BTSP auth dual-auth shadow run | P2 (NUCLEUS) | **ACTIVE** — `jupyterhub_btsp_auth.py` + `deploy_btsp_auth_shadow.sh`. Dual-auth LIVE on JupyterHub (May 14). Auth events accumulating |
 | H2-05 | NestGate content pipeline | P2 (NUCLEUS) | **DONE** (Session 60) — `publish_sporeprint.sh` READY |
 | H2-06→09 | petalTongue content serving + extracellular | P2 (NUCLEUS) | UNBLOCKED — NestGate `content.*` live |
 | H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | **RUNNING** — BearDog v0.9.0 live on :8443, baseline comparison captured |
@@ -343,7 +343,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          ████████░░  2a done, 2b ready, 3a LIVE, 3b shadow LIVE, 3c cellMembrane LIVE, 4 INTERMEDIATE (DoT baseline wired)
 Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
 Upstream (waiting):                ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt (May 13)
-Interstadial exit:                ████████░░  BearDog TLS LIVE, cellMembrane LIVE (H2-14), provenance trio reconciled, lithoSpore 6/7 EXCEEDED. 2 items remain: BTSP dual-auth shadow, WCM through trio
+Interstadial exit:                █████████░  BearDog TLS LIVE, cellMembrane LIVE, BTSP dual-auth ACTIVE, provenance pipeline validated (6/12 PASS). 1 item remains: WCM compositions through deploy graphs
 ```
 
 ---
@@ -385,3 +385,4 @@ Interstadial exit:                ████████░░  BearDog TLS LI
 | 2026-05-14 | **cellMembrane handoff — ironGate ownership transfer**: primalSpring deployed and hardened cellMembrane fieldMouse (157.230.3.183, DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN relay :3478) LIVE. Hardening: fail2ban active, UFW 22+3478 only, exim4 purged, SSH key-only, journald persistent. Ownership transferred to ironGate/projectNUCLEUS. (1) H2-14 moved from OPS-READY → **LIVE**. (2) `nucleus_config.sh` updated with cellMembrane VPS config (`MEMBRANE_VPS_IP`, `SONGBIRD_TURN_SERVER`, `SONGBIRD_TURN_USERNAME`). (3) `songbird_nat_parity.sh` updated with TURN relay reachability probe + cellMembrane defaults. (4) `deploy_songbird_relay.sh` marked superseded by `plasmidBin/deploy_membrane.sh` for cellMembrane ops. (5) Interstadial exit advanced — 2 items remain (BTSP dual-auth, WCM through trio). Registry at **418 methods**. Private ops repo: `sporeGarden/cellMembrane`. Ops tooling: `plasmidBin/deploy_membrane.sh`. Architecture: `wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md` + `CELLMEMBRANE_FIELDMOUSE_DEPLOYMENT.md`. |
 | 2026-05-14 | **cellMembrane geo-delocalization — RustDesk + multi-gate SSH**: primalSpring shipped three updates to the cellMembrane VPS: (1) RustDesk sovereign relay LIVE (hbbs v1.1.15 on :21115-21116, hbbr on :21117) — sovereign remote desktop access through our own relay, all traffic e2e-encrypted. (2) Multi-gate SSH key management via `deploy_membrane.sh keys {list,add,revoke}` — audit-tagged, named keys for onboarding remote gates. (3) VPS hardening: `droplet-agent` purged (opaque DO monitoring), firewall updated to 22+3478+21115-21117. Escalation ladder advanced to Phase 0.5. `nucleus_config.sh` updated with `RUSTDESK_ID_SERVER` + `RUSTDESK_RELAY_SERVER`. SECURITY_VALIDATION.md Layer 6 updated: RustDesk threat model (ID enumeration LOW, relay impersonation mitigated by client key validation), darkforest MEM-11→MEM-15 gaps added. Full VPS verification: 3 services active, 14% disk, 103Mi RAM, no unexpected listeners. |
 | 2026-05-14 | **Comprehensive sovereignty documentation**: SECURITY_VALIDATION.md Layer 6 (External Membrane) with full threat model, 15 darkforest MEM check IDs, Dark Forest provider analysis, escalation ladder. TUNNEL_EVOLUTION.md Step 3c updated (cellMembrane LIVE, what-was-built/what-remains), dependency tracker current, security posture table with cellMembrane column. GATE_PORTABILITY.md: external membrane layer in cell diagram, Channel 2+2b LIVE, failure modes for VPS down/compromised/provider outage. EVOLUTION_GAPS.md: 15 MEM security gaps, scoring updated. |
+| 2026-05-14 | **13/13 primals LIVE + provenance pipeline validated**: (1) All 13 primals deployed on active gate — songbird and coralreef live for first time after manual binary recovery from plasmidBin v2026.05.12 (v2026.05.14 release shipped only 4/13 binaries). (2) BTSP dual-auth shadow ACTIVE on JupyterHub — BTSPAuthenticator plugin live with PAM fallback, auth events accumulating. (3) Provenance pipeline 9-phase run complete: 6/12 wetspring workloads PASS with full trio chain (BLAKE3 → rhizoCrypt DAG → loamSpine spine → sweetGrass braid). Merkle root + ed25519 witness braid operational. (4) Cross-primal auth (H3-07) identified as local deployment blocker — provenance primals temporarily run permissive for pipeline execution. (5) `SPRINGS_ROOT` fix: ToadStool workloads failed with "Executable file not found" — fixed by exporting `SPRINGS_ROOT` in `deploy_primal_start.sh`. (6) Songbird classified as optional in `provenance_pipeline.sh` — pipeline no longer blocks on its health check. **Upstream issues identified**: plasmidBin `fetch.sh --force` is destructive (deletes working binaries before verifying replacements), v2026.05.14 release incomplete (4/13 binaries shipped). BearDog TLS shadow restarted post-reboot: 2ms RPC latency vs 102ms Cloudflare (51x). |

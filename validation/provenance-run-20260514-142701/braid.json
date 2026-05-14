@@ -1,0 +1,51 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "@context": {
+            "@base": "https://ecoprimals.io/",
+            "@version": 1.1,
+            "ecop": "https://ecoprimals.io/vocab#",
+            "prov": "http://www.w3.org/ns/prov#",
+            "schema": "http://schema.org/",
+            "xsd": "http://www.w3.org/2001/XMLSchema#"
+        },
+        "@id": "urn:braid:4846a70e781ed1d905ec023f53e2260b369c21a5f9f81cbf02be0b32210ce32e",
+        "@type": {
+            "type": "Entity"
+        },
+        "data_hash": "4846a70e781ed1d905ec023f53e2260b369c21a5f9f81cbf02be0b32210ce32e",
+        "ecop": {
+            "certificate": null,
+            "compression": null,
+            "ledger_commit": null,
+            "niche": null,
+            "session_ref": null,
+            "source_primal": "sweetgrass",
+            "witnesses": []
+        },
+        "generated_at_time": 1778783428329612806,
+        "loam_anchor": null,
+        "metadata": {
+            "custom": {},
+            "description": "ABG Full Pipeline \u2014 provenance braid for 28 events across wetSpring validators",
+            "tags": [],
+            "title": "abg-pipeline-20260514-142713"
+        },
+        "mime_type": "application/x-provenance-pipeline",
+        "size": 28,
+        "was_attributed_to": "did:primal:3db635c7-2cde-4958-aedf-29e08ea96c48",
+        "was_derived_from": [],
+        "was_generated_by": null,
+        "witness": {
+            "agent": "did:key:z6MkGYwyQsAq457vsh4L-Xhyv8jrOy5TM-RUFWPK_LPqkY4",
+            "algorithm": "ed25519",
+            "context": null,
+            "encoding": "base64",
+            "evidence": "IDRsDK8sjKROjkcNXUULpxs36CZk1W/2BPxC5yWC0GAbPG69gl3ixh03py9XrhttoaEcuXihQQArc9OSpJIVBQ==",
+            "kind": "signature",
+            "tier": "tower",
+            "witnessed_at": 1778783428329931452
+        }
+    },
+    "id": 902
+}

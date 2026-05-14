@@ -132,16 +132,25 @@ rpc_health() {
 }
 
 HEALTH_FAIL=0
-for primal_pair in "BearDog:$BEARDOG_PORT" "Songbird:$SONGBIRD_PORT" "ToadStool:$TOADSTOOL_PORT" "NestGate:$NESTGATE_PORT" "rhizoCrypt:$RHIZOCRYPT_PORT" "loamSpine:$LOAMSPINE_PORT" "sweetGrass:$SWEETGRASS_PORT"; do
+REQUIRED_PRIMALS="BearDog:$BEARDOG_PORT ToadStool:$TOADSTOOL_PORT NestGate:$NESTGATE_PORT rhizoCrypt:$RHIZOCRYPT_PORT loamSpine:$LOAMSPINE_PORT sweetGrass:$SWEETGRASS_PORT"
+OPTIONAL_PRIMALS="Songbird:$SONGBIRD_PORT"
+for primal_pair in $REQUIRED_PRIMALS; do
     name="${primal_pair%%:*}"
     port="${primal_pair#*:}"
     if ! rpc_health "$name" "$port"; then
         HEALTH_FAIL=$((HEALTH_FAIL + 1))
     fi
 done
+for primal_pair in $OPTIONAL_PRIMALS; do
+    name="${primal_pair%%:*}"
+    port="${primal_pair#*:}"
+    if ! rpc_health "$name" "$port"; then
+        log "  [SKIP] $name — optional for provenance pipeline"
+    fi
+done
 
 if [[ $HEALTH_FAIL -gt 0 ]]; then
-    log "  $HEALTH_FAIL primal(s) failed health check."
+    log "  $HEALTH_FAIL required primal(s) failed health check."
     log "  Ensure composition is running: bash deploy.sh --composition nest --gate irongate"
     exit 1
 fi

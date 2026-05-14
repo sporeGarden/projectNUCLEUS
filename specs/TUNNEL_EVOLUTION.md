@@ -25,7 +25,7 @@ generation and penetration testing framework for validation.
 
 ---
 
-## Where We Are (2026-05-10)
+## Where We Are (2026-05-14)
 
 ### Cell Membrane Model
 
@@ -34,6 +34,12 @@ The infrastructure uses a **cell membrane architecture**: the public face
 (extracellular). The tunnel is a membrane carrying only inward-bound
 traffic to sovereign compute. Inside the membrane, the gate has total
 control.
+
+**New (May 14)**: The cellMembrane fieldMouse deployment adds an **external
+membrane** layer — a DigitalOcean VPS providing the three membrane channels
+(Signal/DNS, Relay/NAT, Surface/TLS). Channel 2 (Relay) is live. This is
+the first infrastructure that sits outside the gate but is owned and operated
+by projectNUCLEUS. See `SECURITY_VALIDATION.md` Layer 6 for the threat model.
 
 This delineation produces clean data for skunkBat: every tunnel event is
 an authenticated membrane crossing, not CDN noise. External/internal
@@ -49,6 +55,8 @@ traffic separation is structural, not policy-based.
 | Membrane channels | **lab.primals.eco, git.primals.eco → tunnel** | Membrane |
 | Tunnel replicas | Named tunnel `nucleus-lab` with multi-gate replicas | Membrane |
 | Membrane watchdog | `gate_watchdog.sh` — logs state transitions every 30s | Membrane |
+| **cellMembrane VPS** | **157.230.3.183, Songbird TURN :3478, DigitalOcean nyc1** | **External Membrane** |
+| **BearDog TLS shadow** | **:8443 alongside Cloudflare :443 (shadow run active)** | Membrane |
 | JupyterHub | System service on primary gate:8000, PAM auth | Intracellular |
 | Primal composition | **13 primals** on primary gate, systemd user service | Intracellular |
 | Provenance pipeline | Full 9-phase pipeline operational | Intracellular |
@@ -307,6 +315,11 @@ public services. BearDog rate limiting + Dark Forest pattern sufficient.
 
 **Goal**: Remove `cloudflared` binary dependency — direct browser path to the active gate.
 
+**Status (2026-05-14)**: **cellMembrane LIVE** — Channel 2 (Songbird TURN relay)
+operational on 157.230.3.183:3478. VPS hardened (fail2ban, UFW 22+3478 only, exim4
+purged, SSH key-only). Ownership transferred from primalSpring to ironGate/projectNUCLEUS.
+NAT shadow run ready — TURN credentials wired into `nucleus_config.sh`.
+
 ```
 Browser → primals.eco (DNS-only, A record to public IP)
        → BearDog TLS on the active gate:443
@@ -314,28 +327,37 @@ Browser → primals.eco (DNS-only, A record to public IP)
        → petalTongue + JupyterHub
 ```
 
-**What to build**:
-1. **Songbird STUN client** — Songbird maintains a UDP punch-through to a
-   known STUN relay, keeping the NAT mapping alive. When a browser connects:
+**What was built** (primalSpring → ironGate handoff):
+1. ~~**Self-hosted STUN/TURN relay**~~ — **DONE**. cellMembrane fieldMouse on
+   DigitalOcean VPS (157.230.3.183, Debian 12, nyc1, ~$4/mo). Songbird TURN
+   relay on UDP :3478 with credential-authenticated access.
+   - Deployed via `plasmidBin/deploy_membrane.sh` (pull model — binaries
+     fetched from GitHub Releases on VPS, not SCP'd)
+   - Hardened: fail2ban, UFW composition-aware firewall, exim4 purged,
+     journald persistent, SSH key-only
+   - Credentials: `/etc/songbird/relay-credentials` (HMAC shared secret)
+   - Ops repo: `sporeGarden/cellMembrane` (private)
+   - Architecture: `wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md`
+   - Classified as **fieldMouse** — Dark Forest principle applies (see
+     `SECURITY_VALIDATION.md` Layer 6)
+2. **Songbird STUN client** — Songbird maintains a UDP punch-through to the
+   cellMembrane relay, keeping the NAT mapping alive. When a browser connects:
    - BearDog TLS accepts on port 443 (already running from Step 3b)
    - If direct connection succeeds (port forwarded or UPnP), Songbird not needed
    - If behind CGNAT, Songbird negotiates TURN relay as fallback
-2. **Self-hosted STUN/TURN relay** — small VPS or second NUC at a different
-   location. Requirements:
-   - Public IP with ports 3478 (STUN) and 443 (TURN/TLS relay)
-   - BearDog key-authenticated relay (no anonymous relay abuse)
-   - Estimated cost: $5/month VPS (Hetzner, OVH)
-   - Relay only carries encrypted BTSP traffic — no content inspection
-3. **Connection fallback chain**:
-   ```
-   Try 1: Direct TCP to the active gate public IP:443
-   Try 2: Songbird UDP punch-through via STUN
-   Try 3: TURN relay via VPS
-   Try 4: (emergency) Re-enable cloudflared tunnel
-   ```
-4. **Dynamic DNS** — if the active gate's IP changes (residential ISP), Songbird
-   updates the DNS A record via Cloudflare API (DNS-only mode) or a sovereign
-   DNS update mechanism.
+3. **Connection fallback chain** — songbird Wave 197: 5-tier
+   `ConnectionFallbackChain` (direct → STUN → TURN → cloudflared → offline).
+   **SHIPPED** upstream.
+4. **Dynamic DNS** — songbird Wave 197: Cloudflare DDNS integration. **SHIPPED**.
+
+**What remains (ironGate work)**:
+1. **NAT shadow run validation** — configure LAN gates with TURN credentials,
+   validate two-NAT relay (Gate A behind NAT-1 ↔ relay ↔ Gate B behind NAT-2)
+2. **Tower deployment** — `deploy_membrane.sh deploy --composition tower` adds
+   BearDog + SkunkBat to VPS alongside Songbird
+3. **Encrypted-at-rest** — `share_credentials.sh` + BearDog Vault
+4. **Channel 1 (DNS)** — `knot-dns` on VPS when ready (opens port 53)
+5. **Channel 3 (Surface)** — `beardog-tls` + `nestgate` when ready (opens 80/443)
 
 **Shadow-run protocol** (7 days minimum):
 1. Songbird NAT active alongside cloudflared tunnel
@@ -367,10 +389,12 @@ Browser → sovereign DNS resolution
 **Options** (in order of preference):
 
 1. **Self-hosted authoritative DNS** — run a lightweight authoritative DNS
-   server (e.g., `knot-dns` or a custom primal) on the STUN/TURN VPS.
+   server (e.g., `knot-dns` or a custom primal) on the **cellMembrane VPS**
+   (157.230.3.183 — already deployed with stable IP).
    Transfer `primals.eco` nameserver records from Cloudflare to self-hosted.
-   - Pro: Complete control, no external dependencies
-   - Con: Requires VPS with stable IP, DNS expertise, DNSSEC management
+   This is Channel 1 (Signal) in the membrane channel architecture.
+   - Pro: Complete control, VPS already owned and hardened
+   - Con: DNS expertise, DNSSEC management, opens port 53 on VPS
    - Implementation: `knot-dns` + DNSSEC + monitoring via skunkBat
 
 2. **DNS-over-HTTPS (DoH) with BTSP** — serve DNS responses over BTSP
@@ -444,10 +468,11 @@ In the cell membrane model, dependencies are classified by layer:
 |-----------|-------|-------------------|--------|
 | GitHub Pages | Extracellular | NestGate + petalTongue | **Load-bearing** — primals.eco primary. Replace last. |
 | Cloudflare CDN | Extracellular | NestGate content-addressing | **Load-bearing** — fronts GitHub Pages |
-| Cloudflare Tunnel | Membrane | Songbird NAT traversal | **Active** — membrane channels for lab/git |
-| Cloudflare TLS | Membrane | BearDog BTSP | Planned (Step 3b) — replace at membrane layer |
-| Cloudflare DNS | Extracellular | Self-hosted authoritative | Planned (Step 4) — replace at extracellular layer |
-| PAM passwords | Intracellular | BearDog ionic tokens | Planned (Step 2b) — ion channel selectivity |
+| Cloudflare Tunnel | Membrane | Songbird NAT traversal | **Active** — membrane channels for lab/git. cellMembrane TURN relay LIVE (May 14) |
+| Cloudflare TLS | Membrane | BearDog BTSP | **Shadow running** (Step 3b) — BearDog v0.9.0 on :8443 alongside CF :443 |
+| Cloudflare DNS | Extracellular | Self-hosted authoritative | Planned (Step 4) — cellMembrane VPS is the target host for knot-dns |
+| PAM passwords | Intracellular | BearDog ionic tokens | **Plugin built** (Step 2b) — dual-auth shadow run awaiting start |
+| DigitalOcean VPS | External Membrane | Irreducible — commodity substrate | **Active** — cellMembrane fieldMouse ~$4/mo. Dark Forest principle applies |
 
 Replacement order follows the membrane model: intracellular first (ionic
 tokens), then membrane (Songbird transport, BearDog TLS), then
@@ -458,17 +483,20 @@ replaced independently.
 
 ## Security Posture by Step
 
-| Step | TLS | Auth | Tunnel | DDoS | Isolation |
-|------|-----|------|--------|------|-----------|
-| 2a | Cloudflare | PAM (JupyterHub) | cloudflared | Cloudflare | NucBox intake |
-| 2b | Cloudflare | BTSP ionic token | cloudflared | Cloudflare | NucBox + BTSP |
-| 3a | Cloudflare | BTSP ionic token | cloudflared | Cloudflare | NucBox + BTSP |
-| 3b | BTSP (BearDog) | BTSP ionic token | cloudflared | BearDog rate-limit | NucBox + BTSP |
-| 3c | BTSP | BTSP ionic token | Songbird NAT | BearDog + Dark Forest | NucBox + BTSP |
-| 4 | BTSP | BTSP ionic token | Songbird NAT | Full sovereign | NucBox + BTSP |
+| Step | TLS | Auth | Tunnel | DDoS | Isolation | cellMembrane |
+|------|-----|------|--------|------|-----------|-------------|
+| 2a ✅ | Cloudflare | PAM (JupyterHub) | cloudflared | Cloudflare | NucBox intake | — |
+| 2b | Cloudflare | BTSP ionic token | cloudflared | Cloudflare | NucBox + BTSP | — |
+| 3a | Cloudflare | BTSP ionic token | cloudflared | Cloudflare | NucBox + BTSP | — |
+| 3b (shadow) | BTSP (BearDog :8443) | BTSP ionic token | cloudflared | BearDog rate-limit | NucBox + BTSP | — |
+| **3c (HERE)** | **Cloudflare** | **PAM + BTSP** | **cloudflared + cellMembrane relay** | **Cloudflare** | **NucBox + BTSP** | **Ch2 LIVE (TURN)** |
+| 3c cutover | BTSP | BTSP ionic token | Songbird NAT via cellMembrane | BearDog + Dark Forest | NucBox + BTSP | Ch2 (TURN) |
+| 4 | BTSP | BTSP ionic token | Songbird NAT | Full sovereign | NucBox + BTSP | Ch1 (DNS) + Ch2 (TURN) + Ch3 (TLS) |
 
 At each step, the security surface area that projectNUCLEUS controls
-grows. External dependencies shrink monotonically.
+grows. External dependencies shrink monotonically. The cellMembrane VPS
+adds its own security domain (external substrate) — see `SECURITY_VALIDATION.md`
+Layer 6 for the threat model.
 
 ---
 

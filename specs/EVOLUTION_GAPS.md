@@ -186,6 +186,26 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | H3-09 | conda/pip/crates.io | Vendored deps, private registry | Low priority — offline modes exist | Not blocking |
 | H3-10 | NCBI / UniProt / KEGG | Local mirror + `abg_data.sh` provenance | Partial — data registry operational | Not blocking (data, not service) |
 
+### cellMembrane Security Gaps (darkforest coverage — Layer 6)
+
+The cellMembrane VPS is a new external attack surface that darkforest v0.2.1
+does not cover. See `SECURITY_VALIDATION.md` Layer 6 for the full threat model.
+
+| ID | Gap | Effort | Priority | Notes |
+|----|-----|--------|----------|-------|
+| MEM-01 | darkforest `--suite membrane` module | Medium | High | SSH to `MEMBRANE_VPS_IP`, run remote checks (MEM-02→MEM-10 below). Needs UDP support in `net.rs` |
+| MEM-02 | SSH password auth disabled check | Low | High | `ssh -o PreferredAuthentications=password` probe |
+| MEM-03 | fail2ban sshd jail active check | Low | High | `fail2ban-client status sshd` via SSH |
+| MEM-04 | UFW firewall posture check (22+3478 only) | Low | High | `ufw status` audit via SSH |
+| MEM-05 | TURN relay rejects unauthenticated allocate | Medium | High | STUN allocate without credentials → rejected |
+| MEM-06 | No unnecessary services check | Low | Medium | `systemctl list-units` audit via SSH |
+| MEM-07 | journald persistence check | Low | Low | Verify `/var/log/journal/` via SSH |
+| MEM-08 | Credential file permissions check | Low | High | `stat /etc/songbird/relay-credentials` → 600 root-owned |
+| MEM-09 | Songbird binary integrity (BLAKE3) | Medium | Medium | Hash vs plasmidBin `checksums.toml` |
+| MEM-10 | No unexpected listening ports | Low | High | `ss -tlnp` + `ss -ulnp` audit via SSH |
+| MEM-11 | BearDog TLS :8443 in fuzz/crypto suites | Low | Medium | Add to `DEFAULT_PRIMALS` or separate shadow check |
+| MEM-12 | Credential-at-rest encryption status | Low | Medium | Check for `age`-encrypted blobs on VPS |
+
 ### Irreducible Externals (never sovereign)
 
 These are not gaps — they are accepted constraints:
@@ -317,7 +337,7 @@ first Targeted GuideStone artifact.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
-Horizon 2 (sovereignty):          ████████░░  2a done, 2b ready, 3a LIVE, 3b/3c shadow-staged + deploy scripts, 4 INTERMEDIATE (DoT baseline wired)
+Horizon 2 (sovereignty):          ████████░░  2a done, 2b ready, 3a LIVE, 3b shadow LIVE, 3c cellMembrane LIVE, 4 INTERMEDIATE (DoT baseline wired)
 Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
 Upstream (waiting):                ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt (May 13)
 Interstadial exit:                ████████░░  BearDog TLS LIVE, cellMembrane LIVE (H2-14), provenance trio reconciled, lithoSpore 6/7 EXCEEDED. 2 items remain: BTSP dual-auth shadow, WCM through trio

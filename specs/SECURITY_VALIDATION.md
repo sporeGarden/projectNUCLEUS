@@ -4,19 +4,160 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-05-11)
+## Current State (2026-05-14)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh`
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh` (gate-local)
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
 - **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default)
 - **Ionic tokens live**: Ed25519-signed, scope-checked, expiry-verified
 - **UFW active**, hidepid=2, iptables outbound DROP for ABG UIDs, DNS exfil closed
+- **cellMembrane LIVE**: fieldMouse VPS on 157.230.3.183 (new external attack surface — Layer 6 below)
+- **BearDog TLS shadow LIVE**: :8443 alongside Cloudflare :443 (not yet in darkforest)
 - See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results
 
 > The May 6 baselines below are preserved as fossil record — they document
 > the initial security posture and the gap discovery process.
+
+---
+
+## Layer 6: External Membrane (cellMembrane fieldMouse)
+
+**Added 2026-05-14** — ownership transfer from primalSpring.
+
+The cellMembrane is projectNUCLEUS's first deployment on **external substrate**
+(DigitalOcean VPS). Unlike the gate, the substrate provider has theoretical root
+access to the hardware. The Dark Forest principle applies: the provider is a
+non-family observer. Everything sensitive must be encrypted at rest; the provider
+sees only noise.
+
+This is a fundamentally different security domain from Layers 1-5 (which assume
+trusted hardware). External substrate requires its own threat model.
+
+### What's Deployed
+
+| Component | Value | Risk Profile |
+|-----------|-------|-------------|
+| VPS | `membrane-relay`, 157.230.3.183, Debian 12 x64, DigitalOcean nyc1 | Provider has hypervisor access |
+| Channel 2 | Songbird TURN relay, UDP :3478 | Public relay endpoint |
+| SSH | Key-only, ed25519, fail2ban active | Management surface |
+| Firewall | UFW: 22/tcp + 3478/tcp+udp, default deny | Minimal surface |
+| Composition | Relay only (Phase 0 — Tower not yet deployed) | Static, no biomeOS |
+
+### Threat Model: External Substrate
+
+| Threat | Severity | Mitigation (current) | Mitigation (future) |
+|--------|----------|---------------------|-------------------|
+| Provider reads disk | HIGH | TURN credentials in `/etc/songbird/relay-credentials` (plaintext) | BearDog Vault encrypts at rest (Phase 2) |
+| Provider reads memory | HIGH | Relay processes only encrypted BTSP bytes (opaque to observer) | Unchanged — BTSP handles this by design |
+| Provider snapshots VM | MEDIUM | No family seeds on VPS (relay mode, no BearDog yet) | BingoCube challenge on boot |
+| Unauthorized relay abuse | HIGH | Credential-authenticated TURN (username + HMAC key) | BearDog BTSP handshake for relay access |
+| SSH brute force | MEDIUM | fail2ban (5 attempts, 1h ban), key-only auth | Rotate keys periodically |
+| TURN amplification/abuse | MEDIUM | Authenticated relay (no anonymous TURN) | SkunkBat defense audit (Tower Phase 1) |
+| VPS compromise → pivot inward | HIGH | Relay is stateless — no inbound initiation. LAN gates connect outward only | BTSP mutual auth on all relay connections |
+| Credential exposure in repo | HIGH | `cellMembrane` repo is private, `.gitignore` covers `*.age`, tokens, keys | BearDog `secrets.store` eliminates files |
+| Provider-level network sniffing | LOW | All relayed traffic is BTSP-encrypted end-to-end | Unchanged |
+
+### Hardening Verification (May 14, 2026)
+
+Verified via SSH from ironGate:
+
+| Check | Result | Evidence |
+|-------|--------|----------|
+| SSH access (key-only) | **PASS** | `Permission denied (publickey)` for password auth |
+| songbird-relay active | **PASS** | `systemctl is-active songbird-relay` → `active` (PID 3110) |
+| fail2ban sshd jail | **PASS** | 13 failed attempts caught, 0 banned (working correctly) |
+| Firewall posture | **PASS** | UFW: 22/tcp + 3478/tcp+udp only, default deny |
+| TURN relay (UDP) | **PASS** | `nc -z -u 157.230.3.183 3478` → reachable |
+| journald persistence | **PASS** | `/var/log/journal/` exists |
+| exim4 removed | **PASS** | No mail service in `ss -tlnp` |
+| No unexpected listeners | **PASS** | Only sshd(:22), systemd-resolved(:53 localhost), songbird(:3478 UDP) |
+| Disk/memory headroom | **PASS** | 14% disk, 105Mi/457Mi RAM — healthy margins |
+
+### What the Provider Sees (Dark Forest Analysis)
+
+| Layer | Provider observation | Actual content |
+|-------|---------------------|---------------|
+| Network | UDP packets to/from :3478 | BTSP-encrypted relay bytes — opaque |
+| Binaries | `/opt/membrane/songbird` | Static musl ELF — public, published in plasmidBin |
+| Config | `/etc/songbird/relay-credentials` | HMAC shared secret — **currently plaintext** |
+| systemd | `songbird-relay.service` | Public template from plasmidBin |
+| Firewall | UFW rules | Port list — standard TURN + SSH |
+| Logs | journald entries | Operational metadata — connection counts, errors |
+
+**Current gap**: TURN credentials are plaintext on disk. Provider can read them
+via hypervisor access and relay traffic through the TURN server. Mitigation
+roadmap: `share_credentials.sh` encrypts with `age` (Phase 1), BearDog Vault
+encrypts at rest (Phase 2), BingoCube eliminates credential files entirely (Phase 3).
+
+### darkforest Coverage Gap
+
+darkforest v0.2.1 has **zero coverage** of the cellMembrane VPS. The validator
+runs against `--host` (localhost) and uses TCP-only networking (`net.rs`).
+
+**Proposed `membrane` suite (MEM-01 → MEM-10):**
+
+| ID | Check | How | Severity |
+|----|-------|-----|----------|
+| MEM-01 | SSH password auth disabled | `ssh -o PreferredAuthentications=password` → rejected | HIGH |
+| MEM-02 | fail2ban sshd jail active | `fail2ban-client status sshd` via SSH | HIGH |
+| MEM-03 | UFW posture (22+3478 only, default deny) | `ufw status` via SSH | HIGH |
+| MEM-04 | TURN relay reachable (UDP :3478) | UDP probe from gate | MEDIUM |
+| MEM-05 | TURN rejects unauthenticated relay | STUN allocate without credentials → rejected | HIGH |
+| MEM-06 | No unnecessary services (exim4, droplet-agent) | `systemctl list-units` via SSH | MEDIUM |
+| MEM-07 | journald persistence configured | Check `/var/log/journal/` via SSH | LOW |
+| MEM-08 | Credential file permissions | `stat /etc/songbird/relay-credentials` → 600/root | HIGH |
+| MEM-09 | Songbird binary integrity | BLAKE3 hash vs plasmidBin checksum | MEDIUM |
+| MEM-10 | No unexpected listening ports | `ss -tlnp` + `ss -ulnp` audit via SSH | HIGH |
+
+**Additional darkforest gaps (non-membrane):**
+
+| ID | Check | Current status |
+|----|-------|---------------|
+| BearDog TLS :8443 | Shadow running — not in primal port list or fuzz targets | Should add to fuzz suite |
+| sporePrint local :8880 | Dev preview server — not tested | Low priority (localhost only) |
+| SweetGrass BTSP :9851 | In `nucleus_config.sh` — not in darkforest primal list | Should verify or remove |
+
+### Escalation Ladder (Security Posture by Phase)
+
+```
+Phase 0 (current): Relay only — TURN credentials plaintext on disk
+  └── Dark Forest: provider sees credentials, but relayed traffic is BTSP-encrypted
+  └── Risk: provider could abuse relay allocation. Impact: relay traffic interception
+     (but content is BTSP-encrypted, so provider sees only encrypted bytes)
+  └── Verification: ironGate SSH + manual checks ← WE ARE HERE
+
+Phase 1: age-encrypted credentials on VPS
+  └── share_credentials.sh encrypts all sensitive files
+  └── Provider sees only age-encrypted blobs — noise
+  └── Decryption requires ironGate's SSH ed25519 private key
+
+Phase 2: Tower composition (BearDog + Songbird + SkunkBat)
+  └── BearDog Vault encrypts credentials at rest
+  └── SkunkBat monitors relay abuse patterns
+  └── Family seed never stored plaintext — encrypted by BearDog on boot
+
+Phase 3: BingoCube zero-knowledge access
+  └── No credential files on VPS at all
+  └── Access proven via progressive commitment reveal
+  └── Provider has nothing to decrypt — only commitment proofs on disk
+
+Phase 4: Full autonomy
+  └── BearDog rotates credentials autonomously
+  └── Operator only provisions initial FAMILY_SEED + domain registration
+  └── biomeOS auto-provisions membrane channels
+```
+
+### Ownership Boundary (Security Responsibility)
+
+| Domain | Owner | Security Contact |
+|--------|-------|-----------------|
+| VPS operations, uptime, credential rotation | **projectNUCLEUS / ironGate** | This team |
+| Deployment tooling (`deploy_membrane.sh`, systemd units) | primalSpring | Upstream |
+| Channel deployment decisions (DNS, TLS) | **projectNUCLEUS / ironGate** | This team |
+| Upstream capability evolution (BearDog Vault, BingoCube) | primalSpring | Upstream |
+| `sporeGarden/cellMembrane` repo (private) | **projectNUCLEUS / ironGate** | This team |
 
 ---
 
@@ -218,15 +359,20 @@ Results are written to `validation/security-YYYYMMDD-HHMMSS/` with:
 - 5 parity scenarios for sovereignty validation
 - 3 pentest scripts for security testing
 - Baseline comparison framework for external dependency replacement
+- TURN relay reachability probe (`songbird_nat_parity.sh`)
+- Shadow run orchestrator tying all parity tests together
 
 benchScale topologies model **multi-node** security scenarios (untrusted
 external node probing a defended mesh). `security_validation.sh` tests
-**single-gate** security posture. Both are needed:
+**single-gate** security posture. darkforest `--suite membrane` (when built)
+tests external substrate posture. All three are needed:
 
 ```
-security_validation.sh  →  single gate, production posture
-benchScale topologies   →  multi-node, simulated adversary
-skunkBat showcase/      →  violation detection scenarios
+security_validation.sh     →  single gate, production posture (Layers 1-5)
+darkforest --suite membrane →  external substrate, VPS posture (Layer 6)
+benchScale topologies      →  multi-node, simulated adversary
+benchScale scenarios       →  sovereignty parity (TLS, NAT, DoT, content)
+skunkBat showcase/         →  violation detection scenarios
 ```
 
 ---

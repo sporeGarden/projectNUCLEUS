@@ -21,9 +21,16 @@ The infrastructure follows a cell membrane model: the public internet
 │  └── primals.eco        GitHub Pages + Cloudflare CDN   │
 │                         Always on. No tunnel. No gate.  │
 ├─────────────────────────────────────────────────────────┤
+│  External Membrane (cellMembrane fieldMouse — VPS)      │
+│  ├── Channel 2 (Relay)       Songbird TURN :3478  LIVE  │
+│  ├── Channel 1 (Signal)      knot-dns :53       future  │
+│  ├── Channel 3 (Surface)     BearDog TLS :443   future  │
+│  └── Dark Forest             Provider sees only noise   │
+├─────────────────────────────────────────────────────────┤
 │  Membrane (tunnel channels — gated passage inward)      │
 │  ├── lab.primals.eco         Observer + JupyterHub      │
 │  ├── git.primals.eco         Forgejo (sovereign git)    │
+│  ├── BearDog TLS :8443       Shadow run (sovereign TLS) │
 │  └── (future)                BTSP ion channels          │
 ├─────────────────────────────────────────────────────────┤
 │  Intracellular (sovereign compute — total control)      │
@@ -40,6 +47,14 @@ The infrastructure follows a cell membrane model: the public internet
 If every gate is offline, `primals.eco` still serves. The membrane channels
 (lab, git) are inherently gate-dependent — if no gate is running, there is
 no sovereign compute to access.
+
+**External membrane (May 14, 2026):** The cellMembrane fieldMouse VPS
+(157.230.3.183, DigitalOcean nyc1) provides membrane channels on external
+substrate. Unlike the gate, the VPS substrate provider has theoretical root
+access — Dark Forest principle applies (everything encrypted at rest, provider
+sees only noise). The VPS is owned by ironGate/projectNUCLEUS and operated via
+`plasmidBin/deploy_membrane.sh`. Private ops repo: `sporeGarden/cellMembrane`.
+See `SECURITY_VALIDATION.md` Layer 6 for the threat model.
 
 ## Tunnel Replicas (Membrane Resilience)
 
@@ -118,17 +133,29 @@ Membrane (current):
   GitHub Pages CDN          → extracellular public face
   gate_watchdog.sh          → membrane health logging
 
+External membrane (LIVE — May 14):
+  cellMembrane VPS          → fieldMouse on DigitalOcean (ironGate owns)
+  Songbird TURN :3478       → Channel 2 relay for NAT traversal
+  (future) knot-dns :53     → Channel 1 sovereign DNS
+  (future) BearDog TLS :443 → Channel 3 sovereign surface
+
+Active shadow runs:
+  BearDog TLS :8443         → shadow running alongside Cloudflare :443
+  BTSP dual-auth plugin     → built, awaiting 7-day shadow start
+
 Future (sovereignty horizons):
   BTSP ionic tokens         → ion channel selectivity (who passes through)
   BearDog TLS               → membrane channel encryption (sovereign TLS)
   Songbird NAT              → membrane transport (replace cloudflared)
   NestGate content          → extracellular migration (replace GitHub Pages)
+  knot-dns on cellMembrane  → sovereign DNS (replace Cloudflare nameservers)
 ```
 
 The membrane model means sovereignty horizons replace layers independently:
 BTSP replaces Cloudflare Access at the membrane. BearDog replaces CF TLS.
 Songbird replaces the tunnel transport. Each replacement happens at its
-own layer without disturbing the others.
+own layer without disturbing the others. The cellMembrane VPS provides the
+external substrate for channels that require a publicly routable IP.
 
 ## Failure Modes
 
@@ -139,3 +166,6 @@ own layer without disturbing the others.
 | GitHub Pages down | primals.eco down | Rare (~99.99% uptime). `sporeprint_dns.sh sovereign` as emergency |
 | Cloudflare down | Everything down | Extremely rare. Affects most of the internet. |
 | Primary gate switch | Brief membrane gap during transfer | gate_switch.sh handles gracefully |
+| cellMembrane VPS down | TURN relay unavailable — NAT traversal falls back to cloudflared | `deploy_membrane.sh status` monitoring. Fallback chain: direct → STUN → cloudflared |
+| cellMembrane compromised | TURN relay abuse (relayed traffic is BTSP-encrypted, content safe) | Rotate TURN credentials. `deploy_membrane.sh teardown` + re-provision. See SECURITY_VALIDATION.md Layer 6 |
+| DigitalOcean outage | cellMembrane unavailable | Commodity substrate — re-provision on any VPS provider |

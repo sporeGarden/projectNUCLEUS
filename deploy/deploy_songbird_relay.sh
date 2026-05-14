@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
 # deploy_songbird_relay.sh — Deploy Songbird TURN relay to VPS (H2-14)
 #
-# Provisions a Songbird TURN relay on a VPS for NAT traversal shadow run.
-# Follows the upstream deployment guide: primals/songBird/deployment/relay/README.md
+# SUPERSEDED by plasmidBin/deploy_membrane.sh for the cellMembrane fieldMouse.
+# The cellMembrane is LIVE on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo).
+# Use deploy_membrane.sh for operational management of the VPS.
 #
-# Prerequisites:
-#   - VPS with SSH access and public IP (Hetzner/OVH/Linode, ~$5/mo)
-#   - Songbird binary built for target arch (or from plasmidBin)
-#   - BearDog keys for relay credential material
+# This script remains as a standalone relay deployer for non-cellMembrane VPS
+# targets (e.g. additional relay nodes, friend gates).
 #
-# Usage:
+# cellMembrane operations:
+#   cd ../../infra/plasmidBin && ./deploy_membrane.sh status root@157.230.3.183
+#
+# Standalone usage:
 #   bash deploy_songbird_relay.sh --host <vps-ip> [--user root] [--port 3478]
 #
-# See: primals/songBird/deployment/relay/README.md (Wave 202)
-#      infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md
+# See: sporeGarden/cellMembrane/ (private ops repo)
+#      infra/wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md
+#      primals/songBird/deployment/relay/README.md (Wave 202)
 
 set -euo pipefail
 

@@ -9,7 +9,7 @@ May 12, 2026) — the canonical wire contract.
 `biomeos.spring_status` **IMPLEMENTED** (v3.54)
 
 **Canonical source**: `springs/primalSpring/docs/LIVE_SCIENCE_API.md`
-**Registry**: 415 methods (13 primals, 8 springs)
+**Registry**: 418 methods (13 primals, 8 springs)
 
 ---
 

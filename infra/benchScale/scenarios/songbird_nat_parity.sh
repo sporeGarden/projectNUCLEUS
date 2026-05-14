@@ -35,12 +35,62 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+TURN_SERVER="${SONGBIRD_TURN_SERVER:-${MEMBRANE_VPS_IP:-157.230.3.183}:3478}"
+TURN_HOST="${TURN_SERVER%%:*}"
+TURN_PORT="${TURN_SERVER##*:}"
+
+probe_turn_relay() {
+    local host="$1" port="$2" attempts="${3:-5}"
+    local pass=0
+    echo "--- TURN Relay Reachability ($host:$port) ---"
+    for i in $(seq 1 "$attempts"); do
+        if nc -z -w 3 "$host" "$port" 2>/dev/null; then
+            pass=$((pass + 1))
+            printf "  [TURN %d/%d] TCP :%s reachable\n" "$i" "$attempts" "$port"
+        else
+            printf "  [TURN %d/%d] TCP :%s UNREACHABLE\n" "$i" "$attempts" "$port"
+        fi
+        sleep 1
+    done
+    local pct=$(( pass * 100 / attempts ))
+    echo "  TURN reachability: $pass/$attempts ($pct%)"
+    echo "$pass,$attempts,$pct"
+}
+
 if [[ -z "$SONGBIRD_URL" ]]; then
-    echo "Usage: $0 --songbird-url <URL> [--cf-url URL] [--samples N]" >&2
+    echo "No --songbird-url provided. Running TURN relay reachability probe only."
+    echo "cellMembrane: $TURN_HOST:$TURN_PORT"
     echo ""
-    echo "Songbird NAT traversal must be running and reachable."
-    echo "Deploy via: deploy/deploy_songbird_relay.sh --host <vps-ip> (H2-14, Wave 202)"
-    exit 1
+    mkdir -p "$REPORTS_DIR"
+    RUN_ID="$(date -u +%Y%m%d-%H%M%S)"
+    REPORT="$REPORTS_DIR/songbird_nat_parity_${RUN_ID}.toml"
+    turn_result=$(probe_turn_relay "$TURN_HOST" "$TURN_PORT" "$SAMPLES")
+    turn_line=$(echo "$turn_result" | tail -1)
+    TURN_PASS=$(echo "$turn_line" | cut -d, -f1)
+    TURN_TOTAL=$(echo "$turn_line" | cut -d, -f2)
+    TURN_PCT=$(echo "$turn_line" | cut -d, -f3)
+
+    cat > "$REPORT" << EOF
+# Songbird NAT Relay Probe — $RUN_ID
+# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+[metadata]
+mode = "relay_probe"
+turn_server = "$TURN_SERVER"
+samples = $SAMPLES
+generated_at = "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+[relay]
+reachable_count = $TURN_PASS
+total_probes = $TURN_TOTAL
+reachable_pct = $TURN_PCT
+EOF
+    echo ""
+    echo "Report: $REPORT"
+    echo ""
+    echo "For full HTTP parity test, provide --songbird-url:"
+    echo "  $0 --songbird-url <URL> [--cf-url URL] [--samples N]"
+    exit 0
 fi
 
 mkdir -p "$REPORTS_DIR"

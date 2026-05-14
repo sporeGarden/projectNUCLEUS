@@ -1,6 +1,6 @@
 # ludoSpring — game math + procedural generation validation
 # Validates Tier 1 structural scenarios via UniBin validate subcommand
-# 28 game.* methods registered in canonical registry (415 total)
+# 28 game.* methods registered in canonical registry (418 total)
 # V67: --format json for Tier 2 toadstool.validate integration
 
 [metadata]

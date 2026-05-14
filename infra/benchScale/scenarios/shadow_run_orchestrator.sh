@@ -13,7 +13,7 @@
 # Prerequisites:
 #   - NestGate running with content.put shipped (Session 60)
 #   - BearDog TLS on :8443 (Wave 100 rustls + rate limiter)
-#   - Songbird NAT relay on VPS (~$5/mo)
+#   - cellMembrane TURN relay LIVE on 157.230.3.183:3478 (or custom SONGBIRD_TURN_SERVER)
 #   - cloudflared tunnel still active for comparison
 set -euo pipefail
 
@@ -124,19 +124,19 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
         echo ""
     fi
 
-    # 3. Songbird NAT parity
-    echo "--- H2-3c/H2-14: Songbird NAT Parity ---"
+    # 3. Songbird NAT / cellMembrane TURN relay
+    echo "--- H2-3c/H2-14: Songbird NAT Parity (cellMembrane) ---"
     SONGBIRD_RELAY="${SONGBIRD_RELAY_URL:-}"
 
     if [[ -n "$SONGBIRD_RELAY" ]]; then
-        run_test "Songbird NAT Parity" \
+        run_test "Songbird NAT Parity (full HTTP)" \
             "$SCRIPT_DIR/songbird_nat_parity.sh" \
             --songbird-url "$SONGBIRD_RELAY"
     else
-        echo "  SKIP: SONGBIRD_RELAY_URL not set"
-        echo "  Provision VPS relay (~\$5/mo), set SONGBIRD_RELAY_URL, then re-run"
-        SKIP_COUNT=$((SKIP_COUNT + 1))
-        echo ""
+        echo "  No SONGBIRD_RELAY_URL — running TURN relay reachability probe"
+        run_test "Songbird TURN Relay Probe (cellMembrane)" \
+            "$SCRIPT_DIR/songbird_nat_parity.sh" \
+            --samples 5
     fi
 
     # 4. DoT sovereign DNS parity

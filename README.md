@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — zero hardcoded paths, zero upstream debt (2026-05-13)**
+**Stadial-ready — cellMembrane LIVE, zero upstream debt (2026-05-14)**
 
 ### Infrastructure
 
@@ -73,19 +73,21 @@ Gates connect to each other through chemical bonding patterns:
 - **Zero open upstream gaps** — NestGate Session 60, all per-primal debt closed
 - BTSP Phase 3 AEAD, Wire Standard L3, 5-tier discovery hierarchy — all converged
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
-- **Cell membrane architecture**: primals.eco on CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
+- **Cell membrane architecture**: primals.eco on CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
+- **cellMembrane LIVE (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN relay :3478) active. Hardened (fail2ban, UFW 22+3478 only, exim4 purged). Owned by ironGate/projectNUCLEUS (May 14 handoff). Private ops repo: `sporeGarden/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 10ms RPC latency vs 120ms Cloudflare baseline. `btsp_tls_parity.sh` ready for 7-day comparison
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
 - **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
 - **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)
+- **NAT shadow run READY**: cellMembrane TURN credentials wired into `nucleus_config.sh`. `songbird_nat_parity.sh` updated with relay reachability probe
 - **Deep debt evolution COMPLETE**: deploy.sh modularized, darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
 - **lithoSpore 6/7 modules PASS Tier 2** (51/51 checks): Rust validation for fitness, mutations, alleles, citrate, breseq, anderson. Module 5 (biobricks) awaits upstream B6 data
 - **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh`
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
-- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **415 methods**
+- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **418 methods**
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 
 ### Services (all persistent via systemd)
@@ -98,6 +100,7 @@ Gates connect to each other through chemical bonding patterns:
 | Forgejo | `git.primals.eco` | 3000 | Membrane | Sovereign git mirror |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
+| cellMembrane | 157.230.3.183 | 3478 | External Membrane | Songbird TURN relay (Channel 2). DigitalOcean nyc1 fieldMouse |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
@@ -130,6 +133,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 - **Extracellular**: `primals.eco` on GitHub Pages CDN — always on, zero gate dependency
 - **Membrane**: `lab/git.primals.eco` via Cloudflare tunnel with multi-gate replicas (sub-second failover)
+- **External Membrane**: cellMembrane fieldMouse on DigitalOcean VPS — Channel 2 (TURN relay) for NAT traversal across gate boundaries
 - **Intracellular**: sovereign compute, primals, data — total control inside the gate
 - **Gate-portable**: `deploy/gate_switch.sh <target>` migrates compute; replicas stay in membrane pool
 - **Provisioning**: `deploy/gate_provision.sh <host>` adds a new membrane replica (friend's house, etc.)
@@ -235,6 +239,7 @@ deploy/             Deployment tooling, test suites, pappusCast daemon, membrane
   tier_test_all.sh  Unified test runner across all tiers + pappusCast health
   cloudflare/       Cloudflare Access setup and tunnel configuration
   cloudflared/      Tunnel config templates (config-full.yml, config-static.yml)
+  nucleus_config.sh includes cellMembrane VPS config (MEMBRANE_VPS_IP, TURN credentials)
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
@@ -271,6 +276,7 @@ public/             Managed snapshot copies for observer surface (pappusCast-man
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
 | **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — extracellular layer on GitHub Pages CDN; Phase 3 target: petalTongue self-hosted rendering |
+| **cellMembrane** | sporeGarden | **Private** ops repo — VPS state, runbooks, credential procedures for the cellMembrane fieldMouse deployment |
 | **foundation** | sporeGarden | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
 | **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
 | **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |

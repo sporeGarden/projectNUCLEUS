@@ -4,13 +4,14 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-13 (Atomic deployment phase — 13/13 primals zero debt, 8/8 springs zero debt, Tower LIVE, Nest ready, Node in progress)
+**Last updated**: 2026-05-14 (cellMembrane handoff — ironGate owns VPS ops, Channel 2 LIVE, NAT shadow run unblocked)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer)
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
-**Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), sovereign compute inside
+**Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
 **Upstream status**: All upstream gaps resolved. 13/13 primals zero code debt, 8/8 delta springs zero debt (8,486+ tests). Tower atomic LIVE (ludoSpring 6/6). Nest atomic ready (GAP-36 resolved). Node atomic AMD live, NV FECS-gated.
-**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **415 methods**.
+**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **418 methods**.
+**cellMembrane**: fieldMouse deployment LIVE on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN relay :3478) active. Hardened (fail2ban, UFW 22+3478 only, exim4 purged). Owned by ironGate/projectNUCLEUS (May 14 handoff from primalSpring).
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -126,16 +127,19 @@ limiter (sovereignty horizons H2-10/H2-11). Local work: shadow run + cutover.
 
 ### Step 3c: Songbird NAT (replaces cloudflared)
 
-**Status**: Upstream shipped. Ready for local integration.
+**Status**: **cellMembrane LIVE** — Channel 2 (Songbird TURN relay) active on 157.230.3.183:3478.
+VPS hardened (fail2ban, UFW 22+3478 only, exim4 purged). NAT shadow run ready.
 
 songbird Wave 196-197 shipped full NAT traversal chain: STUN wire-compliant (RFC 5389),
-RFC 5766 TURN client, Cloudflare DDNS, 5-tier `ConnectionFallbackChain`. Local work:
-VPS relay provisioning + integration testing.
+RFC 5766 TURN client, Cloudflare DDNS, 5-tier `ConnectionFallbackChain`.
+primalSpring deployed and hardened the VPS (cellMembrane fieldMouse). Ownership
+transferred to ironGate/projectNUCLEUS on May 14. Local work: NAT shadow run
+validation, Tower composition deployment, Channel 1+3 when ready.
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
 | H2-13 | ~~Songbird STUN client~~ | — | **RESOLVED** — songbird Wave 196: STUN wire-compliant (RFC 5389) |
-| H2-14 | Self-hosted STUN/TURN VPS relay | Ops | **OPS-READY** — `deploy_songbird_relay.sh` staged, systemd unit in upstream, binary in plasmidBin. Provision ~$5/mo VPS + `bash deploy_songbird_relay.sh --host <vps-ip>` |
+| H2-14 | ~~Self-hosted STUN/TURN VPS relay~~ | — | **LIVE** — cellMembrane fieldMouse on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Songbird TURN relay on :3478 active. Ops via `plasmidBin/deploy_membrane.sh status root@157.230.3.183`. Private ops repo: `sporeGarden/cellMembrane` |
 | H2-15 | ~~Dynamic DNS update~~ | — | **RESOLVED** — songbird Wave 197: Cloudflare DDNS integration |
 | H2-16 | ~~Connection fallback chain~~ | — | **RESOLVED** — songbird Wave 197: 5-tier `ConnectionFallbackChain` (direct → STUN → TURN → cloudflared → offline) |
 
@@ -190,7 +194,7 @@ These are not gaps — they are accepted constraints:
 - Linux kernel / systemd
 - NVIDIA GPU drivers
 - Let's Encrypt / ACME (browser trust chain)
-- VPS for STUN relay (~$5/mo, commodity)
+- VPS for membrane channels (~$4/mo, DigitalOcean — cellMembrane fieldMouse)
 
 ---
 
@@ -200,7 +204,7 @@ These are not gaps — they are accepted constraints:
 code debt. 8/8 delta springs at zero debt, 8,486+ tests. Tower atomic LIVE (ludoSpring 6/6).
 Nest atomic ready. Node atomic AMD live, NV FECS-gated. `toadstool.validate` S250 (74 methods).
 `barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53.
-`biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **415 methods** (was 413).
+`biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **418 methods** (was 415).
 `content.put/get` NestGate Session 60 (4-surface parity). BTSP auth pipeline live (13/13 primals).
 skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 springs (`--format json`).
 76 wire routing misroutes fixed — `security.audit_log` → skunkBat, crypto methods base64-encoded,
@@ -244,7 +248,7 @@ from the resolved upstream work. All local, actionable now.
 | ~~foundation integration~~ | Wire provenance results to `sporeGarden/foundation/` — **Thread 5 LTEE + Thread 4 targets + Thread 10 provenance created; THREAD_INDEX hygiene done; paper 02 thread fix** | **DONE** (May 11) | ~~Low~~ |
 | ~~systemd unit portability~~ | ~~Parameterize `/home/irongate` in systemd units~~ — **DONE** via `EnvironmentFile` + `gate.env.template` | **DONE** (May 11, deep debt sweep) | ~~Low~~ |
 | ~~BearDog TLS shadow run (H2-12)~~ | ~~Configure BearDog TLS on port 8443, run `btsp_tls_parity.sh` hourly for 7 days~~ — **RUNNING** (BearDog v0.9.0 on :8443, 10ms RPC latency vs 120ms Cloudflare) | **LIVE** | ~~High (ops)~~ |
-| Songbird NAT VPS relay (H2-14) | Provision ~$5/mo VPS, deploy BearDog-authenticated STUN/TURN relay — `deploy_songbird_relay.sh` staged | songbird Wave 202 OPS-READY | Medium (ops) |
+| ~~Songbird NAT VPS relay (H2-14)~~ | ~~Provision VPS, deploy STUN/TURN relay~~ — **LIVE** cellMembrane fieldMouse on 157.230.3.183:3478 (DigitalOcean nyc1). Ops via `plasmidBin/deploy_membrane.sh`. Private repo: `sporeGarden/cellMembrane` | **LIVE** (May 14) | ~~Medium (ops)~~ |
 | plasmidBin binary workflow | Update workload TOMLs to support fetched binaries (plasmidBin `fetch.sh` → `$PLASMIDBIN_DIR/springs/`) | Springs shipping release binaries | Medium |
 | Future horizons | Tor relay, QUIC multi-path, `cloudflared` orchestration, TURN refresh, Plasmodium | songbird/biomeOS — none blocked | Future |
 
@@ -262,7 +266,7 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 | H2-05 | NestGate content pipeline | P2 (NUCLEUS) | **DONE** (Session 60) — `publish_sporeprint.sh` READY |
 | H2-06→09 | petalTongue content serving + extracellular | P2 (NUCLEUS) | UNBLOCKED — NestGate `content.*` live |
 | H2-12 | BearDog TLS shadow on :8443 | P1 (Primal) + P2 (NUCLEUS) | **RUNNING** — BearDog v0.9.0 live on :8443, baseline comparison captured |
-| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | **OPS-READY** — Wave 202, `deploy_songbird_relay.sh` + systemd + creds shipped |
+| H2-14 | Songbird NAT VPS relay | P1 (Primal) + P2 (NUCLEUS) | **LIVE** — cellMembrane fieldMouse on 157.230.3.183:3478. Handoff from primalSpring complete (May 14). NAT shadow run ready |
 | H2-17→20 | DoT sovereign DNS | P2 (NUCLEUS) | **BASELINE CAPTURED** — DoT ACTIVE (Cloudflare 1.0.0.1), 3-8ms latency, 10/10 success. Sovereign resolver pending |
 | TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **WIRED** — S250 implemented, 12 workload TOMLs with `toadstool-validate-v1` schema |
 | SHADOW | composition.deploy.shadow | P2 (NUCLEUS) | **WIRED** — `shadow_deploy()` in `deploy_graph.sh`, biomeOS v3.53 |
@@ -316,7 +320,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          ████████░░  2a done, 2b ready, 3a LIVE, 3b/3c shadow-staged + deploy scripts, 4 INTERMEDIATE (DoT baseline wired)
 Horizon 3 (primal-only):          ██░░░░░░░░  H3-07/H3-08 UNBLOCKED (JH-11 + JH-5 resolved)
 Upstream (waiting):                ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt (May 13)
-Interstadial exit:                ██████░░░░  BearDog TLS LIVE, provenance trio reconciled, lithoSpore 6/7 EXCEEDED. 3 items remain: Songbird relay, BTSP dual-auth, WCM through trio
+Interstadial exit:                ████████░░  BearDog TLS LIVE, cellMembrane LIVE (H2-14), provenance trio reconciled, lithoSpore 6/7 EXCEEDED. 2 items remain: BTSP dual-auth shadow, WCM through trio
 ```
 
 ---
@@ -355,3 +359,4 @@ Interstadial exit:                ██████░░░░  BearDog TLS LI
 | 2026-05-13 | **Atomic deployment phase absorption**: `composition.deploy.shadow` wired — `shadow_deploy()` in `deploy_graph.sh` does dry-run graph validation (binary existence, port conflicts, dependency ordering, toadstool.validate pre-flight). 12 validation workload TOMLs across all 7 springs wired with `[output] schema = "toadstool-validate-v1"` + `--format json` for Tier 2 notebook integration. `dot_sovereign_parity.sh` created — DNS-over-TLS vs sovereign resolver timing/accuracy comparison (H2-4/H2-17→20), integrated into `shadow_run_orchestrator.sh`. Wire notes added to `LIVE_SCIENCE_API.md`: bearDog base64 signing, skunkBat `security.audit_log` path, NestGate `content.*` vs `storage.*` domain separation, BTSP auth pipeline, composition.deploy.shadow. River delta Push 3 absorbed. Interstadial exit score advanced. |
 | 2026-05-13 | **Shadow run execution + baseline fixes**: (1) DoT baseline fixed — replaced `dig` (not installed) with `resolvectl query` fallback chain, DoT detection regex fixed to match `+DNSOverTLS` from `resolvectl status`. Result: 10/10 success, 3-8ms latency, DoT ACTIVE via Cloudflare 1.0.0.1. (2) Tunnel baseline uptime calculation fixed — added `tunnel_reachable_pct` (100%, TLS connected) alongside `uptime_pct` (0%, service not running). (3) BearDog TLS shadow **LIVE** on :8443 (v0.9.0, 200+ methods, BTSP v2.0) — updated `deploy_beardog_tls_shadow.sh` to use `--listen`/`--family-id`/`--audit-dir` (not `--tls-cert`/`--tls-key`). 10ms RPC latency vs 120ms Cloudflare. (4) Fixed `nucleus_config.sh` source path in 6 benchScale scripts. (5) `parse_graph_nodes` extended for `fragment.nodes`. (6) Proposed API methods resolved: `biomeos.spring_status` → use `capabilities.list`, `nestgate.artifact_query` → use `content.get`/`content.resolve`, `rhizocrypt.dag_summary` → use `dag.session.get`. |
 | 2026-05-13 | **Interstadial exit execution — provenance trio + lithoSpore 7/7 + API absorption**: (1) Provenance trio graph capabilities reconciled — `nucleus_complete.toml` loamSpine capabilities updated from stale `session.commit`/`entry.append` to canonical `spine.create`/`spine.get`/`spine.seal`/`entry.append`/`entry.get`/`certificate.mint` (GAP-36 resolved). sweetGrass capabilities updated from `provenance.create_braid`/`provenance.lineage`/`provenance.graph` to canonical `braid.create`/`braid.commit`/`braid.get`/`anchoring.anchor`/`anchoring.verify`. `rootpulse_commit.toml` workflow methods reconciled: `dag.dehydrate`→`dag.dehydration.trigger`, `commit.session`→`spine.seal`, `provenance.create_braid`→`braid.create`. (2) lithoSpore module 7 (`ltee-anderson`) activated — `artifact/data/anderson_predictions/` created with provenance README. 5/5 PASS Tier 2 (no plateau, diminishing returns, GOE/Poisson, variance, 12 populations). Full suite: 6/7 PASS, 1 SKIP (biobricks awaits B6 data). (3) `biomeos.spring_status` absorbed as IMPLEMENTED (v3.54). Registry updated to 415 methods. (4) Upstream absorbed: litho-core shared library (discovery, harness, stats), plasmidBin checksum refresh, rhizoCrypt GAP-36 aliases, biomeOS routing updates. |
+| 2026-05-14 | **cellMembrane handoff — ironGate ownership transfer**: primalSpring deployed and hardened cellMembrane fieldMouse (157.230.3.183, DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN relay :3478) LIVE. Hardening: fail2ban active, UFW 22+3478 only, exim4 purged, SSH key-only, journald persistent. Ownership transferred to ironGate/projectNUCLEUS. (1) H2-14 moved from OPS-READY → **LIVE**. (2) `nucleus_config.sh` updated with cellMembrane VPS config (`MEMBRANE_VPS_IP`, `SONGBIRD_TURN_SERVER`, `SONGBIRD_TURN_USERNAME`). (3) `songbird_nat_parity.sh` updated with TURN relay reachability probe + cellMembrane defaults. (4) `deploy_songbird_relay.sh` marked superseded by `plasmidBin/deploy_membrane.sh` for cellMembrane ops. (5) Interstadial exit advanced — 2 items remain (BTSP dual-auth, WCM through trio). Registry at **418 methods**. Private ops repo: `sporeGarden/cellMembrane`. Ops tooling: `plasmidBin/deploy_membrane.sh`. Architecture: `wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md` + `CELLMEMBRANE_FIELDMOUSE_DEPLOYMENT.md`. |

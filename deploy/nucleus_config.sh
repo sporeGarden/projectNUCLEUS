@@ -59,6 +59,12 @@ SKUNKBAT_PORT="${SKUNKBAT_PORT:-9140}"
 # "permissive" = log + allow unauthenticated calls (testing only)
 NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-enforced}"
 
+# --- cellMembrane (fieldMouse VPS) ---
+MEMBRANE_VPS_IP="${MEMBRANE_VPS_IP:-157.230.3.183}"
+MEMBRANE_VPS_USER="${MEMBRANE_VPS_USER:-root}"
+SONGBIRD_TURN_SERVER="${SONGBIRD_TURN_SERVER:-${MEMBRANE_VPS_IP}:3478}"
+SONGBIRD_TURN_USERNAME="${SONGBIRD_TURN_USERNAME:-nucleus-relay}"
+
 # --- ABG user management ---
 ABG_UID_MIN="${ABG_UID_MIN:-1001}"
 ABG_UID_MAX="${ABG_UID_MAX:-1099}"

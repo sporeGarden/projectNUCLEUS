@@ -64,12 +64,12 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — 13/13 primals LIVE, provenance pipeline validated (2026-05-14)**
+**Stadial-ready — Dark Forest Glacial Gate PASS, 427 methods, 13/13 primals LIVE (2026-05-15)**
 
 ### Infrastructure
 
 - All **13/13 NUCLEUS primals** deployed and healthy — **zero debt** (L1 clean, MethodGate enforced)
-- **8/8 springs** at Tier 4 IPC-first — 13,100+ tests, LTEE reproductions active
+- **8/8 springs** at Tier 4 IPC-first — 13,750+ tests, LTEE reproductions active
 - **Zero open upstream gaps** — NestGate Session 60, all per-primal debt closed
 - BTSP Phase 3 AEAD, Wire Standard L3, 5-tier discovery hierarchy — all converged
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
@@ -82,14 +82,17 @@ Gates connect to each other through chemical bonding patterns:
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
-- **Tunnel baseline CAPTURED**: 100% reachable (TLS connected), TTFB p50 = 110ms, TLS p50 = 65ms
+- **Tunnel baseline CAPTURED**: 9-day quantile summary generated (`validation/baselines/cloudflare_tunnel_7day.toml`)
 - **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)
-- **NAT shadow run READY**: cellMembrane TURN credentials wired into `nucleus_config.sh`. `songbird_nat_parity.sh` updated with relay reachability probe
+- **NAT shadow run STARTED**: cellMembrane TURN relay 100% reachable (10/10 probes). `songbird_nat_parity.sh` ready for full HTTP parity
+- **7-day Cloudflare baseline CAPTURED**: 9 days, 950 samples — TLS p50=73ms p95=101ms, TTFB p50=119ms p95=190ms. BearDog shadow 51x faster at p50
+- **darkforest --suite membrane**: 17 PASS, 0 FAIL against live cellMembrane VPS (MEM-01 through MEM-13). Password auth disabled, fail2ban active, credentials 600/root, no unexpected listeners
+- **Dark Forest Glacial Gate PASS**: `validation/dark_forest_gate_local.sh` — 33 structural checks across 5 pillars. All deploy graphs carry `secure_by_default = true`
 - **Deep debt evolution COMPLETE**: deploy.sh modularized, darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
 - **lithoSpore 6/7 modules PASS Tier 2** (51/51 checks): Rust validation for fitness, mutations, alleles, citrate, breseq, anderson. Module 5 (biobricks) awaits upstream B6 data
 - **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh`
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
-- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **418 methods**
+- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **427 methods**
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 
 ### Services (all persistent via systemd)
@@ -166,7 +169,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 - **Cell membrane architecture**: extracellular (CDN) / membrane (tunnel) / intracellular (sovereign) separation
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
-- **Cloudflare baselines captured**: tunnel reachable 100%, TTFB p50 110ms / TLS p50 65ms (hourly cron)
+- **Cloudflare baselines captured**: 9-day summary (950 samples) — TTFB p50=119ms p95=190ms, TLS p50=73ms p95=101ms (hourly cron + `summarize_baselines.sh`)
 - **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies
 - **tunnelKeeper v0.2.0**: Rust crate for tunnel health, replica count, membrane monitoring
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts
@@ -247,9 +250,11 @@ workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads
 validation/         Composition validation, security pen tests, upstream gap handbacks
+  dark_forest_gate_local.sh  Dark Forest Glacial Gate 5-pillar structural validation (33 checks)
+  darkforest_membrane.sh     cellMembrane VPS remote audit (MEM-01 through MEM-13)
   darkforest/       Pure Rust security validator (v0.2.1 — pen test + fuzz + crypto, modular submodules)
   tunnelKeeper/     Rust crate for Cloudflare tunnel health/management
-  baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs)
+  baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs + 7-day summary TOML)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling
   benchScale/       Load generation and pen testing framework for sovereignty validation

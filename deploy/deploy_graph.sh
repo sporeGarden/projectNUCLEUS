@@ -168,23 +168,28 @@ shadow_deploy() {
     local graph_file="$1"
     local plasmidbin_dir="$2"
     local bind_address="${3:-127.0.0.1}"
+    local mode="${4:-fresh}"
 
     if [[ ! -f "$graph_file" ]]; then
         echo "ERROR: Graph file not found: $graph_file" >&2
         return 1
     fi
 
+    local mode_label="Dry-Run Validation"
+    [[ "$mode" == "live" ]] && mode_label="Live Composition Validation"
+
     echo "╔══════════════════════════════════════════════════════╗"
-    echo "║  composition.deploy.shadow — Dry-Run Validation     ║"
+    echo "║  composition.deploy.shadow — $mode_label"
     echo "╚══════════════════════════════════════════════════════╝"
     echo ""
     echo "  Graph: $graph_file"
+    echo "  Mode:  $mode"
     echo ""
 
     local nodes_valid=0
     local nodes_missing=0
     local nodes_skipped=0
-    local dep_errors=0
+    local nodes_live=0
 
     local all_names=()
 
@@ -208,8 +213,25 @@ shadow_deploy() {
 
         if [[ "$port" -gt 0 ]]; then
             if ss -tlnp 2>/dev/null | grep -q ":$port "; then
-                issues+=("port $port already in use")
-                status="CONFLICT"
+                if [[ "$mode" == "live" ]]; then
+                    local rpc_resp
+                    rpc_resp=$(curl -sf --max-time 2 "http://$bind_address:$port" \
+                        -X POST -H 'Content-Type: application/json' \
+                        -d "{\"jsonrpc\":\"2.0\",\"method\":\"$health\",\"id\":1}" 2>&1 || true)
+                    if echo "$rpc_resp" | grep -q '"result"' 2>/dev/null; then
+                        status="LIVE"
+                    elif echo "$rpc_resp" | grep -q 'Authentication required\|jsonrpc' 2>/dev/null; then
+                        status="LIVE"
+                    elif timeout 1 bash -c "echo > /dev/tcp/$bind_address/$port" 2>/dev/null; then
+                        status="LIVE"
+                    else
+                        issues+=("port $port occupied but unreachable")
+                        status="UNHEALTHY"
+                    fi
+                else
+                    issues+=("port $port already in use")
+                    status="CONFLICT"
+                fi
             fi
         fi
 
@@ -227,16 +249,23 @@ shadow_deploy() {
             done
         fi
 
-        if [[ "$status" == "OK" ]]; then
-            echo "  [$order] $name (TCP $port, caps: $caps) — VALID"
-            nodes_valid=$((nodes_valid + 1))
-        else
-            echo "  [$order] $name — $status"
-            for issue in "${issues[@]}"; do
-                echo "    ! $issue"
-            done
-            nodes_missing=$((nodes_missing + 1))
-        fi
+        case "$status" in
+            OK)
+                echo "  [$order] $name (TCP $port, caps: $caps) — VALID"
+                nodes_valid=$((nodes_valid + 1))
+                ;;
+            LIVE)
+                echo "  [$order] $name (TCP $port) — LIVE ✓"
+                nodes_live=$((nodes_live + 1))
+                ;;
+            *)
+                echo "  [$order] $name — $status"
+                for issue in "${issues[@]}"; do
+                    echo "    ! $issue"
+                done
+                nodes_missing=$((nodes_missing + 1))
+                ;;
+        esac
 
     done < <(parse_graph_nodes "$graph_file")
 
@@ -259,12 +288,15 @@ shadow_deploy() {
                     -d "{\"jsonrpc\":\"2.0\",\"method\":\"toadstool.validate\",\"params\":{\"workload_path\":\"$wl\",\"dry_run\":true},\"id\":1}" 2>/dev/null || true)
                 if echo "$resp" | grep -q '"valid":true' 2>/dev/null; then
                     wl_valid=$((wl_valid + 1))
+                elif echo "$resp" | grep -q 'Authentication required' 2>/dev/null; then
+                    wl_fail=$((wl_fail + 1))
+                    echo "    AUTH: $(basename "$wl") — MethodGate requires BTSP token"
                 else
                     wl_fail=$((wl_fail + 1))
                     echo "    WARN: $(basename "$wl") — validation failed or timeout"
                 fi
             done
-            echo "  Workloads: $wl_valid valid, $wl_fail issues"
+            echo "  Workloads: $wl_valid valid, $wl_fail auth/issues"
         fi
     else
         echo ""
@@ -272,13 +304,22 @@ shadow_deploy() {
     fi
 
     echo ""
-    echo "  Shadow summary: $nodes_valid valid, $nodes_missing issues, $nodes_skipped external"
+    if [[ "$mode" == "live" ]]; then
+        echo "  Live summary: $nodes_live LIVE, $nodes_valid ready, $nodes_missing issues, $nodes_skipped external"
+    else
+        echo "  Shadow summary: $nodes_valid valid, $nodes_missing issues, $nodes_skipped external"
+    fi
 
     if [[ $nodes_missing -gt 0 ]]; then
         echo "  ⚠ Fix issues before live deploy"
         return 1
     fi
-    echo "  ✓ Graph ready for live deploy"
+
+    if [[ "$mode" == "live" && $nodes_live -gt 0 ]]; then
+        echo "  ✓ Composition validated — $nodes_live/$((nodes_live + nodes_valid + nodes_skipped)) nodes LIVE"
+    else
+        echo "  ✓ Graph ready for live deploy"
+    fi
     return 0
 }
 

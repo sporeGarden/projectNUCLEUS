@@ -1,0 +1,50 @@
+# Cloudflare Tunnel Baseline — lab.primals.eco
+# Generated: 2026-05-15T14:48:38Z
+# Source: 9 days of hourly captures (950 total samples)
+
+[metadata]
+target = "https://lab.primals.eco/hub/login"
+capture_days = 9
+total_samples = 950
+generated_at = "2026-05-15T14:48:38Z"
+
+[latency_ms]
+# DNS lookup
+dns_p50 = 1.00
+dns_p95 = 22.87
+dns_p99 = 154.92
+
+# TCP connect
+tcp_p50 = 14.66
+tcp_p95 = 37.20
+tcp_p99 = 174.68
+
+# TLS handshake (time_appconnect)
+tls_p50 = 73.24
+tls_p95 = 101.01
+tls_p99 = 232.05
+
+# Time to first byte
+ttfb_p50 = 118.66
+ttfb_p95 = 190.20
+ttfb_p99 = 315.43
+
+# Total request time
+total_p50 = 118.73
+total_p95 = 190.38
+total_p99 = 315.49
+
+[uptime]
+checks_total = 570
+checks_passed = 222
+uptime_pct = 38.9473
+
+[throughput]
+# Average bytes/sec across all samples
+avg_bytes_per_sec = 24659
+
+[thresholds]
+# Replacement must meet or beat these to pass parity
+max_ttfb_p95_ms = 190.20
+max_tls_p95_ms = 101.01
+min_uptime_pct = 38.9473

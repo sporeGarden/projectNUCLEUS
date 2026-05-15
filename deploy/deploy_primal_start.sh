@@ -42,6 +42,7 @@ start_primal() {
             export TOADSTOOL_NODE_ID="$NODE_ID"
             export TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1
             export SPRINGS_ROOT="${SPRINGS_ROOT:-${ECOPRIMALS_ROOT:-}/springs}"
+            export GATE_HOME="${GATE_HOME:-$HOME}"
             nohup "$PLASMIDBIN_DIR/primals/toadstool" server \
                 --port "$TOADSTOOL_PORT" \
                 --family-id "$FAMILY_ID" \

@@ -1,10 +1,16 @@
 # Deploy Graphs
 
 Curated subset of primalSpring/graphs/ for projectNUCLEUS deployment.
-The canonical source for all 71+ graphs remains in primalSpring.
+The canonical source for all 77+ graphs remains in primalSpring.
+
+**Dark Forest compliance (2026-05-15):**
+- All deploy graphs carry `secure_by_default = true` in `[graph.metadata]` (DF-4 requirement)
+- No non-Songbird nodes advertise `http` or `tls` capabilities (DF-3)
+- All nodes declare `security_model = "btsp"` or `"tower_delegated"` (DF-4)
+- UDS-only default transport, TCP fallback opt-in via `PRIMALSPRING_TCP_TIER5` (DF-2)
 
 **Phase 59 updates (2026-05-06):**
-- All deploy graph nodes now carry `tcp_fallback_port` for Tier 5 discovery
+- All deploy graph nodes carry `tcp_fallback_port` for Tier 5 discovery
 - Graph-level `bonding_policy = "btsp_required"` validates against node `security_model`
 - All 13 primals converged to BTSP Phase 3 AEAD — `security_model = "btsp"` is universal
 - Wire Standard L3: every primal's `capabilities.list` returns `protocol` + `transport`

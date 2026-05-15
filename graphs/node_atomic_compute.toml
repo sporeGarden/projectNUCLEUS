@@ -18,10 +18,11 @@ name = "node_atomic_compute"
 description = "Node Atomic: toadStool dispatch + barraCuda tensor + coralReef shader"
 version = "2.0.0"
 coordination = "sequential"
-bonding_policy = "btsp_required"
+bonding_default = "btsp_required"
 
 [graph.metadata]
 security_model = "btsp_enforced"
+secure_by_default = true
 transport = "uds_preferred"
 tcp_fallback = "tower_routed"
 composition_model = "nucleated"

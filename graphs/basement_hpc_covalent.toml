@@ -56,6 +56,7 @@ bonding_policy = "btsp_required"
 
 [graph.metadata]
 security_model = "btsp_enforced"
+secure_by_default = true
 transport = "uds_only"
 tcp_ports = 0
 federation_transport = "songbird_tcp"

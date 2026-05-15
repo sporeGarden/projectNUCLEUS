@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Interstadial exit executing (2026-05-14) — BearDog TLS shadow LIVE :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (H2-14, 157.230.3.183:3478), provenance trio reconciled, cell membrane architecture, static observer, 418-method registry
+**Status**: Interstadial exit gate CLEARED (2026-05-15) — Dark Forest Glacial Gate PASS (33/33 checks), 427-method registry, 13/13 primals LIVE, 9-day Cloudflare baseline captured, membrane suite 17 PASS, plasmidBin v5.4.0 checksums synced
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -243,7 +243,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
 - **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
 - **GAP-11 CLOSED**: barraCuda 18/18 methods (71 total JSON-RPC methods)
-- **Registry**: 418 methods across 13 primals (was 389 at Phase 60 absorption)
+- **Registry**: 427 methods across 13 primals (was 418 at Wave 10, 389 at Phase 60)
 - **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
 
 **Phase 60 Revalidation (2026-05-08)**:
@@ -365,7 +365,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 7-9+: 418 methods, 301+ exercised, 22 scenarios, 77 graphs, semantic contract tests. `biomeos.spring_status` IMPLEMENTED (v3.54). 76 routing misroutes fixed. `s_routing_consistency` scenario prevents drift.
+- primalSpring at Wave 10-12: 427 methods, 313 exercised (73.3%), 29 scenarios, 77 graphs, semantic contract tests. `biomeos.spring_status` IMPLEMENTED (v3.54). Dark Forest Glacial Gate standard. Zero panics in production (Wave 12).
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

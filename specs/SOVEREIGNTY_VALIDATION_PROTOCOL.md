@@ -75,7 +75,8 @@ This document ties together:
 | Activity | Tool | Output |
 |----------|------|--------|
 | Capture latency (DNS, TCP, TLS, TTFB) | `baselines/capture_tunnel_metrics.sh` (cron) | `baselines/daily/tunnel_metrics_YYYY-MM-DD.csv` |
-| Compute percentiles | `baselines/summarize_baselines.sh` | `baselines/cloudflare_tunnel_7day.toml` |
+| Unified membrane telemetry | `deploy/membrane_telemetry.sh` (cron) | `baselines/daily/membrane_telemetry_YYYY-MM-DD.csv` |
+| Compute percentiles | `deploy/membrane_summary.sh` | `baselines/membrane_7day.toml` (or legacy `cloudflare_tunnel_7day.toml`) |
 | Run scenario-specific baseline | `scenarios/cloudflare_tunnel_baseline.sh` | `baselines/tunnel_baseline_*.toml` |
 | Security scan | `pentest/three_layer_scan.sh` | `reports/security_*/benchscale_summary.toml` |
 | Record in provenance | sweetGrass `braid.witness` | Braid URN in manifest |
@@ -290,7 +291,7 @@ Every validation run produces artifacts that are tracked through sweetGrass.
 
 | Artifact | Format | Provenance |
 |----------|--------|------------|
-| Baseline TOML | `baselines/cloudflare_tunnel_7day.toml` | BLAKE3 hash → rhizoCrypt DAG → braid witness |
+| Baseline TOML | `baselines/membrane_7day.toml` (or `cloudflare_tunnel_7day.toml`) | BLAKE3 hash → rhizoCrypt DAG → braid witness |
 | Parity report | `reports/btsp_tls_parity_*.toml` | BLAKE3 hash → rhizoCrypt DAG → braid witness |
 | Security scan | `reports/security_*/benchscale_summary.toml` | BLAKE3 hash → rhizoCrypt DAG → braid witness |
 | Fuzz report | `reports/fuzz_*.toml` | BLAKE3 hash → rhizoCrypt DAG → braid witness |

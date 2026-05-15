@@ -150,3 +150,13 @@ content_scope = "public,compute"
 [trust.weak]
 allowed_backends = ["vps_cache", "fallback"]
 content_scope = "public"
+
+# --- Telemetry (continuous sovereignty shadow) ---
+
+[telemetry]
+enabled = true
+shadow_mode = "permanent"               # not "pre_cutover" — shadow data persists beyond parity
+collection_interval_s = 900             # 15 min, matches cron cadence
+retention_days = 90                     # rolling window for raw CSVs
+skunkbat_correlation = true             # SkunkBat audit events correlate with telemetry probes
+cutover_gate_days = 7                   # consecutive parity days required before cutover

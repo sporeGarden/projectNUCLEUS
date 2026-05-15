@@ -22,6 +22,8 @@ source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 BASELINES_DIR="$SCRIPT_DIR/../baselines"
 REPORTS_DIR="$SCRIPT_DIR/../reports"
+UNIFIED_BASELINES="${NUCLEUS_PROJECT_ROOT}/validation/baselines"
+TELEMETRY_DIR="${MEMBRANE_TELEMETRY_DIR:-${NUCLEUS_PROJECT_ROOT}/validation/baselines/daily}"
 MODE="all"
 
 while [[ $# -gt 0 ]]; do
@@ -84,7 +86,18 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
     echo "=== Phase 2: Parity Tests ==="
     echo ""
 
-    CF_BASELINE=$(ls -t "$BASELINES_DIR"/cloudflare_tunnel_*.toml 2>/dev/null | head -1 || true)
+    # Prefer unified membrane summary, fall back to old per-channel baselines
+    CF_BASELINE=""
+    if [[ -f "$UNIFIED_BASELINES/membrane_7day.toml" ]]; then
+        CF_BASELINE="$UNIFIED_BASELINES/membrane_7day.toml"
+        echo "  Using unified membrane baseline: $CF_BASELINE"
+    elif [[ -f "$UNIFIED_BASELINES/cloudflare_tunnel_7day.toml" ]]; then
+        CF_BASELINE="$UNIFIED_BASELINES/cloudflare_tunnel_7day.toml"
+        echo "  Using tunnel baseline: $CF_BASELINE"
+    else
+        CF_BASELINE=$(ls -t "$BASELINES_DIR"/cloudflare_tunnel_*.toml 2>/dev/null | head -1 || true)
+        [[ -n "$CF_BASELINE" ]] && echo "  Using benchScale baseline: $CF_BASELINE"
+    fi
 
     # 1. NestGate content parity
     echo "--- H2-05/3a: NestGate Content Parity ---"
@@ -161,6 +174,18 @@ echo "╔═══════════════════════�
 echo "║  Shadow Run Summary                                 ║"
 echo "║  PASS: $PASS_COUNT  FAIL: $FAIL_COUNT  SKIP: $SKIP_COUNT                            ║"
 echo "╚══════════════════════════════════════════════════════╝"
+
+# Append orchestrator results to unified telemetry CSV
+mkdir -p "$TELEMETRY_DIR"
+TODAY="$(date -u +%Y-%m-%d)"
+TELEM_CSV="${TELEMETRY_DIR}/membrane_telemetry_${TODAY}.csv"
+if [ ! -f "$TELEM_CSV" ]; then
+    echo "timestamp_utc,probe_name,target,latency_ms,status,http_code,extra" > "$TELEM_CSV"
+fi
+TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+STATUS="ok"
+[[ $FAIL_COUNT -gt 0 ]] && STATUS="degraded"
+echo "${TS},orchestrator_run,shadow_run,0,${STATUS},0,pass=${PASS_COUNT},fail=${FAIL_COUNT},skip=${SKIP_COUNT}" >> "$TELEM_CSV"
 
 if [[ $FAIL_COUNT -gt 0 ]]; then
     exit 1

@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing (2026-05-15)**
+**Sovereignty evolution ACTIVE — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing, L3+L4 continuous membrane telemetry (2026-05-15)**
 
 ### Infrastructure
 
@@ -82,8 +82,9 @@ Gates connect to each other through chemical bonding patterns:
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
-- **Tunnel baseline CAPTURED**: 9-day quantile summary generated (`validation/baselines/cloudflare_tunnel_7day.toml`)
-- **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT)
+- **Tunnel baseline CAPTURED**: 9-day quantile summary at `validation/baselines/cloudflare_tunnel_7day.toml` (subsumed by unified `membrane_7day.toml`)
+- **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT). Reads unified `membrane_7day.toml` baselines
+- **Continuous membrane telemetry**: `deploy/membrane_telemetry.sh` probes both membranes (VPS + gate) every 15 min via cron. `deploy/membrane_summary.sh` produces rolling 7-day `validation/baselines/membrane_7day.toml` with parity checks and cutover gates. Shadow data is **permanent** — collection continues beyond cutover
 - **NAT shadow run STARTED**: cellMembrane TURN relay 100% reachable (10/10 probes). `songbird_nat_parity.sh` ready for full HTTP parity
 - **7-day Cloudflare baseline CAPTURED**: 9 days, 950 samples — TLS p50=73ms p95=101ms, TTFB p50=119ms p95=190ms. BearDog shadow 51x faster at p50
 - **darkforest --suite membrane**: 17 PASS, 0 FAIL against live cellMembrane VPS (MEM-01 through MEM-13). Password auth disabled, fail2ban active, credentials 600/root, no unexpected listeners
@@ -178,6 +179,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
 - **Cloudflare baselines captured**: 9-day summary (950 samples) — TTFB p50=119ms p95=190ms, TLS p50=73ms p95=101ms
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts
+- **L3+L4 membrane bridge**: Layer 3 (external membrane) and Layer 4 (internal membrane) connected via unified telemetry pipeline. `routing_config.toml [telemetry]` formalizes `shadow_mode = "permanent"` with SkunkBat audit correlation
 - **6 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub (JH-0→JH-11), primal deep debt
 
 ### sporePrint (Extracellular)
@@ -241,7 +243,9 @@ deploy/             Deployment tooling, test suites, pappusCast daemon, membrane
   nucleus_config.sh Gate-agnostic config (all paths, ports, env vars, routing, membrane — single source of truth)
   forgejo_mirror.sh Forgejo org/repo creation + dual-push for all repos
   vps_resize.sh     doctl VPS resize automation
-  routing_config.toml Content-aware routing rules (trust model, backends, cache policy)
+  routing_config.toml Content-aware routing rules (trust model, backends, cache policy, telemetry)
+  membrane_telemetry.sh Unified probe across both membranes (cron-ready, 15-min interval)
+  membrane_summary.sh  Rolling 7-day membrane summary with cutover gates → membrane_7day.toml
   nucleus_paths.py  Python config module (imports GATE_HOME, ABG_SHARED, etc. from env)
   observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
@@ -261,7 +265,7 @@ validation/         Composition validation, security pen tests, upstream gap han
   darkforest_membrane.sh     cellMembrane VPS remote audit (MEM-01 through MEM-13)
   darkforest/       Pure Rust security validator (v0.2.1 — pen test + fuzz + crypto, modular submodules)
   tunnelKeeper/     Rust crate for Cloudflare tunnel health/management
-  baselines/        Hourly Cloudflare tunnel metrics (cron-captured CSVs + 7-day summary TOML)
+  baselines/        Tunnel metrics + unified membrane telemetry (cron CSVs + membrane_7day.toml)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling
   benchScale/       Load generation and pen testing framework for sovereignty validation

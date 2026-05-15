@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-15 (Dark Forest Glacial Gate PASS, 427 methods, deploy graphs hardened)
+**Last updated**: 2026-05-15 (L3+L4 membrane telemetry, unified baselines, permanent shadow mode)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)
@@ -61,7 +61,7 @@ None. All Horizon 1 gaps resolved.
 | H1-02 | Voila executes as hub user | 2026-05-08 | Dedicated `voila` system user (UID 998). `user: 'voila'` in JupyterHub service config |
 | H1-03 | rustdesk on 0.0.0.0 | 2026-05-08 | Already binds LAN IP (192.168.1.238), not 0.0.0.0. No action needed |
 | H1-06 | Cookie secret rotation | 2026-05-08 | `deploy/rotate_cookie_secret.sh` created. Manual rotation — run monthly or after events |
-| H1-07 | Baseline 7-day summary | 2026-05-08 | Cron capturing hourly (deduplicated). Run `summarize_baselines.sh` after May 14 |
+| H1-07 | Baseline 7-day summary | 2026-05-08 | Cron capturing hourly. 9-day summary generated. Subsumed by `membrane_summary.sh` |
 | H1-04 | systemd enumeration | 2026-05-08 | `setfacl` deny execute on `/usr/bin/systemctl` for abg-compute/reviewer/observer groups |
 | H1-05 | Reviewer python3 access | 2026-05-08 | `setfacl` deny execute on `/usr/bin/python3` for abg-reviewer/observer. Compute and admin unaffected |
 
@@ -341,7 +341,7 @@ first Targeted GuideStone artifact.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
-Horizon 2 (sovereignty):          █████████░  Tower LIVE on VPS (6 services), Ch3 shadow, Forgejo primary (32 repos), routing config
+Horizon 2 (sovereignty):          █████████░  Tower LIVE on VPS (6 services), Ch3 shadow, Forgejo primary (32 repos), routing config, L3+L4 telemetry
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED
 Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
@@ -391,3 +391,4 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-15 | **Dark Forest Glacial Gate PASS + deploy graph hardening + 427 methods**: (1) `validation/dark_forest_gate_local.sh` created — 33-check 5-pillar structural validation of local deploy graphs, mirroring primalSpring's `s_dark_forest_gate` scenario. All 5 pillars PASS. (2) All deploy graphs (`nucleus_complete`, `node_atomic_compute`, `ionic_capability_share`, `basement_hpc_covalent`, `friend_remote_covalent`) updated with `secure_by_default = true` in `[graph.metadata]` (DF-4 requirement). (3) Registry references updated from 418 to 427 methods across all docs (`README.md`, `PHASES.md`, `EVOLUTION_GAPS.md`, `LIVE_SCIENCE_API.md`, workload TOMLs). (4) Port realignment confirmed: `nucleus_config.sh` already matches Zero-Port Standard (NestGate 9500, Squirrel 9300). (5) `graphs/README.md` updated with Dark Forest compliance section. Interstadial scoring: 9/10 (Dark Forest gate cleared). |
 | 2026-05-15 | **Interstadial exit gate CLEARED + cleanup**: (1) `composition.deploy(graph)` `--live` mode validated 12/12 primal nodes LIVE. (2) `darkforest_membrane.sh` created — 17 PASS, 0 FAIL, 1 SKIP against cellMembrane VPS (MEM-01→MEM-13). (3) 7-day Cloudflare baseline summary generated (9 days, 950 samples). (4) Songbird NAT shadow started (TURN 100% reachable). (5) plasmidBin checksums.toml synced to v5.4.0 (9 binaries). (6) 12/12 wetspring workloads wired with `toadstool-validate-v1` schema. (7) MEM-01→MEM-13 gaps updated from open to DONE/PASS. (8) Scoring updated to 9.5/10 — exit gate cleared. (9) Validation debris archived (5 timestamped docs + 1 provenance run → `validation/archive/`). (10) wateringHole handoff + exit criteria v1.7 written. |
 | 2026-05-15 | **Sovereignty evolution — Forgejo primary + VPS Tower + Channel 3 shadow**: (1) Forgejo PRIMARY: 32 repos across 3 orgs (sporeGarden, ecoPrimals, syntheticChemistry) mirrored. SSH server enabled (:2222), `.netrc` credential caching, `forgejo_mirror.sh` for org/repo creation + dual-push. H3-04 ACTIVE. (2) VPS resized $4→$12 (512MB→2GB) via doctl. Tower composition deployed: BearDog crypto (:9100, UDS), SkunkBat audit (:9140, TCP --no-uds), 1.7GB free. Fixed: `skunkbat-membrane.service` for standalone mode, `tmpfiles.d/membrane.conf` for runtime dir persistence. (3) DO API token encrypted with BearDog AES-256-GCM (Argon2id KDF, `membrane-vault` key). MEM-15 DONE. (4) Channel 3 shadow LIVE: Caddy v2.11.3 on :80, health/status endpoints active, TLS config blocks ready for DNS grey-cloud. UFW updated: 443/tcp + 80/tcp. `caddy-tls.service` unit created. (5) Content-aware routing prototype: `routing_config.toml` defines rules (ACME→local, static→cache, git/API/auth→gate, large→P2P), trust model (covalent/ionic/metallic/weak→content scopes), cache policy (256MB, webhook invalidation). NestGate cache seeded on VPS. (6) `nucleus_config.sh` updated with Channel 3 + routing settings. (7) Second DO droplet (570909451, 159.223.173.73) discovered — old primalSpring instance, unreachable. |
+| 2026-05-15 | **L3+L4 membrane telemetry — continuous sovereignty shadow**: (1) `deploy/membrane_telemetry.sh` — unified probe across external + internal membranes (Caddy, TURN, BearDog TLS, VPS SSH, Cloudflare tunnel, per-primal RPC, content TTFB, BTSP auth). Cron-ready (15-min). (2) `deploy/membrane_summary.sh` — rolling 7-day `membrane_7day.toml` with parity checks and cutover gates. (3) `nucleus_config.sh` telemetry settings (interval, dir, window, cutover days). (4) `shadow_run_orchestrator.sh` baseline path gap fixed — unified `membrane_7day.toml` preferred, results append to daily CSV. (5) `routing_config.toml [telemetry]` — `shadow_mode = "permanent"`, SkunkBat correlation. (6) Docs updated: `PRIMAL_VS_SOVEREIGNTY_GOALS.md` L3+L4 bridge, `SOVEREIGN_COMPOSITION_EVOLUTION.md` permanent shadow model. |

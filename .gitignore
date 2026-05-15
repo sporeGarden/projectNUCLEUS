@@ -2,6 +2,7 @@
 validation/baselines/cron.log
 validation/baselines/daily/*.csv
 validation/baselines/daily/*.txt
+# membrane_7day.toml IS committed — it's the canonical state snapshot
 
 # Python
 __pycache__/

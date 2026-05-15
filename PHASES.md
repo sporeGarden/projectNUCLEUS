@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing deployed. Dark Forest Glacial Gate PASS (33/33), 427 methods, 13/13 primals LIVE
+**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing, L3+L4 continuous membrane telemetry deployed. Dark Forest Glacial Gate PASS (33/33), 427 methods, 13/13 primals LIVE
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)

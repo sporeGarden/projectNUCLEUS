@@ -101,6 +101,12 @@ declare -A PRIMAL_PORTS=(
     [skunkbat]=$SKUNKBAT_PORT
 )
 
+# --- Membrane Telemetry (continuous sovereignty shadow) ---
+MEMBRANE_TELEMETRY_INTERVAL="${MEMBRANE_TELEMETRY_INTERVAL:-900}"           # seconds (900 = 15 min)
+MEMBRANE_TELEMETRY_DIR="${MEMBRANE_TELEMETRY_DIR:-$NUCLEUS_PROJECT_ROOT/validation/baselines/daily}"
+MEMBRANE_SUMMARY_DAYS="${MEMBRANE_SUMMARY_DAYS:-7}"
+MEMBRANE_CUTOVER_CONSECUTIVE_DAYS="${MEMBRANE_CUTOVER_CONSECUTIVE_DAYS:-7}"
+
 # All primal ports as a flat list (for iteration in validation scripts)
 ALL_PRIMAL_PORTS_LIST=(
     $BEARDOG_PORT $SONGBIRD_PORT $SQUIRREL_PORT $TOADSTOOL_PORT

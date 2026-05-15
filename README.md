@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing, L3+L4 continuous membrane telemetry (2026-05-15)**
+**Sovereignty evolution ACTIVE — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 TLS LIVE (`membrane.primals.eco` ACME cert), HTTP parity PASS (VPS 68ms vs GitHub Pages 89ms), content-aware routing, L3+L4 continuous membrane telemetry (2026-05-15)**
 
 ### Infrastructure
 
@@ -77,15 +77,15 @@ Gates connect to each other through chemical bonding patterns:
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
-- **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80 shadow (Ch3). Channel 3 health endpoint LIVE. 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
-- **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 2ms RPC latency vs 102ms Cloudflare baseline (51x). `btsp_tls_parity.sh` ready for 7-day comparison
+- **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80/:443 (Ch3). **Channel 3 TLS LIVE**: `membrane.primals.eco` with ACME cert (Let's Encrypt E8, valid to Aug 13 2026). Serving real sporePrint content (19MB synced). 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
+- **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — **3ms RPC latency** vs 102ms Cloudflare baseline (34x). Telemetry probe fixed: `/dev/tcp` + `read -t 1` replaces `nc` (which inflated to 3s). `btsp_tls_parity.sh` ready for 7-day comparison
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
 - **DoT baseline CAPTURED**: systemd-resolved DoT ACTIVE via Cloudflare 1.0.0.1, 3-8ms latency, 10/10 success. Sovereign resolver (knot-dns) pending
 - **Tunnel baseline CAPTURED**: 9-day quantile summary at `validation/baselines/cloudflare_tunnel_7day.toml` (subsumed by unified `membrane_7day.toml`)
 - **Shadow run orchestrator**: `infra/benchScale/scenarios/shadow_run_orchestrator.sh` ties all 4 parity tests (NestGate, BearDog TLS, Songbird NAT, DoT). Reads unified `membrane_7day.toml` baselines
 - **Continuous membrane telemetry**: `deploy/membrane_telemetry.sh` probes both membranes (VPS + gate) every 15 min via cron. `deploy/membrane_summary.sh` produces rolling 7-day `validation/baselines/membrane_7day.toml` with parity checks and cutover gates. Shadow data is **permanent** — collection continues beyond cutover
-- **NAT shadow run STARTED**: cellMembrane TURN relay 100% reachable (10/10 probes). `songbird_nat_parity.sh` ready for full HTTP parity
+- **NAT shadow run + HTTP parity PASS**: cellMembrane TURN relay 100% reachable (10/10 probes). HTTP parity: VPS 68ms TTFB vs GitHub Pages 89ms (**PASS**, 10 samples). TLS parity via `membrane.primals.eco`: 130ms vs 96ms, 100% uptime both channels
 - **7-day Cloudflare baseline CAPTURED**: 9 days, 950 samples — TLS p50=73ms p95=101ms, TTFB p50=119ms p95=190ms. BearDog shadow 51x faster at p50
 - **darkforest --suite membrane**: 17 PASS, 0 FAIL against live cellMembrane VPS (MEM-01 through MEM-13). Password auth disabled, fail2ban active, credentials 600/root, no unexpected listeners
 - **Dark Forest Glacial Gate PASS**: `validation/dark_forest_gate_local.sh` — 33 structural checks across 5 pillars. All deploy graphs carry `secure_by_default = true`
@@ -106,7 +106,7 @@ Gates connect to each other through chemical bonding patterns:
 | Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 32 repos, 3 orgs. GitHub = push mirror |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
-| cellMembrane | 157.230.3.183 | 3478, 21115-17, 80 | Inner Membrane | **Tower composition** (2GB): Songbird TURN (Ch2) + RustDesk (Ch2b) + BearDog crypto + SkunkBat audit + Caddy TLS shadow (Ch3). DigitalOcean nyc1 |
+| cellMembrane | 157.230.3.183 | 3478, 21115-17, 80, 443 | Inner Membrane | **Tower composition** (2GB): Songbird TURN (Ch2) + RustDesk (Ch2b) + BearDog crypto + SkunkBat audit + Caddy TLS (Ch3). `membrane.primals.eco` ACME cert LIVE. DigitalOcean nyc1 |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
@@ -174,7 +174,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Content-aware routing**: `routing_config.toml` — static→VPS cache, auth/API/git→gate, large→Songbird P2P
 - **Trust model**: covalent/ionic/metallic/weak bonding maps to content access scopes in routing
 - **VPS Tower LIVE**: BearDog crypto + SkunkBat audit + Songbird relay + RustDesk + Caddy TLS shadow
-- **Channel 3 shadow**: HTTP health on :80, TLS blocks ready for DNS grey-cloud
+- **Channel 3 TLS LIVE**: `membrane.primals.eco` → VPS (DNS-only A record), ACME cert auto-obtained (Let's Encrypt E8). Caddy serves sporePrint + health/status endpoints on :443. HTTP parity PASS (68ms vs 89ms GitHub Pages)
 - **DO credentials encrypted**: BearDog AES-256-GCM with Argon2id on VPS
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
 - **Cloudflare baselines captured**: 9-day summary (950 samples) — TTFB p50=119ms p95=190ms, TLS p50=73ms p95=101ms

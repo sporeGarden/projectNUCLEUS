@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing, L3+L4 continuous membrane telemetry deployed. Dark Forest Glacial Gate PASS (33/33), 427 methods, 13/13 primals LIVE
+**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), **Channel 3 TLS LIVE** (`membrane.primals.eco` ACME cert, HTTP parity PASS — VPS 68ms vs GH Pages 89ms), content-aware routing, L3+L4 continuous membrane telemetry deployed. Dark Forest Glacial Gate PASS (33/33), 427 methods, 13/13 primals LIVE
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -487,7 +487,7 @@ Curated in projectNUCLEUS/graphs/ (canonical source: primalSpring/graphs/):
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Upstream gaps ALL SHIPPED (petalTongue PT-1→PT-5, NestGate NG-1→NG-4). Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced. BearDog TLS shadow LIVE on :8443 (10ms vs 120ms Cloudflare). cellMembrane LIVE (Songbird TURN relay :3478 on 157.230.3.183, DigitalOcean nyc1).
+**Status**: Upstream gaps ALL SHIPPED. Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced. BearDog TLS shadow LIVE on :8443 (**3ms RPC** vs 120ms Cloudflare). cellMembrane LIVE (Songbird TURN relay :3478 on 157.230.3.183). **`membrane.primals.eco` TLS LIVE** — ACME cert (Let's Encrypt E8), serving real sporePrint content. HTTP parity: VPS 68ms vs GitHub Pages 89ms (**PASS**).
 **Bonding**: Covalent core + public weak endpoint
 **New Primals**: petalTongue (UI), BTSP Phase 3
 

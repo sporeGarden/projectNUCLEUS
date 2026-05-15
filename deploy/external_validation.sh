@@ -162,7 +162,7 @@ log ""
 log "── Stage 4: Provenance Pipeline Smoke Test ──"
 
 LATEST_MANIFEST=""
-for d in /tmp/provenance_run2 /tmp/provenance_results "$PROJECT_ROOT/validation"/provenance-run-*; do
+for d in "$PROJECT_ROOT/validation"/provenance-run-* "$PROJECT_ROOT/validation/archive"/provenance-run-*; do
     [[ -f "$d/PROVENANCE_MANIFEST.md" ]] && LATEST_MANIFEST="$d/PROVENANCE_MANIFEST.md"
 done
 
@@ -199,7 +199,7 @@ else
 fi
 
 LATEST_BRAID=""
-for d in /tmp/provenance_run2 /tmp/provenance_results "$PROJECT_ROOT/validation"/provenance-run-*; do
+for d in "$PROJECT_ROOT/validation"/provenance-run-* "$PROJECT_ROOT/validation/archive"/provenance-run-*; do
     [[ -f "$d/braid.json" ]] && LATEST_BRAID="$d/braid.json"
 done
 

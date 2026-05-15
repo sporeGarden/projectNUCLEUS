@@ -64,7 +64,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Stadial-ready — Dark Forest Glacial Gate PASS, 427 methods, 13/13 primals LIVE (2026-05-15)**
+**Sovereignty evolution ACTIVE — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing (2026-05-15)**
 
 ### Infrastructure
 
@@ -77,7 +77,7 @@ Gates connect to each other through chemical bonding patterns:
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
-- **cellMembrane LIVE (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, ~$4/mo). Channel 2 (Songbird TURN :3478) + Channel 2b (RustDesk sovereign relay :21116-21117) active. Hardened (fail2ban, UFW, exim4+droplet-agent purged). Multi-gate SSH key management. Phase 0.5. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
+- **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80 shadow (Ch3). Channel 3 health endpoint LIVE. 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — 2ms RPC latency vs 102ms Cloudflare baseline (51x). `btsp_tls_parity.sh` ready for 7-day comparison
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
@@ -102,10 +102,10 @@ Gates connect to each other through chemical bonding patterns:
 | primals.eco | `primals.eco` | — | Extracellular | GitHub Pages + Cloudflare CDN (always on, no gate) |
 | Observer (static) | `lab.primals.eco` | 8866 | Membrane | Pre-rendered HTML, open/unauthenticated |
 | JupyterHub | `lab.primals.eco` (gated) | 8000 | Membrane | PAM auth + Cloudflare Access, reviewer/user tiers |
-| Forgejo | `git.primals.eco` | 3000 | Membrane | Sovereign git mirror |
+| Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 32 repos, 3 orgs. GitHub = push mirror |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
-| cellMembrane | 157.230.3.183 | 3478, 21116 | External Membrane | Songbird TURN (Ch2) + RustDesk sovereign relay (Ch2b). DigitalOcean nyc1 fieldMouse |
+| cellMembrane | 157.230.3.183 | 3478, 21115-17, 80 | Inner Membrane | **Tower composition** (2GB): Songbird TURN (Ch2) + RustDesk (Ch2b) + BearDog crypto + SkunkBat audit + Caddy TLS shadow (Ch3). DigitalOcean nyc1 |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
@@ -167,14 +167,18 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 ### Sovereignty Evolution
 
-- **Cell membrane architecture**: extracellular (CDN) / membrane (tunnel) / intracellular (sovereign) separation
+- **Three-membrane architecture**: outer (GitHub mirror) / inner (VPS touchpoint) / intracellular (gate source of truth)
+- **VPS as touchpoint, gate as source**: VPS terminates TLS, relays traffic, caches content. Gate hardware runs full NUCLEUS
+- **Forgejo PRIMARY**: 32 repos mirrored across 3 orgs. `forgejo_mirror.sh` dual-push. GitHub is outer membrane
+- **Content-aware routing**: `routing_config.toml` — static→VPS cache, auth/API/git→gate, large→Songbird P2P
+- **Trust model**: covalent/ionic/metallic/weak bonding maps to content access scopes in routing
+- **VPS Tower LIVE**: BearDog crypto + SkunkBat audit + Songbird relay + RustDesk + Caddy TLS shadow
+- **Channel 3 shadow**: HTTP health on :80, TLS blocks ready for DNS grey-cloud
+- **DO credentials encrypted**: BearDog AES-256-GCM with Argon2id on VPS
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
-- **Cloudflare baselines captured**: 9-day summary (950 samples) — TTFB p50=119ms p95=190ms, TLS p50=73ms p95=101ms (hourly cron + `summarize_baselines.sh`)
-- **Cloudflare Access**: Reviewer/user tiers gated via Zero Trust policies
-- **tunnelKeeper v0.2.0**: Rust crate for tunnel health, replica count, membrane monitoring
+- **Cloudflare baselines captured**: 9-day summary (950 samples) — TTFB p50=119ms p95=190ms, TLS p50=73ms p95=101ms
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts
-- **Forgejo calibration instrument** installed — baseline for RootPulse parity targets
-- **6 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub patterns (JH-0→JH-11), primal deep debt, consolidated upstream gaps
+- **6 upstream gap handbacks** delivered: petalTongue (PT-1→PT-5), NestGate (NG-1→NG-4), RootPulse (RP-1→RP-5), JupyterHub (JH-0→JH-11), primal deep debt
 
 ### sporePrint (Extracellular)
 
@@ -234,7 +238,10 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
 deploy/             Deployment tooling, test suites, pappusCast daemon, membrane infrastructure
-  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
+  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars, routing, membrane — single source of truth)
+  forgejo_mirror.sh Forgejo org/repo creation + dual-push for all repos
+  vps_resize.sh     doctl VPS resize automation
+  routing_config.toml Content-aware routing rules (trust model, backends, cache policy)
   nucleus_paths.py  Python config module (imports GATE_HOME, ABG_SHARED, etc. from env)
   observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)

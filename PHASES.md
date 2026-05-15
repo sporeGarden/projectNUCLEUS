@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Interstadial exit gate CLEARED (2026-05-15) — Dark Forest Glacial Gate PASS (33/33 checks), 427-method registry, 13/13 primals LIVE, 9-day Cloudflare baseline captured, membrane suite 17 PASS, plasmidBin v5.4.0 checksums synced
+**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), Channel 3 shadow, content-aware routing deployed. Dark Forest Glacial Gate PASS (33/33), 427 methods, 13/13 primals LIVE
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -179,11 +179,12 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `specs/TUNNEL_EVOLUTION.md` — updated with concrete implementation for Steps 2b→4
 - `specs/COMPLETE_DEPENDENCY_INVENTORY.md` — 40+ dependencies across 7 clusters mapped
 
-**Forgejo Calibration Instrument (2026-05-07)**:
+**Forgejo PRIMARY Git Host (2026-05-07 → 2026-05-15)**:
 - Forgejo v15.0.0 installed as `forgejo.service` on port 3000
 - Accessible via `git.primals.eco` (Cloudflare tunnel ingress)
-- projectNUCLEUS mirrored, SQLite backend, registration disabled
-- Calibration target for RootPulse parity
+- **32 repos across 3 orgs** (sporeGarden, ecoPrimals, syntheticChemistry) mirrored
+- SSH server enabled (:2222), `.netrc` credential caching, `forgejo_mirror.sh` for dual-push
+- GitHub is push mirror (outer membrane). Forgejo is source of truth
 
 **RootPulse Commit Workflow (2026-05-07)**:
 - Ported `rootpulse_commit.toml` from biomeOS to `graphs/`

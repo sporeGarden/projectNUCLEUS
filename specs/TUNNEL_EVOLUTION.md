@@ -329,7 +329,7 @@ Browser → primals.eco (DNS-only, A record to public IP)
 
 **What was built** (primalSpring → ironGate handoff):
 1. ~~**Self-hosted STUN/TURN relay**~~ — **DONE**. cellMembrane fieldMouse on
-   DigitalOcean VPS (157.230.3.183, Debian 12, nyc1, ~$4/mo). Songbird TURN
+   DigitalOcean VPS (157.230.3.183, Debian 12, nyc1, ~$12/mo 2GB). Songbird TURN
    relay on UDP :3478 with credential-authenticated access.
    - Deployed via `plasmidBin/deploy_membrane.sh` (pull model — binaries
      fetched from GitHub Releases on VPS, not SCP'd)
@@ -472,7 +472,7 @@ In the cell membrane model, dependencies are classified by layer:
 | Cloudflare TLS | Membrane | BearDog BTSP | **Shadow running** (Step 3b) — BearDog v0.9.0 on :8443 alongside CF :443 |
 | Cloudflare DNS | Extracellular | Self-hosted authoritative | Planned (Step 4) — cellMembrane VPS is the target host for knot-dns |
 | PAM passwords | Intracellular | BearDog ionic tokens | **Plugin built** (Step 2b) — dual-auth shadow run awaiting start |
-| DigitalOcean VPS | External Membrane | Irreducible — commodity substrate | **Active** — cellMembrane fieldMouse ~$4/mo. Dark Forest principle applies |
+| DigitalOcean VPS | External Membrane | Irreducible — commodity substrate | **Active** — cellMembrane fieldMouse ~$12/mo (2GB Tower). Dark Forest principle applies |
 
 Replacement order follows the membrane model: intracellular first (ionic
 tokens), then membrane (Songbird transport, BearDog TLS), then

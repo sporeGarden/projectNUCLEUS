@@ -28,3 +28,11 @@ validation/provenance-run-*/*.stdout
 
 # Archived provenance runs (fossil record on disk, not in git)
 validation/archive/provenance-run-*/
+
+# Generated external validation directories (timestamped by external_validation.sh)
+validation/external-*/
+
+# Editor backup files
+*.bak
+*.orig
+*.rej

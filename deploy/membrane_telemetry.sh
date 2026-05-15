@@ -75,8 +75,13 @@ probe_rpc() {
     local probe_name="$1" host="$2" port="$3"
     local start_ns end_ns latency_ms status="ok" response
     start_ns=$(date +%s%N)
-    response=$(echo '{"jsonrpc":"2.0","method":"health.liveness","id":1}' | \
-        nc -w 3 "$host" "$port" 2>/dev/null) || response=""
+    response=$(timeout 2 bash -c '
+        exec 3<>/dev/tcp/$1/$2 2>/dev/null || exit 1
+        echo "{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}" >&3
+        read -t 1 line <&3
+        exec 3>&-
+        echo "$line"
+    ' _ "$host" "$port" 2>/dev/null) || response=""
     end_ns=$(date +%s%N)
     latency_ms=$(( (end_ns - start_ns) / 1000000 ))
 
@@ -172,14 +177,27 @@ if [[ "$MODE" == "internal" || "$MODE" == "all" ]]; then
         emit "content_github_ttfb" "https://primals.eco/" "$gh_ttfb_ms" "ok"
     fi
 
-    # BTSP auth events (count from JupyterHub log if accessible)
-    JH_LOG="${JUPYTERHUB_DIR:-/home/irongate/jupyterhub}/jupyterhub.log"
-    if [[ -f "$JH_LOG" ]]; then
-        btsp_count=$(grep -c "AUTH_BTSP" "$JH_LOG" 2>/dev/null) || btsp_count=0
-        pam_count=$(grep -c "AUTH_PAM" "$JH_LOG" 2>/dev/null) || pam_count=0
-        fail_count=$(grep -c "AUTH_FAIL" "$JH_LOG" 2>/dev/null) || fail_count=0
-        emit "auth_events" "jupyterhub" "0" "ok" "0" "btsp=${btsp_count},pam=${pam_count},fail=${fail_count}"
+    # BTSP auth events — scan journald (primary) then fall back to log file
+    btsp_count=0; pam_count=0; fail_count=0
+    auth_source="none"
+    if command -v journalctl >/dev/null 2>&1; then
+        auth_source="journald"
+        jh_log=$(journalctl -u jupyterhub --since "today" --no-pager 2>/dev/null) || jh_log=""
+        if [[ -n "$jh_log" ]]; then
+            btsp_count=$(echo "$jh_log" | grep -ci "BTSP") || btsp_count=0
+            pam_count=$(echo "$jh_log" | grep -ci "PAMAuthenticator\|AUTH_PAM") || pam_count=0
+            fail_count=$(echo "$jh_log" | grep -ci "AUTH_FAIL\|failed login\|authentication failed") || fail_count=0
+        fi
+    else
+        JH_LOG="${JUPYTERHUB_DIR:-/home/irongate/jupyterhub}/jupyterhub.log"
+        if [[ -f "$JH_LOG" ]]; then
+            auth_source="logfile"
+            btsp_count=$(grep -c "AUTH_BTSP" "$JH_LOG" 2>/dev/null) || btsp_count=0
+            pam_count=$(grep -c "AUTH_PAM" "$JH_LOG" 2>/dev/null) || pam_count=0
+            fail_count=$(grep -c "AUTH_FAIL" "$JH_LOG" 2>/dev/null) || fail_count=0
+        fi
     fi
+    emit "auth_events" "jupyterhub/${auth_source}" "0" "ok" "0" "btsp=${btsp_count};pam=${pam_count};fail=${fail_count}"
 fi
 
 LINES_ADDED=$(wc -l < "$CSV_FILE")

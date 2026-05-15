@@ -1,0 +1,23 @@
+# Songbird NAT Parity Report — 20260515-194523
+# Generated: 2026-05-15T19:45:46Z
+
+[metadata]
+cf_url = "https://primals.eco/index.html"
+songbird_url = "https://membrane.primals.eco/index.html"
+samples = 10
+generated_at = "2026-05-15T19:45:46Z"
+
+[cloudflare]
+avg_ttfb_ms = 95.79
+avg_total_ms = 96.23
+uptime_pct = 100.0
+
+[songbird]
+avg_ttfb_ms = 129.93
+avg_total_ms = 159.27
+uptime_pct = 100.0
+
+[parity]
+ttfb_parity = false
+uptime_parity = true
+overall = false

@@ -99,18 +99,33 @@ if [[ "$MODE" == "external" || "$MODE" == "all" ]]; then
     # Caddy health endpoint
     probe_http "caddy_health" "http://${VPS_IP}:${VPS_HTTP}/health"
 
-    # Songbird TURN reachability (TCP)
-    probe_tcp "turn_tcp" "$VPS_IP" "3478"
+    # Songbird TURN reachability (UDP — TURN listens on UDP only)
+    probe_turn_udp() {
+        local host="$1" port="$2"
+        local start_ns end_ns latency_ms status="ok"
+        start_ns=$(date +%s%N)
+        if nc -z -u -w 3 "$host" "$port" 2>/dev/null; then
+            end_ns=$(date +%s%N)
+            latency_ms=$(( (end_ns - start_ns) / 1000000 ))
+        else
+            end_ns=$(date +%s%N)
+            latency_ms=$(( (end_ns - start_ns) / 1000000 ))
+            status="unreachable"
+        fi
+        emit "turn_udp" "${host}:${port}" "$latency_ms" "$status"
+    }
+    probe_turn_udp "$VPS_IP" "3478"
 
     # RustDesk hbbs reachability
     probe_tcp "rustdesk_hbbs" "$VPS_IP" "21116"
 
-    # BearDog TLS shadow (if running on VPS or locally)
-    BTSP_SHADOW_URL="${BTSP_SHADOW_URL:-https://127.0.0.1:8443/hub/login}"
-    if curl -sf --max-time 3 -k "$BTSP_SHADOW_URL" >/dev/null 2>&1; then
-        probe_http "beardog_tls_shadow" "$BTSP_SHADOW_URL" "-k"
+    # BearDog TLS shadow (BTSP RPC on :8443, not HTTP)
+    BTSP_SHADOW_HOST="${BTSP_SHADOW_HOST:-127.0.0.1}"
+    BTSP_SHADOW_PORT="${BTSP_SHADOW_PORT:-8443}"
+    if nc -z -w 2 "$BTSP_SHADOW_HOST" "$BTSP_SHADOW_PORT" 2>/dev/null; then
+        probe_rpc "beardog_tls_shadow" "$BTSP_SHADOW_HOST" "$BTSP_SHADOW_PORT"
     else
-        emit "beardog_tls_shadow" "$BTSP_SHADOW_URL" "0" "not_running"
+        emit "beardog_tls_shadow" "${BTSP_SHADOW_HOST}:${BTSP_SHADOW_PORT}" "0" "not_running"
     fi
 
     # VPS resource snapshot (requires SSH access)

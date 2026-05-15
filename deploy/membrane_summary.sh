@@ -97,7 +97,7 @@ probe_percentile() {
 
 # --- External membrane metrics ---
 caddy_uptime=$(probe_uptime_pct "caddy_health")
-turn_uptime=$(probe_uptime_pct "turn_tcp")
+turn_uptime=$(probe_uptime_pct "turn_udp")
 beardog_p50=$(probe_percentile "beardog_tls_shadow" 50)
 beardog_p95=$(probe_percentile "beardog_tls_shadow" 95)
 

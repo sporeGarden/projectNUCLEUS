@@ -1,0 +1,37 @@
+# Membrane 7-Day Summary — Continuous Sovereignty Telemetry
+# Generated: 2026-05-15T19:13:02Z
+# Source: 1 days of telemetry (27 total probes)
+# Window: 7 days | Cutover gate: 7 consecutive days
+
+[metadata]
+generated_at = "2026-05-15T19:13:02Z"
+capture_days = 1
+total_probes = 27
+summary_window_days = 7
+
+[external_membrane]
+caddy_health_uptime_pct = 100.0
+turn_reachable_pct = 100.0
+beardog_tls_p50_ms = 3021.0
+beardog_tls_p95_ms = 3021.0
+vps_ram_free_mb = 1603
+
+[internal_membrane]
+primal_health_pct = 100.0
+cloudflare_ttfb_p50_ms = 112.0
+cloudflare_ttfb_p95_ms = 138.0
+btsp_auth_pct = 0.0
+content_hash_match_pct = 100.0
+
+[parity]
+tls_parity = false
+nat_reachable = true
+content_parity = true
+auth_accumulating = false
+
+[thresholds]
+# Cutover gates — must ALL be true for 7 consecutive days
+tls_cutover_ready = false
+nat_cutover_ready = false
+content_cutover_ready = false
+auth_cutover_ready = false

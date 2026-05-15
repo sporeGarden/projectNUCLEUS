@@ -44,15 +44,17 @@ trusted hardware). External substrate requires its own threat model.
 | Channel 2b | RustDesk sovereign relay (hbbs :21116, hbbr :21117) | Remote desktop relay |
 | SSH | Key-only, ed25519, fail2ban active, multi-gate managed | Management surface |
 | Firewall | UFW: 22/tcp + 3478/tcp+udp + 21115-21117/tcp + 21116/udp, default deny | Expanded surface |
-| Composition | Relay + RustDesk (Phase 0.5 — Tower not yet deployed) | Static, no biomeOS |
+| Channel 3 | Caddy TLS :80 health (TLS shadow ready for DNS grey-cloud) | Content-aware routing surface |
+| Tower | BearDog :9100 (crypto/identity) + SkunkBat :9140 (defense/audit) | Sovereign crypto on external substrate |
+| Composition | **Tower LIVE (Phase 1)** — 6 services, 2GB RAM, 1.7GB free | biomeOS-free, systemd-managed |
 
 ### Threat Model: External Substrate
 
 | Threat | Severity | Mitigation (current) | Mitigation (future) |
 |--------|----------|---------------------|-------------------|
-| Provider reads disk | HIGH | TURN credentials in `/etc/songbird/relay-credentials` (plaintext). RustDesk ed25519 key at `/opt/membrane/rustdesk/` | BearDog Vault encrypts at rest (Phase 2) |
+| Provider reads disk | HIGH | DO API token encrypted (BearDog AES-256-GCM, Argon2id KDF, `/opt/membrane/credentials.age`). TURN credentials and RustDesk key remain plaintext pending full vault. | BearDog Vault encrypts all secrets at rest |
 | Provider reads memory | HIGH | Relay processes only encrypted bytes (BTSP for Songbird, e2e for RustDesk — opaque to observer) | Unchanged — encryption handles this by design |
-| Provider snapshots VM | MEDIUM | No family seeds on VPS (relay mode, no BearDog yet) | BingoCube challenge on boot |
+| Provider snapshots VM | MEDIUM | BearDog on VPS but no family seed (standalone mode). DO token encrypted at rest. | BingoCube challenge on boot |
 | Unauthorized relay abuse (TURN) | HIGH | Credential-authenticated TURN (username + HMAC key) | BearDog BTSP handshake for relay access |
 | Unauthorized relay abuse (RustDesk) | MEDIUM | RustDesk key-authenticated (hbbs public key required by clients) | BearDog BTSP handshake |
 | RustDesk ID enumeration | LOW | RustDesk IDs are random numeric; key required for connection | Accept — IDs are not secrets |

@@ -4,42 +4,46 @@
 #
 # The smallest composition that can reason + act + audit autonomously.
 # Tower (bearDog + songbird + skunkBat) provides the trust boundary,
-# biomeOS provides graph orchestration via Neural API, squirrel provides
-# AI planning via signal_plan mode.
+# biomeOS provides graph orchestration via Neural API (signal.dispatch,
+# capability.call, composition.deploy), squirrel provides AI planning
+# via signal_plan mode.
 #
 # This is a stadial goal composition: once deployed, the tower agent
 # can autonomously deploy Node, Nest, and full NUCLEUS compositions
 # via the atomic signal layer. Squirrel reads signal_tools.toml to
 # understand available signals and plans multi-signal deployments.
 #
+# AI backends: squirrel connects to whatever is available —
+# local Ollama, remote APIs, or federated peers via songbird mesh.
+#
 # Adapted from primalSpring/graphs/tower_agent.toml with tcp_fallback_port
 # for projectNUCLEUS deploy_graph.sh compatibility.
 #
 # Usage:
 #   bash deploy/deploy.sh --composition agent --graph-deploy
+#   biomeos deploy --graph graphs/tower_agent.toml
 
 [graph]
 name = "tower_agent"
 description = "Tower + biomeOS + squirrel: the autonomous deployment unit"
-version = "1.0.0"
+version = "1.1.0"
 coordination = "sequential"
+bonding_default = "btsp_required"
 
 [graph.metadata]
-base = "tower_atomic"
-profile = "agent"
-particle = "electron"
 security_model = "btsp_enforced"
+secure_by_default = true
 transport = "uds_only"
 tcp_ports = 5
-composition_model = "agentic"
+composition_model = "nucleated"
 fragments = ["tower_atomic"]
-resolve = true
 agentic = true
 
 [graph.bonding_policy]
 tower_internal = "covalent"
 tower_to_external = "ionic"
-encryption_tier = "full"
+encryption_tiers.tower = "full"
+encryption_tiers.orchestration = "btsp_authenticated"
 
 # ── Tower Atomic (trust boundary) ────────────────────────────────────
 
@@ -89,6 +93,8 @@ capabilities = [
 ]
 
 # ── Orchestration substrate ──────────────────────────────────────────
+# biomeOS neural-api: started separately, not spawned by deploy_graph.sh.
+# Provides signal.dispatch, capability.call, composition.deploy, graph.verify.
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -104,11 +110,12 @@ security_model = "tower_delegated"
 capabilities = [
     "graph.deploy", "graph.execute", "graph.list", "graph.status",
     "capability.discover", "capability.call",
-    "signal.dispatch", "signal.list", "signal.schema",
-    "primal.announce",
 ]
 
 # ── Agentic AI ───────────────────────────────────────────────────────
+# Squirrel: AI planning via signal_plan mode. Connects to signal_tools.toml
+# for atomic signal awareness. Plans get dispatched through biomeOS
+# signal.dispatch via signal_executor.sh.
 
 [[graph.nodes]]
 name = "squirrel"

@@ -1,0 +1,83 @@
+# Gate: strandGate — Bioinformatics Powerhouse
+#
+# Dual EPYC 7452 (64 cores, 128 threads) with 256 GB ECC RAM.
+# Most capable multi-substrate compute node. CPU-bound bioinformatics,
+# dual-vendor GPU compute (RTX 3090 + RX 6950 XT), Akida NPU.
+# barraCuda WGSL shaders validated on both NVIDIA and AMD here.
+# Created 2026-05-15.
+
+[gate]
+name = "strandgate"
+role = "Bioinformatics, multi-GPU + neuromorphic, heavy compute"
+location = "Sovereign cluster — LAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "Dual AMD EPYC 7452"
+cores = 64
+threads = 128
+gpu_work = ["NVIDIA RTX 3090 (24 GB GDDR6X)", "AMD RX 6950 XT (16 GB GDDR6)"]
+gpu_arch = ["Ampere SM80", "RDNA 2"]
+gpu_vram_gb = 40
+npu = "BrainChip Akida AKD1000 (PCIe)"
+ram_gb = 256
+ram_type = "DDR4 ECC"
+storage_tb = 18.0
+storage_type = "NVMe (2x2TB + 4x4TB Hyper M.2)"
+os = "Pop!_OS"
+
+[network]
+lan_speed = "1G"
+wan_speed = "1G"
+interface = "Cat6e ethernet"
+ten_g_nic = false
+ten_g_ready = false
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+
+[composition]
+atomic = "heavy_node_atomic"
+primals = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate",
+]
+fragment = "heavy_node_atomic + dual_vendor_gpu"
+
+[ports]
+beardog = 9100
+songbird = 9200
+toadstool = 9400
+nestgate = 9500
+barracuda = 9740
+coralreef = 9730
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "strandgate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[science]
+primary_domains = ["wetSpring", "groundSpring", "neuralSpring"]
+capabilities = [
+    "64-core CPU parallelism (Kraken2, alignment, assembly)",
+    "256 GB ECC RAM (whole-cell modeling, large genome graphs)",
+    "Dual-vendor GPU (barraCuda WGSL parity validation)",
+    "Akida NPU (neuromorphic inference)",
+    "18 TB fast NVMe (FASTQ staging, intermediate results)",
+]
+workloads = [
+    "Whole-cell modeling (ABG, wetSpring) — RAM-bound, 64-core",
+    "scRNA-seq pipelines (alignment, quantification)",
+    "Metagenomics (Kraken2, MetaPhlAn, assembly)",
+    "LTEE reproduction (breseq, allele frequency, lithoSpore)",
+    "barraCuda dual-vendor shader parity (RTX 3090 vs RX 6950 XT)",
+    "groundSpring GEMM validation (large matrix, ECC memory)",
+]
+thermal_zone = "basement (external exhaust available)"
+thermal_preference = "year-round compute (basement cooling)"

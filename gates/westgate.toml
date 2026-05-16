@@ -1,0 +1,81 @@
+# Gate: westGate — Cold Storage Archive
+#
+# 76 TB ZFS pool — the cold storage archive for the entire mesh.
+# NestGate manages content-addressed blob storage with ZFS snapshots
+# (100 snapshots in 0.17s). DDR3 + i7-4771: reliable and big, not fast.
+# 10G NIC installed for high-bandwidth blob replication.
+# Created 2026-05-15.
+
+[gate]
+name = "westgate"
+role = "Cold storage, NAS, caching layer"
+location = "Sovereign cluster — LAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "Intel i7-4771"
+cores = 4
+threads = 8
+gpu_display = "NVIDIA RTX 2070 Super"
+gpu_arch = "Turing SM75"
+gpu_vram_gb = 8
+ram_gb = 32
+ram_type = "DDR3"
+storage_hdd_tb = 76.0
+storage_nvme_tb = 2.0
+storage_type = "ZFS pool (HDD) + NVMe cache"
+zfs_snapshots = true
+os = "Pop!_OS"
+
+[network]
+lan_speed = "1G (10G pending cable)"
+wan_speed = "1G"
+interface = "Cat6a ethernet"
+ten_g_nic = true
+ten_g_ready = true
+ten_g_switch_port = true
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+
+[composition]
+atomic = "heavy_nest_atomic"
+primals = [
+    "beardog", "songbird",
+    "nestgate",
+]
+fragment = "heavy_nest_atomic (storage-focused)"
+
+[ports]
+beardog = 9100
+songbird = 9200
+nestgate = 9500
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "westgate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[science]
+primary_domains = ["wetSpring", "groundSpring"]
+capabilities = [
+    "76 TB ZFS cold storage (NCBI FASTQs, genome databases)",
+    "Content-addressed blob storage (NestGate)",
+    "ZFS snapshots (100 in 0.17s — instant dataset versioning)",
+    "10G NIC for high-bandwidth blob replication (pending cable)",
+    "NVMe cache tier for hot datasets",
+]
+workloads = [
+    "NCBI FASTQ storage and retrieval (5+ GB files)",
+    "Genome database hosting (RefSeq, UniProt, KEGG)",
+    "LTEE dataset archival (lithoSpore modules)",
+    "NestGate content-addressed replication (cross-gate)",
+    "provenance artifact storage (sweetGrass braids)",
+    "sporePrint content source-of-truth",
+]
+thermal_zone = "basement (passive, low TDP)"
+thermal_preference = "always-on (low power draw, 65W CPU + idle GPU)"

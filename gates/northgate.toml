@@ -1,0 +1,74 @@
+# Gate: northGate — Personal Gaming + Remote Compute
+#
+# Strongest single GPU in the mesh (RTX 5090).
+# Demonstrates "friend/family remote compute without disrupting normal use" —
+# NUCLEUS primals run in background while the owner games.
+# 10G NIC installed, pending cable for backbone activation.
+# Created 2026-05-15.
+
+[gate]
+name = "northgate"
+role = "Personal gaming primary, remote compute secondary"
+location = "Sovereign cluster — LAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "AMD Ryzen 9 9950X3D"
+cores = 16
+threads = 32
+gpu_display = "NVIDIA RTX 5090"
+gpu_arch = "Blackwell SM120"
+gpu_vram_gb = 32
+ram_gb = 96
+ram_type = "DDR5"
+storage_tb = 5.0
+storage_type = "NVMe"
+os = "Pop!_OS"
+
+[network]
+lan_speed = "1G (10G pending cable)"
+wan_speed = "1G"
+interface = "Cat6a ethernet"
+ten_g_nic = true
+ten_g_ready = true
+ten_g_switch_port = true
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+
+[composition]
+atomic = "node_atomic"
+primals = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+]
+fragment = "node_atomic_compute"
+
+[ports]
+beardog = 9100
+songbird = 9200
+toadstool = 9400
+barracuda = 9740
+coralreef = 9730
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "northgate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[science]
+primary_domains = ["hotSpring", "neuralSpring"]
+capabilities = ["SM120 GPU compute", "FP64 (consumer 1:64)", "32GB GDDR7", "high single-thread (3D V-Cache)"]
+workloads = [
+    "WDM Yukawa MD (SM120 validation)",
+    "ML inference (neuralSpring LSTM, attention)",
+    "coralReef SM120 target validation",
+    "barraCuda shader profiling (largest single VRAM)",
+]
+thermal_zone = "upper floor (heated room)"
+thermal_preference = "winter dispatch preferred (450W TDP = space heating)"
+owner_priority = "gaming — toadStool yields to GPU load >50%"

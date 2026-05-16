@@ -1,0 +1,83 @@
+# Gate: flockGate — Remote Covalent Mesh Node
+#
+# Demonstrates the multi-household covalent mesh pattern.
+# Same family seed, different physical LAN.
+# Connected via Songbird BirdSong over TCP fallback (WAN).
+# Higher latency than LAN gates, same full trust model.
+# Created 2026-05-15.
+
+[gate]
+name = "flockgate"
+role = "Flock compute / remote covalent mesh"
+location = "Remote household — WAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "Intel i9-13900K"
+cores = 24
+threads = 32
+gpu_display = "NVIDIA RTX 3070 Ti"
+gpu_arch = "Ampere SM80"
+gpu_vram_gb = 8
+ram_gb = 64
+ram_type = "DDR5"
+storage_tb = 2.0
+storage_type = "NVMe"
+os = "Ubuntu 24.04.3"
+
+[network]
+lan_speed = "1G (local household)"
+wan_speed = "residential broadband"
+interface = "ethernet"
+ten_g_nic = false
+ten_g_ready = false
+remote_mesh = true
+mesh_transport = "Songbird TCP fallback (BirdSong over WAN)"
+latency_to_cluster_ms = "~20-40 (WAN dependent)"
+
+[membrane]
+role = "intracellular (remote)"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+multi_household = true
+
+[composition]
+atomic = "node_atomic"
+primals = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+]
+fragment = "node_atomic_compute"
+
+[ports]
+beardog = 9100
+songbird = 9200
+toadstool = 9400
+barracuda = 9740
+coralreef = 9730
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "flockgate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[science]
+primary_domains = ["hotSpring", "neuralSpring", "ludoSpring"]
+capabilities = [
+    "24-core i9-13900K (high single-thread + E-cores for background)",
+    "RTX 3070 Ti (8 GB, SM80 Ampere)",
+    "64 GB DDR5 (mid-range workloads)",
+    "Remote/distributed compute (latency-tolerant workloads)",
+]
+workloads = [
+    "Latency-tolerant GPU shaders (WDM sweeps, overnight batches)",
+    "neuralSpring inference (pre-trained model serving)",
+    "ludoSpring game math validation (barraCuda Perlin, WFC)",
+    "Distributed ensemble members (one gate per parameter sweep point)",
+]
+thermal_zone = "remote household (owner discretion)"
+thermal_preference = "owner-controlled — opt-in dispatch only"
+owner_priority = "personal use first — max_guest_load configurable"
+max_guest_load_default = 50

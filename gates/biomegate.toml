@@ -1,0 +1,89 @@
+# Gate: biomeGate — Semi-Mobile Mini HPC / HBM2 Test Bench
+#
+# Threadripper 3970X (32 cores, 64 threads), 256 GB DDR4.
+# The project's HBM2 test bench — hotSpring team works here.
+# Work cards rotate: Titan V, MI50, Tesla K80.
+# coralReef sovereign compiler development (sm_70, gfx906).
+# Created 2026-05-15.
+
+[gate]
+name = "biomegate"
+role = "HBM2 sovereign compiler development, semi-mobile heavy compute"
+location = "Sovereign cluster — LAN"
+bonding = "covalent"
+
+[hardware]
+cpu = "AMD Threadripper 3970X"
+cores = 32
+threads = 64
+gpu_display = "NVIDIA RTX 5060 (8 GB GDDR7)"
+gpu_work = ["NVIDIA Titan V (12 GB HBM2)", "NVIDIA Tesla K80 (24 GB GDDR5, 2x12 GB)"]
+gpu_work_float = ["2nd Titan V (12 GB HBM2)", "2x AMD Instinct MI50 (16 GB HBM2 each)"]
+gpu_arch = ["Volta SM70", "Kepler GK210", "Vega 20 gfx906"]
+gpu_vram_gb_installed = 44
+gpu_hbm2_gb_installed = 12
+gpu_hbm2_gb_fleet = 56
+npu = "BrainChip Akida AKD1000 (from strandGate)"
+ram_gb = 256
+ram_type = "DDR4"
+storage_tb = 5.0
+storage_type = "NVMe (1TB boot + 2x2TB work/scratch)"
+pcie_slots_practical = 3
+os = "Pop!_OS"
+
+[network]
+lan_speed = "1G"
+wan_speed = "1G"
+interface = "Cat6e ethernet"
+ten_g_nic = false
+ten_g_ready = false
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+
+[composition]
+atomic = "heavy_node_atomic"
+primals = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+]
+fragment = "heavy_node_atomic + hbm2_bench"
+
+[ports]
+beardog = 9100
+songbird = 9200
+toadstool = 9400
+barracuda = 9740
+coralreef = 9730
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "biomegate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[science]
+primary_domains = ["hotSpring", "groundSpring"]
+capabilities = [
+    "HBM2 compute (Titan V sm_70, MI50 gfx906)",
+    "FP64 7.4 TFLOPS (Titan V) + 6.6 TFLOPS (MI50)",
+    "HBM2 bandwidth 653 GB/s (Titan V) + 1024 GB/s (MI50)",
+    "32-core CPU for baselines/verification",
+    "Kepler coverage (Tesla K80 GK210)",
+    "coralReef sovereign compiler target development",
+    "VFIO PBDMA context load experiments (Exp 058)",
+]
+workloads = [
+    "Lattice QCD production (32^4, β sweeps, HMC) — Titan V HBM2",
+    "WDM Yukawa MD (N=10k, Green-Kubo transport) — HBM2 FP64",
+    "coralReef compiler development (sm_70 + gfx906 targets)",
+    "DF64 transcendental validation (Exp 046 precision families)",
+    "Dual Titan V mmiotrace (VFIO register mapping)",
+    "groundSpring GPU bench (gs-bench-gpu)",
+    "hotSpring Kokkos parity benchmarks (Exp 053)",
+]
+thermal_zone = "ground floor (mixed heating utility)"
+thermal_preference = "winter dispatch preferred (300W work cards)"

@@ -101,6 +101,28 @@ declare -A PRIMAL_PORTS=(
     [skunkbat]=$SKUNKBAT_PORT
 )
 
+# --- 10G Backbone (covalent mesh interconnect) ---
+# Switch: acquired. NICs: installed on northGate, southGate, eastGate, westGate.
+# Cables: PENDING (~$50 Cat6a or DAC). Activation: immediate once cabled.
+BACKBONE_VLAN_ID="${BACKBONE_VLAN_ID:-100}"
+BACKBONE_MTU="${BACKBONE_MTU:-9000}"                    # jumbo frames
+BACKBONE_SUBNET="${BACKBONE_SUBNET:-10.10.0.0/24}"     # covalent VLAN
+
+# Inter-gate static IPs (10G backbone — used by Songbird + toadStool)
+declare -A BACKBONE_IPS=(
+    [northgate]="10.10.0.1"
+    [southgate]="10.10.0.2"
+    [eastgate]="10.10.0.3"
+    [westgate]="10.10.0.4"
+    [irongate]="10.10.0.10"     # 1G until NIC added, reachable via gateway
+    [strandgate]="10.10.0.11"   # 1G until NIC added
+    [biomegate]="10.10.0.12"    # 1G until NIC added
+)
+
+# Thermal dispatch (GPU heat recovery model)
+# Values: "winter" | "summer" | "shoulder" | "auto"
+THERMAL_SEASON="${THERMAL_SEASON:-auto}"
+
 # --- Membrane Telemetry (continuous sovereignty shadow) ---
 MEMBRANE_TELEMETRY_INTERVAL="${MEMBRANE_TELEMETRY_INTERVAL:-900}"           # seconds (900 = 15 min)
 MEMBRANE_TELEMETRY_DIR="${MEMBRANE_TELEMETRY_DIR:-$NUCLEUS_PROJECT_ROOT/validation/baselines/daily}"

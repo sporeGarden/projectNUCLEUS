@@ -189,7 +189,7 @@ if [[ "$MODE" == "internal" || "$MODE" == "all" ]]; then
             fail_count=$(echo "$jh_log" | grep -ci "AUTH_FAIL\|failed login\|authentication failed") || fail_count=0
         fi
     else
-        JH_LOG="${JUPYTERHUB_DIR:-${GATE_HOME:-/home/irongate}/jupyterhub}/jupyterhub.log"
+        JH_LOG="${JUPYTERHUB_DIR:-${GATE_HOME:-$HOME}/jupyterhub}/jupyterhub.log"
         if [[ -f "$JH_LOG" ]]; then
             auth_source="logfile"
             btsp_count=$(grep -c "AUTH_BTSP" "$JH_LOG" 2>/dev/null) || btsp_count=0

@@ -18,7 +18,7 @@ provenance-tracked, every notebook is visible, every result is reproducible.
 ## Directory Structure
 
 ```
-/home/irongate/shared/abg/
+$GATE_HOME/shared/abg/
 ├── commons/           Scratch notebooks, experiments, exploration
 ├── pilot/             Structured experiments (between scratch and formal projects)
 │   └── {name}/
@@ -52,7 +52,7 @@ Each user's `~/notebooks/` directory is their JupyterLab root:
 ├── Welcome.ipynb                   Tier-appropriate welcome notebook (symlinked)
 ├── scratch/                        Personal scratch space (compute/admin only, chmod 700)
 ├── results/                        Personal results
-└── shared -> /home/irongate/shared/abg    (compute/admin/observer)
+└── shared -> $GATE_HOME/shared/abg    (compute/admin/observer)
     OR
 └── showcase -> .../shared/abg/showcase    (reviewer — showcase only)
 ```
@@ -118,16 +118,16 @@ Creates `pilot/scrna-feasibility/` with `notebooks/`, `data/`, and a
 
 ```bash
 sudo bash abg_accounts.sh create-project scrna-castleman
-cp -r /home/irongate/shared/abg/pilot/scrna-feasibility/notebooks/* \
-      /home/irongate/shared/abg/projects/scrna-castleman/notebooks/
+cp -r $GATE_HOME/shared/abg/pilot/scrna-feasibility/notebooks/* \
+      $GATE_HOME/shared/abg/projects/scrna-castleman/notebooks/
 ```
 
 ### Promoting Project to Showcase
 
 ```bash
-cp /home/irongate/shared/abg/projects/scrna-castleman/notebooks/final.ipynb \
-   /home/irongate/shared/abg/showcase/
-chmod 444 /home/irongate/shared/abg/showcase/final.ipynb
+cp $GATE_HOME/shared/abg/projects/scrna-castleman/notebooks/final.ipynb \
+   $GATE_HOME/shared/abg/showcase/
+chmod 444 $GATE_HOME/shared/abg/showcase/final.ipynb
 ```
 
 ---
@@ -212,7 +212,7 @@ and `braid.json` — the full audit trail for the computation.
 
 ## Implementation
 
-- Directory structure: `/home/irongate/shared/abg/`
+- Directory structure: `$GATE_HOME/shared/abg/`
 - Permissions managed by `deploy/abg_accounts.sh`
 - JupyterHub integration via `pre_spawn_hook` in `jupyterhub_config.py`
 - Tier-aware symlinks: reviewer gets `showcase/` only, others get full `shared/`

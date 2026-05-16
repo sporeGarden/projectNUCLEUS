@@ -1,8 +1,8 @@
 //! Transport abstraction for dual-architecture tunnel evolution.
 //!
-//! v0.1: CloudflareTunnelTransport — manages the `cloudflared` process
-//! v0.2: SongbirdTransport — songbird-quic + songbird-tls as library deps
-//! v0.3: BearDogAuthTransport — full primal auth via beardog-auth
+//! v0.1: `CloudflareTunnelTransport` — manages the `cloudflared` process
+//! v0.2: `SongbirdTransport` — songbird-quic + songbird-tls as library deps
+//! v0.3: `BearDogAuthTransport` — full primal auth via beardog-auth
 //!
 //! Cloudflare remains primary until Songbird/BearDog reach parity.
 
@@ -86,15 +86,13 @@ impl CloudflareTunnelTransport {
             .output()
             .map_err(|e| TransportError::Unavailable(format!("cloudflared not found: {e}")))?;
 
-        let version = String::from_utf8_lossy(&output.stdout)
-            .trim()
-            .to_string();
+        let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
         Ok(version)
     }
 }
 
 impl TunnelTransport for CloudflareTunnelTransport {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "cloudflare"
     }
 

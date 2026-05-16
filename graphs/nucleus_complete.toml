@@ -238,7 +238,7 @@ capabilities = [
 [[graph.nodes]]
 name = "skunkbat"
 binary = "skunkbat"
-order = 10
+order = 11
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -257,7 +257,7 @@ capabilities = [
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 11
+order = 12
 required = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
@@ -280,7 +280,7 @@ capabilities = [
 [[graph.nodes]]
 name = "primalspring"
 binary = "primalspring_primal"
-order = 12
+order = 13
 required = true
 spawn = false
 depends_on = ["biomeos_neural_api", "beardog", "songbird", "nestgate", "toadstool", "squirrel"]

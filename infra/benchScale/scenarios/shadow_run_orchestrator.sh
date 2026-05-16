@@ -101,7 +101,7 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
 
     # 1. NestGate content parity
     echo "--- H2-05/3a: NestGate Content Parity ---"
-    NESTGATE_URL="http://${NUCLEUS_BIND_ADDRESS}:${PETALTONGUE_PORT:-9901}"
+    NESTGATE_URL="http://${NUCLEUS_BIND_ADDRESS}:${PETALTONGUE_PORT:-9900}"
     GHPAGES_URL="https://primals.eco"
 
     if curl -sf --max-time 5 "$NESTGATE_URL" >/dev/null 2>&1; then

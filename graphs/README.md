@@ -19,10 +19,10 @@ The canonical source for all 77+ graphs remains in primalSpring.
 
 | File | Particle | Primals |
 |------|----------|---------|
-| `tower_atomic.toml` | Electron | BearDog + Songbird |
-| `node_atomic.toml` | Proton | Tower + ToadStool + barraCuda + coralReef + skunkBat |
-| `nest_atomic.toml` | Neutron | Tower + NestGate + provenance trio + skunkBat |
-| `nucleus.toml` | Full atom | Tower + Node + Nest (9 domain primals; see `nucleus_complete.toml` for full 13) |
+| `tower_atomic.toml` | Electron | BearDog + Songbird + skunkBat |
+| `node_atomic.toml` | Proton | Tower + ToadStool + barraCuda + coralReef |
+| `nest_atomic.toml` | Neutron | Tower + NestGate + provenance trio |
+| `nucleus.toml` | Full atom | Tower + Node + Nest (10 domain primals; see `nucleus_complete.toml` for full 13) |
 
 ## Deployment Graphs
 

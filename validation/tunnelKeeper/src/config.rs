@@ -98,18 +98,13 @@ pub async fn sync(
 
     if pull {
         let remote = client.get_tunnel_config(&config.tunnel).await?;
-        if json {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&remote).unwrap_or_default()
-            );
-        } else {
+        if !json {
             println!("Remote config for tunnel '{}':", config.tunnel);
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&remote).unwrap_or_default()
-            );
         }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&remote).unwrap_or_default()
+        );
     } else {
         let ingress_payload: Vec<serde_json::Value> = config
             .ingress
@@ -122,7 +117,11 @@ pub async fn sync(
             .await?;
 
         if json {
-            println!(r#"{{"status":"synced","tunnel":"{}","rules":{}}}"#, config.tunnel, config.ingress.len());
+            println!(
+                r#"{{"status":"synced","tunnel":"{}","rules":{}}}"#,
+                config.tunnel,
+                config.ingress.len()
+            );
         } else {
             println!(
                 "Pushed {} ingress rules to tunnel '{}'",
@@ -223,4 +222,89 @@ pub fn route_rm(config_path: &Path, path: &str, json: bool) -> Result<(), Config
         );
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_YAML: &str = r"
+tunnel: abc-123-def
+credentials-file: /home/user/.cloudflared/abc-123-def.json
+ingress:
+  - hostname: lab.primals.eco
+    service: http://127.0.0.1:8000
+  - hostname: git.primals.eco
+    service: http://127.0.0.1:3000
+  - service: http_status:404
+";
+
+    #[test]
+    fn parse_valid_config() {
+        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        assert_eq!(config.tunnel, "abc-123-def");
+        assert_eq!(config.ingress.len(), 3);
+        assert_eq!(
+            config.ingress[0].hostname.as_deref(),
+            Some("lab.primals.eco")
+        );
+        assert!(config.ingress[2].hostname.is_none());
+    }
+
+    #[test]
+    fn config_yaml_roundtrip() {
+        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        let yaml = serde_yaml::to_string(&config).unwrap();
+        let config2: TunnelConfig = serde_yaml::from_str(&yaml).unwrap();
+        assert_eq!(config.tunnel, config2.tunnel);
+        assert_eq!(config.ingress.len(), config2.ingress.len());
+    }
+
+    #[test]
+    fn config_json_serialization() {
+        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        let json = serde_json::to_string(&config).unwrap();
+        let value: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(value["tunnel"], "abc-123-def");
+    }
+
+    #[test]
+    fn load_nonexistent_path_returns_not_found() {
+        let result = TunnelConfig::load(Path::new("/nonexistent/path/config.yml"));
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("not found"), "expected NotFound, got: {err}");
+    }
+
+    #[test]
+    fn config_save_and_reload() {
+        let dir = std::env::temp_dir().join("tunnelkeeper_test_config");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("test_config.yml");
+
+        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        config.save(&path).unwrap();
+
+        let loaded = TunnelConfig::load(&path).unwrap();
+        assert_eq!(loaded.tunnel, "abc-123-def");
+        assert_eq!(loaded.ingress.len(), 3);
+
+        let _ = fs::remove_file(&path);
+        let _ = fs::remove_dir(&dir);
+    }
+
+    #[test]
+    fn ingress_rule_hostname_none_for_catchall() {
+        let rule: IngressRule = serde_yaml::from_str("service: http_status:404").unwrap();
+        assert!(rule.hostname.is_none());
+        assert!(rule.path.is_none());
+        assert_eq!(rule.service, "http_status:404");
+    }
+
+    #[test]
+    fn ingress_rule_with_path() {
+        let yaml = "hostname: lab.primals.eco\npath: \"/api/.*\"\nservice: http://127.0.0.1:8000\n";
+        let rule: IngressRule = serde_yaml::from_str(yaml).unwrap();
+        assert_eq!(rule.path.as_deref(), Some("/api/.*"));
+    }
 }

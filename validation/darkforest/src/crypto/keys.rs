@@ -1,17 +1,27 @@
-use crate::check::*;
-use crate::net::sudo_cmd;
 use super::gate_home;
+use crate::check::{
+    COMPUTE_USER, Category, CheckBuilder, CheckResult, OBSERVER_USER, REVIEWER_USER, Severity,
+};
+use crate::net::sudo_cmd;
 
-pub(crate) fn cry_04_api_token_entropy(results: &mut Vec<CheckResult>) {
+pub fn cry_04_api_token_entropy(results: &mut Vec<CheckResult>) {
     println!("── CRY-04: API Token Entropy ──");
     let cb = CheckBuilder::new("CRY-04", "crypto", Category::Crypto, Severity::High)
         .remediation("JupyterHub generates UUID4 tokens by default — ensure no custom overrides");
 
     let db = gate_home().join("jupyterhub/jupyterhub.sqlite");
-    let (code, out) = sudo_cmd("root",
-        &format!("sqlite3 {} \"SELECT prefix FROM api_tokens LIMIT 5\" 2>/dev/null", db.display()));
+    let (code, out) = sudo_cmd(
+        "root",
+        &format!(
+            "sqlite3 {} \"SELECT prefix FROM api_tokens LIMIT 5\" 2>/dev/null",
+            db.display()
+        ),
+    );
     if code != 0 || out.trim().is_empty() {
-        results.push(cb.pass("No API tokens in database or database not accessible", "Empty result"));
+        results.push(cb.pass(
+            "No API tokens in database or database not accessible",
+            "Empty result",
+        ));
         return;
     }
 
@@ -23,7 +33,10 @@ pub(crate) fn cry_04_api_token_entropy(results: &mut Vec<CheckResult>) {
 
     if all_hex {
         results.push(cb.pass(
-            &format!("API token prefixes are hex (UUID-derived): {} tokens checked", prefixes.len()),
+            &format!(
+                "API token prefixes are hex (UUID-derived): {} tokens checked",
+                prefixes.len()
+            ),
             &format!("prefixes={}", prefixes.join(",")),
         ));
     } else {
@@ -34,23 +47,34 @@ pub(crate) fn cry_04_api_token_entropy(results: &mut Vec<CheckResult>) {
     }
 }
 
-pub(crate) fn cry_05_shadow_hash_algorithm(results: &mut Vec<CheckResult>) {
+pub fn cry_05_shadow_hash_algorithm(results: &mut Vec<CheckResult>) {
     println!("── CRY-05: Shadow Hash Algorithm ──");
 
     let abg_users = [COMPUTE_USER, REVIEWER_USER, OBSERVER_USER, "kmok"];
     for user in &abg_users {
-        let cb = CheckBuilder::new(&format!("CRY-05-{user}"), "crypto", Category::Crypto, Severity::Critical)
-            .remediation("Set ENCRYPT_METHOD SHA512 or yescrypt in /etc/login.defs");
+        let cb = CheckBuilder::new(
+            &format!("CRY-05-{user}"),
+            "crypto",
+            Category::Crypto,
+            Severity::Critical,
+        )
+        .remediation("Set ENCRYPT_METHOD SHA512 or yescrypt in /etc/login.defs");
 
         let (code, line) = sudo_cmd("root", &format!("grep '^{user}:' /etc/shadow 2>/dev/null"));
         if code != 0 || line.trim().is_empty() {
-            results.push(cb.pass(&format!("{user}: no shadow entry (system account or no password)"), "Not found"));
+            results.push(cb.pass(
+                &format!("{user}: no shadow entry (system account or no password)"),
+                "Not found",
+            ));
             continue;
         }
 
         let hash_field = line.split(':').nth(1).unwrap_or("");
         if hash_field == "*" || hash_field == "!" || hash_field == "!!" || hash_field.is_empty() {
-            results.push(cb.pass(&format!("{user}: account locked (no password hash)"), hash_field));
+            results.push(cb.pass(
+                &format!("{user}: account locked (no password hash)"),
+                hash_field,
+            ));
             continue;
         }
 
@@ -66,18 +90,24 @@ pub(crate) fn cry_05_shadow_hash_algorithm(results: &mut Vec<CheckResult>) {
             results.push(cb.fail(&format!("{user}: DES hash — critically weak"), "DES"));
         } else {
             let alg_id = hash_field.split('$').nth(1).unwrap_or("?");
-            results.push(cb.pass(&format!("{user}: hash algorithm ${alg_id}$"), &format!("${alg_id}$...")));
+            results.push(cb.pass(
+                &format!("{user}: hash algorithm ${alg_id}$"),
+                &format!("${alg_id}$..."),
+            ));
         }
     }
 }
 
-pub(crate) fn cry_06_shadow_hash_strength(results: &mut Vec<CheckResult>) {
+pub fn cry_06_shadow_hash_strength(results: &mut Vec<CheckResult>) {
     println!("── CRY-06: Shadow Hash Rounds ──");
 
     let cb = CheckBuilder::new("CRY-06", "crypto", Category::Crypto, Severity::Medium)
         .remediation("Set SHA_CRYPT_MIN_ROUNDS >= 5000 in /etc/login.defs");
 
-    let (code, defs) = sudo_cmd("root", "grep -i 'SHA_CRYPT_MIN_ROUNDS\\|YESCRYPT_COST_FACTOR' /etc/login.defs 2>/dev/null");
+    let (code, defs) = sudo_cmd(
+        "root",
+        "grep -i 'SHA_CRYPT_MIN_ROUNDS\\|YESCRYPT_COST_FACTOR' /etc/login.defs 2>/dev/null",
+    );
     if code != 0 || defs.trim().is_empty() {
         results.push(cb.pass(
             "No explicit rounds/cost in login.defs (using distro defaults — acceptable for SHA-512)",
@@ -88,11 +118,9 @@ pub(crate) fn cry_06_shadow_hash_strength(results: &mut Vec<CheckResult>) {
 
     let evidence = defs.trim().to_string();
     let rounds_ok = defs.lines().any(|l| {
-        if let Some(val) = l.split_whitespace().last() {
-            val.parse::<u32>().map_or(false, |n| n >= 5000)
-        } else {
-            false
-        }
+        l.split_whitespace()
+            .last()
+            .is_some_and(|val| val.parse::<u32>().is_ok_and(|n| n >= 5000))
     });
 
     if rounds_ok || defs.contains("YESCRYPT") {
@@ -102,20 +130,32 @@ pub(crate) fn cry_06_shadow_hash_strength(results: &mut Vec<CheckResult>) {
     }
 }
 
-pub(crate) fn cry_11_master_key_present(results: &mut Vec<CheckResult>) {
+pub fn cry_11_master_key_present(results: &mut Vec<CheckResult>) {
     println!("── CRY-11: BearDog Master Key Presence ──");
     let cb = CheckBuilder::new("CRY-11", "crypto", Category::Crypto, Severity::High)
         .remediation("Set BEARDOG_MASTER_KEY env var for persistent key derivation");
 
-    let (code, out) = sudo_cmd("root",
-        &format!("grep -r 'BEARDOG_MASTER_KEY' /etc/systemd/system/beardog* {}/.config/systemd/user/beardog* 2>/dev/null | head -3",
-            gate_home().display()));
+    let (code, out) = sudo_cmd(
+        "root",
+        &format!(
+            "grep -r 'BEARDOG_MASTER_KEY' /etc/systemd/system/beardog* {}/.config/systemd/user/beardog* 2>/dev/null | head -3",
+            gate_home().display()
+        ),
+    );
     if code == 0 && !out.trim().is_empty() && out.contains("BEARDOG_MASTER_KEY") {
-        let has_value = out.contains('=') && !out.contains("BEARDOG_MASTER_KEY=\"\"") && !out.contains("BEARDOG_MASTER_KEY=\n");
+        let has_value = out.contains('=')
+            && !out.contains("BEARDOG_MASTER_KEY=\"\"")
+            && !out.contains("BEARDOG_MASTER_KEY=\n");
         if has_value {
-            results.push(cb.pass("BEARDOG_MASTER_KEY is set in systemd unit", "Found in service definition"));
+            results.push(cb.pass(
+                "BEARDOG_MASTER_KEY is set in systemd unit",
+                "Found in service definition",
+            ));
         } else {
-            results.push(cb.dark("BEARDOG_MASTER_KEY defined but may be empty", &out[..80.min(out.len())]));
+            results.push(cb.dark(
+                "BEARDOG_MASTER_KEY defined but may be empty",
+                &out[..80.min(out.len())],
+            ));
         }
     } else {
         results.push(cb.dark(

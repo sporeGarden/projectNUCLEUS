@@ -1,15 +1,15 @@
-use crate::check::*;
+use super::{CryptoConfig, hex_decode, shannon_entropy};
+use crate::check::{Category, CheckBuilder, CheckResult, Severity};
 use crate::net::sudo_cmd;
-use super::{CryptoConfig, shannon_entropy, hex_decode};
 use std::time::SystemTime;
 
-pub(crate) fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+pub fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-01: Cookie Secret Entropy ──");
     let cb = CheckBuilder::new("CRY-01", "crypto", Category::Crypto, Severity::Critical)
         .remediation("Regenerate cookie secret: deploy/rotate_cookie_secret.sh");
     let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, content) = sudo_cmd("root", &format!("cat {} 2>/dev/null", secret_path));
+    let (code, content) = sudo_cmd("root", &format!("cat {secret_path} 2>/dev/null"));
     if code != 0 || content.trim().is_empty() {
         results.push(cb.fail("Cookie secret file not readable or empty", &secret_path));
         return;
@@ -42,13 +42,13 @@ pub(crate) fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckR
     }
 }
 
-pub(crate) fn cry_02_cookie_age(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+pub fn cry_02_cookie_age(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-02: Cookie Secret Age ──");
     let cb = CheckBuilder::new("CRY-02", "crypto", Category::Crypto, Severity::Medium)
         .remediation("Rotate monthly: sudo bash deploy/rotate_cookie_secret.sh");
     let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%Y' {} 2>/dev/null", secret_path));
+    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%Y' {secret_path} 2>/dev/null"));
     if code != 0 {
         results.push(cb.fail("Cannot stat cookie secret file", &secret_path));
         return;
@@ -57,8 +57,7 @@ pub(crate) fn cry_02_cookie_age(cfg: &CryptoConfig, results: &mut Vec<CheckResul
     if let Ok(mtime) = stat_out.trim().parse::<u64>() {
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
-            .map(|d| d.as_secs())
-            .unwrap_or(0);
+            .map_or(0, |d| d.as_secs());
         let age_days = (now.saturating_sub(mtime)) / 86400;
         if age_days > 90 {
             results.push(cb.dark(
@@ -76,19 +75,22 @@ pub(crate) fn cry_02_cookie_age(cfg: &CryptoConfig, results: &mut Vec<CheckResul
     }
 }
 
-pub(crate) fn cry_03_cookie_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+pub fn cry_03_cookie_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-03: Cookie Secret Permissions ──");
     let cb = CheckBuilder::new("CRY-03", "crypto", Category::Crypto, Severity::High)
         .remediation("chmod 600 and chown root the cookie secret file");
     let secret_path = cfg.cookie_secret.display().to_string();
 
-    let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%a %U' {} 2>/dev/null", secret_path));
+    let (code, stat_out) = sudo_cmd(
+        "root",
+        &format!("stat -c '%a %U' {secret_path} 2>/dev/null"),
+    );
     if code != 0 {
         results.push(cb.fail("Cannot stat cookie secret file", &secret_path));
         return;
     }
 
-    let parts: Vec<&str> = stat_out.trim().split_whitespace().collect();
+    let parts: Vec<&str> = stat_out.split_whitespace().collect();
     let perms = parts.first().unwrap_or(&"???");
     let owner = parts.get(1).unwrap_or(&"???");
 
@@ -102,13 +104,15 @@ pub(crate) fn cry_03_cookie_permissions(cfg: &CryptoConfig, results: &mut Vec<Ch
         ));
     } else {
         results.push(cb.fail(
-            &format!("Cookie secret permissions unsafe: mode={perms}, owner={owner} (need 600, root)"),
+            &format!(
+                "Cookie secret permissions unsafe: mode={perms}, owner={owner} (need 600, root)"
+            ),
             &format!("{perms} {owner}"),
         ));
     }
 }
 
-pub(crate) fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
+pub fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-13: Sensitive File Permission Sweep ──");
 
     let cookie_path = cfg.cookie_secret.display().to_string();
@@ -125,7 +129,7 @@ pub(crate) fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mu
         let cb = CheckBuilder::new(&id, "crypto", Category::Crypto, Severity::High)
             .remediation(&format!("chmod 600 {path}"));
 
-        let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%a' {} 2>/dev/null", path));
+        let (code, stat_out) = sudo_cmd("root", &format!("stat -c '%a' {path} 2>/dev/null"));
         if code != 0 {
             results.push(cb.pass(&format!("{label}: file not found (acceptable)"), path));
             continue;
@@ -137,26 +141,52 @@ pub(crate) fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mu
         let group_readable = (mode / 10) % 10 >= 4;
 
         if world_readable {
-            results.push(cb.fail(&format!("{label}: world-readable ({perms})"), &format!("{path} mode={perms}")));
+            results.push(cb.fail(
+                &format!("{label}: world-readable ({perms})"),
+                &format!("{path} mode={perms}"),
+            ));
         } else if group_readable && mode != 640 {
-            results.push(cb.dark(&format!("{label}: group-readable ({perms}) — review group membership"), &format!("{path} mode={perms}")));
+            results.push(cb.dark(
+                &format!("{label}: group-readable ({perms}) — review group membership"),
+                &format!("{path} mode={perms}"),
+            ));
         } else {
-            results.push(cb.pass(&format!("{label}: permissions OK ({perms})"), &format!("{path} mode={perms}")));
+            results.push(cb.pass(
+                &format!("{label}: permissions OK ({perms})"),
+                &format!("{path} mode={perms}"),
+            ));
         }
     }
 
-    let (code, creds_out) = sudo_cmd("root", &format!("ls -la {}/*.json 2>/dev/null", cfg.cloudflared_dir.display()));
+    let (code, creds_out) = sudo_cmd(
+        "root",
+        &format!(
+            "ls -la {}/*.json 2>/dev/null",
+            cfg.cloudflared_dir.display()
+        ),
+    );
     if code == 0 && !creds_out.trim().is_empty() {
-        let cb = CheckBuilder::new("CRY-13-tunnel_creds", "crypto", Category::Crypto, Severity::Critical)
-            .remediation("chmod 600 ~/.cloudflared/*.json");
+        let cb = CheckBuilder::new(
+            "CRY-13-tunnel_creds",
+            "crypto",
+            Category::Crypto,
+            Severity::Critical,
+        )
+        .remediation("chmod 600 ~/.cloudflared/*.json");
         let has_world = creds_out.lines().any(|l| {
             let chars: Vec<char> = l.chars().collect();
             chars.len() > 9 && (chars[7] == 'r' || chars[8] == 'w')
         });
         if has_world {
-            results.push(cb.fail("Tunnel credential files world-readable", &creds_out[..120.min(creds_out.len())]));
+            results.push(cb.fail(
+                "Tunnel credential files world-readable",
+                &creds_out[..120.min(creds_out.len())],
+            ));
         } else {
-            results.push(cb.pass("Tunnel credential files properly restricted", "Not world-readable"));
+            results.push(cb.pass(
+                "Tunnel credential files properly restricted",
+                "Not world-readable",
+            ));
         }
     }
 }

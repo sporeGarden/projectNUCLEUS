@@ -38,11 +38,11 @@ NUCLEUS composes from three atomics, each named for a subatomic particle:
 
 | Atomic | Particle | Primals | Role |
 |--------|----------|---------|------|
-| **Tower** | Electron | BearDog + Songbird | Trust boundary — crypto, identity, networking, BTSP |
+| **Tower** | Electron | BearDog + Songbird + skunkBat | Trust boundary — crypto, identity, networking, defense |
 | **Node** | Proton | Tower + ToadStool + barraCuda + coralReef | Compute — workload dispatch, GPU math, shader compilation |
 | **Nest** | Neutron | Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass | Storage — content-addressed data, provenance, attribution |
 
-Full NUCLEUS = Tower + Node + Nest + Squirrel (AI) + biomeOS (orchestration).
+Full NUCLEUS = Tower + Node + Nest + Squirrel (AI) + biomeOS (orchestration) + petalTongue (viz).
 
 | Composition | Particle | Primals | Role |
 |-------------|----------|---------|------|

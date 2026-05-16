@@ -61,9 +61,9 @@ with ChaCha20-Poly1305 AEAD encryption.
 You don't deploy all primals everywhere. NUCLEUS defines three **atomics**
 — minimal compositions matched to what a machine can do:
 
-**Tower** (the trust layer): BearDog + Songbird. Every machine runs Tower.
-It handles identity and networking. A Raspberry Pi or NUC can run Tower
-as a tunnel endpoint.
+**Tower** (the trust layer): BearDog + Songbird + skunkBat. Every machine
+runs Tower. It handles identity, networking, and defense. A Raspberry Pi
+or NUC can run Tower as a tunnel endpoint.
 
 **Node** (the compute layer): Tower + ToadStool + barraCuda + coralReef.
 Any machine with a GPU or substantial CPU runs Node. This is where
@@ -73,8 +73,8 @@ science workloads execute.
 sweetGrass. Machines with large storage run Nest. Results are
 content-addressed with full provenance chains (DAG → ledger → braid).
 
-A full NUCLEUS is all three atomics plus AI coordination (Squirrel) and
-orchestration (biomeOS).
+A full NUCLEUS is all three atomics plus AI coordination (Squirrel),
+orchestration (biomeOS), and visualization (petalTongue).
 
 ## How Workloads Run
 

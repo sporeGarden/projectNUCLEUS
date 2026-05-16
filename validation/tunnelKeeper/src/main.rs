@@ -1,7 +1,10 @@
+#![forbid(unsafe_code)]
+
 mod api;
 mod config;
 mod crypto;
 mod health;
+#[cfg(feature = "songbird-transport")]
 mod transport;
 
 use clap::{Parser, Subcommand};
@@ -18,10 +21,14 @@ use std::path::PathBuf;
 )]
 struct Cli {
     /// cloudflared config file path
-    #[arg(long, env = "CLOUDFLARED_CONFIG", default_value = "~/.cloudflared/config.yml")]
+    #[arg(
+        long,
+        env = "CLOUDFLARED_CONFIG",
+        default_value = "~/.cloudflared/config.yml"
+    )]
     config: PathBuf,
 
-    /// Cloudflare API token (or set CF_API_TOKEN env var)
+    /// Cloudflare API token (or set `CF_API_TOKEN` env var)
     #[arg(long, env = "CF_API_TOKEN")]
     api_token: Option<String>,
 
@@ -81,7 +88,7 @@ enum RouteAction {
         /// Path regex (e.g. "/new/.*")
         #[arg(long)]
         path: Option<String>,
-        /// Backend service URL (e.g. http://127.0.0.1:8867)
+        /// Backend service URL (e.g. <http://127.0.0.1:8867>)
         #[arg(long)]
         service: String,
     },
@@ -131,10 +138,14 @@ async fn main() {
             RouteAction::Rm { path } => config::route_rm(&cli.config, &path, cli.json),
         },
         Commands::Creds { action } => match action {
-            CredsAction::Encrypt { creds_path } => crypto::encrypt_creds(creds_path.as_deref(), cli.json)
-                .map_err(config::ConfigError::Crypto),
-            CredsAction::Decrypt { creds_path } => crypto::decrypt_creds(creds_path.as_deref(), cli.json)
-                .map_err(config::ConfigError::Crypto),
+            CredsAction::Encrypt { creds_path } => {
+                crypto::encrypt_creds(creds_path.as_deref(), cli.json)
+                    .map_err(config::ConfigError::Crypto)
+            }
+            CredsAction::Decrypt { creds_path } => {
+                crypto::decrypt_creds(creds_path.as_deref(), cli.json)
+                    .map_err(config::ConfigError::Crypto)
+            }
         },
     };
 

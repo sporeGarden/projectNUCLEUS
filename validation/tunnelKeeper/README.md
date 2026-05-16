@@ -11,8 +11,9 @@ primary transport while primal equivalents are built and validated:
 
 | Version | Transport | Status |
 |---------|-----------|--------|
-| v0.1 | `CloudflareTunnelTransport` — wraps `cloudflared` process | **Current** |
-| v0.2 | `SongbirdTransport` — `songbird-quic` + `songbird-tls` as library deps | Planned |
+| v0.1 | `CloudflareTunnelTransport` — wraps `cloudflared` process | Superseded |
+| v0.2 | Health, config, routing, credential encryption (pure Rust) | **Current** |
+| v0.3 | `SongbirdTransport` — `songbird-quic` + `songbird-tls` as library deps | Planned |
 | v0.3 | `BearDogAuthTransport` — `beardog-auth` replaces CF Access | Planned |
 
 The `TunnelTransport` trait defines the boundary. Shadow-run protocol validates
@@ -34,7 +35,7 @@ tunnelKeeper creds decrypt                  # restore for cloudflared
 
 - `clap` — CLI (same pattern as darkforest)
 - `serde` / `serde_json` / `serde_yaml` — config parsing
-- `reqwest` with `rustls-tls` — CF API v4 client (no OpenSSL)
+- `reqwest` 0.13 with `rustls` + `webpki-roots` — CF API v4 client (no OpenSSL, no `ring`)
 - `tokio` — async runtime
 - `chacha20poly1305` — credential encryption (BearDog pattern)
 - `ed25519-dalek` — key derivation (BearDog pattern)

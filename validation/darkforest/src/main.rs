@@ -1,5 +1,8 @@
+#![forbid(unsafe_code)]
+
 mod check;
 mod crypto;
+mod discovery;
 mod fuzz;
 mod net;
 mod observer;
@@ -89,7 +92,7 @@ fn main() {
         report::print_pipe(&results[before..]);
     }
 
-    let duration_ms = start.elapsed().as_millis() as u64;
+    let duration_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
     let rpt = report::Report::build(results, host, &cli.suite, &start_ts, duration_ms);
 
     report::print_summary(&rpt);
@@ -101,6 +104,6 @@ fn main() {
         }
     }
 
-    let exit_code = if rpt.summary.fail > 0 { 1 } else { 0 };
+    let exit_code = i32::from(rpt.summary.fail > 0);
     std::process::exit(exit_code);
 }

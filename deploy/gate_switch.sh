@@ -82,7 +82,7 @@ if ! ssh -o ConnectTimeout=5 -o BatchMode=yes "$TARGET" true 2>/dev/null; then
 fi
 log "  SSH connectivity: OK"
 
-REMOTE_NUCLEUS="Development/ecoPrimals/sporeGarden/projectNUCLEUS"
+REMOTE_NUCLEUS="Development/ecoPrimals/gardens/projectNUCLEUS"
 REMOTE_DEPLOY=$(ssh "$TARGET" "ls ~/${REMOTE_NUCLEUS}/deploy/deploy.sh 2>/dev/null" || true)
 if [[ -z "$REMOTE_DEPLOY" ]]; then
     warn "  deploy.sh not found on $TARGET — services must be set up manually"

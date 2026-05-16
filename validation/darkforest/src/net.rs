@@ -19,14 +19,13 @@ pub fn send_raw(host: &str, port: u16, data: &[u8], timeout_ms: u64) -> Option<V
     let mut total = Vec::new();
     loop {
         match stream.read(&mut buf) {
-            Ok(0) => break,
+            Ok(0) | Err(_) => break,
             Ok(n) => {
                 total.extend_from_slice(&buf[..n]);
                 if total.len() > 65536 {
                     break;
                 }
             }
-            Err(_) => break,
         }
     }
     Some(total)
@@ -85,9 +84,8 @@ pub fn http_method(
     path: &str,
     timeout_ms: u64,
 ) -> Option<u16> {
-    let req = format!(
-        "{method} {path} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
-    );
+    let req =
+        format!("{method} {path} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n");
     let resp = send_raw(host, port, req.as_bytes(), timeout_ms)?;
     let text = String::from_utf8_lossy(&resp);
     text.lines()

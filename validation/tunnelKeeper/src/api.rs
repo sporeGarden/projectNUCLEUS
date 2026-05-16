@@ -1,4 +1,4 @@
-use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
+use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -99,10 +99,7 @@ impl Client {
             .ok_or_else(|| ApiError::Other("empty result from CF API".into()))
     }
 
-    pub async fn get_tunnel_config(
-        &self,
-        tunnel_id: &str,
-    ) -> Result<serde_json::Value, ApiError> {
+    pub async fn get_tunnel_config(&self, tunnel_id: &str) -> Result<serde_json::Value, ApiError> {
         let url = format!(
             "{}/accounts/{}/cfd_tunnel/{}/configurations",
             self.base_url, self.account_id, tunnel_id
@@ -151,12 +148,11 @@ impl Client {
         Ok(())
     }
 
-    /// List all Access Applications for the account
+    /// List all Access Applications for the account.
+    /// Used by operational scripts — not yet wired into a CLI subcommand.
+    #[cfg(feature = "access-apps")]
     pub async fn list_access_apps(&self) -> Result<Vec<serde_json::Value>, ApiError> {
-        let url = format!(
-            "{}/accounts/{}/access/apps",
-            self.base_url, self.account_id
-        );
+        let url = format!("{}/accounts/{}/access/apps", self.base_url, self.account_id);
         let resp = self.http.get(&url).send().await?;
         let status = resp.status().as_u16();
         let body: CfResponse<Vec<serde_json::Value>> = resp.json().await?;

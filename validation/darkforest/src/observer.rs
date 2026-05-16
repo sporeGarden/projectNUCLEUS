@@ -20,8 +20,7 @@ fn html_dir() -> PathBuf {
     let gate = std::env::var("GATE_HOME")
         .or_else(|_| std::env::var("HOME"))
         .unwrap_or_else(|_| "/home/nobody".into());
-    let abg = std::env::var("ABG_SHARED")
-        .unwrap_or_else(|_| format!("{gate}/shared/abg"));
+    let abg = std::env::var("ABG_SHARED").unwrap_or_else(|_| format!("{gate}/shared/abg"));
     PathBuf::from(abg).join("public/.pappusCast/html_export")
 }
 
@@ -72,7 +71,10 @@ fn check_theme(dir: &Path, files: &[PathBuf], results: &mut Vec<CheckResult>) {
                 results.push(cb.pass("Dark theme CSS present", &rel.display().to_string()));
             }
             Ok(_) => {
-                results.push(cb.fail("Missing dark theme CSS override", &rel.display().to_string()));
+                results.push(cb.fail(
+                    "Missing dark theme CSS override",
+                    &rel.display().to_string(),
+                ));
             }
             Err(e) => {
                 results.push(cb.fail("Cannot read file", &e.to_string()));
@@ -203,10 +205,7 @@ fn check_root_index(host: &str, results: &mut Vec<CheckResult>) {
         }
         Some((code, _, body)) => {
             let snippet = &body[..body.len().min(100)];
-            results.push(cb.fail(
-                &format!("HTTP {code}, missing expected content"),
-                snippet,
-            ));
+            results.push(cb.fail(&format!("HTTP {code}, missing expected content"), snippet));
         }
         None => {
             results.push(cb.fail(
@@ -226,31 +225,28 @@ fn check_response_headers(host: &str, results: &mut Vec<CheckResult>) {
         ("X-Frame-Options", "DENY"),
         ("Referrer-Policy", "no-referrer"),
     ];
-    match http_get(host, port, "/", "", 5000) {
-        Some((_, headers, _)) => {
-            for (name, value) in &expected {
-                let id = format!("OBS-08:{name}");
-                let cb = CheckBuilder::new(&id, SUITE, Category::Network, Severity::Medium)
-                    .remediation("Add header to ObserverHandler.end_headers()");
-                let needle = format!("{name}: {value}");
-                if headers.contains(&needle) {
-                    results.push(cb.pass(&format!("{name}: {value}"), &needle));
-                } else {
-                    results.push(cb.fail(
-                        &format!("Missing or wrong {name}"),
-                        &format!("Expected '{value}' in headers"),
-                    ));
-                }
+    if let Some((_, headers, _)) = http_get(host, port, "/", "", 5000) {
+        for (name, value) in &expected {
+            let id = format!("OBS-08:{name}");
+            let cb = CheckBuilder::new(&id, SUITE, Category::Network, Severity::Medium)
+                .remediation("Add header to ObserverHandler.end_headers()");
+            let needle = format!("{name}: {value}");
+            if headers.contains(&needle) {
+                results.push(cb.pass(&format!("{name}: {value}"), &needle));
+            } else {
+                results.push(cb.fail(
+                    &format!("Missing or wrong {name}"),
+                    &format!("Expected '{value}' in headers"),
+                ));
             }
         }
-        None => {
-            let cb = CheckBuilder::new("OBS-08", SUITE, Category::Network, Severity::Medium)
-                .remediation("Ensure observer-static.service is running");
-            results.push(cb.fail(
-                "Cannot connect to static observer",
-                &format!("{host}:{port}"),
-            ));
-        }
+    } else {
+        let cb = CheckBuilder::new("OBS-08", SUITE, Category::Network, Severity::Medium)
+            .remediation("Ensure observer-static.service is running");
+        results.push(cb.fail(
+            "Cannot connect to static observer",
+            &format!("{host}:{port}"),
+        ));
     }
 }
 
@@ -258,7 +254,11 @@ fn check_response_headers(host: &str, results: &mut Vec<CheckResult>) {
 fn check_dir_blocking(host: &str, results: &mut Vec<CheckResult>) {
     let port = observer_port();
     let blocked = [
-        "envs", "wheelhouse", "templates", ".ipynb_checkpoints", ".pappusCast",
+        "envs",
+        "wheelhouse",
+        "templates",
+        ".ipynb_checkpoints",
+        ".pappusCast",
     ];
     for dir in &blocked {
         let id = format!("OBS-09:{dir}");

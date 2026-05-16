@@ -62,37 +62,34 @@ pub async fn run(
     let config = TunnelConfig::load(config_path)?;
 
     let process = check_process();
-    let connectivity = check_connectivity(&config).await;
+    let connectivity = check_connectivity(&config);
     let dns = check_dns(&config);
     let config_health = check_config(&config);
     let replicas = check_replicas(api_token, &config).await;
 
-    let overall = if process.running
-        && connectivity.local_reachable
-        && dns.resolves
-        && config_health.valid
-    {
-        if replicas.available && replicas.unique_origins < 2 {
-            "healthy (single replica — no failover)".to_string()
+    let overall =
+        if process.running && connectivity.local_reachable && dns.resolves && config_health.valid {
+            if replicas.available && replicas.unique_origins < 2 {
+                "healthy (single replica — no failover)".to_string()
+            } else {
+                "healthy".to_string()
+            }
         } else {
-            "healthy".to_string()
-        }
-    } else {
-        let mut issues = Vec::new();
-        if !process.running {
-            issues.push("process down");
-        }
-        if !connectivity.local_reachable {
-            issues.push("local unreachable");
-        }
-        if !dns.resolves {
-            issues.push("DNS failure");
-        }
-        if !config_health.valid {
-            issues.push("config invalid");
-        }
-        format!("degraded: {}", issues.join(", "))
-    };
+            let mut issues = Vec::new();
+            if !process.running {
+                issues.push("process down");
+            }
+            if !connectivity.local_reachable {
+                issues.push("local unreachable");
+            }
+            if !dns.resolves {
+                issues.push("DNS failure");
+            }
+            if !config_health.valid {
+                issues.push("config invalid");
+            }
+            format!("degraded: {}", issues.join(", "))
+        };
 
     let report = HealthReport {
         tunnel_name: config.tunnel.clone(),
@@ -211,7 +208,7 @@ fn check_process() -> ProcessHealth {
     }
 }
 
-async fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
+fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
     // Probe the first service backend from ingress rules
     let first_service = config
         .ingress
@@ -219,24 +216,26 @@ async fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
         .find(|r| r.hostname.is_some())
         .map(|r| &r.service);
 
-    if let Some(svc) = first_service {
-        if let Some(addr) = svc.strip_prefix("http://").or_else(|| svc.strip_prefix("https://")) {
-            let start = Instant::now();
-            let reachable = TcpStream::connect_timeout(
-                &addr.parse().unwrap_or_else(|_| {
-                    std::net::SocketAddr::from(([127, 0, 0, 1], 8000))
-                }),
-                Duration::from_secs(3),
-            )
-            .is_ok();
-            let latency = start.elapsed().as_millis() as u64;
+    if let Some(svc) = first_service
+        && let Some(addr) = svc
+            .strip_prefix("http://")
+            .or_else(|| svc.strip_prefix("https://"))
+    {
+        let start = Instant::now();
+        let reachable = TcpStream::connect_timeout(
+            &addr
+                .parse()
+                .unwrap_or_else(|_| std::net::SocketAddr::from(([127, 0, 0, 1], 8000))),
+            Duration::from_secs(3),
+        )
+        .is_ok();
+        let latency = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
-            return ConnectivityHealth {
-                local_reachable: reachable,
-                latency_ms: Some(latency),
-                cf_edge: None,
-            };
-        }
+        return ConnectivityHealth {
+            local_reachable: reachable,
+            latency_ms: Some(latency),
+            cf_edge: None,
+        };
     }
 
     ConnectivityHealth {
@@ -261,20 +260,20 @@ fn check_dns(config: &TunnelConfig) -> DnsHealth {
     ];
 
     for (cmd, args) in &resolvers {
-        if let Ok(output) = Command::new(cmd).args(args).output() {
-            if output.status.success() {
-                let result = String::from_utf8_lossy(&output.stdout);
-                let ip = result
-                    .split_whitespace()
-                    .find(|w| w.contains('.') || w.contains(':'))
-                    .map(String::from);
-                if ip.is_some() {
-                    return DnsHealth {
-                        resolves: true,
-                        hostname: hostname.to_string(),
-                        resolved_ip: ip,
-                    };
-                }
+        if let Ok(output) = Command::new(cmd).args(args).output()
+            && output.status.success()
+        {
+            let result = String::from_utf8_lossy(&output.stdout);
+            let ip = result
+                .split_whitespace()
+                .find(|w| w.contains('.') || w.contains(':'))
+                .map(String::from);
+            if ip.is_some() {
+                return DnsHealth {
+                    resolves: true,
+                    hostname: hostname.to_string(),
+                    resolved_ip: ip,
+                };
             }
         }
     }
@@ -288,8 +287,7 @@ fn check_dns(config: &TunnelConfig) -> DnsHealth {
 
 fn check_config(config: &TunnelConfig) -> ConfigHealth {
     let creds_readable = Path::new(&config.credentials_file).exists()
-        && std::fs::metadata(&config.credentials_file)
-            .is_ok_and(|m| m.len() > 0);
+        && std::fs::metadata(&config.credentials_file).is_ok_and(|m| m.len() > 0);
 
     ConfigHealth {
         valid: !config.tunnel.is_empty() && !config.ingress.is_empty(),
@@ -333,11 +331,7 @@ fn print_report(report: &HealthReport) {
     println!(
         "│   {} → {}",
         report.dns.hostname,
-        report
-            .dns
-            .resolved_ip
-            .as_deref()
-            .unwrap_or("UNRESOLVED")
+        report.dns.resolved_ip.as_deref().unwrap_or("UNRESOLVED")
     );
     println!("├─ Config");
     println!(
@@ -375,4 +369,133 @@ fn print_report(report: &HealthReport) {
         println!("│   (no API token — replica check skipped)");
     }
     println!("└──────────────────────────────────────────────");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::{IngressRule, TunnelConfig};
+
+    fn test_config() -> TunnelConfig {
+        TunnelConfig {
+            tunnel: "test-tunnel-id".to_string(),
+            credentials_file: "/tmp/nonexistent-creds.json".to_string(),
+            ingress: vec![
+                IngressRule {
+                    hostname: Some("lab.test.eco".to_string()),
+                    path: None,
+                    service: "http://127.0.0.1:8000".to_string(),
+                },
+                IngressRule {
+                    hostname: None,
+                    path: None,
+                    service: "http_status:404".to_string(),
+                },
+            ],
+        }
+    }
+
+    #[test]
+    fn check_config_valid_tunnel() {
+        let config = test_config();
+        let health = check_config(&config);
+        assert!(health.valid);
+        assert_eq!(health.ingress_rules, 2);
+        assert!(!health.credentials_readable);
+    }
+
+    #[test]
+    fn check_config_empty_tunnel_invalid() {
+        let config = TunnelConfig {
+            tunnel: String::new(),
+            credentials_file: String::new(),
+            ingress: vec![IngressRule {
+                hostname: None,
+                path: None,
+                service: "http_status:404".to_string(),
+            }],
+        };
+        assert!(!check_config(&config).valid);
+    }
+
+    #[test]
+    fn check_config_no_ingress_invalid() {
+        let config = TunnelConfig {
+            tunnel: "abc".to_string(),
+            credentials_file: String::new(),
+            ingress: vec![],
+        };
+        assert!(!check_config(&config).valid);
+    }
+
+    #[test]
+    fn connectivity_no_hostname_returns_unreachable() {
+        let config = TunnelConfig {
+            tunnel: "t".to_string(),
+            credentials_file: String::new(),
+            ingress: vec![IngressRule {
+                hostname: None,
+                path: None,
+                service: "http_status:404".to_string(),
+            }],
+        };
+        let conn = check_connectivity(&config);
+        assert!(!conn.local_reachable);
+        assert!(conn.latency_ms.is_none());
+    }
+
+    #[test]
+    fn dns_health_returns_a_result() {
+        let config = test_config();
+        let dns = check_dns(&config);
+        assert_eq!(dns.hostname, "lab.test.eco");
+    }
+
+    #[test]
+    fn process_health_returns_struct() {
+        let process = check_process();
+        if !process.running {
+            assert!(process.pid.is_none());
+        }
+    }
+
+    #[test]
+    fn health_report_json_serialization() {
+        let report = HealthReport {
+            tunnel_name: "test".to_string(),
+            process: ProcessHealth {
+                running: true,
+                pid: Some(1234),
+                uptime_seconds: Some(3600),
+            },
+            connectivity: ConnectivityHealth {
+                local_reachable: true,
+                latency_ms: Some(5),
+                cf_edge: None,
+            },
+            dns: DnsHealth {
+                resolves: true,
+                hostname: "test.eco".to_string(),
+                resolved_ip: Some("1.2.3.4".to_string()),
+            },
+            config: ConfigHealth {
+                valid: true,
+                ingress_rules: 3,
+                credentials_readable: true,
+            },
+            replicas: ReplicaHealth {
+                available: true,
+                active_connectors: 4,
+                unique_origins: 1,
+                edge_colos: vec!["EWR".to_string(), "IAD".to_string()],
+                tunnel_status: Some("healthy".to_string()),
+            },
+            overall: "healthy".to_string(),
+        };
+        let json = serde_json::to_string(&report).unwrap();
+        let value: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(value["tunnel_name"], "test");
+        assert_eq!(value["process"]["pid"], 1234);
+        assert_eq!(value["replicas"]["active_connectors"], 4);
+    }
 }

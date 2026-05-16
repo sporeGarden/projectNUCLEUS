@@ -1,13 +1,27 @@
-use crate::check::*;
-use crate::net::*;
+use crate::check::{Category, CheckBuilder, CheckResult, Severity, hub_port};
+use crate::discovery;
+use crate::net::{http_get, http_method, http_post, send_jsonrpc, send_raw};
+use std::fmt::Write as _;
 use std::net::TcpStream;
 use std::time::{Duration, Instant};
 
 pub fn run_primals(host: &str, rounds: u32, results: &mut Vec<CheckResult>) {
-    let primals = load_primals();
+    let mut primals = discovery::resolve_primals(host);
     println!("\n══ Protocol Fuzzing ══");
-    for p in &primals {
-        println!("\n── Fuzzing {}:{} ──", p.name, p.port);
+    println!("  Discovery: {} primals resolved", primals.len());
+    for p in &mut primals {
+        discovery::probe_liveness(host, p);
+        if p.live {
+            discovery::probe_capabilities(host, p);
+        }
+        println!(
+            "  {} :{} [{}] {} caps, {}",
+            p.name,
+            p.port,
+            p.source,
+            p.capabilities.len(),
+            if p.live { "LIVE" } else { "offline" }
+        );
         fuzz_primal(&p.name, p.port, host, rounds, results);
     }
 }
@@ -18,15 +32,29 @@ pub fn run_hub(host: &str, results: &mut Vec<CheckResult>) {
     fuzz_jupyterhub(host, hub, results);
 }
 
-fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &mut Vec<CheckResult>) {
+fn fuzz_primal(
+    name: &str,
+    port: u16,
+    host: &str,
+    timing_rounds: u32,
+    results: &mut Vec<CheckResult>,
+) {
     let suite = format!("fuzz.{name}");
 
-    let reachable = send_raw(host, port, b"", 2000).is_some()
-        || send_raw(host, port, b"test", 2000).is_some();
+    let reachable =
+        send_raw(host, port, b"", 2000).is_some() || send_raw(host, port, b"test", 2000).is_some();
     if !reachable {
         results.push(
-            CheckBuilder::new(&format!("FUZ-{name}-00"), &suite, Category::Fuzz, Severity::Info)
-                .pass(&format!("{name}:{port} not listening (skip)"), "Connection refused"),
+            CheckBuilder::new(
+                &format!("FUZ-{name}-00"),
+                &suite,
+                Category::Fuzz,
+                Severity::Info,
+            )
+            .pass(
+                &format!("{name}:{port} not listening (skip)"),
+                "Connection refused",
+            ),
         );
         return;
     }
@@ -54,7 +82,7 @@ fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &
             let mut s = String::from("[");
             for i in 0..100 {
                 if i > 0 { s.push(','); }
-                s.push_str(&format!(r#"{{"jsonrpc":"2.0","method":"health.liveness","id":{i}}}"#));
+                let _ = write!(s, r#"{{"jsonrpc":"2.0","method":"health.liveness","id":{i}}}"#);
             }
             s.push(']');
             s.into_bytes()
@@ -68,9 +96,14 @@ fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &
             std::thread::sleep(Duration::from_millis(500));
             if send_raw(host, port, b"", 2000).is_none() {
                 results.push(
-                    CheckBuilder::new(&format!("FUZ-{name}-crash"), &suite, Category::Fuzz, Severity::Critical)
-                        .remediation("Primal must survive malformed input without crashing")
-                        .fail(&format!("{name} stopped responding after {pname}"), pname),
+                    CheckBuilder::new(
+                        &format!("FUZ-{name}-crash"),
+                        &suite,
+                        Category::Fuzz,
+                        Severity::Critical,
+                    )
+                    .remediation("Primal must survive malformed input without crashing")
+                    .fail(&format!("{name} stopped responding after {pname}"), pname),
                 );
                 crashed = true;
                 break;
@@ -79,42 +112,72 @@ fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &
     }
     if !crashed {
         results.push(
-            CheckBuilder::new(&format!("FUZ-{name}-mal"), &suite, Category::Fuzz, Severity::High)
-                .pass(&format!("{name} handled all {} malformed payloads", payloads.len()), "No crashes"),
+            CheckBuilder::new(
+                &format!("FUZ-{name}-mal"),
+                &suite,
+                Category::Fuzz,
+                Severity::High,
+            )
+            .pass(
+                &format!("{name} handled all {} malformed payloads", payloads.len()),
+                "No crashes",
+            ),
         );
     }
 
     let binary_probes: &[(&str, &[u8])] = &[
-        ("tls_clienthello", b"\x16\x03\x01\x00\xf1\x01\x00\x00\xed\x03\x03"),
+        (
+            "tls_clienthello",
+            b"\x16\x03\x01\x00\xf1\x01\x00\x00\xed\x03\x03",
+        ),
         ("http2_preface", b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"),
         ("ssh_banner", b"SSH-2.0-OpenSSH_9.0\r\n"),
         ("redis_ping", b"*1\r\n$4\r\nPING\r\n"),
         ("memcached_stats", b"stats\r\n"),
     ];
     for (bname, bdata) in binary_probes {
-        let cb = CheckBuilder::new(&format!("FUZ-{name}-{bname}"), &suite, Category::Fuzz, Severity::Medium)
-            .remediation("Primal must reject non-JSON-RPC protocol probes");
+        let cb = CheckBuilder::new(
+            &format!("FUZ-{name}-{bname}"),
+            &suite,
+            Category::Fuzz,
+            Severity::Medium,
+        )
+        .remediation("Primal must reject non-JSON-RPC protocol probes");
         let resp = send_raw(host, port, bdata, 2000);
         if let Some(ref data) = resp {
             let text = String::from_utf8_lossy(data);
             if text.contains("200 OK") || text.contains("result") {
-                results.push(cb.fail(&format!("{name} responded to {bname} with success"), &text[..80.min(text.len())]));
+                results.push(cb.fail(
+                    &format!("{name} responded to {bname} with success"),
+                    &text[..80.min(text.len())],
+                ));
                 continue;
             }
         }
-        results.push(cb.pass(&format!("{name} rejects {bname}"), "Rejected or no response"));
+        results.push(cb.pass(
+            &format!("{name} rejects {bname}"),
+            "Rejected or no response",
+        ));
     }
 
     let mut big = br#"{"jsonrpc":"2.0","method":"health.liveness","params":{"data":""#.to_vec();
-    big.extend(std::iter::repeat(b'A').take(100_000));
+    big.extend(std::iter::repeat_n(b'A', 100_000));
     big.extend(br#""},"id":1}"#);
-    let cb = CheckBuilder::new(&format!("FUZ-{name}-big"), &suite, Category::Fuzz, Severity::Medium)
-        .remediation("Primal must handle oversized payloads without crashing");
+    let cb = CheckBuilder::new(
+        &format!("FUZ-{name}-big"),
+        &suite,
+        Category::Fuzz,
+        Severity::Medium,
+    )
+    .remediation("Primal must handle oversized payloads without crashing");
     let resp = send_raw(host, port, &big, 5000);
     if resp.is_none() {
         std::thread::sleep(Duration::from_secs(1));
         if send_raw(host, port, b"", 2000).is_none() {
-            results.push(cb.fail(&format!("{name} crashed on 100KB payload"), "100KB JSON-RPC"));
+            results.push(cb.fail(
+                &format!("{name} crashed on 100KB payload"),
+                "100KB JSON-RPC",
+            ));
         } else {
             results.push(cb.pass(&format!("{name} handled 100KB payload"), "Survived"));
         }
@@ -127,7 +190,12 @@ fn fuzz_primal(name: &str, port: u16, host: &str, timing_rounds: u32, results: &
 
 fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut Vec<CheckResult>) {
     let suite = format!("fuzz.{name}");
-    let methods = ["health.liveness", "nonexistent.method", "admin.secret", "storage.list"];
+    let methods = [
+        "health.liveness",
+        "nonexistent.method",
+        "admin.secret",
+        "storage.list",
+    ];
     let mut timings: Vec<(&str, f64)> = Vec::new();
 
     for method in &methods {
@@ -148,21 +216,35 @@ fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut
         }
     }
 
-    let cb = CheckBuilder::new(&format!("FUZ-{name}-timing"), &suite, Category::Fuzz, Severity::Low)
-        .remediation("Ensure uniform response times across methods to prevent enumeration");
+    let cb = CheckBuilder::new(
+        &format!("FUZ-{name}-timing"),
+        &suite,
+        Category::Fuzz,
+        Severity::Low,
+    )
+    .remediation("Ensure uniform response times across methods to prevent enumeration");
 
     if timings.len() < 2 {
-        results.push(cb.pass(&format!("{name}: too few methods responded for timing analysis"), "Insufficient data"));
+        results.push(cb.pass(
+            &format!("{name}: too few methods responded for timing analysis"),
+            "Insufficient data",
+        ));
         return;
     }
 
     let means: Vec<f64> = timings.iter().map(|(_, m)| *m).collect();
-    let max_diff = means.iter().cloned().fold(f64::NEG_INFINITY, f64::max)
-        - means.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max_diff = means.iter().copied().fold(f64::NEG_INFINITY, f64::max)
+        - means.iter().copied().fold(f64::INFINITY, f64::min);
     if max_diff > 0.1 {
-        let detail: Vec<String> = timings.iter().map(|(m, t)| format!("{m}={t:.3}s")).collect();
+        let detail: Vec<String> = timings
+            .iter()
+            .map(|(m, t)| format!("{m}={t:.3}s"))
+            .collect();
         results.push(cb.dark(
-            &format!("{name}: {max_diff:.3}s variance across methods ({})", detail.join(", ")),
+            &format!(
+                "{name}: {max_diff:.3}s variance across methods ({})",
+                detail.join(", ")
+            ),
             &format!("max_diff={max_diff:.3}s"),
         ));
     } else {
@@ -182,10 +264,16 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
         .remediation("Hub should handle oversized cookies gracefully (400 or 431)");
     match http_get(host, hub_port, "/hub/login", &headers, 5000) {
         Some((code, _, _)) if [200, 302, 400, 403, 431].contains(&code) => {
-            results.push(cb.pass(&format!("Hub handles oversized cookie (HTTP {code})"), &format!("HTTP {code}")));
+            results.push(cb.pass(
+                &format!("Hub handles oversized cookie (HTTP {code})"),
+                &format!("HTTP {code}"),
+            ));
         }
         Some((code, _, _)) => {
-            results.push(cb.dark(&format!("Unexpected response to oversized cookie: HTTP {code}"), &format!("HTTP {code}")));
+            results.push(cb.dark(
+                &format!("Unexpected response to oversized cookie: HTTP {code}"),
+                &format!("HTTP {code}"),
+            ));
         }
         None => results.push(cb.pass("Hub rejected oversized cookie", "Connection closed")),
     }
@@ -194,15 +282,32 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let body = format!("username={marker}%00evil&password=test");
     let cb = CheckBuilder::new("FUZ-HUB-02", suite, Category::Fuzz, Severity::Medium)
         .remediation("Sanitize username input, strip null bytes");
-    match http_post(host, hub_port, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000) {
+    match http_post(
+        host,
+        hub_port,
+        "/hub/login",
+        "application/x-www-form-urlencoded",
+        &body,
+        "",
+        5000,
+    ) {
         Some((200, ref rb)) if rb.contains(&marker) => {
-            results.push(cb.fail("Null byte username accepted and reflected (HTTP 200)", &marker));
+            results.push(cb.fail(
+                "Null byte username accepted and reflected (HTTP 200)",
+                &marker,
+            ));
         }
         Some((code, ref rb)) if rb.contains(&marker) => {
-            results.push(cb.dark(&format!("Null byte username reflected in error page (HTTP {code}, CSP mitigates)"), &marker));
+            results.push(cb.dark(
+                &format!("Null byte username reflected in error page (HTTP {code}, CSP mitigates)"),
+                &marker,
+            ));
         }
         Some((code, _)) => {
-            results.push(cb.pass(&format!("Null byte username handled (HTTP {code})"), &format!("HTTP {code}")));
+            results.push(cb.pass(
+                &format!("Null byte username handled (HTTP {code})"),
+                &format!("HTTP {code}"),
+            ));
         }
         None => results.push(cb.pass("Null byte username rejected", "No response")),
     }
@@ -212,38 +317,81 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("FUZ-HUB-03", suite, Category::Auth, Severity::Critical)
         .remediation("Token validation must reject invalid tokens");
     match http_get(host, hub_port, "/hub/api/users", &hdr, 5000) {
-        Some((200, _, _)) => results.push(cb.fail("Fake token accepted on /hub/api/users", "HTTP 200 with fake token")),
-        Some((code, _, _)) => results.push(cb.pass(&format!("Fake token rejected (HTTP {code})"), &format!("HTTP {code}"))),
+        Some((200, _, _)) => results.push(cb.fail(
+            "Fake token accepted on /hub/api/users",
+            "HTTP 200 with fake token",
+        )),
+        Some((code, _, _)) => results.push(cb.pass(
+            &format!("Fake token rejected (HTTP {code})"),
+            &format!("HTTP {code}"),
+        )),
         None => results.push(cb.pass("Fake token rejected", "No response")),
     }
 
-    for sqli in ["admin'--", "admin' OR '1'='1", r#"" OR ""="#, r#"admin"; DROP TABLE users;--"#] {
+    for sqli in [
+        "admin'--",
+        "admin' OR '1'='1",
+        r#"" OR ""="#,
+        r#"admin"; DROP TABLE users;--"#,
+    ] {
         let body = format!("username={sqli}&password=test");
-        let _ = http_post(host, hub_port, "/hub/login", "application/x-www-form-urlencoded", &body, "", 5000);
+        let _ = http_post(
+            host,
+            hub_port,
+            "/hub/login",
+            "application/x-www-form-urlencoded",
+            &body,
+            "",
+            5000,
+        );
     }
     results.push(
-        CheckBuilder::new("FUZ-HUB-04", suite, Category::Fuzz, Severity::High)
-            .pass("Login form handles SQL injection payloads without crash", "4 SQLi payloads survived"),
+        CheckBuilder::new("FUZ-HUB-04", suite, Category::Fuzz, Severity::High).pass(
+            "Login form handles SQL injection payloads without crash",
+            "4 SQLi payloads survived",
+        ),
     );
 
     let cb = CheckBuilder::new("FUZ-HUB-05", suite, Category::Fuzz, Severity::High)
         .remediation("Escape or strip special chars from ?next parameter");
-    match http_get(host, hub_port, r#"/hub/login?next="><script>alert(1)</script>"#, "", 5000) {
+    match http_get(
+        host,
+        hub_port,
+        r#"/hub/login?next="><script>alert(1)</script>"#,
+        "",
+        5000,
+    ) {
         Some((_, _, body)) if body.contains("<script>alert(1)</script>") => {
-            results.push(cb.fail("XSS in ?next parameter reflected", "Script tag found in response"));
+            results.push(cb.fail(
+                "XSS in ?next parameter reflected",
+                "Script tag found in response",
+            ));
         }
-        Some((_, _, _)) => results.push(cb.pass("XSS in ?next parameter not reflected", "No script tag")),
+        Some((_, _, _)) => {
+            results.push(cb.pass("XSS in ?next parameter not reflected", "No script tag"));
+        }
         None => results.push(cb.pass("XSS probe handled", "No response")),
     }
 
     for method in ["PUT", "DELETE", "PATCH", "OPTIONS", "TRACE"] {
-        let cb = CheckBuilder::new(&format!("FUZ-HUB-M-{}", method.to_lowercase()), suite, Category::Fuzz, Severity::Medium)
-            .remediation("Restrict HTTP methods to GET/POST on API endpoints");
+        let cb = CheckBuilder::new(
+            &format!("FUZ-HUB-M-{}", method.to_lowercase()),
+            suite,
+            Category::Fuzz,
+            Severity::Medium,
+        )
+        .remediation("Restrict HTTP methods to GET/POST on API endpoints");
         if let Some(code) = http_method(host, hub_port, method, "/hub/api/users", 5000) {
             if code == 200 && (method == "DELETE" || method == "PUT") {
-                results.push(cb.fail(&format!("{method} /hub/api/users returns 200"), &format!("HTTP {code}")));
+                results.push(cb.fail(
+                    &format!("{method} /hub/api/users returns 200"),
+                    &format!("HTTP {code}"),
+                ));
             } else {
-                results.push(cb.pass(&format!("{method} /hub/api/users returns {code}"), &format!("HTTP {code}")));
+                results.push(cb.pass(
+                    &format!("{method} /hub/api/users returns {code}"),
+                    &format!("HTTP {code}"),
+                ));
             }
         }
     }
@@ -251,8 +399,14 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("FUZ-HUB-TRACE", suite, Category::Fuzz, Severity::Medium)
         .remediation("Block TRACE method to prevent XST attacks");
     match http_method(host, hub_port, "TRACE", "/hub/", 5000) {
-        Some(200) => results.push(cb.fail("TRACE method echoes request — XST vulnerability", "HTTP 200")),
-        Some(code) => results.push(cb.pass(&format!("TRACE method blocked (HTTP {code})"), &format!("HTTP {code}"))),
+        Some(200) => results.push(cb.fail(
+            "TRACE method echoes request — XST vulnerability",
+            "HTTP 200",
+        )),
+        Some(code) => results.push(cb.pass(
+            &format!("TRACE method blocked (HTTP {code})"),
+            &format!("HTTP {code}"),
+        )),
         None => results.push(cb.pass("TRACE method rejected", "No response")),
     }
 
@@ -270,11 +424,20 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     std::thread::sleep(Duration::from_secs(1));
     match http_get(host, hub_port, "/hub/login", "", 5000) {
         Some((code, _, _)) if code == 200 || code == 302 => {
-            results.push(cb.pass("Hub survives 50 concurrent connections", &format!("HTTP {code}")));
+            results.push(cb.pass(
+                "Hub survives 50 concurrent connections",
+                &format!("HTTP {code}"),
+            ));
         }
         Some((code, _, _)) => {
-            results.push(cb.dark(&format!("Hub degraded after 50 connections (HTTP {code})"), &format!("HTTP {code}")));
+            results.push(cb.dark(
+                &format!("Hub degraded after 50 connections (HTTP {code})"),
+                &format!("HTTP {code}"),
+            ));
         }
-        None => results.push(cb.dark("Hub degraded after connection flood", "No response post-flood")),
+        None => results.push(cb.dark(
+            "Hub degraded after connection flood",
+            "No response post-flood",
+        )),
     }
 }

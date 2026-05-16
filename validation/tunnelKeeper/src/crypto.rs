@@ -24,13 +24,10 @@ pub enum CryptoError {
 const KEY_FILE: &str = ".tunnelkeeper.key";
 
 fn cloudflared_dir() -> PathBuf {
-    if let Ok(d) = std::env::var("CLOUDFLARED_DIR") {
-        PathBuf::from(d)
-    } else if let Ok(home) = std::env::var("HOME") {
-        PathBuf::from(home).join(".cloudflared")
-    } else {
-        PathBuf::from("/home").join(whoami()).join(".cloudflared")
-    }
+    std::env::var("CLOUDFLARED_DIR")
+        .map(PathBuf::from)
+        .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".cloudflared")))
+        .unwrap_or_else(|_| PathBuf::from("/home").join(whoami()).join(".cloudflared"))
 }
 
 fn whoami() -> String {
@@ -101,8 +98,8 @@ pub fn encrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
     let plaintext = fs::read(&path)?;
     let key = get_or_create_key()?;
 
-    let cipher = ChaCha20Poly1305::new_from_slice(&key)
-        .map_err(|e| CryptoError::Encrypt(e.to_string()))?;
+    let cipher =
+        ChaCha20Poly1305::new_from_slice(&key).map_err(|e| CryptoError::Encrypt(e.to_string()))?;
 
     let mut nonce_bytes = [0u8; 12];
     OsRng.fill_bytes(&mut nonce_bytes);
@@ -123,8 +120,7 @@ pub fn encrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
     };
 
     let enc_path = path.with_extension("json.enc");
-    let serialized = serde_json::to_vec(&blob)
-        .map_err(|e| CryptoError::Encrypt(e.to_string()))?;
+    let serialized = serde_json::to_vec(&blob).map_err(|e| CryptoError::Encrypt(e.to_string()))?;
     fs::write(&enc_path, serialized)?;
 
     #[cfg(unix)]
@@ -142,9 +138,7 @@ pub fn encrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
     } else {
         println!("Encrypted: {} → {}", path.display(), enc_path.display());
         println!("Key stored at: {}/{KEY_FILE}", cloudflared_dir().display());
-        println!(
-            "Original credentials can be removed once encryption is verified."
-        );
+        println!("Original credentials can be removed once encryption is verified.");
     }
     Ok(())
 }
@@ -157,18 +151,13 @@ pub fn decrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
         let mut found = None;
         for entry in fs::read_dir(&dir)? {
             let entry = entry?;
-            if entry
-                .file_name()
-                .to_string_lossy()
-                .ends_with(".json.enc")
-            {
+            if entry.file_name().to_string_lossy().ends_with(".json.enc") {
                 found = Some(entry.path());
                 break;
             }
         }
-        found.ok_or_else(|| {
-            CryptoError::Other(format!("no .enc file found in {}", dir.display()))
-        })?
+        found
+            .ok_or_else(|| CryptoError::Other(format!("no .enc file found in {}", dir.display())))?
     };
 
     let raw = fs::read(&path)?;
@@ -176,8 +165,8 @@ pub fn decrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
         serde_json::from_slice(&raw).map_err(|e| CryptoError::Decrypt(e.to_string()))?;
 
     let key = get_or_create_key()?;
-    let cipher = ChaCha20Poly1305::new_from_slice(&key)
-        .map_err(|e| CryptoError::Decrypt(e.to_string()))?;
+    let cipher =
+        ChaCha20Poly1305::new_from_slice(&key).map_err(|e| CryptoError::Decrypt(e.to_string()))?;
 
     let nonce = Nonce::from_slice(&blob.nonce);
     let plaintext = cipher
@@ -203,4 +192,134 @@ pub fn decrypt_creds(creds_path: Option<&Path>, json: bool) -> Result<(), Crypto
         println!("Decrypted: {} → {}", path.display(), out_path.display());
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chacha20poly1305::aead::{Aead, KeyInit, OsRng};
+    use chacha20poly1305::{ChaCha20Poly1305, Nonce};
+    use rand_core::RngCore;
+
+    #[test]
+    fn chacha20_encrypt_decrypt_roundtrip() {
+        let mut key_bytes = [0u8; 32];
+        OsRng.fill_bytes(&mut key_bytes);
+        let cipher = ChaCha20Poly1305::new_from_slice(&key_bytes).unwrap();
+
+        let mut nonce_bytes = [0u8; 12];
+        OsRng.fill_bytes(&mut nonce_bytes);
+        let nonce = Nonce::from_slice(&nonce_bytes);
+
+        let plaintext = b"NUCLEUS sovereign credential data";
+        let ciphertext = cipher.encrypt(nonce, plaintext.as_ref()).unwrap();
+
+        assert_ne!(&ciphertext, plaintext);
+
+        let decrypted = cipher.decrypt(nonce, ciphertext.as_ref()).unwrap();
+        assert_eq!(decrypted, plaintext);
+    }
+
+    #[test]
+    fn wrong_key_fails_decrypt() {
+        let mut key1 = [0u8; 32];
+        let mut key2 = [0u8; 32];
+        OsRng.fill_bytes(&mut key1);
+        OsRng.fill_bytes(&mut key2);
+
+        let cipher1 = ChaCha20Poly1305::new_from_slice(&key1).unwrap();
+        let cipher2 = ChaCha20Poly1305::new_from_slice(&key2).unwrap();
+
+        let mut nonce_bytes = [0u8; 12];
+        OsRng.fill_bytes(&mut nonce_bytes);
+        let nonce = Nonce::from_slice(&nonce_bytes);
+
+        let ciphertext = cipher1.encrypt(nonce, b"secret".as_ref()).unwrap();
+        assert!(cipher2.decrypt(nonce, ciphertext.as_ref()).is_err());
+    }
+
+    #[test]
+    fn encrypted_blob_serde_roundtrip() {
+        let blob = EncryptedBlob {
+            nonce: vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            ciphertext: vec![0xDE, 0xAD],
+            original_name: "test-creds.json".to_string(),
+        };
+        let json = serde_json::to_vec(&blob).unwrap();
+        let decoded: EncryptedBlob = serde_json::from_slice(&json).unwrap();
+        assert_eq!(decoded.nonce, blob.nonce);
+        assert_eq!(decoded.ciphertext, blob.ciphertext);
+        assert_eq!(decoded.original_name, "test-creds.json");
+    }
+
+    #[test]
+    fn ed25519_key_is_32_bytes() {
+        let signing = ed25519_dalek::SigningKey::generate(&mut OsRng);
+        let bytes = signing.to_bytes();
+        assert_eq!(bytes.len(), 32);
+    }
+
+    #[test]
+    fn whoami_returns_nonempty() {
+        let user = whoami();
+        assert!(!user.is_empty());
+    }
+
+    #[test]
+    fn cloudflared_dir_returns_valid_path() {
+        let dir = cloudflared_dir();
+        assert!(!dir.as_os_str().is_empty());
+        let s = dir.to_string_lossy();
+        assert!(
+            s.contains(".cloudflared") || s.contains("CLOUDFLARED"),
+            "unexpected cloudflared dir: {s}"
+        );
+    }
+
+    #[test]
+    fn file_encrypt_decrypt_roundtrip() {
+        let dir = std::env::temp_dir().join("tunnelkeeper_crypto_test");
+        let _ = fs::create_dir_all(&dir);
+
+        let key_path = dir.join(".tunnelkeeper.key");
+        let signing = ed25519_dalek::SigningKey::generate(&mut OsRng);
+        fs::write(&key_path, signing.to_bytes()).unwrap();
+
+        let creds_path = dir.join("test-tunnel.json");
+        let original = br#"{"AccountTag":"abc","TunnelID":"def","TunnelSecret":"ghi"}"#;
+        fs::write(&creds_path, original).unwrap();
+
+        let key = {
+            let raw = fs::read(&key_path).unwrap();
+            let mut k = [0u8; 32];
+            k.copy_from_slice(&raw[..32]);
+            k
+        };
+
+        let cipher = ChaCha20Poly1305::new_from_slice(&key).unwrap();
+        let mut nonce_bytes = [0u8; 12];
+        OsRng.fill_bytes(&mut nonce_bytes);
+        let nonce = Nonce::from_slice(&nonce_bytes);
+
+        let plaintext = fs::read(&creds_path).unwrap();
+        let ciphertext = cipher.encrypt(nonce, plaintext.as_ref()).unwrap();
+
+        let blob = EncryptedBlob {
+            nonce: nonce_bytes.to_vec(),
+            ciphertext,
+            original_name: "test-tunnel.json".to_string(),
+        };
+        let enc_path = dir.join("test-tunnel.json.enc");
+        fs::write(&enc_path, serde_json::to_vec(&blob).unwrap()).unwrap();
+
+        let raw = fs::read(&enc_path).unwrap();
+        let loaded: EncryptedBlob = serde_json::from_slice(&raw).unwrap();
+        let dec_nonce = Nonce::from_slice(&loaded.nonce);
+        let decrypted = cipher
+            .decrypt(dec_nonce, loaded.ciphertext.as_ref())
+            .unwrap();
+        assert_eq!(decrypted, original);
+
+        let _ = fs::remove_dir_all(&dir);
+    }
 }

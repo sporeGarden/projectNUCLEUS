@@ -48,7 +48,7 @@ pub struct CheckResult {
 }
 
 impl CheckResult {
-    pub fn pipe_tag(&self) -> &'static str {
+    pub const fn pipe_tag(&self) -> &'static str {
         match self.status {
             Status::Pass => "PASS",
             Status::Fail => "FAIL",
@@ -110,18 +110,17 @@ impl CheckBuilder {
             title: title.to_string(),
             evidence: evidence.to_string(),
             remediation: self.remediation,
-            elapsed_ms: self.start.elapsed().as_millis() as u64,
+            elapsed_ms: u64::try_from(self.start.elapsed().as_millis()).unwrap_or(u64::MAX),
             timestamp: iso_now(),
         }
     }
 }
 
 pub fn iso_now() -> String {
-    Command::new("date")
-        .arg("-Iseconds")
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .unwrap_or_else(|_| String::from("unknown"))
+    Command::new("date").arg("-Iseconds").output().map_or_else(
+        |_| String::from("unknown"),
+        |o| String::from_utf8_lossy(&o.stdout).trim().to_string(),
+    )
 }
 
 pub struct Primal {
@@ -129,34 +128,19 @@ pub struct Primal {
     pub port: u16,
 }
 
-/// Compiled defaults — used when no env overrides are set
-const DEFAULT_PRIMALS: &[(&str, &str, u16)] = &[
-    ("barracuda",     "BARRACUDA_PORT",     9740),
-    ("beardog",       "BEARDOG_PORT",       9100),
-    ("biomeos",       "BIOMEOS_PORT",       9800),
-    ("coralreef",     "CORALREEF_PORT",     9730),
-    ("loamspine",     "LOAMSPINE_PORT",     9700),
-    ("nestgate",      "NESTGATE_PORT",      9500),
-    ("petaltongue",   "PETALTONGUE_PORT",   9900),
-    ("rhizocrypt",    "RHIZOCRYPT_PORT",    9601),
-    ("rhizocrypt-rpc","RHIZOCRYPT_RPC_PORT",9602),
-    ("skunkbat",      "SKUNKBAT_PORT",      9140),
-    ("songbird",      "SONGBIRD_PORT",      9200),
-    ("squirrel",      "SQUIRREL_PORT",      9300),
-    ("sweetgrass",    "SWEETGRASS_PORT",    9850),
-    ("toadstool",     "TOADSTOOL_PORT",     9400),
-];
-
-/// Loads primal list, honoring env-var overrides from nucleus_config.sh
+/// Loads primal list via capability-based discovery with env/default fallback.
+///
+/// Resolution cascade:
+/// 1. biomeOS `primal.list` (live topology) — if biomeOS is reachable
+/// 2. Per-primal `{NAME}_PORT` env vars (ops override)
+/// 3. Compiled defaults (last resort)
 pub fn load_primals() -> Vec<Primal> {
-    DEFAULT_PRIMALS
-        .iter()
-        .map(|(name, env_key, default_port)| {
-            let port = std::env::var(env_key)
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(*default_port);
-            Primal { name: (*name).to_string(), port }
+    let host = std::env::var("DARKFOREST_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    crate::discovery::resolve_primals(&host)
+        .into_iter()
+        .map(|rp| Primal {
+            name: rp.name,
+            port: rp.port,
         })
         .collect()
 }
@@ -171,3 +155,111 @@ pub fn hub_port() -> u16 {
 pub const COMPUTE_USER: &str = "tamison";
 pub const REVIEWER_USER: &str = "abgreviewer";
 pub const OBSERVER_USER: &str = "abg-test";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pipe_tag_maps_correctly() {
+        let mk = |s: Status| CheckResult {
+            id: String::new(),
+            suite: String::new(),
+            category: Category::Network,
+            severity: Severity::Info,
+            status: s,
+            title: String::new(),
+            evidence: String::new(),
+            remediation: String::new(),
+            elapsed_ms: 0,
+            timestamp: String::new(),
+        };
+        assert_eq!(mk(Status::Pass).pipe_tag(), "PASS");
+        assert_eq!(mk(Status::Fail).pipe_tag(), "FAIL");
+        assert_eq!(mk(Status::KnownGap).pipe_tag(), "KNOWN_GAP");
+        assert_eq!(mk(Status::DarkForest).pipe_tag(), "DARK_FOREST");
+    }
+
+    #[test]
+    fn check_builder_pass_records_fields() {
+        let result = CheckBuilder::new("TST-01", "test.suite", Category::Crypto, Severity::High)
+            .remediation("fix it")
+            .pass("all good", "no issues");
+        assert_eq!(result.id, "TST-01");
+        assert_eq!(result.suite, "test.suite");
+        assert_eq!(result.status, Status::Pass);
+        assert_eq!(result.category, Category::Crypto);
+        assert_eq!(result.severity, Severity::High);
+        assert_eq!(result.remediation, "fix it");
+        assert_eq!(result.title, "all good");
+        assert_eq!(result.evidence, "no issues");
+    }
+
+    #[test]
+    fn check_builder_fail_records_status() {
+        let result = CheckBuilder::new("TST-02", "s", Category::Auth, Severity::Critical)
+            .fail("broken", "evidence");
+        assert_eq!(result.status, Status::Fail);
+    }
+
+    #[test]
+    fn check_builder_dark_records_status() {
+        let result = CheckBuilder::new("TST-03", "s", Category::InfoLeak, Severity::Low)
+            .dark("leak found", "data");
+        assert_eq!(result.status, Status::DarkForest);
+    }
+
+    #[test]
+    fn check_builder_known_gap_records_status() {
+        let result = CheckBuilder::new("TST-04", "s", Category::Fuzz, Severity::Medium)
+            .known_gap("gap", "reason");
+        assert_eq!(result.status, Status::KnownGap);
+    }
+
+    #[test]
+    fn load_primals_returns_14_defaults() {
+        let primals = load_primals();
+        assert_eq!(primals.len(), 14, "should have 14 default primals");
+    }
+
+    #[test]
+    fn load_primals_includes_all_nucleus_primals() {
+        let primals = load_primals();
+        let names: Vec<&str> = primals.iter().map(|p| p.name.as_str()).collect();
+        for expected in [
+            "beardog",
+            "songbird",
+            "skunkbat",
+            "toadstool",
+            "barracuda",
+            "coralreef",
+            "nestgate",
+            "rhizocrypt",
+            "loamspine",
+            "sweetgrass",
+            "biomeos",
+            "petaltongue",
+            "squirrel",
+        ] {
+            assert!(names.contains(&expected), "missing primal: {expected}");
+        }
+    }
+
+    #[test]
+    fn status_serde_roundtrip() {
+        let json = serde_json::to_string(&Status::DarkForest).unwrap();
+        assert_eq!(json, "\"dark_forest\"");
+    }
+
+    #[test]
+    fn severity_serde_roundtrip() {
+        let json = serde_json::to_string(&Severity::Critical).unwrap();
+        assert_eq!(json, "\"critical\"");
+    }
+
+    #[test]
+    fn category_serde_roundtrip() {
+        let json = serde_json::to_string(&Category::InfoLeak).unwrap();
+        assert_eq!(json, "\"info_leak\"");
+    }
+}

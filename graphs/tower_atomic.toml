@@ -1,26 +1,27 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Fragment: Tower Atomic — BearDog + Songbird (Electron)
+# Fragment: Tower Atomic — BearDog + Songbird + skunkBat (Electron)
 #
 # The trust boundary. BearDog provides all cryptography (TLS, signing,
 # identity, BTSP enforcement). Songbird provides discovery, mesh
-# networking, and HTTP via BearDog's TLS.
+# networking, and HTTP via BearDog's TLS. skunkBat provides defense,
+# audit logging, and threat detection — the immune system of the gate.
 #
 # Tower mediates ALL inter-atomic bonding — no cross-gate communication
 # happens without passing through the electron shell.
 #
 # gen3 ECOSYSTEM_ARCHITECTURE §3.1: "Tower Atomic — The Foundation"
-# Particle model: Tower = Electron
+# Particle model: Tower = Electron (3 primals)
 #
 # Appears in: every deploy graph, every proto-nucleate, every sketch.
 # Node Atomic and Nest Atomic both include Tower as their base.
 
 [fragment]
 name = "tower_atomic"
-description = "BearDog (crypto) + Songbird (network) — the electron shell"
-version = "2.0.0"
+description = "BearDog (crypto) + Songbird (network) + skunkBat (defense) — the electron shell"
+version = "3.0.0"
 particle = "electron"
-node_count = 2
+node_count = 3
 
 [[fragment.nodes]]
 name = "beardog"
@@ -42,3 +43,14 @@ health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
 capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
+
+[[fragment.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = ["defense.audit", "defense.status", "defense.events", "security.audit_log", "recon.scan", "threat.assess", "threat.mitigate"]

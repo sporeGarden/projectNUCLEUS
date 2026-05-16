@@ -4,6 +4,8 @@
 # Nest Atomic + ToadStool validated 2026-05-04 with 235+ checks passing.
 # Provenance pipeline elevated same day — full DAG/ledger/braid chain.
 # Phase 59 absorption 2026-05-06: 13/13 BTSP Phase 3 AEAD, Wire L3, 5-tier discovery.
+# GPU reconciled 2026-05-15: RTX 5070 (Blackwell SM120), was stale 4070 reference.
+# Membrane + network sections added 2026-05-15.
 
 [gate]
 name = "irongate"
@@ -15,14 +17,30 @@ bonding = "covalent"
 cpu = "Intel i9-14900K"
 cores = 24
 threads = 32
-gpu_display = "NVIDIA RTX 4070"
+gpu_display = "NVIDIA RTX 5070"
+gpu_arch = "Blackwell SM120"
 gpu_vram_gb = 12
 ram_gb = 96
 ram_type = "DDR5"
 storage_tb = 3.6
 storage_type = "NVMe"
-network = "Cat6e ethernet (LAN), 1G WAN"
 os = "Pop!_OS 22.04"
+
+[network]
+lan_speed = "1G"
+wan_speed = "1G"
+interface = "Cat6e ethernet"
+ten_g_nic = false
+ten_g_ready = false
+nuc_p2p = "10.99.0.0/30 (USB-C to NUC M6)"
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+tls_surface = "membrane.primals.eco"
+telemetry = "deploy/membrane_telemetry.sh (15-min cron)"
+membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 
 [composition]
 atomic = "nest+toadstool"

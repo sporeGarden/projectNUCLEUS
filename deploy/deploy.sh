@@ -40,7 +40,7 @@ usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --composition NAME   tower|node|nest|full (default: node)"
+    echo "  --composition NAME   tower|agent|node|nest|full (default: node)"
     echo "  --gate NAME          Gate name (matches gates/<name>.toml)"
     echo "  --family-name NAME   Family name for seed init (default: \$(hostname)-sovereign)"
     echo "  --plasmidbin DIR     Path to plasmidBin (default: auto-detect)"
@@ -68,6 +68,7 @@ done
 primals_for_composition() {
     case "$1" in
         tower) echo "beardog songbird" ;;
+        agent) echo "beardog songbird skunkbat biomeos squirrel" ;;
         node)  echo "beardog songbird toadstool barracuda coralreef skunkbat" ;;
         nest)  echo "beardog songbird nestgate rhizocrypt loamspine sweetgrass skunkbat" ;;
         full)
@@ -181,6 +182,7 @@ fi
 graph_for_composition() {
     case "$1" in
         tower) echo "$PROJECT_ROOT/graphs/tower_atomic.toml" ;;
+        agent) echo "$PROJECT_ROOT/graphs/tower_agent.toml" ;;
         node)  echo "$PROJECT_ROOT/graphs/node_atomic_compute.toml" ;;
         nest)  echo "$PROJECT_ROOT/graphs/nest_atomic.toml" ;;
         full)  echo "$PROJECT_ROOT/graphs/nucleus_complete.toml" ;;

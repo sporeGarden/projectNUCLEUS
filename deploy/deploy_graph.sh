@@ -154,6 +154,12 @@ start_primal_from_graph() {
                 --http-address "$bind_address:$((port + 1))" \
                 > "/tmp/${binary}.log" 2>&1 &
             ;;
+        squirrel)
+            nohup "$bin_path" server \
+                --port "$port" \
+                --family-id "$family_id" \
+                > "/tmp/${binary}.log" 2>&1 &
+            ;;
         *)
             nohup "$bin_path" server \
                 --port "$port" \

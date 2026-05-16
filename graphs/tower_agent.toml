@@ -1,0 +1,127 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower Agent — the minimal agentic deployment unit
+#
+# The smallest composition that can reason + act + audit autonomously.
+# Tower (bearDog + songbird + skunkBat) provides the trust boundary,
+# biomeOS provides graph orchestration via Neural API, squirrel provides
+# AI planning via signal_plan mode.
+#
+# This is a stadial goal composition: once deployed, the tower agent
+# can autonomously deploy Node, Nest, and full NUCLEUS compositions
+# via the atomic signal layer. Squirrel reads signal_tools.toml to
+# understand available signals and plans multi-signal deployments.
+#
+# Adapted from primalSpring/graphs/tower_agent.toml with tcp_fallback_port
+# for projectNUCLEUS deploy_graph.sh compatibility.
+#
+# Usage:
+#   bash deploy/deploy.sh --composition agent --graph-deploy
+
+[graph]
+name = "tower_agent"
+description = "Tower + biomeOS + squirrel: the autonomous deployment unit"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+base = "tower_atomic"
+profile = "agent"
+particle = "electron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 5
+composition_model = "agentic"
+fragments = ["tower_atomic"]
+resolve = true
+agentic = true
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_external = "ionic"
+encryption_tier = "full"
+
+# ── Tower Atomic (trust boundary) ────────────────────────────────────
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+tcp_fallback_port = 9100
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.sign", "crypto.verify", "crypto.keygen", "crypto.identity",
+    "crypto.encrypt_chacha20_poly1305", "btsp.negotiate",
+    "fido2.authenticate", "fido2.register",
+]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+tcp_fallback_port = 9200
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = [
+    "ipc.resolve", "ipc.register", "ipc.discover",
+    "discovery.peers", "discovery.announce",
+]
+
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog"]
+tcp_fallback_port = 9140
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = [
+    "defense.audit", "defense.status", "security.audit_log",
+    "threat.assess", "recon.scan",
+]
+
+# ── Orchestration substrate ──────────────────────────────────────────
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+tcp_fallback_port = 9800
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = [
+    "graph.deploy", "graph.execute", "graph.list", "graph.status",
+    "capability.discover", "capability.call",
+    "signal.dispatch", "signal.list", "signal.schema",
+    "primal.announce",
+]
+
+# ── Agentic AI ───────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 5
+required = true
+depends_on = ["beardog", "songbird", "skunkbat", "biomeos_neural_api"]
+tcp_fallback_port = 9300
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = [
+    "ai.query", "ai.complete", "ai.embed", "ai.models",
+    "ai.list_providers", "squirrel.context.push", "squirrel.providers",
+    "mcp.tools.list",
+]

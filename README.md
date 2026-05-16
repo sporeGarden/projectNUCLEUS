@@ -44,6 +44,14 @@ NUCLEUS composes from three atomics, each named for a subatomic particle:
 
 Full NUCLEUS = Tower + Node + Nest + Squirrel (AI) + biomeOS (orchestration).
 
+| Composition | Particle | Primals | Role |
+|-------------|----------|---------|------|
+| **Agent** | Photon | Tower + biomeOS + Squirrel | Autonomous agent — AI planning via `signal_plan`, graph execution via `signal.dispatch` |
+
+The Agent composition is the smallest unit that can reason + act + audit autonomously.
+Squirrel decomposes intent into atomic signals, biomeOS dispatches them through tower
+primals. `signal_executor.sh` bridges the two via JSON-RPC.
+
 **fieldMouse** is NOT a primal — it is a deployment class (biomeOS chimeras for edge/IoT).
 Do not include fieldMouse in primal rosters.
 
@@ -77,6 +85,7 @@ Gates connect to each other through chemical bonding patterns:
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
+- **Agent composition WIRED**: `tower_agent.toml` graph + `signal_executor.sh` bridge — Squirrel `signal_plan` → biomeOS `signal.dispatch` agent loop. 5 compositions: tower, agent, node, nest, full
 - **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80/:443 (Ch3). **Channel 3 TLS LIVE**: `membrane.primals.eco` with ACME cert (Let's Encrypt E8, valid to Aug 13 2026). Serving real sporePrint content (19MB synced). 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — **3ms RPC latency** vs 102ms Cloudflare baseline (34x). Telemetry probe fixed: `/dev/tcp` + `read -t 1` replaces `nc` (which inflated to 3s). `btsp_tls_parity.sh` ready for 7-day comparison
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
@@ -196,8 +205,30 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 cd deploy/
 bash deploy.sh --composition node --gate mygate
 
+# Deploy the Agent composition (Tower + biomeOS + Squirrel)
+bash deploy.sh --composition agent --graph-deploy
+
 # Execute a workload through toadStool
 toadstool execute workloads/wetspring/wetspring-16s-rust-validation.toml
+```
+
+### Agent Loop (signal_plan → signal.dispatch)
+
+With the agent composition running, use `signal_executor.sh` to close the agent
+loop — Squirrel plans, biomeOS executes:
+
+```bash
+# Plan + dispatch: natural language → atomic signals
+bash deploy/signal_executor.sh "check the health of all tower primals"
+
+# Plan only (inspect the signal plan without dispatching)
+bash deploy/signal_executor.sh --plan-only "deploy a nest composition"
+
+# Dispatch a single signal directly (bypass planning)
+bash deploy/signal_executor.sh --signal tower.health
+
+# Dry run (show what would dispatch without executing)
+bash deploy/signal_executor.sh --dry-run "store this data securely"
 ```
 
 See [deploy/](deploy/) for full deployment instructions.
@@ -240,6 +271,7 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
 deploy/             Deployment tooling, test suites, pappusCast daemon, membrane infrastructure
+  signal_executor.sh Signal plan executor: intent → squirrel signal_plan → biomeOS signal.dispatch
   nucleus_config.sh Gate-agnostic config (all paths, ports, env vars, routing, membrane — single source of truth)
   forgejo_mirror.sh Forgejo org/repo creation + dual-push for all repos
   vps_resize.sh     doctl VPS resize automation
@@ -257,6 +289,7 @@ deploy/             Deployment tooling, test suites, pappusCast daemon, membrane
   cloudflared/      Tunnel config templates (config-full.yml, config-static.yml)
   nucleus_config.sh includes cellMembrane VPS config (MEMBRANE_VPS_IP, TURN credentials)
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
+  tower_agent.toml  Agent composition: Tower + biomeOS neural-api + Squirrel (agentic AI)
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
   templates/        Templates for new workloads

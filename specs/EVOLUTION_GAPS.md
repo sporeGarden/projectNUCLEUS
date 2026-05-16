@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-15 (Horizon 4 transactions — ceremony design, Steam federation, ferment lifecycle, sunCloud routing)
+**Last updated**: 2026-05-15 (Horizon 4 expanded — artifact validation playbook, benchScale topologies, agentReagents gate template)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)
@@ -356,16 +356,25 @@ extend the sovereign organism from compute into transactions.
 | **H4-08** | Membrane cert verification — ionic TLS API | READY | BearDog ionic + Caddy endpoint wiring | — |
 | **H4-09** | Ceremony attenuation scheduler | DESIGNED | loamSpine expiry + capability shrink logic | `specs/TIER2_CEREMONY_DESIGN.md` |
 | **H4-10** | Fuzz evolution — darkforest membrane mode | DESIGNED | darkforest `--membrane` flag implementation | `specs/FUZZ_EVOLUTION.md` |
+| **H4-11** | Artifact validation suite — benchScale scenario | READY | All primals running on ironGate | `specs/VALIDATION_PLAYBOOK.md` |
+| **H4-12** | benchScale Docker topology — provenance trio lab | READY | Docker + plasmidBin binaries | `sort-after/benchScale/topologies/nucleus/` |
+| **H4-13** | agentReagents gate template — VM-level provenance validation | READY | libvirt + base image + plasmidBin | `sort-after/agentReagents/templates/nucleus_gate.yaml` |
+| **H4-14** | Cross-gate artifact federation — multi-gate NestGate replication | DESIGNED | 10G cables + second gate online | `specs/VALIDATION_PLAYBOOK.md` |
+| **H4-15** | VPS ferment tracker — membrane events as NFT DAG | DESIGNED | H4-05 exercised + membrane_telemetry feeding DAG | `specs/VALIDATION_PLAYBOOK.md` |
 
 ### Priority sequence
 
-1. **H4-05 + H4-06** (now): Exercise ferment mint + Loam cert on ironGate (all primals present)
-2. **H4-08** (now): Wire cert verification through VPS TLS surface
-3. **H4-01** (next): Personal sovereignty ceremony (all primitives exist, needs orchestration)
-4. **H4-03** (after cables): Cross-gate save federation
-5. **H4-07** (needs activation): sunCloud value routing
-6. **H4-02** (needs protocol): Multi-device stadium ceremony
-7. **H4-10** (next sprint): darkforest membrane extension
+1. **H4-11** (now): Run artifact validation suite against live NUCLEUS — immediate feedback
+2. **H4-05 + H4-06** (now): Exercise ferment mint + Loam cert on ironGate (all primals present)
+3. **H4-08** (now): Wire cert verification through VPS TLS surface
+4. **H4-12** (next): Stand up Docker provenance trio lab for CI-friendly validation
+5. **H4-01** (next): Personal sovereignty ceremony (all primitives exist, needs orchestration)
+6. **H4-03 + H4-14** (after cables): Cross-gate save federation + artifact replication
+7. **H4-15** (after H4-05): VPS membrane events feeding ferment DAG
+8. **H4-07** (needs activation): sunCloud value routing
+9. **H4-13** (needs libvirt): agentReagents VM gate for full OS-level isolation testing
+10. **H4-02** (needs protocol): Multi-device stadium ceremony
+11. **H4-10** (next sprint): darkforest membrane extension
 
 ---
 
@@ -375,7 +384,7 @@ extend the sovereign organism from compute into transactions.
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
 Horizon 2 (sovereignty):          █████████░  Tower LIVE (6 svc), Ch3 TLS LIVE (ACME cert), HTTP parity PASS, Forgejo primary (32 repos), L3+L4 telemetry
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED
-Horizon 4 (transactions):         █░░░░░░░░░  DESIGNED — ceremony + federation + economics specs written, H4-05/06/08 ready to exercise
+Horizon 4 (transactions):         ██░░░░░░░░  READY — validation playbook + benchScale topologies + artifact_validation.sh wired. H4-11/12/13 ready to run.
 Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened
@@ -427,3 +436,4 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-15 | **L3+L4 membrane telemetry — continuous sovereignty shadow**: (1) `deploy/membrane_telemetry.sh` — unified probe across external + internal membranes (Caddy, TURN, BearDog TLS, VPS SSH, Cloudflare tunnel, per-primal RPC, content TTFB, BTSP auth). Cron-ready (15-min). (2) `deploy/membrane_summary.sh` — rolling 7-day `membrane_7day.toml` with parity checks and cutover gates. (3) `nucleus_config.sh` telemetry settings (interval, dir, window, cutover days). (4) `shadow_run_orchestrator.sh` baseline path gap fixed — unified `membrane_7day.toml` preferred, results append to daily CSV. (5) `routing_config.toml [telemetry]` — `shadow_mode = "permanent"`, SkunkBat correlation. (6) Docs updated: `PRIMAL_VS_SOVEREIGNTY_GOALS.md` L3+L4 bridge, `SOVEREIGN_COMPOSITION_EVOLUTION.md` permanent shadow model. |
 | 2026-05-15 | **Sovereignty targets executed — content sync + DNS grey-cloud + ACME TLS + HTTP parity**: (1) sporePrint content synced to VPS NestGate cache (19MB, `scp` — rsync unavailable on VPS). Caddy serving real content on :80. (2) `membrane.primals.eco` DNS A record created (DNS-only, not proxied, TTL 300). Safe test domain — no production traffic affected. (3) ACME cert automatically obtained (Let's Encrypt E8, valid to Aug 13 2026). Caddy TLS block added to `/etc/membrane/Caddyfile` — serves health, status, and sporePrint content. (4) BearDog TLS probe fixed: `probe_rpc()` rewritten to use `/dev/tcp` + `read -t 1` instead of `nc` (which waited for socket close). Latency: 3ms actual (was 3021ms). (5) BTSP auth telemetry: journald scan primary, logfile fallback. Semicolons for field separators in CSV extra column. (6) HTTP parity PASS: VPS 68ms TTFB vs GitHub Pages 89ms (10 samples). TLS parity via `membrane.primals.eco`: 130ms vs 96ms (within 35% — expected VPS vs CDN). Uptime 100% both channels. |
 | 2026-05-15 | **Horizon 4 (transactions) created**: 10 gaps tracked across ceremony, federation, and economics. (1) Tier 2 key ceremony designed — personal sovereignty + event (stadium) types, full protocol spec in `specs/TIER2_CEREMONY_DESIGN.md`. (2) Steam save federation architecture — cross-gate via 10G backbone, VPS off-site backup, multi-household via Songbird. (3) Ferment token + Loam Certificate lifecycle ready to exercise (H4-05, H4-06). (4) sunCloud metabolic routing designed (H4-07). (5) Membrane cert verification wirable now (H4-08). (6) Unified architecture: `gen4/architecture/SOVEREIGN_TRANSACTION_MEMBRANE.md` ties all threads through gram-negative membrane model. (7) Fuzz evolution roadmap (H4-10) per `specs/FUZZ_EVOLUTION.md`. Scoring: 1/10 (designed, not exercised). |
+| 2026-05-15 | **Artifact validation playbook + benchScale topologies**: (1) `specs/VALIDATION_PLAYBOOK.md` — practical "run this, validate that" mapping for 7 long-term artifacts (provenance trio, NFT, Loam cert, Tier 2 ceremony, Steam federation, sunCloud, BearDog genetics). Each artifact has smallest testable unit, smallest composition, 2-3 use cases, 2-3 science cases, and benchScale integration. (2) 4 Docker topologies for Rust benchScale: `provenance_trio`, `tower_membrane`, `ferment_lifecycle`, `full_nucleus` — lab-grade multi-primal composition testing. (3) `agentReagents/templates/nucleus_gate.yaml` — minimal VM gate provisioning provenance trio with systemd units. (4) `scenarios/artifact_validation.sh` — 7-section bash scenario exercising all artifacts against live NUCLEUS (TOML report output). (5) H4-11→H4-15 gaps added. Scoring: 2/10 (tooling ready, waiting for exercise). |

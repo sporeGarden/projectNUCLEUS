@@ -40,7 +40,8 @@ benchScale/
 │   ├── songbird_nat_parity.sh
 │   ├── dot_sovereign_parity.sh
 │   ├── full_stack_load.sh
-│   └── shadow_run_orchestrator.sh
+│   ├── shadow_run_orchestrator.sh
+│   └── artifact_validation.sh    # 7-artifact validation suite
 ├── pentest/            # Security testing tools
 │   ├── three_layer_scan.sh
 │   ├── fuzz_jsonrpc.py
@@ -58,3 +59,29 @@ benchScale/
 
 Every scenario produces a structured TOML report in `reports/` that can be
 consumed by skunkBat for security metric tracking.
+
+## Artifact Validation
+
+`scenarios/artifact_validation.sh` exercises the 7 long-term sovereign artifacts
+against a running NUCLEUS deployment:
+
+```bash
+# Run all 7 artifact sections
+./scenarios/artifact_validation.sh
+
+# Run a single section (1-7)
+./scenarios/artifact_validation.sh --section 2   # Novel Ferment Transcript only
+```
+
+Sections:
+1. Provenance Trio Pipeline (nest_store signal graph)
+2. Novel Ferment Transcript (time-accumulated DAG → cert)
+3. Loam Certificate (ownership proof minting)
+4. Tier 2 Key Ceremony (protocol validation with synthetic entropy)
+5. Steam Data Federation (NestGate cross-gate content replication)
+6. sunCloud Metabolic Routing (multi-contributor attribution braids)
+7. BearDog Genetic Authority (key derivation + trust ceiling)
+
+See `specs/VALIDATION_PLAYBOOK.md` for the full artifact mapping including
+use cases, science cases, and integration with Rust benchScale topologies
+at `sort-after/benchScale/topologies/nucleus/`.

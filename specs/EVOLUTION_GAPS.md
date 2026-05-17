@@ -20,6 +20,7 @@ Related specs:
 - [SECURITY_VALIDATION.md](SECURITY_VALIDATION.md) — five-layer validation model
 - [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) — replacement methodology
 - [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
+- `infra/wateringHole/REPO_MEMBRANE_BOUNDARY.md` — inner/outer membrane repo classification
 
 **Rust evolution**: `validation/darkforest/` v0.2.1 — modular auditable security framework (zero
 runtime deps). 8 source modules: `check.rs` (structured types + env-var-driven primal config),
@@ -280,6 +281,52 @@ from the resolved upstream work. All local, actionable now.
 
 ---
 
+## Validation Gate Matrix — Sovereignty Phase Transitions
+
+Each sovereignty transition is gated by a specific validation system.
+No cutover proceeds without a PASS from the corresponding gate.
+
+### Validation Systems Inventory
+
+| System | Location | Scope | Output |
+|--------|----------|-------|--------|
+| `security_validation.sh` | `deploy/` | Multi-layer security sweep (L1–L6) | PASS/FAIL per layer |
+| `darkforest` (Rust) | `validation/darkforest/` | 34 modular pentest checks, crypto, observer | JSON report, per-check severity |
+| `dark_forest_gate_local.sh` | `validation/` | 33 structural checks across 5 pillars for deploy graphs | PASS/FAIL per pillar |
+| `darkforest_membrane.sh` | `validation/` | MEM-01 through MEM-13 remote VPS validation | PASS/FAIL/SKIP per MEM-ID |
+| `membrane_telemetry.sh` | `deploy/` | Unified probe: Caddy, TURN, BearDog TLS, SSH, Cloudflare, primal RPC, TTFB | CSV + daily append |
+| `membrane_summary.sh` | `deploy/` | Rolling 7-day `membrane_7day.toml` with parity checks and cutover gates | TOML report |
+| `tier_test_all.sh` | `deploy/` | Multi-tier user validation: observer, reviewer, compute, hub | Per-tier PASS/FAIL |
+| `btsp_tls_parity.sh` | `deploy/` | BearDog TLS vs Cloudflare TLS latency/availability comparison | Parity metrics |
+| `songbird_nat_parity.sh` | `deploy/` | Songbird TURN relay vs cloudflared NAT comparison | Reachability + latency |
+| `dot_sovereign_parity.sh` | `deploy/` | DoT sovereign resolver vs Cloudflare DNS comparison | Timing + accuracy |
+| `shadow_run_orchestrator.sh` | `deploy/` | Unified shadow run across all sovereignty channels | Composite TOML |
+
+### Phase Transition → Validation Gate Mapping
+
+| Phase Transition | Pre-Transition Gate | During Shadow | Cutover Gate | Post-Cutover Verify |
+|-----------------|---------------------|---------------|--------------|---------------------|
+| **H2-01→04: BTSP Auth (replaces PAM)** | `tier_test_all.sh` baseline (all tiers PASS with PAM) | `membrane_telemetry.sh` BTSP auth events, dual-auth success rate logging | BTSP success ≥ 99.9%, latency < 50ms overhead, 7-day clean shadow | `tier_test_all.sh` re-run (all tiers PASS with BTSP-only) |
+| **H2-05→09: petalTongue Content (replaces GitHub Pages)** | `membrane_telemetry.sh` content TTFB baseline, `membrane_summary.sh` parity snapshot | `membrane_telemetry.sh` NestGate TTFB vs GitHub Pages TTFB | Content parity 100%, TTFB within 10% of Zola/Pages | `darkforest --suite observer` (OBS-01→OBS-09 against sovereign surface) |
+| **H2-10→12: BearDog TLS (replaces Cloudflare TLS)** | `btsp_tls_parity.sh` baseline capture (7 days) | `membrane_telemetry.sh` BearDog :8443 latency, `membrane_summary.sh` daily parity | `membrane_summary.sh` cutover gate MET (latency + availability parity) | `security_validation.sh` full sweep, `darkforest` crypto suite (CRY-01→CRY-13) |
+| **H2-13→16: Songbird NAT (replaces cloudflared)** | `songbird_nat_parity.sh` baseline, `darkforest_membrane.sh` MEM-01→MEM-13 | `membrane_telemetry.sh` TURN reachability, `membrane_summary.sh` parity | `darkforest_membrane.sh` full PASS, `songbird_nat_parity.sh` parity MET | `security_validation.sh` Layer 6 re-sweep |
+| **H2-17→20: Sovereign DNS (replaces Cloudflare NS)** | `dot_sovereign_parity.sh` DoT baseline (accuracy + timing) | `dot_sovereign_parity.sh` sovereign vs Cloudflare daily | 10/10 accuracy, latency within 20% of DoT, 7-day clean | `security_validation.sh` full sweep after each NS change |
+| **H3-03: Forgejo Actions (replaces GitHub Actions)** | Port `notify-sporeprint.yml` first (smallest CI surface) | Manual comparison: Forgejo run output vs GitHub Actions output | 100% workflow parity on pilot workflow | Expand to remaining 73 workflow files incrementally |
+| **H3-04: Forgejo Primary (replaces GitHub repos)** | `dark_forest_gate_local.sh` (all graphs valid post-remote-switch) | Dual-push verification via `forgejo_mirror.sh --push-all` | Forgejo post-receive auto-mirror to GitHub working | Periodic `dark_forest_gate_local.sh` + content parity |
+
+### Validation Cadence
+
+| Frequency | Validation | Purpose |
+|-----------|-----------|---------|
+| Continuous (15-min cron) | `membrane_telemetry.sh` | Sovereignty channel health |
+| Daily | `membrane_summary.sh` | Rolling 7-day parity report |
+| Pre/post any deployment | `dark_forest_gate_local.sh` | Deploy graph structural integrity |
+| Pre/post any VPS change | `darkforest_membrane.sh` | Membrane security posture |
+| Weekly | `security_validation.sh` | Full multi-layer security sweep |
+| Per sovereignty cutover | Corresponding parity script | Phase-specific cutover gate |
+
+---
+
 ## Interstadial / Stadial Phase Tagging
 
 Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
@@ -437,3 +484,4 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-15 | **Sovereignty targets executed — content sync + DNS grey-cloud + ACME TLS + HTTP parity**: (1) sporePrint content synced to VPS NestGate cache (19MB, `scp` — rsync unavailable on VPS). Caddy serving real content on :80. (2) `membrane.primals.eco` DNS A record created (DNS-only, not proxied, TTL 300). Safe test domain — no production traffic affected. (3) ACME cert automatically obtained (Let's Encrypt E8, valid to Aug 13 2026). Caddy TLS block added to `/etc/membrane/Caddyfile` — serves health, status, and sporePrint content. (4) BearDog TLS probe fixed: `probe_rpc()` rewritten to use `/dev/tcp` + `read -t 1` instead of `nc` (which waited for socket close). Latency: 3ms actual (was 3021ms). (5) BTSP auth telemetry: journald scan primary, logfile fallback. Semicolons for field separators in CSV extra column. (6) HTTP parity PASS: VPS 68ms TTFB vs GitHub Pages 89ms (10 samples). TLS parity via `membrane.primals.eco`: 130ms vs 96ms (within 35% — expected VPS vs CDN). Uptime 100% both channels. |
 | 2026-05-15 | **Horizon 4 (transactions) created**: 10 gaps tracked across ceremony, federation, and economics. (1) Tier 2 key ceremony designed — personal sovereignty + event (stadium) types, full protocol spec in `specs/TIER2_CEREMONY_DESIGN.md`. (2) Steam save federation architecture — cross-gate via 10G backbone, VPS off-site backup, multi-household via Songbird. (3) Ferment token + Loam Certificate lifecycle ready to exercise (H4-05, H4-06). (4) sunCloud metabolic routing designed (H4-07). (5) Membrane cert verification wirable now (H4-08). (6) Unified architecture: `gen4/architecture/SOVEREIGN_TRANSACTION_MEMBRANE.md` ties all threads through gram-negative membrane model. (7) Fuzz evolution roadmap (H4-10) per `specs/FUZZ_EVOLUTION.md`. Scoring: 1/10 (designed, not exercised). |
 | 2026-05-15 | **Artifact validation playbook + benchScale topologies**: (1) `specs/VALIDATION_PLAYBOOK.md` — practical "run this, validate that" mapping for 7 long-term artifacts (provenance trio, NFT, Loam cert, Tier 2 ceremony, Steam federation, sunCloud, BearDog genetics). Each artifact has smallest testable unit, smallest composition, 2-3 use cases, 2-3 science cases, and benchScale integration. (2) 4 Docker topologies for Rust benchScale: `provenance_trio`, `tower_membrane`, `ferment_lifecycle`, `full_nucleus` — lab-grade multi-primal composition testing. (3) `agentReagents/templates/nucleus_gate.yaml` — minimal VM gate provisioning provenance trio with systemd units. (4) `scenarios/artifact_validation.sh` — 7-section bash scenario exercising all artifacts against live NUCLEUS (TOML report output). (5) H4-11→H4-15 gaps added. Scoring: 2/10 (tooling ready, waiting for exercise). |
+| 2026-05-17 | **Validation Gate Matrix + infrastructure review**: (1) Validation Gate Matrix section added — maps each of 11 validation systems to specific sovereignty phase transitions (H2-01→H2-20, H3-03→H3-04). Pre-transition, shadow, cutover, and post-cutover gates defined for each. (2) Validation cadence table added (continuous/daily/weekly/per-cutover). (3) Stale `gardens/sporeGarden/` clone removed (duplicate projectNUCLEUS). (4) `.env` audit: all sensitive files (squirrel API keys, JWT secrets) properly gitignored, no contamination risk. (5) `REPO_MEMBRANE_BOUNDARY.md` created in wateringHole — full repo classification (inner-only/dual-push/outer-only) with contamination risk matrix and Forgejo migration path. (6) cellMembrane decision documented: recommend Forgejo-only when operationally stable. |

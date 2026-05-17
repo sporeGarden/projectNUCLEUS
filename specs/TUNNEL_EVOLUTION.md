@@ -336,7 +336,7 @@ Browser → primals.eco (DNS-only, A record to public IP)
    - Hardened: fail2ban, UFW composition-aware firewall, exim4 purged,
      journald persistent, SSH key-only
    - Credentials: `/etc/songbird/relay-credentials` (HMAC shared secret)
-   - Ops repo: `sporeGarden/cellMembrane` (private)
+   - Ops repo: `gardens/cellMembrane` (private)
    - Architecture: `wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md`
    - Classified as **fieldMouse** — Dark Forest principle applies (see
      `SECURITY_VALIDATION.md` Layer 6)

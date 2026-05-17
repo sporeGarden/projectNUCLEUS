@@ -34,7 +34,7 @@ gen3 ECOSYSTEM_ARCHITECTURE.md          (what primals are, how they compose)
 gen4 architecture/                       (who uses it — products, guidestone, artifacts)
   ├── COMPOSITION_PATTERNS.md            (PrimalBridge, degradation, zero-import)
   ├── GUIDESTONE.md                      (5 properties: deterministic, traceable, self-verifying)
-  └── CREATIVE_SURFACE_ARCHITECTURE.md   (sporeGarden product layer)
+  └── CREATIVE_SURFACE_ARCHITECTURE.md   (gardens product layer)
 
 primalSpring specs/                      (runtime contracts)
   ├── DESKTOP_NUCLEUS_DEPLOYMENT.md      (substrate lifecycle — Phase 0-4)

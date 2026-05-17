@@ -325,7 +325,7 @@ Current state:
 
 ### lithoSpore Integration
 
-lithoSpore (`sporeGarden/lithoSpore`) is a projectNUCLEUS subsystem — the
+lithoSpore (`gardens/lithoSpore`) is a projectNUCLEUS subsystem — the
 first Targeted GuideStone artifact.
 
 - Workload TOMLs: `litho-validate-tier2.toml`, `litho-validate-tier3.toml`

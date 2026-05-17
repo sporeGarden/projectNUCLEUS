@@ -177,7 +177,7 @@ Phase 4: Full autonomy
 | Deployment tooling (`deploy_membrane.sh`, systemd units) | primalSpring | Upstream |
 | Channel deployment decisions (DNS, TLS) | **projectNUCLEUS / ironGate** | This team |
 | Upstream capability evolution (BearDog Vault, BingoCube) | primalSpring | Upstream |
-| `sporeGarden/cellMembrane` repo (private) | **projectNUCLEUS / ironGate** | This team |
+| `gardens/cellMembrane` repo (private) | **projectNUCLEUS / ironGate** | This team |
 
 ---
 

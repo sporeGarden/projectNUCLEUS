@@ -12,7 +12,7 @@ Group=voila
 EnvironmentFile=-/etc/projectnucleus/gate.env
 Environment=ABG_SHARED=${GATE_HOME}/shared/abg
 ExecStart=${GATE_HOME}/miniforge3/envs/jupyterhub/bin/python3 \
-    ${GATE_HOME}/Development/ecoPrimals/sporeGarden/projectNUCLEUS/deploy/observer_server.py
+    ${GATE_HOME}/Development/ecoPrimals/gardens/projectNUCLEUS/deploy/observer_server.py
 Restart=on-failure
 RestartSec=5
 

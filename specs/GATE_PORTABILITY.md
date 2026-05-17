@@ -54,7 +54,7 @@ no sovereign compute to access.
 substrate. Unlike the gate, the VPS substrate provider has theoretical root
 access — Dark Forest principle applies (everything encrypted at rest, provider
 sees only noise). The VPS is owned by ironGate/projectNUCLEUS and operated via
-`plasmidBin/deploy_membrane.sh`. Private ops repo: `sporeGarden/cellMembrane`.
+`plasmidBin/deploy_membrane.sh`. Private ops repo: `gardens/cellMembrane`.
 See `SECURITY_VALIDATION.md` Layer 6 for the threat model.
 
 ## Tunnel Replicas (Membrane Resilience)

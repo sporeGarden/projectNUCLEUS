@@ -4,7 +4,7 @@ The deployable NUCLEUS infrastructure product. Stand up a sovereign compute
 node, host sites, dispatch workloads, and progressively eliminate every
 external dependency.
 
-**Organization**: sporeGarden (products built on ecoPrimals)
+**Organization**: gardens (products built on ecoPrimals)
 **Generation**: gen4 — composition and deployment
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
@@ -86,7 +86,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
 - **Agent composition WIRED**: `tower_agent.toml` graph + `signal_executor.sh` bridge — Squirrel `signal_plan` → biomeOS `signal.dispatch` agent loop. 5 compositions: tower, agent, node, nest, full
-- **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80/:443 (Ch3). **Channel 3 TLS LIVE**: `membrane.primals.eco` with ACME cert (Let's Encrypt E8, valid to Aug 13 2026). Serving real sporePrint content (19MB synced). 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `sporeGarden/cellMembrane`
+- **cellMembrane LIVE — Tower composition (H2-14)**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **6 services active**: Songbird TURN :3478 (Ch2), RustDesk hbbs/hbbr :21115-17 (Ch2b), BearDog crypto :9100 (Tower), SkunkBat audit :9140 (Tower), Caddy TLS :80/:443 (Ch3). **Channel 3 TLS LIVE**: `membrane.primals.eco` with ACME cert (Let's Encrypt E8, valid to Aug 13 2026). Serving real sporePrint content (19MB synced). 1.7GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d persistence). DO token encrypted with BearDog AES-256-GCM. Owned by ironGate/projectNUCLEUS. Private ops repo: `gardens/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — **3ms RPC latency** vs 102ms Cloudflare baseline (34x). Telemetry probe fixed: `/dev/tcp` + `read -t 1` replaces `nc` (which inflated to 3s). `btsp_tls_parity.sh` ready for 7-day comparison
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept, auth events accumulating
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). 6/12 wetspring workloads PASS with BLAKE3-anchored provenance chain. Merkle root + ed25519 witness braid operational
@@ -260,7 +260,7 @@ WireGuard tunnels.
 ### Phase 4: Full NUCLEUS Desktop Substrate
 
 biomeOS as orchestrator across all gates. Metallic bonding for institutional
-HPC. All sporeGarden products running on projectNUCLEUS. sunCloud metabolic
+HPC. All gardens products running on projectNUCLEUS. sunCloud metabolic
 economics. Zero external dependencies.
 
 See [PHASES.md](PHASES.md) for detailed phase architecture.
@@ -327,7 +327,7 @@ public/             Managed snapshot copies for observer surface (pappusCast-man
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
 | **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — extracellular layer on GitHub Pages CDN; Phase 3 target: petalTongue self-hosted rendering |
-| **cellMembrane** | sporeGarden | **Private** ops repo — VPS state, runbooks, credential procedures for the cellMembrane fieldMouse deployment |
-| **foundation** | sporeGarden | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
-| **helixVision** | sporeGarden | Genomics product — runs on projectNUCLEUS |
-| **esotericWebb** | sporeGarden | Creative product — runs on projectNUCLEUS |
+| **cellMembrane** | gardens | **Private** ops repo — VPS state, runbooks, credential procedures for the cellMembrane fieldMouse deployment |
+| **projectFOUNDATION** | gardens | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
+| **helixVision** | gardens | Genomics product — runs on projectNUCLEUS |
+| **esotericWebb** | gardens | Creative product — runs on projectNUCLEUS |

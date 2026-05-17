@@ -14,7 +14,7 @@
 # Standalone usage:
 #   bash deploy_songbird_relay.sh --host <vps-ip> [--user root] [--port 3478]
 #
-# See: sporeGarden/cellMembrane/ (private ops repo)
+# See: gardens/cellMembrane/ (private ops repo)
 #      infra/wateringHole/MEMBRANE_CHANNEL_ARCHITECTURE.md
 #      primals/songBird/deployment/relay/README.md (Wave 202)
 

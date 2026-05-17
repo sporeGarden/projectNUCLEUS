@@ -31,12 +31,12 @@ for arg in "$@"; do
 done
 
 declare -A REPO_MAP
-# sporeGarden org (already exists in Forgejo)
-REPO_MAP["sporeGarden/projectNUCLEUS"]="sporeGarden/projectNUCLEUS"
-REPO_MAP["sporeGarden/cellMembrane"]="sporeGarden/cellMembrane"
-REPO_MAP["sporeGarden/foundation"]="sporeGarden/foundation"
-REPO_MAP["sporeGarden/lithoSpore"]="sporeGarden/lithoSpore"
-REPO_MAP["sporeGarden/esotericWebb"]="sporeGarden/esotericWebb"
+# gardens (products built on ecoPrimals — Forgejo org is still sporeGarden)
+REPO_MAP["gardens/projectNUCLEUS"]="sporeGarden/projectNUCLEUS"
+REPO_MAP["gardens/cellMembrane"]="sporeGarden/cellMembrane"
+REPO_MAP["gardens/projectFOUNDATION"]="sporeGarden/projectFOUNDATION"
+REPO_MAP["gardens/lithoSpore"]="sporeGarden/lithoSpore"
+REPO_MAP["gardens/esotericWebb"]="sporeGarden/esotericWebb"
 
 # ecoPrimals org
 REPO_MAP["infra/plasmidBin"]="ecoPrimals/plasmidBin"

@@ -83,6 +83,24 @@ fail to start without blocking the composition. The substrate reports them
 as degraded, not failed. Required primals (BearDog, Songbird, ToadStool,
 NestGate, Squirrel) block the composition.
 
+### cellMembrane Degradation Behavior (Phase 0.5 → Phase 1)
+
+Per the ecosystem degradation standard: science is never gated behind primal
+availability. cellMembrane services degrade independently:
+
+| Service | Down Behavior | lithoSpore Impact | Gate Impact |
+|---------|---------------|-------------------|-------------|
+| Songbird TURN (:3478) | Geo-delocalized Tier 2 unavailable. lithoSpore degrades to standalone or LAN mode | `try_record_tier3()` skips relay, science runs locally | No gate-to-gate relay via VPS |
+| BearDog crypto (:9100) | Tower auth unavailable on VPS. Existing sessions continue (token-based) | Tier 3 provenance degrades to partial (DAG without crypto attestation) | VPS gate serves content unsigned |
+| SkunkBat audit (:9140) | Audit logging paused. No security events recorded on VPS | No impact — audit is observational | Membrane telemetry gaps |
+| Caddy TLS (:80/:443) | `membrane.primals.eco` unreachable. Content served via GitHub Pages CDN fallback | No impact — lithoSpore uses Songbird, not HTTPS | sporePrint content via outer membrane only |
+| RustDesk hbbs/hbbr (:21115-17) | Sovereign remote desktop unavailable. Fall back to SSH or Songbird direct | No impact — RustDesk is ops tooling | Remote gate access via SSH only |
+
+**Invariant**: Every membrane service failure degrades to the next-lower
+channel or to standalone. No service failure causes data loss or science
+failure. Partial provenance (DAG without braid) is valid per
+`wateringHole/PROVENANCE_TRIO_INTEGRATION_GUIDE.md`.
+
 ## Shutdown
 
 Reverse topological order. Meta tier → domain primals → Tower. Socket

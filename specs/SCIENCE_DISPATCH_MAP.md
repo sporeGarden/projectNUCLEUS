@@ -193,5 +193,86 @@ transfer negligible for datasets <1 GB.
 
 ---
 
-*6 springs, 11 gates, 1 dispatch model. The science routes to where
+## Ferment Transcript Dispatch Route
+
+The ferment transcript is a production dispatch pattern that flows science
+through the provenance trio into deployable artifacts. wetSpring's Barrick 2009
+breseq pipeline is the first real-data instance.
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  PIPELINE: Ferment Transcript (wetSpring → lithoSpore)           │
+│                                                                   │
+│  1. NCBI FASTQ (SRP001569) → southGate 4TB NVMe                 │
+│  2. breseq 0.40.1 mutation calling → southGate (CPU-bound)      │
+│  3. rhizoCrypt dag.session.create → ironGate (provenance)        │
+│  4. rhizoCrypt dag.event.append per clone → ironGate             │
+│  5. loamSpine spine.seal → ironGate (ledger certification)       │
+│  6. sweetGrass braid.create → ironGate (attribution braid)      │
+│  7. Ferment transcript JSON export (braid_id, dag_session_id,   │
+│     dag_merkle_root, spine_id, computation metadata)             │
+│  8. lithoSpore data.toml ingestion (upstream_braid reference)    │
+│  9. USB artifact build → guideStone deployment                    │
+│  10. cellMembrane geo-delocalized Tier 2 relay (optional)        │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Ferment Transcript Wire Format
+
+```json
+{
+  "dataset_id": "barrick_2009_mutations",
+  "spring": "wetSpring",
+  "spring_version": "0.1.0",
+  "braid_id": "<sweetGrass — empty in standalone>",
+  "dag_session_id": "<rhizoCrypt>",
+  "dag_merkle_root": "<BLAKE3>",
+  "spine_id": "<loamSpine>",
+  "computation": {
+    "tool": "breseq",
+    "tool_version": "0.40.1",
+    "input_accession": "SRP001569",
+    "node_count": 7,
+    "wall_time_seconds": 3793
+  },
+  "summary_blake3": "529e34ee..."
+}
+```
+
+### Stability Tier Awareness
+
+Gate TOMLs and workload definitions reference primal methods. Per Wave 20
+`capability_registry.toml`, every method group carries a stability tier:
+
+| Tier | Meaning | Consumer Guidance |
+|------|---------|-------------------|
+| **stable** | Wire name frozen | Safe in dispatch maps, gate TOMLs, scope manifests |
+| **evolving** | May change with deprecation cycle | Document dependency; watch wateringHole |
+| **internal** | Implementation detail | Do not depend externally |
+
+Stable methods in projectNUCLEUS dispatch: `health.*`, `security.*`,
+`content.*`, `dag.*`, `spine.*`, `braid.*`, `compute.dispatch.*`,
+`discovery.*`. Gate TOML `[science]` sections reference hardware capabilities
+(strings), not method names directly — method stability applies to workload
+TOMLs and `provenance_pipeline.sh`.
+
+### Partial Provenance (Trio Transaction Semantics)
+
+Per `wateringHole/PROVENANCE_TRIO_INTEGRATION_GUIDE.md`, partial trio
+completion is valid — no rollback on partial:
+
+| State | DAG | Spine | Braid | Valid? |
+|-------|:---:|:-----:|:-----:|:------:|
+| Full | YES | YES | YES | Complete provenance chain |
+| Partial (DAG+spine) | YES | YES | no | Ledger entry, no attribution |
+| Partial (DAG only) | YES | no | no | Session recorded, unbacked |
+| None | no | no | no | Standalone mode |
+
+Gate configurations handle partial provenance gracefully. When cellMembrane
+hosts a Tier 2 relay, science dispatch degrades to whatever trio primals are
+reachable — never errors on absent provenance.
+
+---
+
+*8 springs, 11 gates, 1 dispatch model. The science routes to where
 the hardware is. The 10G backbone makes the cluster one machine.*

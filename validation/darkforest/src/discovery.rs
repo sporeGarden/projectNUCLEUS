@@ -78,7 +78,10 @@ pub fn resolve_primals(host: &str) -> Vec<ResolvedPrimal> {
         .collect()
 }
 
-/// Ask biomeOS for the live primal topology via `primal.list`
+/// Ask biomeOS for the live primal topology via `primal.list`.
+///
+/// Wave 20 canonical response: `{ "primals": [...], "count": N }`
+/// Also accepts legacy raw-array form for backward compat.
 fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
     let biomeos_port: u16 = std::env::var("BIOMEOS_PORT")
         .ok()
@@ -98,9 +101,11 @@ fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
         return Vec::new();
     };
 
+    // Canonical: { "primals": [...], "count": N } — prefer envelope, fall back to raw array
     let Some(primals) = result
-        .as_array()
-        .or_else(|| result.get("primals").and_then(|p| p.as_array()))
+        .get("primals")
+        .and_then(|p| p.as_array())
+        .or_else(|| result.as_array())
     else {
         return Vec::new();
     };
@@ -109,6 +114,7 @@ fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
         .iter()
         .filter_map(|entry| {
             let name = entry.get("name")?.as_str()?;
+            // Canonical entry: { "name", "socket", optional "port", "capabilities", "pid", "status", "version" }
             let port = entry
                 .get("port")
                 .and_then(serde_json::Value::as_u64)
@@ -143,20 +149,29 @@ pub fn probe_liveness(host: &str, primal: &mut ResolvedPrimal) {
     }
 }
 
-/// Query a primal's capabilities via JSON-RPC `capability.list`
+/// Query a primal's capabilities via JSON-RPC `capability.list`.
+///
+/// Wave 20 canonical response: `{ "capabilities": [...], "count": N, "primal": "name" }`
+/// Also accepts legacy `{ "methods": [...] }` or raw array for backward compat.
 pub fn probe_capabilities(host: &str, primal: &mut ResolvedPrimal) {
     let payload = r#"{"jsonrpc":"2.0","method":"capability.list","params":{},"id":1}"#;
     if let Some((_status, body)) = send_jsonrpc(host, primal.port, payload, 2000)
         && let Ok(v) = serde_json::from_str::<serde_json::Value>(&body)
-        && let Some(methods) = v
-            .get("result")
-            .and_then(|r| r.get("methods").or(Some(r)))
-            .and_then(|m| m.as_array())
+        && let Some(result) = v.get("result")
     {
-        primal.capabilities = methods
-            .iter()
-            .filter_map(|m| m.as_str().map(String::from))
-            .collect();
+        // Canonical: { "capabilities": [...] } — fall back to "methods" or raw array
+        let methods = result
+            .get("capabilities")
+            .or_else(|| result.get("methods"))
+            .and_then(|m| m.as_array())
+            .or_else(|| result.as_array());
+
+        if let Some(arr) = methods {
+            primal.capabilities = arr
+                .iter()
+                .filter_map(|m| m.as_str().map(String::from))
+                .collect();
+        }
     }
 }
 

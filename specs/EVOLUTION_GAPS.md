@@ -11,7 +11,7 @@ without waiting on upstream unless noted.
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
 **Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
 **Upstream status**: All upstream gaps resolved. 13/13 primals zero code debt, 8/8 delta springs zero debt (8,486+ tests). Tower atomic LIVE (ludoSpring 6/6). Nest atomic ready (GAP-36 resolved). Node atomic AMD live, NV FECS-gated.
-**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **427 methods**.
+**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **452 methods** (Wave 20, stable). Canonical `primal.list` / `capability.list` schemas SHIPPED.
 **cellMembrane**: fieldMouse deployment LIVE on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **Tower composition**: BearDog crypto (:9100) + SkunkBat audit (:9140) + Songbird TURN (:3478) + RustDesk (:21115-17) + Caddy TLS (:80/:443). **Channel 3 TLS LIVE**: `membrane.primals.eco` ACME cert (Let's Encrypt E8), serving real sporePrint content (19MB). HTTP parity PASS (68ms VPS vs 89ms GitHub Pages). DO token encrypted (BearDog AES-256-GCM). Content-aware routing deployed. 1.7GB free. Owned by ironGate/projectNUCLEUS.
 **Forgejo**: PRIMARY git host — 32 repos across 3 orgs (sporeGarden, ecoPrimals, syntheticChemistry). `.netrc` credential caching. `forgejo_mirror.sh` for org/repo creation + dual-push. GitHub is push mirror (outer membrane).
 
@@ -231,7 +231,7 @@ These are not gaps — they are accepted constraints:
 code debt. 8/8 delta springs at zero debt, 8,486+ tests. Tower atomic LIVE (ludoSpring 6/6).
 Nest atomic ready. Node atomic AMD live, NV FECS-gated. `toadstool.validate` S250 (74 methods).
 `barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53.
-`biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **427 methods** (was 418).
+`biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **452 methods** (Wave 20, was 427 at Wave 12). `primal.list` / `capability.list` canonical schemas SHIPPED (Wave 20).
 `content.put/get` NestGate Session 60 (4-surface parity). BTSP auth pipeline live (13/13 primals).
 skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 springs (`--format json`).
 76 wire routing misroutes fixed — `security.audit_log` → skunkBat, crypto methods base64-encoded,
@@ -344,7 +344,7 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 | TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **WIRED** — S250 implemented, 12 workload TOMLs with `toadstool-validate-v1` schema |
 | SHADOW | composition.deploy.shadow | P2 (NUCLEUS) | **WIRED** — `shadow_deploy()` in `deploy_graph.sh`, biomeOS v3.53 |
 | ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Graph capabilities reconciled (GAP-36 canonical names); provenance_pipeline.sh exercises dag.*/spine.*/braid.* |
-| LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | **EXCEEDED** — 6/7 modules PASS Tier 2, litho-core shared library, liveSpore tracking |
+| LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | **EXCEEDED** — 7/7 modules PASS Tier 2 (75/75 checks, 117 tests), cross-tier parity 7/7 MATCH, Tier 3 wired (trio JSON-RPC), litho-core shared library, liveSpore tracking |
 | FND-10 | Foundation 10/10 threads active | P5 (Foundation) | **DONE** — all threads seeded, TOML-driven fetch |
 
 ### Stadial Targets (external validation drives cutover)
@@ -376,12 +376,15 @@ lithoSpore (`gardens/lithoSpore`) is a projectNUCLEUS subsystem — the
 first Targeted GuideStone artifact.
 
 - Workload TOMLs: `litho-validate-tier2.toml`, `litho-validate-tier3.toml`
-- **Phase 2 active**: 6/7 modules PASS Tier 2 (Rust) — modules 1-4, 6, 7 live; module 5 (biobricks) awaits B6 spring data
-- Shared `litho-core` library: `discovery`, `harness`, `stats` modules — cross-module reuse pattern
+- **Phase 2 COMPLETE**: 7/7 modules PASS Tier 2 (75/75 checks, 117 tests). Module 5 (biobricks) activated — all modules live
+- **Cross-tier parity**: 7/7 modules MATCH (Python Tier 1 ↔ Rust Tier 2). `litho parity` is the ecosystem standard for cross-implementation validation
+- **Tier 3 wired**: JSON-RPC trio provenance (rhizoCrypt + loamSpine + sweetGrass) with graceful degradation via `try_record_tier3()` / `primals_reached` tracking
+- Shared `litho-core` library: `discovery`, `harness`, `stats`, `validation` modules — cross-module reuse pattern
 - Integration point: NUCLEUS dispatches lithoSpore workloads via `composition.deploy(graph)`
 - USB deployment: Tier 3 deploy graph (`graphs/ltee_guidestone.toml`) composes
   NUCLEUS primals around lithoSpore science modules
-- Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data — **EXCEEDED** (6/7 modules Tier 2)
+- **Ferment transcript ingestion**: wetSpring Barrick 2009 braids flow into lithoSpore `data.toml` as `upstream_braid` — computation-verified science chain
+- Interstadial target: 2+ modules PASS at Tier 1 (Python) with real data — **EXCEEDED** (7/7 modules Tier 2 + parity)
 - Stadial target: USB to Barrick Lab (Phase 5) — GuideStone Phase 1 DONE (architecture + queue seeding)
 
 ---
@@ -484,4 +487,7 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-15 | **Sovereignty targets executed — content sync + DNS grey-cloud + ACME TLS + HTTP parity**: (1) sporePrint content synced to VPS NestGate cache (19MB, `scp` — rsync unavailable on VPS). Caddy serving real content on :80. (2) `membrane.primals.eco` DNS A record created (DNS-only, not proxied, TTL 300). Safe test domain — no production traffic affected. (3) ACME cert automatically obtained (Let's Encrypt E8, valid to Aug 13 2026). Caddy TLS block added to `/etc/membrane/Caddyfile` — serves health, status, and sporePrint content. (4) BearDog TLS probe fixed: `probe_rpc()` rewritten to use `/dev/tcp` + `read -t 1` instead of `nc` (which waited for socket close). Latency: 3ms actual (was 3021ms). (5) BTSP auth telemetry: journald scan primary, logfile fallback. Semicolons for field separators in CSV extra column. (6) HTTP parity PASS: VPS 68ms TTFB vs GitHub Pages 89ms (10 samples). TLS parity via `membrane.primals.eco`: 130ms vs 96ms (within 35% — expected VPS vs CDN). Uptime 100% both channels. |
 | 2026-05-15 | **Horizon 4 (transactions) created**: 10 gaps tracked across ceremony, federation, and economics. (1) Tier 2 key ceremony designed — personal sovereignty + event (stadium) types, full protocol spec in `specs/TIER2_CEREMONY_DESIGN.md`. (2) Steam save federation architecture — cross-gate via 10G backbone, VPS off-site backup, multi-household via Songbird. (3) Ferment token + Loam Certificate lifecycle ready to exercise (H4-05, H4-06). (4) sunCloud metabolic routing designed (H4-07). (5) Membrane cert verification wirable now (H4-08). (6) Unified architecture: `gen4/architecture/SOVEREIGN_TRANSACTION_MEMBRANE.md` ties all threads through gram-negative membrane model. (7) Fuzz evolution roadmap (H4-10) per `specs/FUZZ_EVOLUTION.md`. Scoring: 1/10 (designed, not exercised). |
 | 2026-05-15 | **Artifact validation playbook + benchScale topologies**: (1) `specs/VALIDATION_PLAYBOOK.md` — practical "run this, validate that" mapping for 7 long-term artifacts (provenance trio, NFT, Loam cert, Tier 2 ceremony, Steam federation, sunCloud, BearDog genetics). Each artifact has smallest testable unit, smallest composition, 2-3 use cases, 2-3 science cases, and benchScale integration. (2) 4 Docker topologies for Rust benchScale: `provenance_trio`, `tower_membrane`, `ferment_lifecycle`, `full_nucleus` — lab-grade multi-primal composition testing. (3) `agentReagents/templates/nucleus_gate.yaml` — minimal VM gate provisioning provenance trio with systemd units. (4) `scenarios/artifact_validation.sh` — 7-section bash scenario exercising all artifacts against live NUCLEUS (TOML report output). (5) H4-11→H4-15 gaps added. Scoring: 2/10 (tooling ready, waiting for exercise). |
+| 2026-05-16 | **Deep debt + portability**: 55 Rust tests (darkforest 34, tunnelKeeper 21), discovery module with 3-tier cascade, reqwest 0.13 (aws-lc-rs interim), capability-based primal resolution, hardcoded path elimination. |
+| 2026-05-17 | **Reorg**: sporeGarden → gardens. cellMembrane moved to gardens/. Stale duplicates removed. Systemd units, forgejo mirror, docs updated. |
 | 2026-05-17 | **Validation Gate Matrix + infrastructure review**: (1) Validation Gate Matrix section added — maps each of 11 validation systems to specific sovereignty phase transitions (H2-01→H2-20, H3-03→H3-04). Pre-transition, shadow, cutover, and post-cutover gates defined for each. (2) Validation cadence table added (continuous/daily/weekly/per-cutover). (3) Stale `gardens/sporeGarden/` clone removed (duplicate projectNUCLEUS). (4) `.env` audit: all sensitive files (squirrel API keys, JWT secrets) properly gitignored, no contamination risk. (5) `REPO_MEMBRANE_BOUNDARY.md` created in wateringHole — full repo classification (inner-only/dual-push/outer-only) with contamination risk matrix and Forgejo migration path. (6) cellMembrane decision documented: recommend Forgejo-only when operationally stable. |
+| 2026-05-17 | **Wave 21 absorption**: (1) Registry updated 427→452 methods (Wave 20, stability-tier annotated). (2) lithoSpore refs updated 6/7→7/7 PASS (75/75 checks, 117 tests, cross-tier parity 7/7 MATCH, Tier 3 wired). (3) `primal.list` / `capability.list` canonical schemas marked SHIPPED — discovery module updated to prefer canonical `{ "primals": [...], "count": N }` envelope. (4) Ferment transcript dispatch route documented in `SCIENCE_DISPATCH_MAP.md` — wetSpring → trio → braid → lithoSpore pipeline. (5) Stability tier awareness added (stable/evolving/internal per capability_registry.toml). (6) cellMembrane degradation behavior documented in `EXECUTION_MODEL.md` — per-service fallback table. (7) Cross-tier parity reference added to `TIER2_CEREMONY_DESIGN.md`. (8) Partial provenance (trio transaction semantics) documented in dispatch map. |

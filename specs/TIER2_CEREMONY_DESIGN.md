@@ -325,6 +325,24 @@ intracellularly (on gate hardware the family controls).
 
 ---
 
+### Cross-Tier Parity Validation
+
+BearDog RPC sequence validation benefits from the cross-tier parity pattern
+established by lithoSpore. The three-layer proof structure applies to ceremony
+validation:
+
+- **Tier 1**: Python reference implementation of entropy mixing + key derivation
+- **Tier 2**: Rust `beardog-genetics` validation — compare against Tier 1 expected values
+- **Tier 3**: Primal composition (BearDog RPC round-trip) — verify ceremony
+  chain through live IPC
+
+lithoSpore's `ParityReport` JSON format (7/7 modules MATCH) is the ecosystem
+standard for cross-implementation validation. Ceremony validation should adopt
+the same `ParityResult` structure for reporting BearDog entropy/key derivation
+parity. See `primalSpring/docs/VALIDATION_TIERS.md` § Cross-Tier Parity Pattern.
+
+---
+
 *Human entropy is non-fungible. That's the point. Your typing rhythm,
 your HSM's attestation, your physical presence at a moment in time —
 these cannot be reproduced. Tier 2 sovereign keys inherit this property.

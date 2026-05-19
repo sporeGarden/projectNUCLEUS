@@ -1,0 +1,23 @@
+# BTSP TLS Parity Report — 20260519-152048
+# Generated: 2026-05-19T15:21:18Z
+
+[metadata]
+baseline = "/home/irongate/Development/ecoPrimals/gardens/projectNUCLEUS/validation/baselines/membrane_7day.toml"
+btsp_url = "http://127.0.0.1:8443"
+btsp_host = "127.0.0.1"
+btsp_port = 8443
+probe = "JSON-RPC health.liveness"
+samples = 10
+generated_at = "2026-05-19T15:21:18Z"
+
+[cloudflare_baseline]
+tls_p95_ms = 3021.0
+ttfb_p95_ms = 163.0
+
+[btsp_measured]
+rpc_p95_ms = 2027.00
+uptime_pct = 100.0
+
+[parity]
+rpc_parity = false
+overall = false

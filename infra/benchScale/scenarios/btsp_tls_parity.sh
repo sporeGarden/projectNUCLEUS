@@ -58,26 +58,32 @@ CF_TTFB_P95=$(grep 'ttfb_p95' "$BASELINE" | head -1 | awk -F= '{gsub(/ /,"",$2);
 echo "  CF Baseline: tls_p95=${CF_TLS_P95}ms  ttfb_p95=${CF_TTFB_P95}ms"
 echo ""
 
-CURL_FMT='%{time_namelookup},%{time_connect},%{time_appconnect},%{time_starttransfer},%{time_total},%{http_code}'
+# BearDog speaks JSON-RPC over TCP (BTSP protocol), not HTTPS.
+# Measure latency via JSON-RPC health.liveness round-trip.
+BTSP_HOST=$(echo "$BTSP_URL" | sed -E 's|https?://||' | cut -d: -f1)
+BTSP_PORT=$(echo "$BTSP_URL" | sed -E 's|https?://||' | cut -d: -f2 | cut -d/ -f1)
+[[ -z "$BTSP_PORT" ]] && BTSP_PORT=8443
+RPC_REQ='{"jsonrpc":"2.0","method":"health.liveness","id":1}'
+
 TMP_CSV=$(mktemp)
-echo "tls_ms,ttfb_ms,total_ms,code" > "$TMP_CSV"
+echo "rpc_ms,code" > "$TMP_CSV"
 
 PASS=0
 for i in $(seq 1 "$SAMPLES"); do
-    raw=$(curl -sS -o /dev/null -w "$CURL_FMT" --max-time 30 -k "$BTSP_URL" 2>/dev/null) || raw="0,0,0,0,0,0"
-    IFS=',' read -r dns tcp tls ttfb total code <<< "$raw"
+    start_ns=$(date +%s%N)
+    resp=$(echo "$RPC_REQ" | nc -q 0 -w 2 "$BTSP_HOST" "$BTSP_PORT" 2>/dev/null | head -1 || echo "")
+    end_ns=$(date +%s%N)
+    elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
 
-    tls_ms=$(echo "$tls * 1000" | bc)
-    ttfb_ms=$(echo "$ttfb * 1000" | bc)
-    total_ms=$(echo "$total * 1000" | bc)
-
-    echo "${tls_ms},${ttfb_ms},${total_ms},${code}" >> "$TMP_CSV"
-
-    if [[ "$code" == "200" ]]; then
+    if echo "$resp" | grep -q '"result"'; then
+        code="OK"
         PASS=$((PASS + 1))
+    else
+        code="ERR"
     fi
 
-    printf "  [%d/%d] HTTP %s  tls=%sms  ttfb=%sms\n" "$i" "$SAMPLES" "$code" "$tls_ms" "$ttfb_ms"
+    echo "${elapsed_ms},${code}" >> "$TMP_CSV"
+    printf "  [%d/%d] %s  rpc=%dms\n" "$i" "$SAMPLES" "$code" "$elapsed_ms"
     sleep 1
 done
 
@@ -93,16 +99,16 @@ percentile_csv() {
         }'
 }
 
-BTSP_TLS_P95=$(percentile_csv 1 95)
-BTSP_TTFB_P95=$(percentile_csv 2 95)
+BTSP_RPC_P95=$(percentile_csv 1 95)
 
-TLS_PARITY=$(echo "$BTSP_TLS_P95 <= $CF_TLS_P95" | bc -l 2>/dev/null || echo "0")
-TTFB_PARITY=$(echo "$BTSP_TTFB_P95 <= $CF_TTFB_P95" | bc -l 2>/dev/null || echo "0")
+# Compare JSON-RPC p95 against CF TTFB p95 (both measure "time to response")
+RPC_PARITY=$(echo "$BTSP_RPC_P95 <= $CF_TTFB_P95" | bc -l 2>/dev/null || echo "0")
 
 echo ""
 echo "Results:"
-echo "  BTSP tls_p95:  ${BTSP_TLS_P95}ms  (CF: ${CF_TLS_P95}ms) — $([ "$TLS_PARITY" = "1" ] && echo "PASS" || echo "FAIL")"
-echo "  BTSP ttfb_p95: ${BTSP_TTFB_P95}ms (CF: ${CF_TTFB_P95}ms) — $([ "$TTFB_PARITY" = "1" ] && echo "PASS" || echo "FAIL")"
+echo "  BTSP rpc_p95:  ${BTSP_RPC_P95}ms  (CF ttfb_p95: ${CF_TTFB_P95}ms, CF tls_p95: ${CF_TLS_P95}ms)"
+echo "  RPC parity (rpc ≤ CF TTFB): $([ "$RPC_PARITY" = "1" ] && echo "PASS" || echo "FAIL")"
+echo "  Success rate: ${PASS}/${SAMPLES}"
 
 cat > "$REPORT" << EOF
 # BTSP TLS Parity Report — $RUN_ID
@@ -111,6 +117,9 @@ cat > "$REPORT" << EOF
 [metadata]
 baseline = "$BASELINE"
 btsp_url = "$BTSP_URL"
+btsp_host = "$BTSP_HOST"
+btsp_port = $BTSP_PORT
+probe = "JSON-RPC health.liveness"
 samples = $SAMPLES
 generated_at = "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -119,14 +128,12 @@ tls_p95_ms = $CF_TLS_P95
 ttfb_p95_ms = $CF_TTFB_P95
 
 [btsp_measured]
-tls_p95_ms = $BTSP_TLS_P95
-ttfb_p95_ms = $BTSP_TTFB_P95
+rpc_p95_ms = $BTSP_RPC_P95
 uptime_pct = $(echo "scale=1; $PASS * 100 / $SAMPLES" | bc)
 
 [parity]
-tls_parity = $([ "$TLS_PARITY" = "1" ] && echo "true" || echo "false")
-ttfb_parity = $([ "$TTFB_PARITY" = "1" ] && echo "true" || echo "false")
-overall = $([ "$TLS_PARITY" = "1" ] && [ "$TTFB_PARITY" = "1" ] && echo "true" || echo "false")
+rpc_parity = $([ "$RPC_PARITY" = "1" ] && echo "true" || echo "false")
+overall = $([ "$RPC_PARITY" = "1" ] && echo "true" || echo "false")
 EOF
 
 rm -f "$TMP_CSV"

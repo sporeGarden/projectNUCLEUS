@@ -100,8 +100,11 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
     fi
 
     # 1. NestGate content parity
+    # petalTongue in `web` mode serves HTTP; in `server` mode serves JSON-RPC only.
+    # Check PETALTONGUE_WEB_PORT (web mode) first, fall back to PETALTONGUE_PORT (server mode).
     echo "--- H2-05/3a: NestGate Content Parity ---"
-    NESTGATE_URL="http://${NUCLEUS_BIND_ADDRESS}:${PETALTONGUE_PORT:-9900}"
+    PT_WEB_PORT="${PETALTONGUE_WEB_PORT:-8080}"
+    NESTGATE_URL="http://${NUCLEUS_BIND_ADDRESS}:${PT_WEB_PORT}"
     GHPAGES_URL="https://primals.eco"
 
     if curl -sf --max-time 5 "$NESTGATE_URL" >/dev/null 2>&1; then
@@ -110,24 +113,28 @@ if [[ "$MODE" == "parity" || "$MODE" == "all" ]]; then
             --ghpages-url "$GHPAGES_URL" \
             --nestgate-url "$NESTGATE_URL"
     else
-        echo "  SKIP: NestGate/petalTongue not reachable at $NESTGATE_URL"
+        echo "  SKIP: petalTongue web not reachable at $NESTGATE_URL"
+        echo "  Start petalTongue in web mode: petaltongue web --port $PT_WEB_PORT"
         SKIP_COUNT=$((SKIP_COUNT + 1))
         echo ""
     fi
 
     # 2. BearDog TLS parity
+    # BearDog shadow on :8443 serves JSON-RPC (BTSP protocol), not HTTPS.
+    # Probe via /dev/tcp + health.liveness, not curl.
     echo "--- H2-3b/H2-12: BearDog BTSP TLS Parity ---"
-    BTSP_URL="https://127.0.0.1:8443/hub/login"
+    BTSP_HOST="${BTSP_SHADOW_HOST:-127.0.0.1}"
+    BTSP_PORT="${BTSP_SHADOW_PORT:-8443}"
 
     if [[ -n "$CF_BASELINE" ]]; then
-        if curl -sf --max-time 5 -k "$BTSP_URL" >/dev/null 2>&1; then
+        if timeout 2 bash -c "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | nc -w 1 $BTSP_HOST $BTSP_PORT 2>/dev/null | grep -q result" 2>/dev/null; then
             run_test "BTSP TLS Parity" \
                 "$SCRIPT_DIR/btsp_tls_parity.sh" \
                 --baseline "$CF_BASELINE" \
-                --btsp-url "$BTSP_URL"
+                --btsp-url "http://$BTSP_HOST:$BTSP_PORT"
         else
-            echo "  SKIP: BearDog TLS not reachable at $BTSP_URL"
-            echo "  Start BearDog with --tls-port 8443 for shadow testing"
+            echo "  SKIP: BearDog TLS not reachable at $BTSP_HOST:$BTSP_PORT"
+            echo "  Start shadow: bash deploy/deploy_beardog_tls_shadow.sh --port $BTSP_PORT"
             SKIP_COUNT=$((SKIP_COUNT + 1))
             echo ""
         fi

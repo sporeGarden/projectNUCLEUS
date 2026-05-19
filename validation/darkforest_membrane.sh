@@ -193,7 +193,8 @@ if $SKIP_SSH; then
     skip "MEM-10" "SSH checks skipped"
 else
     # Phase 0.5: SSH + TURN + RustDesk + Tower (BearDog + SkunkBat) + Caddy TLS
-    expected_ports="22 53 5355 3478 21115 21116 21117 21118 21119 9100 9140 80 443 2019"
+    # + Shadow services: BearDog TLS :8443, petalTongue web :8080
+    expected_ports="22 53 5355 3478 21115 21116 21117 21118 21119 9100 9140 80 443 2019 8443 8080"
     listeners=$(ssh_cmd "ss -tlnp 2>/dev/null | grep LISTEN" || true)
     unexpected=0
     while IFS= read -r line; do

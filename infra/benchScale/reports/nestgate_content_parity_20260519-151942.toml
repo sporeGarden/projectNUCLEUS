@@ -1,0 +1,38 @@
+# NestGate Content Parity Report — 20260519-151942
+# Generated: 2026-05-19T15:19:42Z
+
+[metadata]
+ghpages_url = "https://primals.eco"
+nestgate_url = "http://127.0.0.1:8080"
+samples_per_path = 10
+generated_at = "2026-05-19T15:19:42Z"
+
+[path_root]
+path = "/"
+ghpages_ttfb_ms = 112.90
+ghpages_total_ms = 113.39
+nestgate_ttfb_ms = .63
+nestgate_total_ms = .69
+content_hash_match = false
+ttfb_parity = true
+
+[path_lab_compute-access]
+path = "/lab/compute-access/"
+ghpages_ttfb_ms = 104.58
+ghpages_total_ms = 104.99
+nestgate_ttfb_ms = .49
+nestgate_total_ms = .51
+content_hash_match = false
+ttfb_parity = true
+
+[path_about]
+path = "/about/"
+ghpages_ttfb_ms = 101.19
+ghpages_total_ms = 101.32
+nestgate_ttfb_ms = .44
+nestgate_total_ms = .46
+content_hash_match = false
+ttfb_parity = true
+
+[parity]
+overall = false

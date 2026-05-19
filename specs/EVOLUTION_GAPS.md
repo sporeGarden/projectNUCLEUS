@@ -439,10 +439,10 @@ Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `
 
 | # | Track | Sovereign | Commercial | Status | Parity Script | Metric |
 |---|-------|-----------|------------|--------|---------------|--------|
-| S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** — 10ms vs 120ms (12×) | `btsp_tls_parity.sh` | p50/p95/p99 latency, error rate |
-| S2 | NAT traversal | Songbird TURN relay | cloudflared tunnel | **READY** — TURN client shipped (Wave 205) | `songbird_nat_parity.sh` | Connection setup, keepalive, reconnect |
-| S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **READY** — transport parity (Session 60) | `nestgate_content_parity.sh` | TTFB, cache hit, content freshness |
-| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **READY** — ionic tokens + FIDO2 | (new — auth parity) | Auth latency (<50ms), session mgmt |
+| S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** — 6-12ms vs 163ms (13-27×). VPS + ironGate deployed | `btsp_tls_parity.sh` | JSON-RPC p95, error rate |
+| S2 | NAT traversal | Songbird TURN relay | cloudflared tunnel | **LIVE** — relay v0.2.1 on VPS, 100% reachable 3+ days | `songbird_nat_parity.sh` | TURN reachability, UDP latency |
+| S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **LIVE** — petalTongue web on VPS :8080. TTFB 67ms vs 111ms GH (40% faster) | `nestgate_content_parity.sh` | TTFB, content hash, 404 rate |
+| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **READY** — spec shipped (Wave 106), integration pending | (new — auth parity) | Auth latency (<50ms), session mgmt |
 
 ### Remaining per Track
 
@@ -464,7 +464,7 @@ Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `
 - [x] `primal.announce` wired
 - [x] Relay deployment guide shipped: `deployment/relay/README.md` (5-minute quick deploy)
 - [x] TURN server improvements pulled (Wave 206+: session management, coordinator enhancements)
-- [ ] Deploy relay node on cellMembrane VPS (scp binary + systemd service)
+- [x] Deploy relay node on cellMembrane VPS — `songbird-relay.service` LIVE (v0.2.1, 3+ days, 100% reachable)
 - [ ] Dual-path shadow routing (cloudflared + songbird in parallel)
 - [ ] Cross-gate test: 2+ gates via songbird relay
 - [ ] 7-day metric collection
@@ -511,8 +511,8 @@ All 4 tracks must pass simultaneously before DNS switch.
 | ~~`ACME_TLS_INTEGRATION_PATH.md` missing~~ | bearDog | ~~S1 design gap~~ | **RESOLVED** — exists on disk (7.5KB, Wave 105) |
 | ~~`deny.toml` ring wrappers stale~~ | bearDog | ~~ring policy~~ | **RESOLVED** — `["rustls", "rustls-webpki"]` (Wave 105) |
 | ~~JupyterHub dual-auth spec~~ | bearDog | ~~S4 design~~ | **RESOLVED** — `JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` shipped (Wave 106) |
-| Songbird relay node deployment on cellMembrane | songbird + projectNUCLEUS | S2 shadow — relay must be live | **OPEN** — deployment guide ready, binary scp + systemd |
-| petalTongue static asset parity testing | petalTongue + projectNUCLEUS | S3 cutover | **OPEN** — gzip+brotli+404 shipped, systematic test pending |
+| ~~Songbird relay node deployment on cellMembrane~~ | songbird + projectNUCLEUS | ~~S2 shadow~~ | **RESOLVED** — `songbird-relay.service` LIVE on VPS (v0.2.1, 3+ days, 100% reachable) |
+| ~~petalTongue static asset parity testing~~ | petalTongue + projectNUCLEUS | ~~S3 cutover~~ | **RESOLVED** — `petaltongue-web.service` deployed on VPS :8080. TTFB parity PASS (67ms vs 111ms). Content hash parity pending (mirror) |
 
 ---
 
@@ -523,7 +523,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          █████████░  Tower LIVE (6 svc), Ch3 TLS LIVE (ACME cert), HTTP parity PASS, Forgejo primary (32 repos), L3+L4 telemetry
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED
 Horizon 4 (transactions):         ██░░░░░░░░  READY — validation playbook + benchScale topologies + artifact_validation.sh wired. H4-11/12/13 ready to run.
-Shadow (Wave 24):                 █████░░░░░  S1 LIVE (TLS, ACME crate shipped). S2-S4 READY (specs + code shipped). 4/5 upstream blockers RESOLVED. Remaining: relay deploy + asset parity test.
+Shadow (Wave 24):                 ██████░░░░  S1 LIVE (TLS 6-12ms, VPS deployed). S2 LIVE (TURN 100%, 3+ days). S3 LIVE (TTFB 67ms < 111ms GH). S4 READY. Orchestrator: 4 PASS, 0 FAIL, 1 SKIP (DNS). 5/5 upstream blockers RESOLVED.
 Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened

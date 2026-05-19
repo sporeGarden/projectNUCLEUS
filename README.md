@@ -104,7 +104,7 @@ Gates connect to each other through chemical bonding patterns:
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
 - **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **452 methods** (Wave 20)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
-- **Wave 24 sovereignty shadow ACTIVE**: `graphs/sovereignty_shadow.toml` — 4-track parity proof (S1 TLS **LIVE** 10ms vs 120ms, S2 NAT **READY**, S3 content **READY**, S4 auth **READY**). Calibrate → shadow → cutover protocol. `membrane_telemetry.sh` feeds rolling 7-day baselines. Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
+- **Wave 24 sovereignty shadow OPERATIONAL**: `graphs/sovereignty_shadow.toml` — 4-track parity proof. Orchestrator: **4 PASS, 0 FAIL, 1 SKIP** (knot-dns only). S1 TLS **LIVE** (6-12ms vs 163ms, VPS deployed), S2 NAT **LIVE** (100% reachable, 3+ days), S3 content **LIVE** (TTFB 67ms vs 111ms GH), S4 auth **READY**. All 5 upstream blockers RESOLVED. `membrane_telemetry.sh` → 7-day baselines. Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
 
 ### Services (all persistent via systemd)
 

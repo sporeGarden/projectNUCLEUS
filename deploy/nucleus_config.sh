@@ -123,6 +123,14 @@ declare -A BACKBONE_IPS=(
 # Values: "winter" | "summer" | "shoulder" | "auto"
 THERMAL_SEASON="${THERMAL_SEASON:-auto}"
 
+# --- Shadow Run Config (Wave 24: sovereignty parity proofs) ---
+BTSP_SHADOW_HOST="${BTSP_SHADOW_HOST:-127.0.0.1}"
+BTSP_SHADOW_PORT="${BTSP_SHADOW_PORT:-8443}"
+SONGBIRD_RELAY_URL="${SONGBIRD_RELAY_URL:-}"                                # set when relay deployed
+CONTENT_STAGING_URL="${CONTENT_STAGING_URL:-}"                              # petalTongue staging endpoint
+BEARDOG_TLS_MODE="${BEARDOG_TLS_MODE:-shadow}"                              # shadow | acme | static
+SHADOW_CUTOVER_PARITY_THRESHOLD="${SHADOW_CUTOVER_PARITY_THRESHOLD:-1.5}"   # sovereign p95 ≤ N× commercial p95
+
 # --- Membrane Telemetry (continuous sovereignty shadow) ---
 MEMBRANE_TELEMETRY_INTERVAL="${MEMBRANE_TELEMETRY_INTERVAL:-900}"           # seconds (900 = 15 min)
 MEMBRANE_TELEMETRY_DIR="${MEMBRANE_TELEMETRY_DIR:-$NUCLEUS_PROJECT_ROOT/validation/baselines/daily}"

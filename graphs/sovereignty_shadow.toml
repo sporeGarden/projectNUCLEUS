@@ -1,0 +1,136 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Graph: Sovereignty Shadow — 4-track parity proof (Wave 24)
+#
+# Proves sovereign components can replace commercial counterparts.
+# Each track runs in parallel with its commercial equivalent.
+# Cutover happens only after 7-day parity is demonstrated.
+#
+# Tracks:
+#   S1: BearDog TLS   → replaces Cloudflare TLS termination
+#   S2: Songbird relay → replaces cloudflared tunnel
+#   S3: NestGate+PT    → replaces GitHub Pages
+#   S4: BearDog BTSP   → replaces OAuth2 proxy
+#
+# See: WAVE24_SHADOW_RUN_EXECUTION_MAY19_2026.md
+# See: infra/wateringHole/SOVEREIGNTY_STANDARDS.md §2 (calibrate → shadow → cutover)
+
+[graph]
+name = "sovereignty_shadow"
+description = "4-track shadow run: TLS + NAT + content + auth parity proofs"
+version = "1.0.0"
+shadow = true
+secure_by_default = true
+
+[graph.metadata]
+wave = 24
+owner = "projectNUCLEUS"
+protocol = "calibrate-shadow-cutover"
+cutover_gate = "sovereign p95 <= 1.5x commercial p95 for 7 consecutive days"
+
+# --- S1: TLS Termination ---
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+by_capability = "crypto"
+shadow_target = "cloudflare_tls"
+shadow_port = 8443
+parity_script = "infra/benchScale/scenarios/btsp_tls_parity.sh"
+metrics = ["tls_p50", "tls_p95", "tls_p99", "error_rate", "cert_rotation"]
+
+[graph.nodes.shadow_criteria]
+description = "BearDog rustls vs Cloudflare TLS tunnel"
+baseline_source = "validation/baselines/membrane_7day.toml"
+cutover_metric = "tls_p95"
+cutover_threshold = "sovereign_p95 <= 1.5 * commercial_p95"
+
+# --- S2: NAT Traversal ---
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+by_capability = "relay"
+shadow_target = "cloudflared_tunnel"
+parity_script = "infra/benchScale/scenarios/songbird_nat_parity.sh"
+metrics = ["connection_setup_ms", "keepalive_reliability", "reconnect_freq", "bandwidth_overhead"]
+
+[graph.nodes.shadow_criteria]
+description = "Songbird TURN relay vs cloudflared tunnel"
+baseline_source = "validation/baselines/membrane_7day.toml"
+cutover_metric = "nat_reachable"
+cutover_threshold = "100% reachability over 7 days"
+
+# --- S3: Content Hosting ---
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 3
+required = true
+by_capability = "content"
+shadow_target = "github_pages"
+parity_script = "infra/benchScale/scenarios/nestgate_content_parity.sh"
+metrics = ["ttfb_p50", "ttfb_p95", "cache_hit_rate", "content_freshness"]
+
+[graph.nodes.shadow_criteria]
+description = "NestGate content store vs GitHub Pages CDN"
+baseline_source = "validation/baselines/membrane_7day.toml"
+cutover_metric = "content_ttfb_p95"
+cutover_threshold = "vps_ttfb <= 1.1 * github_ttfb"
+
+[[graph.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 4
+required = false
+by_capability = "visualization"
+shadow_target = "github_pages_frontend"
+metrics = ["ttfb", "mime_type_parity", "compression", "cache_headers"]
+
+[graph.nodes.shadow_criteria]
+description = "petalTongue static serving vs GitHub Pages frontend"
+cutover_metric = "feature_parity"
+cutover_threshold = "CSS/JS/image serving matches GH Pages behavior"
+
+# --- S4: Auth ---
+[[graph.nodes]]
+name = "beardog_auth"
+binary = "beardog"
+order = 5
+required = true
+by_capability = "auth"
+shadow_target = "oauth2_proxy"
+metrics = ["auth_latency_ms", "session_creation_ms", "token_refresh_reliability", "fido2_enrollment_rate"]
+
+[graph.nodes.shadow_criteria]
+description = "BearDog BTSP dual-auth vs OAuth2 proxy on JupyterHub"
+cutover_metric = "auth_latency_p95"
+cutover_threshold = "< 50ms"
+
+# --- Orchestration ---
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 6
+required = false
+by_capability = "audit"
+description = "Audit shadow metrics in skunkBat format for provenance trio tracking"
+
+[[graph.nodes]]
+name = "biomeos"
+binary = "biomeos"
+order = 7
+required = false
+by_capability = "orchestration"
+description = "composition.deploy.shadow dry-run validation layer"
+
+# --- Telemetry integration ---
+[graph.telemetry]
+collection_script = "deploy/membrane_telemetry.sh"
+summary_script = "deploy/membrane_summary.sh"
+orchestrator = "infra/benchScale/scenarios/shadow_run_orchestrator.sh"
+baseline_file = "validation/baselines/membrane_7day.toml"
+cadence_seconds = 900
+cutover_consecutive_days = 7

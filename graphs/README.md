@@ -38,6 +38,7 @@ The canonical source for all 77+ graphs remains in primalSpring.
 | `basement_hpc_covalent.toml` | Covalent | LAN cluster — your machines |
 | `friend_remote_covalent.toml` | Covalent + NAT | Friend's machine with tunnel |
 | `ionic_capability_share.toml` | Ionic | Two-family metered sharing |
+| `sovereignty_shadow.toml` | Shadow | Wave 24 — 4-track sovereignty parity proofs (TLS/NAT/content/auth) |
 
 ## TCP Fallback Ports (Tier 5 Discovery)
 

@@ -428,6 +428,88 @@ extend the sovereign organism from compute into transactions.
 
 ---
 
+## Wave 24: Shadow Run Matrix (Sovereignty Parity Proofs)
+
+Deploy graph: `graphs/sovereignty_shadow.toml`
+Protocol: calibrate → shadow → cutover (`wateringHole/SOVEREIGNTY_STANDARDS.md` §2)
+Orchestrator: `infra/benchScale/scenarios/shadow_run_orchestrator.sh`
+Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `validation/baselines/membrane_7day.toml`
+
+### Shadow Status
+
+| # | Track | Sovereign | Commercial | Status | Parity Script | Metric |
+|---|-------|-----------|------------|--------|---------------|--------|
+| S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** — 10ms vs 120ms (12×) | `btsp_tls_parity.sh` | p50/p95/p99 latency, error rate |
+| S2 | NAT traversal | Songbird TURN relay | cloudflared tunnel | **READY** — TURN client shipped (Wave 205) | `songbird_nat_parity.sh` | Connection setup, keepalive, reconnect |
+| S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **READY** — transport parity (Session 60) | `nestgate_content_parity.sh` | TTFB, cache hit, content freshness |
+| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **READY** — ionic tokens + FIDO2 | (new — auth parity) | Auth latency (<50ms), session mgmt |
+
+### Remaining per Track
+
+**S1 — BearDog TLS (LIVE, shadow metrics accumulating)**
+- [x] rustls X.509 termination live on :8443
+- [x] Per-IP sliding-window rate limiter
+- [x] `deploy_beardog_tls_shadow.sh` operational
+- [ ] bearDog ACME Phase 2: `beardog-acme` crate (HTTP-01, cert storage, hot-reload)
+- [ ] bearDog ACME Phase 3: renewal daemon (12h check, 30-day-before-expiry)
+- [ ] 7-day continuous p50/p95/p99 measurement via `membrane_telemetry.sh`
+- [ ] Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
+
+**S2 — Songbird NAT (READY, relay deployment pending)**
+- [x] `songbird-turn-client` crate (RFC 5766 TURN)
+- [x] STUN wire-compliant (RFC 5389)
+- [x] 5-tier ConnectionFallbackChain (direct → STUN → lineage → TURN → emergency)
+- [x] `primal.announce` wired
+- [ ] Deploy relay node on cellMembrane (alongside bearDog TLS)
+- [ ] Dual-path shadow routing (cloudflared + songbird in parallel)
+- [ ] Cross-gate test: 2+ gates via songbird relay
+- [ ] 7-day metric collection
+
+**S3 — Content Hosting (READY, mirror pending)**
+- [x] NestGate: 8 `content.*` methods on all 4 transports (Session 60)
+- [x] petalTongue: `backend=nestgate` live (v1.6.6)
+- [x] `content_pipeline_smoke.toml` graph
+- [x] ACME routing rule in `routing_config.toml`
+- [ ] Mirror GitHub Pages content to NestGate via `content.put`
+- [ ] DNS staging subdomain → petalTongue :8080
+- [ ] TTFB, cache hit, 404 rate metric collection
+- [ ] Static asset parity (CSS/JS/images, MIME types, compression)
+
+**S4 — Auth (READY, JupyterHub integration pending)**
+- [x] Ed25519 ionic tokens with TTL/expiry (Wave 102)
+- [x] BTSP Phase 3 AEAD on all 13 primals
+- [x] FIDO2/CTAP2 IPC surface (Wave 103)
+- [x] `deploy_btsp_auth_shadow.sh` operational
+- [ ] BearDog as JupyterHub auth provider (replaces OAuth2 proxy)
+- [ ] Session management: bearDog token → JupyterHub session mapping
+- [ ] Auth latency target: <50ms p95
+
+### Cutover Criteria
+
+Per `wateringHole/SOVEREIGNTY_STANDARDS.md`:
+
+| Track | Metric | Threshold | Duration |
+|-------|--------|-----------|----------|
+| S1 TLS | `beardog_tls_p95` | ≤ 1.5× `cloudflare_ttfb_p95` | 7 consecutive days |
+| S2 NAT | TURN reachability | 100% | 7 consecutive days |
+| S3 Content | VPS TTFB | ≤ 110% GitHub Pages TTFB | 7 consecutive days |
+| S4 Auth | Auth latency | < 50ms p95 | 7 consecutive days |
+
+Cutover gate: `deploy/membrane_summary.sh` computes rolling 7-day window.
+All 4 tracks must pass simultaneously before DNS switch.
+
+### Upstream Blockers (for primal teams)
+
+| Blocker | Owner | Impact |
+|---------|-------|--------|
+| `beardog-acme` crate (HTTP-01 + renewal) | bearDog team | S1 cutover — auto-cert needed |
+| `specs/ACME_TLS_INTEGRATION_PATH.md` (referenced but missing from tree) | bearDog team | S1 design document gap |
+| bearDog `deny.toml` ring wrappers stale (`wrappers = []`) | bearDog team | ring policy not reconciled to Wave 105 |
+| Songbird relay node deployment | songbird team | S2 shadow — relay must be live |
+| petalTongue static asset parity | petalTongue team | S3 cutover — CSS/JS/image serving |
+
+---
+
 ## Scoring
 
 ```
@@ -435,6 +517,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          █████████░  Tower LIVE (6 svc), Ch3 TLS LIVE (ACME cert), HTTP parity PASS, Forgejo primary (32 repos), L3+L4 telemetry
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED
 Horizon 4 (transactions):         ██░░░░░░░░  READY — validation playbook + benchScale topologies + artifact_validation.sh wired. H4-11/12/13 ready to run.
+Shadow (Wave 24):                 ███░░░░░░░  S1 LIVE (TLS), S2-S4 READY. Deploy graph created. Cutover criteria defined. Awaiting ACME + relay deploy.
 Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened

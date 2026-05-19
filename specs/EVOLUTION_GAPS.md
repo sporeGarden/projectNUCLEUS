@@ -450,17 +450,21 @@ Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `
 - [x] rustls X.509 termination live on :8443
 - [x] Per-IP sliding-window rate limiter
 - [x] `deploy_beardog_tls_shadow.sh` operational
-- [ ] bearDog ACME Phase 2: `beardog-acme` crate (HTTP-01, cert storage, hot-reload)
-- [ ] bearDog ACME Phase 3: renewal daemon (12h check, 30-day-before-expiry)
+- [x] bearDog ACME Phase 2: `beardog-acme` crate SHIPPED (Wave 106) — HTTP-01, cert storage, hot-reload via `Arc<ServerConfig>` swap, shadow metrics collector
+- [x] `specs/ACME_TLS_INTEGRATION_PATH.md` exists (7.5KB design doc)
+- [x] `deny.toml` ring wrappers reconciled: `["rustls", "rustls-webpki"]`
+- [ ] bearDog ACME Phase 3: renewal daemon integration (12h check, 30-day-before-expiry)
 - [ ] 7-day continuous p50/p95/p99 measurement via `membrane_telemetry.sh`
 - [ ] Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
 
 **S2 — Songbird NAT (READY, relay deployment pending)**
-- [x] `songbird-turn-client` crate (RFC 5766 TURN)
+- [x] `songbird-turn-client` crate (RFC 5766 TURN, Wave 205)
 - [x] STUN wire-compliant (RFC 5389)
 - [x] 5-tier ConnectionFallbackChain (direct → STUN → lineage → TURN → emergency)
 - [x] `primal.announce` wired
-- [ ] Deploy relay node on cellMembrane (alongside bearDog TLS)
+- [x] Relay deployment guide shipped: `deployment/relay/README.md` (5-minute quick deploy)
+- [x] TURN server improvements pulled (Wave 206+: session management, coordinator enhancements)
+- [ ] Deploy relay node on cellMembrane VPS (scp binary + systemd service)
 - [ ] Dual-path shadow routing (cloudflared + songbird in parallel)
 - [ ] Cross-gate test: 2+ gates via songbird relay
 - [ ] 7-day metric collection
@@ -475,12 +479,13 @@ Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `
 - [ ] TTFB, cache hit, 404 rate metric collection
 - [ ] Static asset parity (CSS/JS/images, MIME types, compression)
 
-**S4 — Auth (READY, JupyterHub integration pending)**
+**S4 — Auth (READY, JupyterHub integration designed)**
 - [x] Ed25519 ionic tokens with TTL/expiry (Wave 102)
 - [x] BTSP Phase 3 AEAD on all 13 primals
 - [x] FIDO2/CTAP2 IPC surface (Wave 103)
 - [x] `deploy_btsp_auth_shadow.sh` operational
-- [ ] BearDog as JupyterHub auth provider (replaces OAuth2 proxy)
+- [x] `specs/JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` SHIPPED (bearDog Wave 106) — full architecture for dual-auth middleware (`BEARDOG_TLS_MODE=shadow`)
+- [ ] Implement dual-auth middleware per bearDog spec (D4)
 - [ ] Session management: bearDog token → JupyterHub session mapping
 - [ ] Auth latency target: <50ms p95
 
@@ -500,13 +505,14 @@ All 4 tracks must pass simultaneously before DNS switch.
 
 ### Upstream Blockers (for primal teams)
 
-| Blocker | Owner | Impact |
-|---------|-------|--------|
-| `beardog-acme` crate (HTTP-01 + renewal) | bearDog team | S1 cutover — auto-cert needed |
-| `specs/ACME_TLS_INTEGRATION_PATH.md` (referenced but missing from tree) | bearDog team | S1 design document gap |
-| bearDog `deny.toml` ring wrappers stale (`wrappers = []`) | bearDog team | ring policy not reconciled to Wave 105 |
-| Songbird relay node deployment | songbird team | S2 shadow — relay must be live |
-| petalTongue static asset parity | petalTongue team | S3 cutover — CSS/JS/image serving |
+| Blocker | Owner | Impact | Status |
+|---------|-------|--------|--------|
+| ~~`beardog-acme` crate~~ | bearDog | ~~S1 cutover~~ | **RESOLVED** — Wave 106 shipped (10 source files, shadow_metrics.rs) |
+| ~~`ACME_TLS_INTEGRATION_PATH.md` missing~~ | bearDog | ~~S1 design gap~~ | **RESOLVED** — exists on disk (7.5KB, Wave 105) |
+| ~~`deny.toml` ring wrappers stale~~ | bearDog | ~~ring policy~~ | **RESOLVED** — `["rustls", "rustls-webpki"]` (Wave 105) |
+| ~~JupyterHub dual-auth spec~~ | bearDog | ~~S4 design~~ | **RESOLVED** — `JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` shipped (Wave 106) |
+| Songbird relay node deployment on cellMembrane | songbird + projectNUCLEUS | S2 shadow — relay must be live | **OPEN** — deployment guide ready, binary scp + systemd |
+| petalTongue static asset parity testing | petalTongue + projectNUCLEUS | S3 cutover | **OPEN** — gzip+brotli+404 shipped, systematic test pending |
 
 ---
 
@@ -517,7 +523,7 @@ Horizon 1 (external security):    ██████████  COMPLETE — a
 Horizon 2 (sovereignty):          █████████░  Tower LIVE (6 svc), Ch3 TLS LIVE (ACME cert), HTTP parity PASS, Forgejo primary (32 repos), L3+L4 telemetry
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED
 Horizon 4 (transactions):         ██░░░░░░░░  READY — validation playbook + benchScale topologies + artifact_validation.sh wired. H4-11/12/13 ready to run.
-Shadow (Wave 24):                 ███░░░░░░░  S1 LIVE (TLS), S2-S4 READY. Deploy graph created. Cutover criteria defined. Awaiting ACME + relay deploy.
+Shadow (Wave 24):                 █████░░░░░  S1 LIVE (TLS, ACME crate shipped). S2-S4 READY (specs + code shipped). 4/5 upstream blockers RESOLVED. Remaining: relay deploy + asset parity test.
 Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened
@@ -574,3 +580,4 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-17 | **Reorg**: sporeGarden → gardens. cellMembrane moved to gardens/. Stale duplicates removed. Systemd units, forgejo mirror, docs updated. |
 | 2026-05-17 | **Validation Gate Matrix + infrastructure review**: (1) Validation Gate Matrix section added — maps each of 11 validation systems to specific sovereignty phase transitions (H2-01→H2-20, H3-03→H3-04). Pre-transition, shadow, cutover, and post-cutover gates defined for each. (2) Validation cadence table added (continuous/daily/weekly/per-cutover). (3) Stale `gardens/sporeGarden/` clone removed (duplicate projectNUCLEUS). (4) `.env` audit: all sensitive files (squirrel API keys, JWT secrets) properly gitignored, no contamination risk. (5) `REPO_MEMBRANE_BOUNDARY.md` created in wateringHole — full repo classification (inner-only/dual-push/outer-only) with contamination risk matrix and Forgejo migration path. (6) cellMembrane decision documented: recommend Forgejo-only when operationally stable. |
 | 2026-05-17 | **Wave 21 absorption**: (1) Registry updated 427→452 methods (Wave 20, stability-tier annotated). (2) lithoSpore refs updated 6/7→7/7 PASS (75/75 checks, 117 tests, cross-tier parity 7/7 MATCH, Tier 3 wired). (3) `primal.list` / `capability.list` canonical schemas marked SHIPPED — discovery module updated to prefer canonical `{ "primals": [...], "count": N }` envelope. (4) Ferment transcript dispatch route documented in `SCIENCE_DISPATCH_MAP.md` — wetSpring → trio → braid → lithoSpore pipeline. (5) Stability tier awareness added (stable/evolving/internal per capability_registry.toml). (6) cellMembrane degradation behavior documented in `EXECUTION_MODEL.md` — per-service fallback table. (7) Cross-tier parity reference added to `TIER2_CEREMONY_DESIGN.md`. (8) Partial provenance (trio transaction semantics) documented in dispatch map. |
+| 2026-05-19 | **Wave 24 absorption + phantom gap clearance**: (1) `sovereignty_shadow.toml` deploy graph created — 4-track (TLS/NAT/content/auth), 7 nodes, per-track cutover criteria. (2) Shadow config centralized in `nucleus_config.sh` (BTSP_SHADOW_*, BEARDOG_TLS_MODE, SONGBIRD_RELAY_URL). (3) Shadow matrix S1-S4 tracked in EVOLUTION_GAPS. (4) bearDog pulled (Waves 105-106): `beardog-acme` crate SHIPPED (10 source files, shadow_metrics.rs), `ACME_TLS_INTEGRATION_PATH.md` exists (7.5KB), `deny.toml` ring wrappers reconciled `["rustls", "rustls-webpki"]`, `JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` shipped. (5) songbird pulled (Wave 206+): TURN server improvements, relay deployment guide, coordinator enhancements. (6) 4/5 upstream blockers cleared — remaining: relay deploy on cellMembrane + petalTongue asset parity test. |

@@ -532,10 +532,10 @@ available**, current 8 services use 108 MB. Nest trio ~40-60 MB.
 
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
-| CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | MEDIUM | Tower composition operational. Nest binaries available in plasmidBin. Awaiting plasmidBin deploy script evolution |
-| CM-2 | `membrane_provenance.sh` post-deploy trio hook | projectNUCLEUS | MEDIUM | Pattern exists in `provenance_pipeline.sh`. Needs membrane adaptation (remote health, SSH dispatch) |
-| CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | LOW | CG-8 resolved upstream |
-| CM-4 | darkforest MEM-14→MEM-17 (Nest health) | projectNUCLEUS | LOW | MEM-01→MEM-13 operational. Nest checks need: NestGate health, rhizoCrypt DAG, loamSpine spine, sweetGrass braid |
+| CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | ~~MEDIUM~~ | **RESOLVED** (Wave 29) — tooling shipped, Nest binaries in plasmidBin, deploy script supports `--composition nest` |
+| CM-2 | `membrane_provenance.sh` post-deploy trio hook | projectNUCLEUS | ~~MEDIUM~~ | **RESOLVED** (Wave 29) — `membrane_provenance.sh` created with SSH dispatch + graceful degradation |
+| CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | ~~LOW~~ | **RESOLVED** — CG-8 resolved in songbird Wave 211; primalSpring scenario `s_cross_gate_capability_call` shipped |
+| CM-4 | darkforest MEM-14→MEM-17 (Nest health) | projectNUCLEUS | ~~LOW~~ | **RESOLVED** (Wave 29) — 17 PASS, 0 FAIL in `darkforest_membrane.sh`; Nest health checks SKIP when not deployed |
 
 ---
 

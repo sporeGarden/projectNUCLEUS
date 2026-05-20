@@ -254,6 +254,66 @@ else
     fail "MEM-13" "RustDesk :21116 unreachable"
 fi
 
+# ─── MEM-14: NestGate health (Nest Atomic) ─────────────────────────────────
+echo "═══ MEM-14: NestGate health (Nest Atomic) ═══"
+if $SKIP_SSH; then
+    skip "MEM-14" "SSH checks skipped"
+else
+    ng_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9500 2>/dev/null | head -1" || true)
+    if echo "$ng_resp" | grep -q '"result"'; then
+        pass "MEM-14" "NestGate healthy on :9500"
+    elif ssh_cmd "pgrep -x nestgate >/dev/null 2>&1"; then
+        fail "MEM-14" "NestGate process running but not responding on :9500"
+    else
+        skip "MEM-14" "NestGate not deployed (Nest Atomic pending CM-1)"
+    fi
+fi
+
+# ─── MEM-15: rhizoCrypt DAG health (Nest Atomic) ──────────────────────────
+echo "═══ MEM-15: rhizoCrypt health (Nest Atomic) ═══"
+if $SKIP_SSH; then
+    skip "MEM-15" "SSH checks skipped"
+else
+    rc_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9601 2>/dev/null | head -1" || true)
+    if echo "$rc_resp" | grep -q '"result"'; then
+        pass "MEM-15" "rhizoCrypt healthy on :9601 (JSON-RPC)"
+    elif ssh_cmd "pgrep -x rhizocrypt >/dev/null 2>&1"; then
+        fail "MEM-15" "rhizoCrypt process running but not responding"
+    else
+        skip "MEM-15" "rhizoCrypt not deployed (Nest Atomic pending CM-1)"
+    fi
+fi
+
+# ─── MEM-16: loamSpine ledger health (Nest Atomic) ────────────────────────
+echo "═══ MEM-16: loamSpine health (Nest Atomic) ═══"
+if $SKIP_SSH; then
+    skip "MEM-16" "SSH checks skipped"
+else
+    ls_resp=$(ssh_cmd "curl -sf --max-time 3 -X POST http://127.0.0.1:9700 -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' 2>/dev/null" || true)
+    if echo "$ls_resp" | grep -q '"result"'; then
+        pass "MEM-16" "loamSpine healthy on :9700 (HTTP)"
+    elif ssh_cmd "pgrep -x loamspine >/dev/null 2>&1"; then
+        fail "MEM-16" "loamSpine process running but not responding"
+    else
+        skip "MEM-16" "loamSpine not deployed (Nest Atomic pending CM-1)"
+    fi
+fi
+
+# ─── MEM-17: sweetGrass braid health (Nest Atomic) ────────────────────────
+echo "═══ MEM-17: sweetGrass health (Nest Atomic) ═══"
+if $SKIP_SSH; then
+    skip "MEM-17" "SSH checks skipped"
+else
+    sg_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9850 2>/dev/null | head -1" || true)
+    if echo "$sg_resp" | grep -q '"result"'; then
+        pass "MEM-17" "sweetGrass healthy on :9850"
+    elif ssh_cmd "pgrep -x sweetgrass >/dev/null 2>&1"; then
+        fail "MEM-17" "sweetGrass process running but not responding"
+    else
+        skip "MEM-17" "sweetGrass not deployed (Nest Atomic pending CM-1)"
+    fi
+fi
+
 # ─── Summary ────────────────────────────────────────────────────────────────
 echo ""
 echo "═══════════════════════════════════════════════════"

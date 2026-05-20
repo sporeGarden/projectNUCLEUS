@@ -110,7 +110,7 @@ Full primal path (NestGate + petalTongue) remains Phase 3 target for sovereign e
 
 | ID | Gap | Effort | Notes |
 |----|-----|--------|-------|
-| H2-05 | ~~Build NestGate content pipeline~~ | **DONE** | NestGate Session 60: `content.put/get/exists/list/publish/resolve/promote/collections` on all 4 transports. `publish_sporeprint.sh` ready to wire. |
+| H2-05 | ~~Build NestGate content pipeline~~ | **DONE** | NestGate Session 60: `content.put/get/exists/list/publish/resolve/promote/collections` on all 4 transports. `publish_sporeprint.sh` structurally complete but **blocked on BTSP scope**: BearDog `auth.issue_session` returns fixed default scopes (`crypto.*`, `health.*`, `capabilities.*`, `identity.*`) — does not include `content.*`. NestGate MethodGate rejects. **Upstream ask**: BearDog scope expansion for pipeline tokens (SP-4 blocker). |
 | H2-06 | Configure petalTongue web mode | Low | `--docroot` resolved Phase 60. `backend=nestgate` **UNBLOCKED** — SPA + CORS shipped. Wire `content.get`/`content.resolve` for production. |
 | H2-07 | ~~Cloudflare ingress route~~ | **DONE** | `primals.eco` in tunnel config, DNS switchable via API |
 | H2-08 | Shadow run: Zola/tunnel vs NestGate/petalTongue (7 days) | Ops | **UNBLOCKED** — `nestgate_content_parity.sh` ready. Compare TTFB, Lighthouse scores. |
@@ -516,6 +516,29 @@ All 4 tracks must pass simultaneously before DNS switch.
 
 ---
 
+## Wave 28-29: sporePrint + cellMembrane Nest Atomic
+
+### Wave 28: sporePrint pappusCast (SP-4)
+
+| # | Gap | Owner | Priority | Status |
+|---|-----|-------|----------|--------|
+| SP-4 | Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put` | projectNUCLEUS | LOW | Script complete (123 LOC). **Blocked**: BearDog `auth.issue_session` returns fixed scopes without `content.*`. NestGate MethodGate rejects. Upstream ask: BearDog scope expansion for pipeline tokens. Natural after S3 content parity proves mirror. |
+
+### Wave 29: cellMembrane Nest Atomic
+
+Expand VPS from Tower Atomic (BearDog + Songbird + SkunkBat) to Nest Atomic
+(+ NestGate + rhizoCrypt + loamSpine + sweetGrass). Memory budget: **1,597 MB
+available**, current 8 services use 108 MB. Nest trio ~40-60 MB.
+
+| # | Gap | Owner | Priority | Status |
+|---|-----|-------|----------|--------|
+| CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | MEDIUM | Tower composition operational. Nest binaries available in plasmidBin. Awaiting plasmidBin deploy script evolution |
+| CM-2 | `membrane_provenance.sh` post-deploy trio hook | projectNUCLEUS | MEDIUM | Pattern exists in `provenance_pipeline.sh`. Needs membrane adaptation (remote health, SSH dispatch) |
+| CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | LOW | CG-8 resolved upstream |
+| CM-4 | darkforest MEM-14→MEM-17 (Nest health) | projectNUCLEUS | LOW | MEM-01→MEM-13 operational. Nest checks need: NestGate health, rhizoCrypt DAG, loamSpine spine, sweetGrass braid |
+
+---
+
 ## Scoring
 
 ```
@@ -580,4 +603,5 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-17 | **Reorg**: sporeGarden → gardens. cellMembrane moved to gardens/. Stale duplicates removed. Systemd units, forgejo mirror, docs updated. |
 | 2026-05-17 | **Validation Gate Matrix + infrastructure review**: (1) Validation Gate Matrix section added — maps each of 11 validation systems to specific sovereignty phase transitions (H2-01→H2-20, H3-03→H3-04). Pre-transition, shadow, cutover, and post-cutover gates defined for each. (2) Validation cadence table added (continuous/daily/weekly/per-cutover). (3) Stale `gardens/sporeGarden/` clone removed (duplicate projectNUCLEUS). (4) `.env` audit: all sensitive files (squirrel API keys, JWT secrets) properly gitignored, no contamination risk. (5) `REPO_MEMBRANE_BOUNDARY.md` created in wateringHole — full repo classification (inner-only/dual-push/outer-only) with contamination risk matrix and Forgejo migration path. (6) cellMembrane decision documented: recommend Forgejo-only when operationally stable. |
 | 2026-05-17 | **Wave 21 absorption**: (1) Registry updated 427→452 methods (Wave 20, stability-tier annotated). (2) lithoSpore refs updated 6/7→7/7 PASS (75/75 checks, 117 tests, cross-tier parity 7/7 MATCH, Tier 3 wired). (3) `primal.list` / `capability.list` canonical schemas marked SHIPPED — discovery module updated to prefer canonical `{ "primals": [...], "count": N }` envelope. (4) Ferment transcript dispatch route documented in `SCIENCE_DISPATCH_MAP.md` — wetSpring → trio → braid → lithoSpore pipeline. (5) Stability tier awareness added (stable/evolving/internal per capability_registry.toml). (6) cellMembrane degradation behavior documented in `EXECUTION_MODEL.md` — per-service fallback table. (7) Cross-tier parity reference added to `TIER2_CEREMONY_DESIGN.md`. (8) Partial provenance (trio transaction semantics) documented in dispatch map. |
+| 2026-05-20 | **Wave 28-29 absorption + Nest Atomic preparation**: (1) Wave 28 SP-4 gap analyzed: `publish_sporeprint.sh` structurally complete but blocked on BTSP scope — BearDog `auth.issue_session` returns fixed scopes without `content.*`, NestGate MethodGate rejects. Upstream handback to bearDog team. (2) Wave 29 CM-2 `membrane_provenance.sh` created — post-deploy trio hook (DAG + spine + braid verification via SSH, graceful degradation). (3) CM-4 `darkforest_membrane.sh` MEM-14→MEM-17 added — NestGate, rhizoCrypt, loamSpine, sweetGrass health checks (SKIP when not deployed, PASS/FAIL when live). 17 PASS, 0 FAIL, 5 SKIP. (4) VPS memory budget confirmed: 1,597 MB available, 108 MB used by 8 services, Nest Atomic ~40-60 MB = budget OK. (5) All shadow services confirmed running 24h+ since deployment (BearDog TLS, petalTongue web, Songbird TURN). |
 | 2026-05-19 | **Wave 24 absorption + phantom gap clearance**: (1) `sovereignty_shadow.toml` deploy graph created — 4-track (TLS/NAT/content/auth), 7 nodes, per-track cutover criteria. (2) Shadow config centralized in `nucleus_config.sh` (BTSP_SHADOW_*, BEARDOG_TLS_MODE, SONGBIRD_RELAY_URL). (3) Shadow matrix S1-S4 tracked in EVOLUTION_GAPS. (4) bearDog pulled (Waves 105-106): `beardog-acme` crate SHIPPED (10 source files, shadow_metrics.rs), `ACME_TLS_INTEGRATION_PATH.md` exists (7.5KB), `deny.toml` ring wrappers reconciled `["rustls", "rustls-webpki"]`, `JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` shipped. (5) songbird pulled (Wave 206+): TURN server improvements, relay deployment guide, coordinator enhancements. (6) 4/5 upstream blockers cleared — remaining: relay deploy on cellMembrane + petalTongue asset parity test. |

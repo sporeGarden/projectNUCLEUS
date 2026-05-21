@@ -231,10 +231,10 @@ if ! echo "$PRIMALS" | grep -q beardog; then
     READINESS_ISSUES=$((READINESS_ISSUES + 1))
 fi
 
-# 5. primalspring_guidestone structural validation (if available)
-GUIDESTONE=$(command -v primalspring_guidestone 2>/dev/null || echo "")
+# 5. primalspring validate structural validation (if available)
+GUIDESTONE=$(command -v primalspring 2>/dev/null || echo "")
 if [[ -n "$GUIDESTONE" ]] && [[ -f "$GRAPH_FILE" ]]; then
-    echo "  Running primalspring_guidestone against $GRAPH_FILE..."
+    echo "  Running primalspring validate against $GRAPH_FILE..."
     if ! "$GUIDESTONE" validate --graph "$GRAPH_FILE"; then
         echo "  [Structure] guidestone validation reported issues"
         READINESS_ISSUES=$((READINESS_ISSUES + 1))

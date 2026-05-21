@@ -104,13 +104,13 @@ projectNUCLEUS exercises the full NUCLEUS atomic:
 | **Meta** | biomeOS + Squirrel + petalTongue | Orchestration, AI inference, visualization |
 
 All 13 primals communicate via JSON-RPC 2.0 over Unix domain sockets.
-TCP fallback available per Tier 5 discovery. 452 registered methods (stable).
+TCP fallback available per Tier 5 discovery. 445 registered methods (stable).
 
 ## Sovereign Infrastructure Status
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| Primal Capabilities | **PASS** | 452 methods, 13/13 primals LIVE |
+| Primal Capabilities | **PASS** | 445 methods, 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane live (8 services), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
@@ -139,8 +139,8 @@ substrate — a $12/mo DigitalOcean droplet running Tower composition
 
 ```
 Phase 0   (Relay only)      → Songbird TURN + RustDesk           ← DONE
-Phase 0.5 (Tower on VPS)    → + BearDog + SkunkBat + Caddy TLS   ← CURRENT
-Phase 1   (Sovereign TLS)   → BearDog ACME replaces Caddy        ← SHADOW ACTIVE
+Phase 0.5 (Tower on VPS)    → + BearDog + SkunkBat + Caddy TLS   ← DONE
+Phase 1   (Tower compose)   → BearDog + Songbird + SkunkBat + RustDesk ← CURRENT
 Phase 2   (Content)         → petalTongue replaces GitHub Pages   ← SHADOW ACTIVE
 Phase 3   (DNS)             → knot-dns replaces Cloudflare DNS    ← PENDING
 Phase 4   (Full mesh)       → Multiple VPS, biomeOS orchestrated  ← FUTURE
@@ -179,7 +179,7 @@ availability:
 - **Content**: petalTongue serves HTTP on :8080. VPS TTFB 67ms vs GitHub
   Pages 111ms (40% faster). Content hash parity pending (mirror not done).
 - **Compute**: 13 primals on ironGate via biomeOS composition.deploy.
-  452 registered methods. lithoSpore 7/7 modules validated.
+  445 registered methods. lithoSpore 7/7 modules validated.
 - **Security**: darkforest 267 checks PASS. BTSP 13/13 AEAD. FIDO2/CTAP2
   hardware attestation ready. membrane audit 17/17 PASS.
 

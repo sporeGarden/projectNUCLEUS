@@ -140,7 +140,7 @@ runs against `--host` (localhost) and uses TCP-only networking (`net.rs`).
 ### Escalation Ladder (Security Posture by Phase)
 
 ```
-Phase 0.5 (current): Relay + RustDesk + multi-gate SSH
+Phase 1 (current): Tower composition (BearDog + Songbird + SkunkBat + RustDesk)
   └── Dark Forest: provider sees credentials on disk, but relayed traffic
      is end-to-end encrypted (BTSP for Songbird, native e2e for RustDesk)
   └── Risk: provider could abuse TURN allocation or impersonate RustDesk relay.

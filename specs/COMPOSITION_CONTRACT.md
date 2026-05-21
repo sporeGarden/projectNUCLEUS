@@ -156,7 +156,7 @@ Graph `transport` metadata drives which tiers are attempted:
 
 ### Structural (guidestone)
 
-`primalspring_guidestone validate --graph <path>` checks:
+`primalspring validate --graph <path>` checks:
 - Graph parses as valid TOML
 - Nodes with `security_model = "btsp"` have `bonding_policy` at graph level
 - UDS transport graphs have `by_capability` on primal nodes

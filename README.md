@@ -102,7 +102,7 @@ Gates connect to each other through chemical bonding patterns:
 - **lithoSpore 7/7 modules PASS Tier 2** (75/75 checks, 117 tests): Rust validation for fitness, mutations, alleles, citrate, biobricks, breseq, anderson. Cross-tier parity 7/7 MATCH (Python ↔ Rust). Tier 3 wired (trio JSON-RPC, graceful degradation)
 - **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh`
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
-- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **452 methods** (Wave 20)
+- **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **445 methods** (Wave 20)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 - **Wave 24 sovereignty shadow OPERATIONAL**: `graphs/sovereignty_shadow.toml` — 4-track parity proof. Orchestrator: **4 PASS, 0 FAIL, 1 SKIP** (knot-dns only). S1 TLS **LIVE** (6-12ms vs 163ms, VPS deployed), S2 NAT **LIVE** (100% reachable, 3+ days), S3 content **LIVE** (TTFB 67ms vs 111ms GH), S4 auth **READY**. All 5 upstream blockers RESOLVED. `membrane_telemetry.sh` → 7-day baselines. Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
 

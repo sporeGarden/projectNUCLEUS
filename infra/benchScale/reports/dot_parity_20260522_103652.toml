@@ -1,0 +1,29 @@
+[metadata]
+test = "dot_sovereign_parity"
+timestamp = "2026-05-22T14:36:52Z"
+iterations = 10
+mode = "parity"
+
+[baseline]
+resolver = "systemd-resolved (DoT)"
+upstream = ["1.1.1.1", "9.9.9.9"]
+
+[[baseline.results]]
+domain = "primals.eco", avg_ms = 16, success = "10/10"
+domain = "lab.primals.eco", avg_ms = 14, success = "10/10"
+domain = "git.primals.eco", avg_ms = 16, success = "10/10"
+domain = "github.com", avg_ms = 13, success = "10/10"
+domain = "crates.io", avg_ms = 15, success = "10/10"
+domain = "ncbi.nlm.nih.gov", avg_ms = 10, success = "10/10"
+dnssec_status = "dot_active"
+
+[sovereign]
+resolver = "157.230.3.183"
+
+[[sovereign.results]]
+domain = "primals.eco", avg_ms = 45, success = "10/10"
+domain = "lab.primals.eco", avg_ms = 0, success = "0/10"
+domain = "git.primals.eco", avg_ms = 0, success = "0/10"
+domain = "github.com", avg_ms = 0, success = "0/10"
+domain = "crates.io", avg_ms = 0, success = "0/10"
+domain = "ncbi.nlm.nih.gov", avg_ms = 0, success = "0/10"

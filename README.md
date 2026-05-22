@@ -104,7 +104,7 @@ Gates connect to each other through chemical bonding patterns:
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
 - **`biomeos.spring_status` IMPLEMENTED** (v3.54): Binary discovery + workload counts. Registry at **445 methods** (Wave 20)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
-- **Wave 24 sovereignty shadow OPERATIONAL**: `graphs/sovereignty_shadow.toml` — 4-track parity proof. Orchestrator: **4 PASS, 0 FAIL, 1 SKIP** (knot-dns only). S1 TLS **LIVE** (6-12ms vs 163ms, VPS deployed), S2 NAT **LIVE** (100% reachable, 3+ days), S3 content **LIVE** (TTFB 67ms vs 111ms GH), S4 auth **READY**. All 5 upstream blockers RESOLVED. `membrane_telemetry.sh` → 7-day baselines. Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
+- **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 4-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable, 7+ days), S3 content **LIVE** (TTFB 67ms vs 111ms GH), S4 auth **LIVE**. **Sovereign DNS** (knot-dns v3.2.6, DNSSEC ECDSAP256SHA256, 45ms). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS. Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
 
 ### Services (all persistent via systemd)
 

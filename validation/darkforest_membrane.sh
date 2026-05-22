@@ -194,7 +194,7 @@ if $SKIP_SSH; then
 else
     # Phase 0.5: SSH + TURN + RustDesk + Tower (BearDog + SkunkBat) + Caddy TLS
     # + Shadow services: BearDog TLS :8443, petalTongue web :8080
-    expected_ports="22 53 5355 3478 21115 21116 21117 21118 21119 9100 9140 80 443 2019 8443 8080"
+    expected_ports="22 53 5355 3478 21115 21116 21117 21118 21119 9100 9140 80 443 2019 8443 8080 9500 9601 9602 9700 9001 9850 8091"
     listeners=$(ssh_cmd "ss -tlnp 2>/dev/null | grep LISTEN" || true)
     unexpected=0
     while IFS= read -r line; do
@@ -206,8 +206,18 @@ else
             [[ "$port" == "$ep" ]] && is_expected=true
         done
         if ! $is_expected; then
-            echo "    NOTE: Unexpected TCP listener on :$port"
-            unexpected=$((unexpected + 1))
+            proc_name=$(echo "$line" | grep -oP 'users:\(\("\K[^"]+' || echo "unknown")
+            known_primals="sweetgrass nestgate rhizocrypt loamspine beardog songbird skunkbat petaltongue"
+            is_known_primal=false
+            for kp in $known_primals; do
+                [[ "$proc_name" == "$kp" ]] && is_known_primal=true
+            done
+            if $is_known_primal; then
+                echo "    NOTE: Primal ephemeral port :$port ($proc_name) — OK"
+            else
+                echo "    NOTE: Unexpected TCP listener on :$port ($proc_name)"
+                unexpected=$((unexpected + 1))
+            fi
         fi
     done <<< "$listeners"
     if [[ $unexpected -eq 0 ]]; then
@@ -255,30 +265,32 @@ else
 fi
 
 # ─── MEM-14: NestGate health (Nest Atomic) ─────────────────────────────────
+# NestGate serves HTTP REST on :9500 (not JSON-RPC). Probe /health endpoint.
 echo "═══ MEM-14: NestGate health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-14" "SSH checks skipped"
 else
-    ng_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9500 2>/dev/null | head -1" || true)
-    if echo "$ng_resp" | grep -q '"result"'; then
-        pass "MEM-14" "NestGate healthy on :9500"
+    ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:9500/health 2>/dev/null" || true)
+    if echo "$ng_resp" | grep -q '"status":"ok"'; then
+        pass "MEM-14" "NestGate healthy on :9500 (HTTP REST)"
     elif ssh_cmd "pgrep -x nestgate >/dev/null 2>&1"; then
-        fail "MEM-14" "NestGate process running but not responding on :9500"
+        fail "MEM-14" "NestGate process running but /health not responding"
     else
         skip "MEM-14" "NestGate not deployed (Nest Atomic pending CM-1)"
     fi
 fi
 
 # ─── MEM-15: rhizoCrypt DAG health (Nest Atomic) ──────────────────────────
+# rhizoCrypt: tarpc on :9601, JSON-RPC (newline-delimited) on :9602.
 echo "═══ MEM-15: rhizoCrypt health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-15" "SSH checks skipped"
 else
-    rc_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9601 2>/dev/null | head -1" || true)
+    rc_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9602 2>/dev/null | head -1" || true)
     if echo "$rc_resp" | grep -q '"result"'; then
-        pass "MEM-15" "rhizoCrypt healthy on :9601 (JSON-RPC)"
+        pass "MEM-15" "rhizoCrypt healthy on :9602 (JSON-RPC)"
     elif ssh_cmd "pgrep -x rhizocrypt >/dev/null 2>&1"; then
-        fail "MEM-15" "rhizoCrypt process running but not responding"
+        fail "MEM-15" "rhizoCrypt process running but not responding on :9602"
     else
         skip "MEM-15" "rhizoCrypt not deployed (Nest Atomic pending CM-1)"
     fi

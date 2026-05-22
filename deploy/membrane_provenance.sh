@@ -75,17 +75,17 @@ RHIZOCRYPT_LIVE=false
 LOAMSPINE_LIVE=false
 SWEETGRASS_LIVE=false
 
-ng_resp=$(rpc_remote 9500 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
-if echo "$ng_resp" | grep -q '"result"'; then
-    pass "TRIO-01" "NestGate healthy (:9500)"
+ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:9500/health 2>/dev/null" || true)
+if echo "$ng_resp" | grep -q '"status":"ok"'; then
+    pass "TRIO-01" "NestGate healthy (:9500 HTTP REST)"
     NESTGATE_LIVE=true
 else
     skip "TRIO-01" "NestGate not responding (Nest Atomic not deployed)"
 fi
 
-rc_resp=$(rpc_remote 9601 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
+rc_resp=$(rpc_remote 9602 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
 if echo "$rc_resp" | grep -q '"result"'; then
-    pass "TRIO-02" "rhizoCrypt healthy (:9601)"
+    pass "TRIO-02" "rhizoCrypt healthy (:9602 JSON-RPC)"
     RHIZOCRYPT_LIVE=true
 else
     skip "TRIO-02" "rhizoCrypt not responding (Nest Atomic not deployed)"
@@ -126,14 +126,14 @@ echo "── Phase 2: DAG Session (rhizoCrypt) ──"
 
 if $RHIZOCRYPT_LIVE; then
     SESSION_NAME="membrane-verify-$(date +%Y%m%d-%H%M%S)"
-    dag_resp=$(rpc_remote 9601 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"name\":\"$SESSION_NAME\"},\"id\":10}")
+    dag_resp=$(rpc_remote 9602 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"name\":\"$SESSION_NAME\"},\"id\":10}")
     SESSION_ID=$(echo "$dag_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('result',''))" 2>/dev/null || true)
 
     if [[ -n "$SESSION_ID" && "$SESSION_ID" != "None" && "$SESSION_ID" != "" ]]; then
         pass "TRIO-05" "DAG session created: ${SESSION_ID:0:20}..."
 
-        event_resp=$(rpc_remote 9601 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"type\":\"membrane_verify\",\"timestamp\":\"$(date -Iseconds)\"}},\"id\":11}")
-        if echo "$event_resp" | grep -q '"result"'; then
+        event_resp=$(rpc_remote 9602 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"type\":\"membrane_verify\",\"timestamp\":\"$(date -Iseconds)\"}},\"id\":11}")
+        if echo "${event_resp:-}" | grep -q '"result"'; then
             pass "TRIO-06" "DAG event appended"
         else
             warn "TRIO-06" "DAG event append returned: ${event_resp:0:100}"
@@ -227,7 +227,7 @@ cat > "$RESULTS_DIR/PROVENANCE_MEMBRANE_REPORT.md" << EOF
 | Step | Method | Result |
 |------|--------|--------|
 | DAG session | dag.session.create | ${SESSION_ID:-skipped} |
-| DAG event | dag.event.append | $(echo "$event_resp" 2>/dev/null | grep -q result && echo "OK" || echo "skipped") |
+| DAG event | dag.event.append | $(echo "${event_resp:-}" 2>/dev/null | grep -q result && echo "OK" || echo "skipped") |
 | Spine | spine.create | ${SPINE_ID:-skipped} |
 | Braid | braid.create | ${BRAID_ID:-skipped} |
 

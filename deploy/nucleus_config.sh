@@ -128,6 +128,7 @@ THERMAL_SEASON="${THERMAL_SEASON:-auto}"
 BTSP_SHADOW_HOST="${BTSP_SHADOW_HOST:-127.0.0.1}"
 BTSP_SHADOW_PORT="${BTSP_SHADOW_PORT:-8443}"
 SONGBIRD_RELAY_URL="${SONGBIRD_RELAY_URL:-}"                                # set when relay deployed
+SOVEREIGN_RESOLVER="${SOVEREIGN_RESOLVER:-${MEMBRANE_VPS_IP}}"              # knot-dns on cellMembrane VPS
 CONTENT_STAGING_URL="${CONTENT_STAGING_URL:-}"                              # petalTongue staging endpoint
 BEARDOG_TLS_MODE="${BEARDOG_TLS_MODE:-shadow}"                              # shadow | acme | static
 SHADOW_CUTOVER_PARITY_THRESHOLD="${SHADOW_CUTOVER_PARITY_THRESHOLD:-1.5}"   # sovereign p95 ≤ N× commercial p95

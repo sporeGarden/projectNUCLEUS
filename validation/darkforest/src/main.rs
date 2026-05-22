@@ -92,6 +92,26 @@ fn main() {
         report::print_pipe(&results[before..]);
     }
 
+    if matches!(cli.suite.as_str(), "all" | "discovery") {
+        let disc_start = Instant::now();
+        let primals = discovery::resolve_primals(host);
+        let crypto_primals = discovery::by_capability(&primals, "crypto");
+        let names: Vec<&str> = crypto_primals.iter().map(|p| p.name.as_str()).collect();
+        let disc_ms = u64::try_from(disc_start.elapsed().as_millis()).unwrap_or(0);
+        results.push(check::CheckResult {
+            id: "DISC-01".to_string(),
+            suite: "discovery".to_string(),
+            category: check::Category::Network,
+            severity: check::Severity::Info,
+            status: if crypto_primals.is_empty() { check::Status::KnownGap } else { check::Status::Pass },
+            title: "Capability discovery: crypto providers".to_string(),
+            evidence: format!("{} primals resolved, {} have crypto: {}", primals.len(), crypto_primals.len(), names.join(", ")),
+            remediation: String::new(),
+            elapsed_ms: disc_ms,
+            timestamp: iso_now(),
+        });
+    }
+
     let duration_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
     let rpt = report::Report::build(results, host, &cli.suite, &start_ts, duration_ms);
 

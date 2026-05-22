@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# cargo-deny configuration — tunnelKeeper
+# TLS via rustls (aws-lc-rs backend). ring allowed as transitive only.
+
+[advisories]
+vulnerability = "deny"
+unmaintained = "warn"
+yanked = "deny"
+
+[licenses]
+unlicensed = "deny"
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "Zlib",
+    "OpenSSL",
+    "Ring",
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+deny = [
+    { crate = "openssl", reason = "Use rustls — no OpenSSL in ecoPrimals" },
+    { crate = "openssl-sys", reason = "C binding — use rustls" },
+    { crate = "native-tls", reason = "Platform TLS — use rustls" },
+]
+allow = [
+    { crate = "ring", reason = "Transitive via rustls/quinn — monitored for removal" },
+    { crate = "aws-lc-sys", reason = "rustls crypto backend — C/ASM in TLS layer only" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

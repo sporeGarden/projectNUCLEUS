@@ -22,6 +22,7 @@ description = "BearDog (crypto) + Songbird (network) + skunkBat (defense) — th
 version = "3.0.0"
 particle = "electron"
 node_count = 3
+secure_by_default = true
 
 [[fragment.nodes]]
 name = "beardog"

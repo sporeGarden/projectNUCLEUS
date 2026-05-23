@@ -110,7 +110,7 @@ TCP fallback available per Tier 5 discovery. 445 registered methods (stable).
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| Primal Capabilities | **PASS** | 445 methods, 13/13 primals LIVE |
+| Primal Capabilities | **PASS** | 458 methods (Wave 46), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane live (8 services), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |

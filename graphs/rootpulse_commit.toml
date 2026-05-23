@@ -11,6 +11,7 @@
 id = "rootpulse_commit"
 description = "RootPulse commit: dehydrate ephemeral session to permanent history with attribution"
 coordination = "Sequential"
+secure_by_default = true
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PHASE 1: HEALTH CHECKS

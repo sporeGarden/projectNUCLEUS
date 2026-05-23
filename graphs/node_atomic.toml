@@ -30,6 +30,7 @@ version = "3.0.0"
 particle = "proton"
 node_count = 6
 includes = ["tower_atomic"]
+secure_by_default = true
 
 [[fragment.nodes]]
 name = "beardog"

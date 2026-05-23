@@ -25,6 +25,7 @@ description = "Tower (electron) + Node (proton) + Nest (neutron) — the full at
 version = "3.0.0"
 node_count = 10
 includes = ["tower_atomic", "node_atomic", "nest_atomic"]
+secure_by_default = true
 
 [[fragment.nodes]]
 name = "beardog"

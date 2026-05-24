@@ -104,7 +104,7 @@ projectNUCLEUS exercises the full NUCLEUS atomic:
 | **Meta** | biomeOS + Squirrel + petalTongue | Orchestration, AI inference, visualization |
 
 All 13 primals communicate via JSON-RPC 2.0 over Unix domain sockets.
-TCP fallback available per Tier 5 discovery. 445 registered methods (stable).
+TCP fallback available per Tier 5 discovery. 458 registered methods (Wave 46, stable).
 
 ## Sovereign Infrastructure Status
 
@@ -112,18 +112,18 @@ TCP fallback available per Tier 5 discovery. 445 registered methods (stable).
 |-------|--------|----------|
 | Primal Capabilities | **PASS** | 458 methods (Wave 46), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
-| Deployment | **PASS** | cellMembrane live (8 services), Channel 3 TLS (ACME) |
+| Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
-| Shadow Parity | **ACTIVE** | S1 LIVE (TLS), S2-S3 LIVE (NAT, content), S4 READY (auth) |
-| Sovereign DNS | **PENDING** | knot-dns deployment (H2-17→20) |
+| Shadow Parity | **PASS** | **6/0/0** — S1 TLS, S2 NAT, S3 content, S4 auth, S5 DNS all LIVE |
+| Sovereign DNS | **DEPLOYED** | knot-dns v3.2.6, DNSSEC on VPS. NS cutover (H2-18) pending registrar |
 
 ## cellMembrane Interface (VPS 157.230.3.183)
 
 The cellMembrane is the first deployment of NUCLEUS primals on external
-substrate — a $12/mo DigitalOcean droplet running Tower composition
-(BearDog + Songbird + SkunkBat) alongside transitional services (Caddy TLS).
+substrate — a $12/mo DigitalOcean droplet running **Nest Atomic composition**
+(Tower + NestGate + provenance trio) alongside transitional services.
 
-### Services (May 19, 2026)
+### Services (May 23, 2026)
 
 | Service | Port | Function | Status |
 |---------|------|----------|--------|
@@ -131,6 +131,10 @@ substrate — a $12/mo DigitalOcean droplet running Tower composition
 | BearDog TLS shadow | :8443 | Sovereignty shadow S1 | RUNNING v0.9.0 |
 | SkunkBat | :9140 | Audit, threat defense | RUNNING |
 | Songbird TURN | UDP :3478 | NAT relay (RFC 5766) | RUNNING v0.2.1 |
+| NestGate | :9500 | Content-addressed storage | RUNNING v2.1.0 |
+| rhizoCrypt | :9602 | Ephemeral DAG memory | RUNNING v0.14.0 |
+| loamSpine | :9700 | Permanence ledger | RUNNING v0.9.16 |
+| sweetGrass | :9850 | Attribution braids | RUNNING v0.7.34 |
 | Caddy | :80, :443 | TLS termination (transitional) | RUNNING (ACME) |
 | petalTongue web | :8080 | Content surface S3 | RUNNING |
 | RustDesk hbbs/hbbr | :21115-21119 | Remote desktop relay | RUNNING |
@@ -140,10 +144,11 @@ substrate — a $12/mo DigitalOcean droplet running Tower composition
 ```
 Phase 0   (Relay only)      → Songbird TURN + RustDesk           ← DONE
 Phase 0.5 (Tower on VPS)    → + BearDog + SkunkBat + Caddy TLS   ← DONE
-Phase 1   (Tower compose)   → BearDog + Songbird + SkunkBat + RustDesk ← CURRENT
+Phase 1   (Tower compose)   → BearDog + Songbird + SkunkBat + RustDesk ← DONE
+Phase 1.5 (Nest Atomic)     → + NestGate + rhizoCrypt + loamSpine + sweetGrass ← CURRENT
 Phase 2   (Content)         → petalTongue replaces GitHub Pages   ← SHADOW ACTIVE
-Phase 3   (DNS)             → knot-dns replaces Cloudflare DNS    ← PENDING
-Phase 4   (Full mesh)       → Multiple VPS, biomeOS orchestrated  ← FUTURE
+Phase 3   (DNS)             → knot-dns replaces Cloudflare DNS    ← DEPLOYED (H2-17)
+Phase 4   (Full mesh)       → Multiple VPS, biomeOS orchestrated  ← FUTURE (FlockGate H3-11)
 ```
 
 ### Degradation Behavior

@@ -33,6 +33,15 @@ validation/archive/provenance-run-*/
 # Generated external validation directories (timestamped by external_validation.sh)
 validation/external-*/
 
+# Generated membrane provenance runs (timestamped by membrane_provenance.sh)
+validation/membrane-provenance-*/
+
+# Generated security validation runs (archived manually when complete)
+validation/security-*/
+
+# benchScale timestamped reports (committed selectively)
+infra/benchScale/reports/
+
 # Editor backup files
 *.bak
 *.orig

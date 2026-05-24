@@ -3,8 +3,8 @@
 Curated subset of primalSpring/graphs/ for projectNUCLEUS deployment.
 The canonical source for all 77+ graphs remains in primalSpring.
 
-**Dark Forest compliance (2026-05-15):**
-- All deploy graphs carry `secure_by_default = true` in `[graph.metadata]` (DF-4 requirement)
+**Dark Forest compliance (2026-05-23):**
+- All 12/12 graphs carry `secure_by_default = true` (fragments + deploy + workflow) (DF-4 requirement)
 - No non-Songbird nodes advertise `http` or `tls` capabilities (DF-3)
 - All nodes declare `security_model = "btsp"` or `"tower_delegated"` (DF-4)
 - UDS-only default transport, TCP fallback opt-in via `PRIMALSPRING_TCP_TIER5` (DF-2)
@@ -38,7 +38,7 @@ The canonical source for all 77+ graphs remains in primalSpring.
 | `basement_hpc_covalent.toml` | Covalent | LAN cluster — your machines |
 | `friend_remote_covalent.toml` | Covalent + NAT | Friend's machine with tunnel |
 | `ionic_capability_share.toml` | Ionic | Two-family metered sharing |
-| `sovereignty_shadow.toml` | Shadow | Wave 24 — 4-track sovereignty parity proofs (TLS/NAT/content/auth) |
+| `sovereignty_shadow.toml` | Shadow | 5-track sovereignty parity proofs (TLS/NAT/content/auth/DNS) — **6/0/0 FULL PASS** |
 
 ## TCP Fallback Ports (Tier 5 Discovery)
 

@@ -67,33 +67,33 @@ external dependency baselines against sovereign replacements. Orchestrated by
 **Deploy graph**: `graphs/sovereignty_shadow.toml`
 **Protocol**: `wateringHole/SOVEREIGNTY_STANDARDS.md` §2
 
-### Shadow Matrix (May 19, 2026)
+### Shadow Matrix (May 23, 2026)
 
 | # | Track | Sovereign | Commercial | Status | Measured |
 |---|-------|-----------|------------|--------|----------|
-| S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** | 6-12ms RPC vs 163ms CF TTFB |
+| S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** | 13ms RPC vs 163ms CF TTFB |
 | S2 | NAT traversal | Songbird TURN relay | cloudflared tunnel | **LIVE** | 100% reachable (3ms UDP) |
-| S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **LIVE** | 0.4ms local / 67ms VPS vs 111ms GH |
-| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **READY** | Spec shipped, integration pending |
+| S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **LIVE** | 68ms VPS TTFB vs 111ms GH |
+| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **LIVE** | Dual-auth shadow active, events accumulating |
+| S5 | DNS resolution | knot-dns (DNSSEC) | Cloudflare NS | **LIVE** | 45ms authoritative, ECDSAP256SHA256 |
 
-### Orchestrator Progression (May 19)
+### Orchestrator Progression
 
 ```
-Run 1 (15:04 UTC): 2 PASS, 0 FAIL, 3 SKIP  — BearDog/petalTongue not running
-Run 2 (15:16 UTC): 2 PASS, 0 FAIL, 3 SKIP  — probe bugs (curl vs JSON-RPC)
-Run 3 (15:18 UTC): 4 PASS, 0 FAIL, 1 SKIP  — probes fixed, services started
-Run 4 (15:21 UTC): 4 PASS, 0 FAIL, 1 SKIP  — stable (knot-dns only SKIP)
+Run 1-4 (May 19): 4 PASS, 0 FAIL, 1 SKIP (knot-dns not yet deployed)
+Run 5   (May 22): 5 PASS, 0 FAIL, 1 SKIP (DNS deployed, probe stabilizing)
+Run 6   (May 22): 6 PASS, 0 FAIL, 0 SKIP — FULL PASS (all 5 tracks + DNS)
 ```
 
 ### Parity Reports
 
 | Track | Report | Key metric | Gate met? |
 |-------|--------|------------|-----------|
-| S1 TLS | `btsp_tls_parity_*.toml` | BearDog RPC p95: 6-12ms; CF TTFB p95: 163ms | Latency yes; 7-day window not started |
-| S2 NAT | `songbird_nat_parity_*.toml` | TURN reachability: 100% (5/5, repeated) | Reachability yes; dual-path pending |
-| S3 Content | `nestgate_content_parity_*.toml` | TTFB parity: PASS; content hash: FAIL (not mirrored) | TTFB yes; mirror pending |
-| S4 Auth | — | No measurements yet | Not started |
-| DNS | `dot_parity_*.toml` | DoT baseline: 3-8ms all domains 10/10 | Sovereign knot-dns not deployed |
+| S1 TLS | `btsp_tls_parity_*.toml` | BearDog RPC 13ms vs CF 163ms | **YES** — 12x faster |
+| S2 NAT | `songbird_nat_parity_*.toml` | TURN reachability: 100% | **YES** — dual-path operational |
+| S3 Content | `nestgate_content_parity_*.toml` | VPS 68ms vs GH 111ms TTFB | **YES** — parity exceeded |
+| S4 Auth | BTSP shadow telemetry | Dual-auth active, events logged | **ACTIVE** — 7-day window running |
+| S5 DNS | `dot_parity_*.toml` | knot-dns 45ms, DNSSEC signed | **YES** — H2-17 DEPLOYED |
 
 ### Baselines
 
@@ -120,12 +120,12 @@ Run 4 (15:21 UTC): 4 PASS, 0 FAIL, 1 SKIP  — stable (knot-dns only SKIP)
 Validates cellMembrane (157.230.3.183) against adversarial configuration.
 
 **Script**: `validation/darkforest_membrane.sh`
-**Result (May 19, 2026)**: **17 PASS, 0 FAIL, 1 SKIP** (SKIP: b3sum not on VPS)
+**Result (May 22, 2026)**: **21 PASS, 0 FAIL, 1 SKIP** (SKIP: b3sum not on VPS)
 
 | Check | Description | Result |
 |-------|-------------|--------|
 | MEM-01 | SSH password auth disabled | PASS |
-| MEM-02 | fail2ban active (3 bans) | PASS |
+| MEM-02 | fail2ban active | PASS |
 | MEM-03 | UFW deny-default, expected ports only | PASS |
 | MEM-04 | TURN unauthenticated allocate rejected | PASS |
 | MEM-05 | exim4/droplet-agent/snapd absent | PASS |
@@ -135,6 +135,10 @@ Validates cellMembrane (157.230.3.183) against adversarial configuration.
 | MEM-09 | BLAKE3 binary integrity | SKIP |
 | MEM-10 | No unexpected TCP listeners | PASS |
 | MEM-11–13 | Service-specific checks | PASS |
+| MEM-14 | NestGate health (:9500 REST) | PASS |
+| MEM-15 | rhizoCrypt health (:9602 JSON-RPC) | PASS |
+| MEM-16 | loamSpine health (:9700 HTTP) | PASS |
+| MEM-17 | sweetGrass health (:9850 TCP) | PASS |
 
 ## E5: lithoSpore Cross-Tier Parity
 
@@ -166,15 +170,16 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 darkforest           34 tests  (crypto, check, report, discovery)
 tunnelKeeper         21 tests  (config, crypto, health)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
-darkforest_membrane  17 checks (VPS security audit)
-benchScale            4 tracks (shadow parity, 15+ reports)
+darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
+benchScale            5 tracks (shadow parity, 25+ reports)
 5-layer security    267 checks (pentest, fuzz, crypto, observer, gate)
 ───────────────────────────────────────────────────────────────────
-Total               460+ validations, 0 failures
+Total               464+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
-cargo fmt clean, graphs synchronized to primalSpring v3.0.0.
+cargo fmt clean, graphs synchronized to primalSpring v0.9.27 (Wave 46), `deny.toml`
+on both crates, `secure_by_default` 12/12 deploy graphs.
 
 ---
 
@@ -195,7 +200,7 @@ cargo fmt clean, graphs synchronized to primalSpring v3.0.0.
 
 | Goal | Experiment | Gate Criteria |
 |------|-----------|---------------|
-| Sovereign DNS | E3 | knot-dns on VPS replaces Cloudflare DNS (H2-17→20) |
+| ~~Sovereign DNS~~ | ~~E3~~ | ~~knot-dns on VPS~~ → **DEPLOYED** (H2-17, May 22). NS cutover H2-18 pending registrar. |
 | Cross-gate mesh | E2/E3 | 2+ gates connected via Songbird relay (exp073 covalent pattern) |
 | Forgejo Actions CI | — | CI pipelines sovereign (Forgejo replaces GitHub Actions) |
 | Membrane auto-healing | E4 | Rolling baselines auto-detect sovereignty regression |
@@ -220,7 +225,7 @@ cargo fmt clean, graphs synchronized to primalSpring v3.0.0.
 
 ---
 
-## VPS Services (cellMembrane: 157.230.3.183)
+## VPS Services (cellMembrane: 157.230.3.183) — Nest Atomic (May 22)
 
 | Service | Port | systemd Unit | Status |
 |---------|------|-------------|--------|
@@ -228,9 +233,12 @@ cargo fmt clean, graphs synchronized to primalSpring v3.0.0.
 | BearDog TLS shadow | TCP :8443 | `beardog-tls-shadow.service` | RUNNING (v0.9.0) |
 | SkunkBat (audit) | TCP :9140 | `skunkbat-membrane.service` | RUNNING |
 | Songbird TURN relay | UDP :3478 | `songbird-relay.service` | RUNNING (v0.2.1) |
+| NestGate (storage) | TCP :9500 | `nestgate-membrane.service` | RUNNING (v2.1.0) |
+| rhizoCrypt (DAG) | TCP :9602 | `rhizocrypt-membrane.service` | RUNNING (v0.14.0) |
+| loamSpine (ledger) | TCP :9700 | `loamspine-membrane.service` | RUNNING (v0.9.16) |
+| sweetGrass (braid) | TCP :9850 | `sweetgrass-membrane.service` | RUNNING (v0.7.34) |
 | Caddy TLS | TCP :80, :443 | `caddy-tls.service` | RUNNING (ACME) |
 | petalTongue web | TCP :8080 | `petaltongue-web.service` | RUNNING |
-| RustDesk hbbs | TCP :21115-21116 | `hbbs-membrane.service` | RUNNING |
-| RustDesk hbbr | TCP :21117-21119 | `hbbr-membrane.service` | RUNNING |
+| RustDesk hbbs/hbbr | TCP :21115-21119 | `hbbs/hbbr-membrane.service` | RUNNING |
 
-Resources: 1.9 GB RAM (331 MB used), 9.7 GB disk (21% used), Ubuntu 24.04.
+Resources: 2 GB RAM (~400 MB used), 1.6 GB free. Ubuntu 24.04.

@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-15) — Forgejo primary (32 repos), VPS Tower LIVE (2GB, 6 services), **Channel 3 TLS LIVE** (`membrane.primals.eco` ACME cert, HTTP parity PASS — VPS 68ms vs GH Pages 89ms), content-aware routing, L3+L4 continuous membrane telemetry deployed. Dark Forest Glacial Gate PASS (33/33), 458 methods (Wave 46), 13/13 primals LIVE
+**Status**: Sovereignty evolution ACTIVE (2026-05-23) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 458 methods (Wave 46), 55 Rust tests PASS, 13/13 primals LIVE, provenance trio 10/10 PASS on VPS
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)

@@ -6,7 +6,7 @@
 #   2. Stop voila-public + voila-redirect services
 #   3. Install and start observer-static service on the same port (8866)
 #
-# Reversible: run switch_to_voila_observer.sh to go back.
+# Reversible: run deploy/legacy/switch_to_voila_observer.sh to go back (legacy).
 #
 # Usage: sudo bash switch_to_static_observer.sh
 
@@ -71,4 +71,4 @@ fi
 
 echo ""
 echo "Observer switched to static pre-rendered HTML."
-echo "Voila services disabled (can re-enable with: sudo bash switch_to_voila_observer.sh)"
+echo "Voila services disabled (can re-enable with: sudo bash deploy/legacy/switch_to_voila_observer.sh)"

@@ -6,7 +6,7 @@ May 12, 2026) — the canonical wire contract.
 
 **Current state**: Tier 2 ACTIVE — `toadstool.validate` **IMPLEMENTED** (S250),
 `toadstool.list_workloads` **WIRED** (S245+), `barracuda.precision.route` **IMPLEMENTED** (649 tests),
-`biomeos.spring_status` **IMPLEMENTED** (v3.54)
+`biomeos.spring_status` **IMPLEMENTED** (v3.78), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 55)
 
 **Canonical source**: `springs/primalSpring/docs/LIVE_SCIENCE_API.md`
 **Registry**: 460 methods (13 primals, 8 springs, Wave 55 — `nucleus.ingest_spore` + `nucleus.emit_spore` added. Typed errors, env_keys centralized, stability-tier annotated)
@@ -155,7 +155,7 @@ Submit a workload for execution (compute trio IPC contract, Wave 8).
 
 | Method | Status | Notes |
 |--------|--------|-------|
-| `biomeos.spring_status` | **IMPLEMENTED** (v3.54) | Binary discovery + workload counts for Tier 2 notebooks. Also available via `capabilities.list` per primal |
+| `biomeos.spring_status` | **IMPLEMENTED** (v3.78) | Binary discovery + workload counts for Tier 2 notebooks. Also available via `capabilities.list` per primal |
 | `nestgate.artifact_query` | **Resolved** | `content.get` (by BLAKE3 hash) and `content.resolve` (by collection+path) — both SHIPPED in Session 60. Provenance chain via `dag.session.get` on rhizoCrypt |
 | `rhizocrypt.dag_summary` | **Resolved** | `dag.session.get` (returns full session state) and `dag.session.list` (enumeration) — both SHIPPED. No separate summary method needed |
 
@@ -206,7 +206,7 @@ Each tier adds capability without removing previous tiers.
 | `shader.compile.wgsl` | coralReef | **WIRED** (Sprint 7) | WGSL→PTX/SPIR-V |
 | `content.put/get` | nestGate | **SHIPPED** (Session 60) | Content-addressed storage |
 | `dag.session.create` | rhizoCrypt | **SHIPPED** | Provenance pipeline |
-| `biomeos.spring_status` | biomeOS | **IMPLEMENTED** (v3.54) | Binary discovery + workload counts |
+| `biomeos.spring_status` | biomeOS | **IMPLEMENTED** (v3.78) | Binary discovery + workload counts |
 | `nestgate.artifact_query` | nestGate | **Resolved** | Use `content.get`/`content.resolve` (Session 60) |
 | `rhizocrypt.dag_summary` | rhizoCrypt | **Resolved** | Use `dag.session.get`/`dag.session.list` |
 

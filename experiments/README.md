@@ -6,10 +6,10 @@ Validation experiments for sovereign NUCLEUS deployment.
 
 | ID | Name | Crate/Tool | Tests | Status |
 |----|------|-----------|-------|--------|
-| E1 | Security boundary validation | `validation/darkforest/` | 34 | PASS |
+| E1 | Security boundary validation | `validation/darkforest/` | 44 | PASS |
 | E2 | Transport sovereignty | `validation/tunnelKeeper/` | 21 | PASS |
 | E3 | Sovereignty parity | `infra/benchScale/` | 4 tracks | ACTIVE |
-| E4 | Membrane security audit | `validation/darkforest_membrane.sh` | 13 checks | PASS |
+| E4 | Membrane security audit | `validation/darkforest_membrane.sh` | 17 checks (21 PASS) | PASS |
 | E5 | lithoSpore integration | `gardens/lithoSpore/` | 117 | PASS |
 
 ---
@@ -21,8 +21,8 @@ JupyterHub via JSON-RPC fuzz, HTTP pentest, crypto validation, and
 observer-tier access control.
 
 **Rust crate**: `validation/darkforest/` (v0.2.1)
-**Test coverage**: 34 unit tests (Shannon entropy, hex decode, check builder,
-report roundtrip, discovery module, capability probing)
+**Test coverage**: 44 unit tests (Shannon entropy, hex decode, check builder,
+report roundtrip, discovery module, capability probing, HTTP parsing, net graceful failure)
 
 **Results (validated May 2026)**:
 - 13/13 primals respond to JSON-RPC `health.liveness`

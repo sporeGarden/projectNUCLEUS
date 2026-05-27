@@ -8,7 +8,7 @@ bonding remains the foundation even when Phase 4 metallic federation is live.
 ## Phase 1: Covalent LAN HPC
 
 **Status**: Validated (2026-05-06), full provenance pipeline operational
-**System**: active gate (i9-14900K, 96 GB DDR5, RTX 4070 / RTX 3090)
+**System**: active gate (i9-14900K, 96 GB DDR5, RTX 5070 Blackwell)
 **Bonding**: Covalent (shared family seed, full trust)
 **Composition**: Full NUCLEUS (13 primals, dynamically discovered from plasmidBin)
 - Tower: BearDog + SongBird
@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-27) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 55), 55 Rust tests PASS, 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.78 — `nucleus ingest/emit` gateway scaffolded (NC-1)
+**Status**: Sovereignty evolution ACTIVE (2026-05-27) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 55), 65 Rust tests PASS (darkforest 44, tunnelKeeper 21), 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.78 — `nucleus ingest/emit` gateway scaffolded (NC-1). serde-saphyr pure Rust YAML
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)

@@ -3,7 +3,7 @@
 **Product**: projectNUCLEUS
 **Type**: Deployment and validation umbrella (not a domain science spring)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
-**Updated**: May 19, 2026
+**Updated**: May 27, 2026 (Wave 55 absorption — 460 methods, NC-1→NC-5 niche climate, serde-saphyr pure Rust)
 
 ## What projectNUCLEUS Validates
 
@@ -26,7 +26,7 @@ primalSpring graphs + wateringHole standards
 projectNUCLEUS deploys on ironGate (local covalent gate)
        ↓
 darkforest validates security (pentest, fuzz, crypto, observer)
- → 34 unit tests, 267 security checks, 86 observer checks
+ → 44 unit tests (+ 21 tunnelKeeper = 65 total), 267 security checks, 86 observer checks
        ↓
 tunnelKeeper validates transport (health, DNS, config, replicas)
  → 21 unit tests, reqwest + rustls (zero ring)
@@ -35,7 +35,7 @@ darkforest_membrane audits cellMembrane VPS (SSH, UFW, TURN, listeners)
  → 17/17 PASS (MEM-01 through MEM-13)
        ↓
 benchScale validates sovereignty parity (CF baseline → sovereign shadow)
- → 4-track shadow: TLS + NAT + content + auth
+ → 5-track shadow + DNS: TLS + NAT + content + auth + DoT/knot-dns (6/0/0 FULL PASS)
        ↓
 lithoSpore validates cross-tier science (Python ↔ Rust ↔ Primal IPC)
  → 7/7 modules PASS, 75/75 checks, 117 tests, 7/7 parity MATCH
@@ -50,7 +50,7 @@ Gaps hand back to primalSpring → primals evolve → cycle continues
 Pure Rust security validator probes all 13 primals via JSON-RPC fuzz,
 HTTP pentest, crypto validation, and observer-tier access control.
 
-**34 unit tests**, 267 security checks, 33 structural gate checks.
+**65 unit tests** (darkforest 44 + tunnelKeeper 21), 267 security checks, 33 structural gate checks.
 
 Key results:
 - 13/13 primals respond to `health.liveness`
@@ -77,14 +77,14 @@ against 7-day rolling baselines. Orchestrated by `shadow_run_orchestrator.sh`.
 | S1 TLS | BearDog :8443 (rustls) | Cloudflare TLS | **6-12ms** vs 163ms (13-27× faster) |
 | S2 NAT | Songbird TURN relay | cloudflared tunnel | **100% reachable**, 3ms UDP |
 | S3 Content | petalTongue + NestGate | GitHub Pages | **67ms VPS** vs 111ms GH (40% faster) |
-| S4 Auth | BearDog BTSP dual-auth | OAuth2 proxy | Spec shipped, integration pending |
+| S4 Auth | BearDog BTSP dual-auth | OAuth2 proxy | **LIVE** — shadow running, 7-day cutover window |
 
 **Cutover gate**: All 4 tracks must demonstrate parity for 7 consecutive days.
 Sovereign p95 ≤ 1.5× commercial p95.
 
 ### E4: Membrane Security Audit (darkforest_membrane)
 
-Remote audit of cellMembrane VPS: 17 PASS, 0 FAIL, 1 SKIP.
+Remote audit of cellMembrane VPS: 21 PASS, 0 FAIL, 1 SKIP (MEM-01 through MEM-17, Nest Atomic).
 SSH hardening, fail2ban, UFW deny-default, TURN auth, credential perms.
 
 ### E5: lithoSpore Cross-Tier Parity
@@ -123,7 +123,7 @@ The cellMembrane is the first deployment of NUCLEUS primals on external
 substrate — a $12/mo DigitalOcean droplet running **Nest Atomic composition**
 (Tower + NestGate + provenance trio) alongside transitional services.
 
-### Services (May 23, 2026)
+### Services (May 27, 2026 — Nest Atomic, Wave 55)
 
 | Service | Port | Function | Status |
 |---------|------|----------|--------|
@@ -169,7 +169,7 @@ availability:
 - `darkforest_membrane.sh`: 17 security checks on every VPS change
 - `membrane_telemetry.sh`: 15-min cadence → `membrane_7day.toml` rolling baseline
 - `membrane_summary.sh`: 7-day aggregate with cutover gate evaluation
-- `shadow_run_orchestrator.sh`: weekly 4-track parity measurement
+- `shadow_run_orchestrator.sh`: weekly 5-track + DNS parity measurement (6/0/0 FULL PASS)
 
 ## Progress Toward Sovereignty
 
@@ -192,11 +192,11 @@ availability:
 
 | Dependency | Sovereign Replacement | Status |
 |------------|----------------------|--------|
-| Cloudflare DNS | knot-dns | H2-17→20: not deployed |
+| Cloudflare DNS | knot-dns | H2-17 **DEPLOYED** — DNSSEC ECDSAP256SHA256. NS cutover (H2-18) pending registrar |
 | Cloudflare tunnel | Songbird relay | LIVE but not cutover |
 | GitHub Pages | petalTongue + NestGate | LIVE but content not mirrored |
 | GitHub Actions CI | Forgejo Actions | Not started |
-| OAuth2 proxy | BearDog BTSP | Spec shipped, integration pending |
+| OAuth2 proxy | BearDog BTSP | **LIVE** — dual-auth shadow running |
 | Let's Encrypt | BearDog ACME Phase 3 | Phase 2 shipped, renewal daemon pending |
 
 ### Irreducible externals (never sovereign)

@@ -1,23 +1,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Graph: Sovereignty Shadow — 4-track parity proof (Wave 24)
+# Graph: Sovereignty Shadow — 5-track + DNS parity proof (Wave 38 / 55)
 #
 # Proves sovereign components can replace commercial counterparts.
 # Each track runs in parallel with its commercial equivalent.
 # Cutover happens only after 7-day parity is demonstrated.
+# Orchestrator: 6 PASS, 0 FAIL, 0 SKIP (May 22, 2026)
 #
 # Tracks:
 #   S1: BearDog TLS   → replaces Cloudflare TLS termination
 #   S2: Songbird relay → replaces cloudflared tunnel
 #   S3: NestGate+PT    → replaces GitHub Pages
 #   S4: BearDog BTSP   → replaces OAuth2 proxy
+#   S5: knot-dns       → replaces Cloudflare DNS (DNSSEC ECDSAP256SHA256)
 #
-# See: WAVE24_SHADOW_RUN_EXECUTION_MAY19_2026.md
 # See: infra/wateringHole/SOVEREIGNTY_STANDARDS.md §2 (calibrate → shadow → cutover)
 
 [graph]
 name = "sovereignty_shadow"
-description = "4-track shadow run: TLS + NAT + content + auth parity proofs"
+description = "5-track + DNS shadow run: TLS + NAT + content + auth + DoT parity proofs"
 version = "1.0.0"
 shadow = true
 secure_by_default = true

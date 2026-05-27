@@ -10,6 +10,7 @@
 # Usage:
 #   bash deploy.sh --composition node --gate mygate
 #   bash deploy.sh --composition tower --gate nuc-intake
+#   bash deploy.sh --uds-only              # VPS standard: no TCP ports
 #   bash deploy.sh --stop                  # stop all primals
 #   bash deploy.sh --status                # check running primals
 #
@@ -33,6 +34,7 @@ FAMILY_NAME="${NUCLEUS_FAMILY_NAME:-$(hostname -s)-sovereign}"
 STOP=false
 STATUS=false
 GRAPH_DEPLOY=false
+UDS_ONLY=false
 
 BIND_ADDRESS="${NUCLEUS_BIND_ADDRESS}"
 
@@ -45,6 +47,7 @@ usage() {
     echo "  --family-name NAME   Family name for seed init (default: \$(hostname)-sovereign)"
     echo "  --plasmidbin DIR     Path to plasmidBin (default: auto-detect)"
     echo "  --graph-deploy       Use graph-driven deploy (composition.deploy pattern)"
+    echo "  --uds-only           VPS standard: no TCP ports (Wave 56 standard)"
     echo "  --stop               Stop all running primals"
     echo "  --status             Show status of running primals"
     echo "  --help               Show this help"
@@ -57,6 +60,7 @@ while [[ $# -gt 0 ]]; do
         --family-name)  FAMILY_NAME="$2"; shift 2 ;;
         --plasmidbin)   PLASMIDBIN_DIR="$2"; shift 2 ;;
         --graph-deploy) GRAPH_DEPLOY=true; shift ;;
+        --uds-only)     UDS_ONLY=true; shift ;;
         --stop)         STOP=true; shift ;;
         --status)       STATUS=true; shift ;;
         --help)         usage; exit 0 ;;
@@ -145,6 +149,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "  Gate:        ${GATE:-$(hostname -s)}"
 echo "  Composition: $COMPOSITION ($PRIMALS)"
+echo "  Transport:   $( $UDS_ONLY && echo "UDS-only (VPS standard)" || echo "UDS + TCP fallback" )"
 echo "  plasmidBin:  $PLASMIDBIN_DIR"
 echo "  Family:      $FAMILY_NAME"
 echo ""

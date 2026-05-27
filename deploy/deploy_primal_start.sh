@@ -3,152 +3,164 @@
 #
 # Sourced by deploy.sh. Expects the following variables:
 #   PLASMIDBIN_DIR, RUNTIME_DIR, BIND_ADDRESS, FAMILY_ID, NODE_ID,
-#   BEARDOG_SOCKET, BEACON_SEED, and all *_PORT variables.
+#   BEARDOG_SOCKET, BEACON_SEED, UDS_ONLY, and all *_PORT variables.
+#
+# Wave 56 standard: nucleus_launcher --uds-only is the preferred VPS path.
+# This script supports --uds-only by suppressing TCP port arguments.
 #
 # Provides: start_primal()
 
 start_primal() {
     local p="$1"
 
+    # Wave 56 UDS-only: suppress TCP ports (VPS standard)
+    if ${UDS_ONLY:-false}; then
+        BEARDOG_PORT=0; SONGBIRD_PORT=0; TOADSTOOL_PORT=0; BARRACUDA_PORT=0
+        CORALREEF_PORT=0; NESTGATE_PORT=0; RHIZOCRYPT_PORT=0; LOAMSPINE_PORT=0
+        SWEETGRASS_PORT=0; SQUIRREL_PORT=0; SKUNKBAT_PORT=0; BIOMEOS_PORT=0
+        PETALTONGUE_PORT=0
+    fi
+
     case "$p" in
         beardog)
-            echo "  Starting beardog (UDS + TCP $BEARDOG_PORT)..."
+            local transport=$( (( BEARDOG_PORT > 0 )) && echo "UDS + TCP $BEARDOG_PORT" || echo "UDS-only" )
+            echo "  Starting beardog ($transport)..."
             export BEARDOG_FAMILY_SEED="$BEACON_SEED"
-            nohup "$PLASMIDBIN_DIR/primals/beardog" server \
-                --socket "$BEARDOG_SOCKET" \
-                --family-id "$FAMILY_ID" \
-                --listen "$BIND_ADDRESS:$BEARDOG_PORT" \
-                > /tmp/beardog.log 2>&1 &
+            local bd_args=(server --socket "$BEARDOG_SOCKET" --family-id "$FAMILY_ID")
+            (( BEARDOG_PORT > 0 )) && bd_args+=(--listen "$BIND_ADDRESS:$BEARDOG_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/beardog" "${bd_args[@]}" > /tmp/beardog.log 2>&1 &
             echo "    PID: $!"
             sleep 2
             ;;
 
         songbird)
-            echo "  Starting songbird (HTTP $SONGBIRD_PORT)..."
+            local transport=$( (( SONGBIRD_PORT > 0 )) && echo "HTTP $SONGBIRD_PORT" || echo "UDS-only" )
+            echo "  Starting songbird ($transport)..."
             export BEARDOG_SOCKET="$BEARDOG_SOCKET"
             export BEARDOG_MODE=direct
             export SONGBIRD_SECURITY_PROVIDER=beardog
-            nohup "$PLASMIDBIN_DIR/primals/songbird" server \
-                --port "$SONGBIRD_PORT" \
-                --socket "$RUNTIME_DIR/biomeos/songbird-$FAMILY_ID.sock" \
-                > /tmp/songbird.log 2>&1 &
+            local sb_args=(server --socket "$RUNTIME_DIR/biomeos/songbird-$FAMILY_ID.sock")
+            (( SONGBIRD_PORT > 0 )) && sb_args+=(--port "$SONGBIRD_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/songbird" "${sb_args[@]}" > /tmp/songbird.log 2>&1 &
             echo "    PID: $!"
             sleep 2
             ;;
 
         toadstool)
-            echo "  Starting toadstool (TCP $TOADSTOOL_PORT)..."
+            local transport=$( (( TOADSTOOL_PORT > 0 )) && echo "TCP $TOADSTOOL_PORT" || echo "UDS-only" )
+            echo "  Starting toadstool ($transport)..."
             export TOADSTOOL_FAMILY_ID="$FAMILY_ID"
             export TOADSTOOL_NODE_ID="$NODE_ID"
             export TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1
             export SPRINGS_ROOT="${SPRINGS_ROOT:-${ECOPRIMALS_ROOT:-}/springs}"
             export GATE_HOME="${GATE_HOME:-$HOME}"
-            nohup "$PLASMIDBIN_DIR/primals/toadstool" server \
-                --port "$TOADSTOOL_PORT" \
-                --family-id "$FAMILY_ID" \
-                > /tmp/toadstool.log 2>&1 &
+            local ts_args=(server --family-id "$FAMILY_ID")
+            (( TOADSTOOL_PORT > 0 )) && ts_args+=(--port "$TOADSTOOL_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/toadstool" "${ts_args[@]}" > /tmp/toadstool.log 2>&1 &
             echo "    PID: $!"
             sleep 2
             ;;
 
         barracuda)
-            echo "  Starting barracuda (TCP $BARRACUDA_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/barracuda" server \
-                --bind "$BIND_ADDRESS:$BARRACUDA_PORT" \
-                > /tmp/barracuda.log 2>&1 &
+            local transport=$( (( BARRACUDA_PORT > 0 )) && echo "TCP $BARRACUDA_PORT" || echo "UDS-only" )
+            echo "  Starting barracuda ($transport)..."
+            local bc_args=(server)
+            (( BARRACUDA_PORT > 0 )) && bc_args+=(--bind "$BIND_ADDRESS:$BARRACUDA_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/barracuda" "${bc_args[@]}" > /tmp/barracuda.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         coralreef)
-            echo "  Starting coralreef (RPC $CORALREEF_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/coralreef" server \
-                --rpc-bind "$BIND_ADDRESS:$CORALREEF_PORT" \
-                > /tmp/coralreef.log 2>&1 &
+            local transport=$( (( CORALREEF_PORT > 0 )) && echo "RPC $CORALREEF_PORT" || echo "UDS-only" )
+            echo "  Starting coralreef ($transport)..."
+            local cr_args=(server)
+            (( CORALREEF_PORT > 0 )) && cr_args+=(--rpc-bind "$BIND_ADDRESS:$CORALREEF_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/coralreef" "${cr_args[@]}" > /tmp/coralreef.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         nestgate)
-            echo "  Starting nestgate (UDS + TCP $NESTGATE_PORT)..."
+            local transport=$( (( NESTGATE_PORT > 0 )) && echo "UDS + TCP $NESTGATE_PORT" || echo "UDS-only" )
+            echo "  Starting nestgate ($transport)..."
             export NESTGATE_FAMILY_ID="$FAMILY_ID"
             export NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 32 /dev/urandom | base64)}"
-            nohup "$PLASMIDBIN_DIR/primals/nestgate" daemon \
-                --socket-only \
-                --port "$NESTGATE_PORT" \
-                --bind "$BIND_ADDRESS" \
-                > /tmp/nestgate.log 2>&1 &
+            local ng_args=(daemon --socket-only)
+            (( NESTGATE_PORT > 0 )) && ng_args+=(--port "$NESTGATE_PORT" --bind "$BIND_ADDRESS")
+            nohup "$PLASMIDBIN_DIR/primals/nestgate" "${ng_args[@]}" > /tmp/nestgate.log 2>&1 &
             echo "    PID: $!"
             sleep 2
             ;;
 
         rhizocrypt)
-            echo "  Starting rhizocrypt (TCP $RHIZOCRYPT_PORT, JSON-RPC $((RHIZOCRYPT_PORT+1)))..."
+            local transport=$( (( RHIZOCRYPT_PORT > 0 )) && echo "TCP $RHIZOCRYPT_PORT" || echo "UDS-only" )
+            echo "  Starting rhizocrypt ($transport)..."
             export FAMILY_SEED="$BEACON_SEED"
-            nohup "$PLASMIDBIN_DIR/primals/rhizocrypt" server \
-                --port "$RHIZOCRYPT_PORT" \
-                --host "$BIND_ADDRESS" \
-                > /tmp/rhizocrypt.log 2>&1 &
+            local rc_args=(server)
+            (( RHIZOCRYPT_PORT > 0 )) && rc_args+=(--port "$RHIZOCRYPT_PORT" --host "$BIND_ADDRESS")
+            nohup "$PLASMIDBIN_DIR/primals/rhizocrypt" "${rc_args[@]}" > /tmp/rhizocrypt.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         loamspine)
-            echo "  Starting loamspine (TCP $LOAMSPINE_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/loamspine" server \
-                --port "$LOAMSPINE_PORT" \
-                --bind-address "$BIND_ADDRESS" \
-                > /tmp/loamspine.log 2>&1 &
+            local transport=$( (( LOAMSPINE_PORT > 0 )) && echo "TCP $LOAMSPINE_PORT" || echo "UDS-only" )
+            echo "  Starting loamspine ($transport)..."
+            local ls_args=(server)
+            (( LOAMSPINE_PORT > 0 )) && ls_args+=(--port "$LOAMSPINE_PORT" --bind-address "$BIND_ADDRESS")
+            nohup "$PLASMIDBIN_DIR/primals/loamspine" "${ls_args[@]}" > /tmp/loamspine.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         sweetgrass)
-            echo "  Starting sweetgrass (TCP $SWEETGRASS_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/sweetgrass" server \
-                --port "$SWEETGRASS_PORT" \
-                --http-address "$BIND_ADDRESS:$((SWEETGRASS_PORT + 1))" \
-                > /tmp/sweetgrass.log 2>&1 &
+            local transport=$( (( SWEETGRASS_PORT > 0 )) && echo "TCP $SWEETGRASS_PORT" || echo "UDS-only" )
+            echo "  Starting sweetgrass ($transport)..."
+            local sg_args=(server)
+            (( SWEETGRASS_PORT > 0 )) && sg_args+=(--port "$SWEETGRASS_PORT" --http-address "$BIND_ADDRESS:$((SWEETGRASS_PORT + 1))")
+            nohup "$PLASMIDBIN_DIR/primals/sweetgrass" "${sg_args[@]}" > /tmp/sweetgrass.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         squirrel)
-            echo "  Starting squirrel (TCP $SQUIRREL_PORT)..."
+            local transport=$( (( SQUIRREL_PORT > 0 )) && echo "TCP $SQUIRREL_PORT" || echo "UDS-only" )
+            echo "  Starting squirrel ($transport)..."
             export CAPABILITY_REGISTRY_SOCKET="$RUNTIME_DIR/biomeos/neural-api-$FAMILY_ID.sock"
-            nohup "$PLASMIDBIN_DIR/primals/squirrel" server \
-                --port "$SQUIRREL_PORT" \
-                --bind "$BIND_ADDRESS" \
-                > /tmp/squirrel.log 2>&1 &
+            local sq_args=(server)
+            (( SQUIRREL_PORT > 0 )) && sq_args+=(--port "$SQUIRREL_PORT" --bind "$BIND_ADDRESS")
+            nohup "$PLASMIDBIN_DIR/primals/squirrel" "${sq_args[@]}" > /tmp/squirrel.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         skunkbat)
-            echo "  Starting skunkbat (TCP $SKUNKBAT_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/skunkbat" server \
-                --port "$SKUNKBAT_PORT" \
-                > /tmp/skunkbat.log 2>&1 &
+            local transport=$( (( SKUNKBAT_PORT > 0 )) && echo "TCP $SKUNKBAT_PORT" || echo "UDS-only" )
+            echo "  Starting skunkbat ($transport)..."
+            local sk_args=(server)
+            (( SKUNKBAT_PORT > 0 )) && sk_args+=(--port "$SKUNKBAT_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/skunkbat" "${sk_args[@]}" > /tmp/skunkbat.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;
 
         biomeos)
-            echo "  Starting biomeos neural-api (TCP $BIOMEOS_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/biomeos" neural-api \
-                --port "$BIOMEOS_PORT" \
-                --family-id "$FAMILY_ID" \
-                --btsp-optional \
-                > /tmp/biomeos.log 2>&1 &
+            local transport=$( (( BIOMEOS_PORT > 0 )) && echo "TCP $BIOMEOS_PORT" || echo "UDS-only" )
+            echo "  Starting biomeos neural-api ($transport)..."
+            local bo_args=(neural-api --family-id "$FAMILY_ID" --btsp-optional)
+            (( BIOMEOS_PORT > 0 )) && bo_args+=(--port "$BIOMEOS_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/biomeos" "${bo_args[@]}" > /tmp/biomeos.log 2>&1 &
             echo "    PID: $!"
             sleep 2
             ;;
 
         petaltongue)
-            echo "  Starting petaltongue server (TCP $PETALTONGUE_PORT)..."
-            nohup "$PLASMIDBIN_DIR/primals/petaltongue" server \
-                --port "$PETALTONGUE_PORT" \
-                > /tmp/petaltongue.log 2>&1 &
+            local transport=$( (( PETALTONGUE_PORT > 0 )) && echo "TCP $PETALTONGUE_PORT" || echo "UDS-only" )
+            echo "  Starting petaltongue server ($transport)..."
+            local pt_args=(server)
+            (( PETALTONGUE_PORT > 0 )) && pt_args+=(--port "$PETALTONGUE_PORT")
+            nohup "$PLASMIDBIN_DIR/primals/petaltongue" "${pt_args[@]}" > /tmp/petaltongue.log 2>&1 &
             echo "    PID: $!"
             sleep 1
             ;;

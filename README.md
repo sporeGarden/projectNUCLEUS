@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE (2026-05-27)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 55)**. **65 Rust tests PASS** (darkforest 44, tunnelKeeper 21). Provenance trio 10/10 PASS. NC-1→NC-5 tracked. FlockGate H3-11 tracked.
+**Sovereignty evolution ACTIVE (2026-05-27)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 56)**. **65 Rust tests PASS** (darkforest 44, tunnelKeeper 21). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1→NC-5 tracked. FlockGate H3-11 tracked.
 
 ### Infrastructure
 
@@ -84,7 +84,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Cell membrane architecture**: primals.eco on CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
-- **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order
+- **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order. **Wave 56 `--uds-only`**: deploy scripts suppress all TCP port arguments for VPS standard (zero-port mode)
 - **Agent composition WIRED**: `tower_agent.toml` graph + `signal_executor.sh` bridge — Squirrel `signal_plan` → biomeOS `signal.dispatch` agent loop. 5 compositions: tower, agent, node, nest, full
 - **cellMembrane LIVE — Nest Atomic composition**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **11 services, 7 primals**: Tower (BearDog :9100, SkunkBat :9140, Songbird :3478) + Nest (NestGate :9500, rhizoCrypt :9602, loamSpine :9700, sweetGrass :9850) + RustDesk :21115-17 + Caddy TLS :80/:443 + petalTongue :8080 + BearDog TLS shadow :8443. **Channel 3 TLS LIVE**: `membrane.primals.eco` ACME cert. 1.6GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d). DO token encrypted (BearDog AES-256-GCM). Private ops repo: `gardens/cellMembrane`
 - **BearDog TLS shadow LIVE (H2-12)**: BearDog v0.9.0 on :8443 alongside Cloudflare :443 — **3ms RPC latency** vs 102ms Cloudflare baseline (34x). Telemetry probe fixed: `/dev/tcp` + `read -t 1` replaces `nc` (which inflated to 3s). `btsp_tls_parity.sh` ready for 7-day comparison
@@ -102,9 +102,10 @@ Gates connect to each other through chemical bonding patterns:
 - **lithoSpore 7/7 modules PASS Tier 2** (75/75 checks, 117 tests): Rust validation for fitness, mutations, alleles, citrate, biobricks, breseq, anderson. Cross-tier parity 7/7 MATCH (Python ↔ Rust). Tier 3 wired (trio JSON-RPC, graceful degradation)
 - **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh`
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
-- **`biomeos.spring_status` IMPLEMENTED** (v3.78): Binary discovery + workload counts. Registry at **460 methods** (Wave 55 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed errors, env_keys centralized)
+- **`biomeos.spring_status` IMPLEMENTED** (v3.78): Binary discovery + workload counts. Registry at **460 methods** (Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed errors, env_keys centralized; cell graph `vps_standard` tagging; 12 primordial scripts archived to fossilRecord)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
-- **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. 65 Rust tests PASS (darkforest 44, tunnelKeeper 21). Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps.
+- **Wave 56 deployment standard**: `deploy.sh --uds-only` suppresses TCP ports across all 13 primals (VPS standard). `deploy_graph.sh` + `deploy_primal_start.sh` + `deploy_health_check.sh` all UDS-aware. Socket-based health checks in UDS-only mode. `primalspring checksums` + `primalspring registry` replace shell validation scripts
+- **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. 65 Rust tests PASS (darkforest 44, tunnelKeeper 21). Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
 - **Wave 46 upstream zero gate debt**: primalSpring v0.9.27 — 49 scenarios, 44-cell deployment matrix, 784 tests. All 14 primals pulled to latest. Deploy graphs 12/12 `secure_by_default`. `deny.toml` enforced. FlockGate gap tracked (H3-11)
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **LIVE**, S5 DNS **LIVE** (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
 
@@ -207,6 +208,9 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 # Deploy a Node Atomic to the current machine
 cd deploy/
 bash deploy.sh --composition node --gate mygate
+
+# Deploy VPS standard (Wave 56): zero TCP ports, UDS-only
+bash deploy.sh --composition nest --uds-only
 
 # Deploy the Agent composition (Tower + biomeOS + Squirrel)
 bash deploy.sh --composition agent --graph-deploy

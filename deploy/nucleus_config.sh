@@ -9,6 +9,10 @@
 #     || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
 #
 # All values are overridable via environment variables.
+#
+# Wave 56 standard: VPS deployments use --uds-only (zero TCP ports).
+# TCP ports below are retained for desktop/debug use. Use deploy.sh --uds-only
+# or nucleus_launcher --uds-only for production VPS deployments.
 
 # --- Paths ---
 GATE_HOME="${GATE_HOME:-$HOME}"

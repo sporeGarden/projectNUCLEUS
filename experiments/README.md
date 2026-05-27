@@ -178,8 +178,9 @@ Total               474+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
-cargo fmt clean, graphs synchronized to primalSpring v0.9.30 (Wave 55), `deny.toml`
+cargo fmt clean, graphs synchronized to primalSpring v0.9.30 (Wave 56), `deny.toml`
 on both crates, `secure_by_default` 12/12 deploy graphs. 460 methods registered.
+Deploy tooling `--uds-only` VPS standard (Wave 56).
 
 ---
 
@@ -196,7 +197,7 @@ on both crates, `secure_by_default` 12/12 deploy graphs. 460 methods registered.
 | ACME Phase 3 | E1/E3 | Automated cert renewal (12h check, 30-day-before-expiry) |
 | Cron telemetry | E3 | `membrane_telemetry.sh` every 15min → 7-day rolling baseline |
 
-### Wave 55 — Niche Climate (NC-1→NC-5, pre-stadial)
+### Wave 56 — Niche Climate (NC-1→NC-5, pre-stadial)
 
 | Goal | NC | Gate Criteria | Status |
 |------|-----|---------------|--------|

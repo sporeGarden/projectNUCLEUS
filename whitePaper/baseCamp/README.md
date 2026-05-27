@@ -3,7 +3,7 @@
 **Product**: projectNUCLEUS
 **Type**: Deployment and validation umbrella (not a domain science spring)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
-**Updated**: May 27, 2026 (Wave 55 absorption — 460 methods, NC-1→NC-5 niche climate, serde-saphyr pure Rust)
+**Updated**: May 27, 2026 (Wave 56 absorption — 460 methods, `--uds-only` VPS standard, cell graph tagging, serde-saphyr pure Rust)
 
 ## What projectNUCLEUS Validates
 
@@ -104,13 +104,13 @@ projectNUCLEUS exercises the full NUCLEUS atomic:
 | **Meta** | biomeOS + Squirrel + petalTongue | Orchestration, AI inference, visualization |
 
 All 13 primals communicate via JSON-RPC 2.0 over Unix domain sockets.
-TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 55). `nucleus.ingest_spore` + `nucleus.emit_spore` gateway methods added.
+TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 56). `nucleus.ingest_spore` + `nucleus.emit_spore` gateway methods added. **Wave 56**: `deploy.sh --uds-only` VPS standard — zero TCP ports on production path.
 
 ## Sovereign Infrastructure Status
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| Primal Capabilities | **PASS** | 460 methods (Wave 55), 13/13 primals LIVE |
+| Primal Capabilities | **PASS** | 460 methods (Wave 56), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
@@ -123,7 +123,7 @@ The cellMembrane is the first deployment of NUCLEUS primals on external
 substrate — a $12/mo DigitalOcean droplet running **Nest Atomic composition**
 (Tower + NestGate + provenance trio) alongside transitional services.
 
-### Services (May 27, 2026 — Nest Atomic, Wave 55)
+### Services (May 27, 2026 — Nest Atomic, Wave 56)
 
 | Service | Port | Function | Status |
 |---------|------|----------|--------|
@@ -184,7 +184,7 @@ availability:
 - **Content**: petalTongue serves HTTP on :8080. VPS TTFB 67ms vs GitHub
   Pages 111ms (40% faster). Content hash parity pending (mirror not done).
 - **Compute**: 13 primals on ironGate via biomeOS composition.deploy.
-  460 registered methods (Wave 55). lithoSpore 7/7 modules validated.
+  460 registered methods (Wave 56). lithoSpore 7/7 modules validated.
 - **Security**: darkforest 267 checks PASS. BTSP 13/13 AEAD. FIDO2/CTAP2
   hardware attestation ready. membrane audit 17/17 PASS.
 

@@ -2,9 +2,11 @@
 # deploy_health_check.sh — Post-deploy health verification
 #
 # Sourced by deploy.sh. Expects the following variables:
-#   PLASMIDBIN_DIR, PRIMALS, and all *_PORT variables.
+#   PLASMIDBIN_DIR, RUNTIME_DIR, FAMILY_ID, UDS_ONLY, PRIMALS, and all *_PORT variables.
 #
-# Provides: port_for_primal(), rpc_health_check(), verify_primals()
+# Wave 56: UDS-only mode uses socket file existence checks instead of TCP probes.
+#
+# Provides: port_for_primal(), rpc_health_check(), socket_health_check(), verify_primals()
 
 port_for_primal() {
     case "$1" in
@@ -32,6 +34,17 @@ rpc_health_check() {
         -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' 2>/dev/null
 }
 
+socket_health_check() {
+    local primal="$1"
+    local socket_dir="${RUNTIME_DIR:-/run/user/$(id -u)}/biomeos"
+    local family="${FAMILY_ID:-}"
+
+    for sock in "$socket_dir"/${primal}*.sock "$socket_dir"/${primal}*.jsonrpc.sock; do
+        [[ -S "$sock" ]] && return 0
+    done
+    return 1
+}
+
 verify_primals() {
     local primals="$1"
     local all_ok=true
@@ -45,18 +58,26 @@ verify_primals() {
             continue
         fi
 
-        local port
-        port=$(port_for_primal "$p")
-        if [[ -n "$port" ]]; then
-            local resp
-            resp=$(rpc_health_check "$port") || resp=""
-            if [[ -n "$resp" ]]; then
-                echo "  $p: PID $pid, TCP $port — HEALTHY"
+        if ${UDS_ONLY:-false}; then
+            if socket_health_check "$p"; then
+                echo "  $p: PID $pid, SOCKET LIVE"
             else
-                echo "  $p: PID $pid, TCP $port — running (health probe pending)"
+                echo "  $p: PID $pid, SOCKET ABSENT — running (socket pending)"
             fi
         else
-            echo "  $p: PID $pid — running"
+            local port
+            port=$(port_for_primal "$p")
+            if [[ -n "$port" ]] && (( port > 0 )); then
+                local resp
+                resp=$(rpc_health_check "$port") || resp=""
+                if [[ -n "$resp" ]]; then
+                    echo "  $p: PID $pid, TCP $port — HEALTHY"
+                else
+                    echo "  $p: PID $pid, TCP $port — running (health probe pending)"
+                fi
+            else
+                echo "  $p: PID $pid — running"
+            fi
         fi
     done
 

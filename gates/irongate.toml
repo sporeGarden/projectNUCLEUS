@@ -53,6 +53,7 @@ primals = [
 fragment = "nest_atomic + node_atomic_compute"
 
 # Phase 59 canonical TCP fallback ports (Tier 5 discovery)
+# Wave 56: VPS deployments use --uds-only (zero TCP ports). These are desktop/debug defaults.
 [ports]
 beardog = 9100
 songbird = 9200
@@ -86,11 +87,13 @@ provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
 
 [upstream]
-primalspring_wave = 55
+primalspring_wave = 56
 primalspring_version = "v0.9.30"
 methods_registered = 460
 btsp_phase = 3
 wire_standard = "L3"
 primals_converged = "13/13"
 discovery_tiers = 5
+vps_standard = "uds-only"
+cell_graphs_consumed = true
 absorption_date = "2026-05-27"

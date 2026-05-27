@@ -6,10 +6,10 @@ May 12, 2026) — the canonical wire contract.
 
 **Current state**: Tier 2 ACTIVE — `toadstool.validate` **IMPLEMENTED** (S250),
 `toadstool.list_workloads` **WIRED** (S245+), `barracuda.precision.route` **IMPLEMENTED** (649 tests),
-`biomeos.spring_status` **IMPLEMENTED** (v3.78), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 55)
+`biomeos.spring_status` **IMPLEMENTED** (v3.78), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 56)
 
 **Canonical source**: `springs/primalSpring/docs/LIVE_SCIENCE_API.md`
-**Registry**: 460 methods (13 primals, 8 springs, Wave 55 — `nucleus.ingest_spore` + `nucleus.emit_spore` added. Typed errors, env_keys centralized, stability-tier annotated)
+**Registry**: 460 methods (13 primals, 8 springs, Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added. Typed errors, env_keys centralized, stability-tier annotated. `--uds-only` VPS standard, cell graph `vps_standard` tagging)
 
 ---
 

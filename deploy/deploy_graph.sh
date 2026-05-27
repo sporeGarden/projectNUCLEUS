@@ -79,6 +79,9 @@ start_primal_from_graph() {
     local bind_address="$6"
     local family_id="$7"
 
+    # Wave 56: UDS_ONLY overrides graph ports to zero
+    ${UDS_ONLY:-false} && port=0
+
     local bin_path="$plasmidbin_dir/primals/$binary"
     if [[ ! -x "$bin_path" ]]; then
         echo "    WARN: Binary not found: $bin_path"
@@ -87,85 +90,63 @@ start_primal_from_graph() {
 
     local socket="$runtime_dir/biomeos/${binary}-${family_id}.sock"
 
+    local args=()
     case "$binary" in
         beardog)
-            nohup "$bin_path" server \
-                --socket "$socket" \
-                --family-id "$family_id" \
-                --listen "$bind_address:$port" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server --socket "$socket" --family-id "$family_id")
+            (( port > 0 )) && args+=(--listen "$bind_address:$port")
             ;;
         songbird)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --socket "$socket" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server --socket "$socket")
+            (( port > 0 )) && args+=(--port "$port")
             ;;
         toadstool)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --family-id "$family_id" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server --family-id "$family_id")
+            (( port > 0 )) && args+=(--port "$port")
             ;;
         nestgate)
-            nohup "$bin_path" daemon \
-                --socket-only \
-                --port "$port" \
-                --bind "$bind_address" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(daemon --socket-only)
+            (( port > 0 )) && args+=(--port "$port" --bind "$bind_address")
             ;;
         biomeos)
-            nohup "$bin_path" neural-api \
-                --port "$port" \
-                --family-id "$family_id" \
-                --btsp-optional \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(neural-api --family-id "$family_id" --btsp-optional)
+            (( port > 0 )) && args+=(--port "$port")
             ;;
         petaltongue)
-            nohup "$bin_path" server \
-                --port "$port" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--port "$port")
             ;;
         coralreef)
-            nohup "$bin_path" server \
-                --rpc-bind "$bind_address:$port" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--rpc-bind "$bind_address:$port")
             ;;
         barracuda)
-            nohup "$bin_path" server \
-                --bind "$bind_address:$port" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--bind "$bind_address:$port")
             ;;
         rhizocrypt)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --host "$bind_address" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--port "$port" --host "$bind_address")
             ;;
         loamspine)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --bind-address "$bind_address" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--port "$port" --bind-address "$bind_address")
             ;;
         sweetgrass)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --http-address "$bind_address:$((port + 1))" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--port "$port" --http-address "$bind_address:$((port + 1))")
             ;;
         squirrel)
-            nohup "$bin_path" server \
-                --port "$port" \
-                --family-id "$family_id" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server --family-id "$family_id")
+            (( port > 0 )) && args+=(--port "$port")
             ;;
         *)
-            nohup "$bin_path" server \
-                --port "$port" \
-                > "/tmp/${binary}.log" 2>&1 &
+            args=(server)
+            (( port > 0 )) && args+=(--port "$port")
             ;;
     esac
+
+    nohup "$bin_path" "${args[@]}" > "/tmp/${binary}.log" 2>&1 &
 
     echo $!
 }

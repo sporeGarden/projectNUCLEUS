@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-23) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 458 methods (Wave 46), 55 Rust tests PASS, 13/13 primals LIVE, provenance trio 10/10 PASS on VPS
+**Status**: Sovereignty evolution ACTIVE (2026-05-27) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 55), 55 Rust tests PASS, 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.78 — `nucleus ingest/emit` gateway scaffolded (NC-1)
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -244,7 +244,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
 - **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
 - **GAP-11 CLOSED**: barraCuda 18/18 methods (71 total JSON-RPC methods)
-- **Registry**: 458 methods across 13 primals (Wave 46, was 445 at Wave 20, 427 at Wave 12, 418 at Wave 10, 389 at Phase 60)
+- **Registry**: 460 methods across 13 primals (Wave 55, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12, 389 at Phase 60)
 - **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
 
 **Phase 60 Revalidation (2026-05-08)**:
@@ -366,7 +366,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 46: 458 methods (typed errors, env_keys centralized, stability-tier annotated), canonical `primal.list` / `capability.list` schemas shipped, 784 tests, 49 scenarios, 44-cell deployment matrix. `biomeos.spring_status` IMPLEMENTED (v3.54). Dark Forest Glacial Gate standard. Zero panics in production.
+- primalSpring at Wave 55: 460 methods (v0.9.30, 56 scenarios, 813 tests). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v3.78 gateway scaffolded. Typed errors, env_keys centralized. Dark Forest Glacial Gate standard. Zero panics in production.
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

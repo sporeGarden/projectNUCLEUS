@@ -3,7 +3,7 @@
 Curated subset of primalSpring/graphs/ for projectNUCLEUS deployment.
 The canonical source for all 77+ graphs remains in primalSpring.
 
-**Dark Forest compliance (2026-05-23):**
+**Dark Forest compliance (2026-05-27):**
 - All 12/12 graphs carry `secure_by_default = true` (fragments + deploy + workflow) (DF-4 requirement)
 - No non-Songbird nodes advertise `http` or `tls` capabilities (DF-3)
 - All nodes declare `security_model = "btsp"` or `"tower_delegated"` (DF-4)
@@ -51,6 +51,20 @@ The canonical source for all 77+ graphs remains in primalSpring.
 | NestGate | 9500 | biomeOS | 9800 |
 | rhizoCrypt | 9601 | sweetGrass | 9850 |
 | petalTongue | 9900 | | |
+
+## Signal Graphs (Wave 55 — Niche Climate)
+
+| File | Signal | Steps | Status |
+|------|--------|-------|--------|
+| `nest_ingest_spore.toml` (biomeOS canonical) | `nucleus.ingest_spore` | validate → store → DAG → ledger → braid → sign | NC-1; BLOCKED on biomeOS gateway |
+
+The `nest_ingest_spore` signal graph originates from `primals/biomeOS/graphs/signals/` (also copied in primalSpring).
+It composes existing primal capabilities — no new capabilities required. Six sequential nodes:
+NestGate `storage.exists` + `content.put` → rhizoCrypt `dag.session.create` → loamSpine `entry.append` →
+sweetGrass `braid.create` → BearDog `crypto.sign`. Output: `receipts/nucleus_ingest.toml`.
+
+projectNUCLEUS ironGate is a deployment target — when biomeOS v3.77+ gateway completes (NC-1),
+run `biomeos nucleus ingest <pseudoSpore-dir>` on ironGate VPS to close NUCLEUS_VALIDATION_MATRIX column U.
 
 ## Source
 

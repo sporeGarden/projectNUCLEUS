@@ -4,14 +4,14 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-23 (Wave 46 absorption — typed errors, env_keys, 458 methods, deploy graph secure_by_default 12/12, FlockGate gap tracked)
+**Last updated**: 2026-05-27 (Wave 55 absorption — 460 methods, NC-1→NC-5 niche climate, biomeOS v3.78 nucleus ingest gateway, southGate NC-2)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
 **Architecture**: Cell membrane model — primals.eco on GitHub Pages CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
 **Upstream status**: All upstream gaps resolved. 13/13 primals zero code debt, 8/8 delta springs zero debt (8,486+ tests). Tower atomic LIVE (ludoSpring 6/6). Nest atomic ready (GAP-36 resolved). Node atomic AMD live, NV FECS-gated.
-**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **458 methods** (Wave 46, stable — typed `DispatchError`/`IonicProtocolError`/`PhasedIpcError` thiserror-derived). Canonical `primal.list` / `capability.list` schemas SHIPPED. `env_keys.rs` centralization in primalSpring (MATRIX_CELL, REMOTE_GATE_HOST, PRIMAL_TRANSPORT, DEPLOY_ARCH).
+**Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.78). Registry at **460 methods** (Wave 55 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed `DispatchError`/`IonicProtocolError`/`PhasedIpcError` thiserror-derived). Canonical `primal.list` / `capability.list` schemas SHIPPED. `env_keys.rs` centralization. biomeOS v3.77 scaffolded `nucleus ingest/emit` gateway (NC-1); v3.78 deep debt cleanup.
 **cellMembrane**: fieldMouse deployment LIVE on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **Nest Atomic composition (Wave 38)**: Tower (BearDog :9100, SkunkBat :9140, Songbird :3478) + NestGate :9500 + rhizoCrypt :9602 + loamSpine :9700 + sweetGrass :9850 + RustDesk :21115-17 + Caddy TLS :80/:443 + petalTongue :8080 + BearDog TLS shadow :8443. **11 services, 7 primals**. Provenance trio pipeline verified end-to-end (10/10 PASS). darkforest membrane 21 PASS, 0 FAIL, 1 SKIP. Shadow 6/0/0 FULL PASS (S1-S5 + DNS). DO token encrypted (BearDog AES-256-GCM). 1.6 GB free. Owned by ironGate/projectNUCLEUS.
 **Forgejo**: PRIMARY git host — 32 repos across 3 orgs (sporeGarden, ecoPrimals, syntheticChemistry). `.netrc` credential caching. `forgejo_mirror.sh` for org/repo creation + dual-push. GitHub is push mirror (outer membrane).
 
@@ -192,6 +192,23 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | H3-10 | NCBI / UniProt / KEGG | Local mirror + `abg_data.sh` provenance | Partial — data registry operational | Not blocking (data, not service) |
 | H3-11 | FlockGate cross-WAN deployment | Songbird TURN + cellMembrane relay + covalent mesh | **DESIGNED** — `gates/flockgate.toml` manifest exists, `basement_hpc_covalent.toml` graph ready. cellMembrane TURN relay LIVE. Needs: FlockGate NUCLEUS deploy, cross-gate routing via TURN, BTSP covalent authentication. | cellMembrane TURN + FlockGate hardware provisioning |
 
+### Niche Climate Gaps (Wave 55 — pre-stadial)
+
+**Context**: primalSpring `NICHE_CLIMATE_EVOLUTION.md` defines NC-1→NC-5 as the path to stadial entry.
+projectNUCLEUS is the ironGate sovereign deployment validator. NC-2 (multi-gate mesh) and NC-3
+(cellMembrane sovereignty) are directly owned. NC-1 (spore gateway) blocks us indirectly.
+
+| ID | Gap | Owner | Status | Blocks |
+|----|-----|-------|--------|--------|
+| NC-1 | postPrimordial spore gateway (`biomeos nucleus ingest/emit`) | biomeOS + lithoSpore | **BLOCKED** — biomeOS v3.77 scaffolded, v3.78 cleanup. NC-1.3 (pseudospore-core) COMPLETE. NC-1.4 (biomeOS uses pseudospore-core) OPEN. | Stadial entry; columns U/V/W |
+| NC-2.1 | southGate 13/13 health | Songbird + wetSpring | **BLOCKED** — 7/13 responding. Wave 54 redeploy fixes ready. Songbird mesh seed bug identified. | NC-2 multi-gate mesh |
+| NC-2.3 | Cross-gate capability call via cellMembrane relay | projectNUCLEUS + cellMembrane | **OPEN** — ironGate VPS TURN LIVE, mesh not yet bidirectional | NC-2 stadial |
+| NC-3.1 | cellMembrane Nest Atomic docs sync | cellMembrane | **OPEN** — VPS_STATE.md/GLACIAL_SHIFT say Tower-only; Nest actually deployed May 22 | Unblocks NC-3.2 |
+| NC-3.2 | `membrane.toml` → `composition = "nest"` | cellMembrane | **OPEN** — enables signal channel, K-Derm boundary | Unblocks `s_kderm_boundary` |
+| NC-3.3 | knot-dns NS cutover | cellMembrane + registrar | **OPEN** — knot-dns running (H2-17), NS record change pending | Sovereignty layer S2 |
+| NC-3.4 | Forgejo Releases (sovereign binary channel) | cellMembrane + plasmidBin | **OPEN** — coordinate `auto-harvest.yml` for Forgejo | H3-02 parallel |
+| NC-3.5 | sporePrint living content via NestGate | cellMembrane + bearDog | **BLOCKED** — needs bearDog `content.*` scope on BTSP tokens (SP-4) | Sovereign content hosting |
+
 ### cellMembrane Security Gaps (darkforest coverage — Layer 6)
 
 **Status**: `validation/darkforest_membrane.sh` implements MEM-01 through MEM-13 (17 PASS, 0 FAIL, 1 SKIP on May 15, 2026). Remaining: MEM-09 needs `b3sum` on VPS, MEM-14/MEM-15 are future work.
@@ -232,7 +249,7 @@ These are not gaps — they are accepted constraints:
 code debt. 8/8 delta springs at zero debt, 8,486+ tests. Tower atomic LIVE (ludoSpring 6/6).
 Nest atomic ready. Node atomic AMD live, NV FECS-gated. `toadstool.validate` S250 (74 methods).
 `barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53.
-`biomeos.spring_status` IMPLEMENTED (v3.54). Registry at **458 methods** (Wave 46, was 445 at Wave 20, 427 at Wave 12). `primal.list` / `capability.list` canonical schemas SHIPPED (Wave 20).
+`biomeos.spring_status` IMPLEMENTED (v3.78). Registry at **460 methods** (Wave 55, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12). `primal.list` / `capability.list` canonical schemas SHIPPED. `nucleus.ingest_spore` + `nucleus.emit_spore` registered (Wave 55).
 `content.put/get` NestGate Session 60 (4-surface parity). BTSP auth pipeline live (13/13 primals).
 skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 springs (`--format json`).
 76 wire routing misroutes fixed — `security.audit_log` → skunkBat, crypto methods base64-encoded,
@@ -544,12 +561,13 @@ available**, current 8 services use 108 MB. Nest trio ~40-60 MB.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
-Horizon 2 (sovereignty):          █████████░  Tower LIVE (6 svc), Ch3 TLS LIVE (ACME cert), HTTP parity PASS, Forgejo primary (32 repos), L3+L4 telemetry
+Horizon 2 (sovereignty):          █████████░  Nest Atomic LIVE (11 svc), Ch3 TLS LIVE (ACME), Forgejo primary (32 repos), shadow 6/0/0
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED, H3-11 FlockGate DESIGNED
-Horizon 4 (transactions):         ██░░░░░░░░  READY — validation playbook + benchScale topologies + artifact_validation.sh wired. H4-11/12/13 ready to run.
-Shadow (Wave 24):                 ████████░░  S1 LIVE (TLS 13ms vs CF 163ms). S2 LIVE (TURN 100%). S3 LIVE (content TTFB 68ms). S4 READY. S5 DNS LIVE (knot-dns DNSSEC). Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. All shadow tracks operational.
-Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt
-Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Remaining: H3-07 auth + LTEE B7 binary (both stadial)
+Horizon 4 (transactions):         ██░░░░░░░░  READY — playbook + benchScale topologies wired. H4-11/12/13 ready to run.
+Shadow (Wave 38):                 ████████░░  S1-S5 LIVE. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. All tracks operational.
+Niche climate (Wave 55):          ██░░░░░░░░  NC-1 BLOCKED (biomeOS gateway). NC-2 BLOCKED (southGate 7/13). NC-3 IN PROGRESS.
+Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt. 460 methods (Wave 55).
+Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Stadial entry: NC-1 + NC-2 + NC-4.
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened
 ```
 
@@ -606,5 +624,6 @@ Dark Forest Glacial Gate:         ██████████  PASS — 33/33
 | 2026-05-17 | **Wave 21 absorption**: (1) Registry updated 427→445 methods (Wave 20, stability-tier annotated). (2) lithoSpore refs updated 6/7→7/7 PASS (75/75 checks, 117 tests, cross-tier parity 7/7 MATCH, Tier 3 wired). (3) `primal.list` / `capability.list` canonical schemas marked SHIPPED — discovery module updated to prefer canonical `{ "primals": [...], "count": N }` envelope. (4) Ferment transcript dispatch route documented in `SCIENCE_DISPATCH_MAP.md` — wetSpring → trio → braid → lithoSpore pipeline. (5) Stability tier awareness added (stable/evolving/internal per capability_registry.toml). (6) cellMembrane degradation behavior documented in `EXECUTION_MODEL.md` — per-service fallback table. (7) Cross-tier parity reference added to `TIER2_CEREMONY_DESIGN.md`. (8) Partial provenance (trio transaction semantics) documented in dispatch map. |
 | 2026-05-20 | **Wave 28-29 absorption + Nest Atomic preparation**: (1) Wave 28 SP-4 gap analyzed: `publish_sporeprint.sh` structurally complete but blocked on BTSP scope — BearDog `auth.issue_session` returns fixed scopes without `content.*`, NestGate MethodGate rejects. Upstream handback to bearDog team. (2) Wave 29 CM-2 `membrane_provenance.sh` created — post-deploy trio hook (DAG + spine + braid verification via SSH, graceful degradation). (3) CM-4 `darkforest_membrane.sh` MEM-14→MEM-17 added — NestGate, rhizoCrypt, loamSpine, sweetGrass health checks (SKIP when not deployed, PASS/FAIL when live). 17 PASS, 0 FAIL, 5 SKIP. (4) VPS memory budget confirmed: 1,597 MB available, 108 MB used by 8 services, Nest Atomic ~40-60 MB = budget OK. (5) All shadow services confirmed running 24h+ since deployment (BearDog TLS, petalTongue web, Songbird TURN). |
 | 2026-05-19 | **Wave 24 absorption + phantom gap clearance**: (1) `sovereignty_shadow.toml` deploy graph created — 4-track (TLS/NAT/content/auth), 7 nodes, per-track cutover criteria. (2) Shadow config centralized in `nucleus_config.sh` (BTSP_SHADOW_*, BEARDOG_TLS_MODE, SONGBIRD_RELAY_URL). (3) Shadow matrix S1-S4 tracked in EVOLUTION_GAPS. (4) bearDog pulled (Waves 105-106): `beardog-acme` crate SHIPPED (10 source files, shadow_metrics.rs), `ACME_TLS_INTEGRATION_PATH.md` exists (7.5KB), `deny.toml` ring wrappers reconciled `["rustls", "rustls-webpki"]`, `JUPYTERHUB_DUAL_AUTH_INTEGRATION.md` shipped. (5) songbird pulled (Wave 206+): TURN server improvements, relay deployment guide, coordinator enhancements. (6) 4/5 upstream blockers cleared — remaining: relay deploy on cellMembrane + petalTongue asset parity test. |
+| 2026-05-27 | **Wave 55 absorption — niche climate + 460 methods**: (1) Registry 458→460 (`nucleus.ingest_spore` + `nucleus.emit_spore`). primalSpring v0.9.30, 56 scenarios, 813 tests, biomeOS v3.78. (2) NC-1→NC-5 niche climate gaps tracked — NC-1 (spore gateway) BLOCKED on biomeOS, NC-2 (multi-gate mesh) BLOCKED on southGate 7/13, NC-3 (cellMembrane sovereignty) IN PROGRESS. (3) cellMembrane ops doc drift identified: VPS_STATE.md/GLACIAL_SHIFT say Tower-only despite Nest Atomic deployed May 22 (NC-3.1 sync needed). (4) `membrane.toml` → `composition = "nest"` required for K-Derm boundary (NC-3.2). (5) All 14 primals + 8 springs pulled to Wave 55 latest. (6) biomeOS refs updated v3.54→v3.78 across all docs. (7) `nest_ingest_spore` signal graph awareness (biomeOS/primalSpring canonical). (8) Wave 54 southGate redeploy fixes ready (plasmidBin bf5c96b→b310310): petalTongue CLI, barraCuda --no-gpu-probe, ToadStool early health. (9) Stadial entry requires: NC-1 (2+ springs ingest), NC-2 (3+ gates meshed), NC-4 (4 gates healthy). |
 | 2026-05-23 | **Wave 46 absorption — primalSpring v0.9.27 zero gate debt**: (1) Registry 445→458 methods (typed `DispatchError`/`IonicProtocolError`/`PhasedIpcError`, env_keys centralization). (2) All 12 deploy graphs now have `secure_by_default = true` — 5 fragments (tower_atomic, node_atomic, nest_atomic, nucleus, rootpulse_commit) hardened. (3) H3-11 (FlockGate cross-WAN) tracked — gate manifest + covalent graph exist, TURN relay LIVE, deployment pending. (4) All 14 primals pulled to latest (Wave 46 deep debt). (5) `serde_yaml` → `yaml_serde 0.10` (pure Rust, eliminates unsafe-libyaml C binding). (6) `deny.toml` created for darkforest + tunnelKeeper (ban openssl/native-tls). (7) darkforest discovery suite wired (`DISC-01` capability-based resolution). (8) 55 Rust tests PASS (34+21). Upstream: primalSpring at zero gate debt, 49 scenarios, 44-cell deployment matrix. TEAM_OWNERSHIP_MATRIX v1.1: projectNUCLEUS retains deploy/gates/darkforest/Forgejo/genomeBin; cellMembrane owns VPS provisioning. Not yet available upstream: FlockGate cross-WAN, NeuralBridge BTSP compositions, game/nautilus/ml method depth, Thread 1 WCM RPC (0/24). |
 | 2026-05-22 | **Wave 38 absorption — Nest Atomic LIVE on VPS**: (1) CM-1 executed: `deploy_membrane.sh --composition nest` — NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 deployed to VPS. Fixed CLI interface mismatches (each primal uses `server` subcommand, not `--socket`), NestGate JWT secret provisioned. (2) CM-2 provenance trio verified E2E: 10/10 PASS — DAG session created, events appended, spine created, braid created, Tower cross-check healthy. (3) CM-4 darkforest: 21 PASS, 0 FAIL, 1 SKIP — NestGate (:9500 HTTP REST), rhizoCrypt (:9602 JSON-RPC), loamSpine (:9700 HTTP), sweetGrass (:9850 TCP) all healthy. MEM-10 updated with Nest ephemeral ports. (4) Shadow orchestrator: 5 PASS, 0 FAIL, 1 SKIP — S1 TLS 13ms vs CF 163ms, S2 TURN reachable, S3 content live, DNS pending. (5) Registry confirmed at 445 (was 452 at Wave 20). (6) VPS running 11 services, 7 primals, 1.6 GB free. Composition advanced from Tower to Nest Atomic. |

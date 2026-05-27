@@ -104,13 +104,13 @@ projectNUCLEUS exercises the full NUCLEUS atomic:
 | **Meta** | biomeOS + Squirrel + petalTongue | Orchestration, AI inference, visualization |
 
 All 13 primals communicate via JSON-RPC 2.0 over Unix domain sockets.
-TCP fallback available per Tier 5 discovery. 458 registered methods (Wave 46, stable).
+TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 55). `nucleus.ingest_spore` + `nucleus.emit_spore` gateway methods added.
 
 ## Sovereign Infrastructure Status
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| Primal Capabilities | **PASS** | 458 methods (Wave 46), 13/13 primals LIVE |
+| Primal Capabilities | **PASS** | 460 methods (Wave 55), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
@@ -184,7 +184,7 @@ availability:
 - **Content**: petalTongue serves HTTP on :8080. VPS TTFB 67ms vs GitHub
   Pages 111ms (40% faster). Content hash parity pending (mirror not done).
 - **Compute**: 13 primals on ironGate via biomeOS composition.deploy.
-  445 registered methods. lithoSpore 7/7 modules validated.
+  460 registered methods (Wave 55). lithoSpore 7/7 modules validated.
 - **Security**: darkforest 267 checks PASS. BTSP 13/13 AEAD. FIDO2/CTAP2
   hardware attestation ready. membrane audit 17/17 PASS.
 

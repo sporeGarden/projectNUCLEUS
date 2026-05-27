@@ -178,8 +178,8 @@ Total               464+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
-cargo fmt clean, graphs synchronized to primalSpring v0.9.27 (Wave 46), `deny.toml`
-on both crates, `secure_by_default` 12/12 deploy graphs.
+cargo fmt clean, graphs synchronized to primalSpring v0.9.30 (Wave 55), `deny.toml`
+on both crates, `secure_by_default` 12/12 deploy graphs. 460 methods registered.
 
 ---
 
@@ -196,12 +196,23 @@ on both crates, `secure_by_default` 12/12 deploy graphs.
 | ACME Phase 3 | E1/E3 | Automated cert renewal (12h check, 30-day-before-expiry) |
 | Cron telemetry | E3 | `membrane_telemetry.sh` every 15min → 7-day rolling baseline |
 
+### Wave 55 — Niche Climate (NC-1→NC-5, pre-stadial)
+
+| Goal | NC | Gate Criteria | Status |
+|------|-----|---------------|--------|
+| `biomeos nucleus ingest` on ironGate VPS | NC-1 | hotSpring pseudoSpore v1.6.1 → NUCLEUS column U | BLOCKED on biomeOS gateway |
+| southGate 13/13 health | NC-2.1 | Songbird mesh seed fix, bidirectional SONGBIRD_PEERS | 7/13 responding |
+| Cross-gate capability call via cellMembrane | NC-2.3 | ironGate ↔ eastGate ↔ southGate mesh | OPEN |
+| knot-dns NS cutover to primary | NC-3.3 | Registrar NS delegation → sovereignty layer S2 | knot-dns RUNNING; cutover pending |
+| Forgejo binary releases | NC-3.4 / H3-02 | plasmidBin `auto-harvest.yml` publishes to Forgejo | Coordinate with plasmidBin |
+| sporePrint via NestGate | NC-3.5 | BearDog `content.*` scope → `publish_sporeprint.sh` | BLOCKED on BearDog scope |
+
 ### Medium-term (stadial — measured in months)
 
 | Goal | Experiment | Gate Criteria |
 |------|-----------|---------------|
 | ~~Sovereign DNS~~ | ~~E3~~ | ~~knot-dns on VPS~~ → **DEPLOYED** (H2-17, May 22). NS cutover H2-18 pending registrar. |
-| Cross-gate mesh | E2/E3 | 2+ gates connected via Songbird relay (exp073 covalent pattern) |
+| Cross-gate mesh | E2/E3 | 3+ gates connected via Songbird relay (NC-2.5 bidirectional seeding) |
 | Forgejo Actions CI | — | CI pipelines sovereign (Forgejo replaces GitHub Actions) |
 | Membrane auto-healing | E4 | Rolling baselines auto-detect sovereignty regression |
 | Ferment transcript E2E | E5 | wetSpring braid → lithoSpore ingestion → USB artifact chain |

@@ -47,10 +47,9 @@ pub fn send_jsonrpc(
     full.extend_from_slice(content);
     let resp = send_raw(host, port, &full, timeout_ms)?;
     let text = String::from_utf8_lossy(&resp);
-    let parts: Vec<&str> = text.splitn(2, "\r\n\r\n").collect();
-    let status = parts.first()?.lines().next().unwrap_or("").to_string();
-    let body = parts.get(1).unwrap_or(&"").to_string();
-    Some((status, body))
+    let (headers, body) = split_http_response(&text);
+    let status = headers.lines().next().unwrap_or("").to_string();
+    Some((status, body.to_string()))
 }
 
 pub fn http_get(
@@ -65,16 +64,13 @@ pub fn http_get(
     );
     let resp = send_raw(host, port, req.as_bytes(), timeout_ms)?;
     let text = String::from_utf8_lossy(&resp).to_string();
-    let parts: Vec<&str> = text.splitn(2, "\r\n\r\n").collect();
-    let header_block = *parts.first()?;
-    let status_line = header_block.lines().next().unwrap_or("");
-    let code: u16 = status_line
-        .split_whitespace()
-        .nth(1)
-        .and_then(|s| s.parse().ok())
+    let (headers, body) = split_http_response(&text);
+    let code = headers
+        .lines()
+        .next()
+        .and_then(parse_status_code)
         .unwrap_or(0);
-    let body = parts.get(1).unwrap_or(&"").to_string();
-    Some((code, header_block.to_string(), body))
+    Some((code, headers.to_string(), body.to_string()))
 }
 
 pub fn http_method(
@@ -88,10 +84,7 @@ pub fn http_method(
         format!("{method} {path} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n");
     let resp = send_raw(host, port, req.as_bytes(), timeout_ms)?;
     let text = String::from_utf8_lossy(&resp);
-    text.lines()
-        .next()
-        .and_then(|l| l.split_whitespace().nth(1))
-        .and_then(|s| s.parse().ok())
+    text.lines().next().and_then(parse_status_code)
 }
 
 pub fn http_post(
@@ -110,15 +103,13 @@ pub fn http_post(
     );
     let resp = send_raw(host, port, req.as_bytes(), timeout_ms)?;
     let text = String::from_utf8_lossy(&resp).to_string();
-    let parts: Vec<&str> = text.splitn(2, "\r\n\r\n").collect();
-    let code: u16 = parts
-        .first()
-        .and_then(|h| h.lines().next())
-        .and_then(|l| l.split_whitespace().nth(1))
-        .and_then(|s| s.parse().ok())
+    let (headers, resp_body) = split_http_response(&text);
+    let code = headers
+        .lines()
+        .next()
+        .and_then(parse_status_code)
         .unwrap_or(0);
-    let resp_body = parts.get(1).unwrap_or(&"").to_string();
-    Some((code, resp_body))
+    Some((code, resp_body.to_string()))
 }
 
 pub fn sudo_cmd(user: &str, cmd: &str) -> (i32, String) {
@@ -133,5 +124,86 @@ pub fn sudo_cmd(user: &str, cmd: &str) -> (i32, String) {
             (code, format!("{stdout}{stderr}"))
         }
         Err(e) => (-1, format!("exec error: {e}")),
+    }
+}
+
+/// Parse an HTTP status line into a status code.
+/// Used internally by `http_get`, `http_method`, `http_post`.
+pub fn parse_status_code(status_line: &str) -> Option<u16> {
+    status_line
+        .split_whitespace()
+        .nth(1)
+        .and_then(|s| s.parse().ok())
+}
+
+/// Split an HTTP response into (headers, body).
+pub fn split_http_response(raw: &str) -> (&str, &str) {
+    let mut parts = raw.splitn(2, "\r\n\r\n");
+    let headers = parts.next().unwrap_or("");
+    let body = parts.next().unwrap_or("");
+    (headers, body)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_status_code_200() {
+        assert_eq!(parse_status_code("HTTP/1.1 200 OK"), Some(200));
+    }
+
+    #[test]
+    fn parse_status_code_404() {
+        assert_eq!(parse_status_code("HTTP/1.1 404 Not Found"), Some(404));
+    }
+
+    #[test]
+    fn parse_status_code_empty() {
+        assert_eq!(parse_status_code(""), None);
+    }
+
+    #[test]
+    fn parse_status_code_garbage() {
+        assert_eq!(parse_status_code("garbage"), None);
+    }
+
+    #[test]
+    fn split_http_response_normal() {
+        let raw = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nhello";
+        let (headers, body) = split_http_response(raw);
+        assert!(headers.contains("200 OK"));
+        assert_eq!(body, "hello");
+    }
+
+    #[test]
+    fn split_http_response_no_body() {
+        let raw = "HTTP/1.1 204 No Content\r\n\r\n";
+        let (headers, body) = split_http_response(raw);
+        assert!(headers.contains("204"));
+        assert_eq!(body, "");
+    }
+
+    #[test]
+    fn split_http_response_no_separator() {
+        let raw = "incomplete response";
+        let (headers, body) = split_http_response(raw);
+        assert_eq!(headers, "incomplete response");
+        assert_eq!(body, "");
+    }
+
+    #[test]
+    fn send_raw_to_unreachable_returns_none() {
+        assert!(send_raw("192.0.2.1", 1, b"test", 200).is_none());
+    }
+
+    #[test]
+    fn send_jsonrpc_to_unreachable_returns_none() {
+        assert!(send_jsonrpc("192.0.2.1", 1, r#"{"jsonrpc":"2.0","method":"test","id":1}"#, 200).is_none());
+    }
+
+    #[test]
+    fn http_get_to_unreachable_returns_none() {
+        assert!(http_get("192.0.2.1", 1, "/", "", 200).is_none());
     }
 }

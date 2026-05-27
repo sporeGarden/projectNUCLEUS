@@ -9,7 +9,9 @@ pub enum ConfigError {
     #[error("config file not found: {0}")]
     NotFound(String),
     #[error("YAML parse error: {0}")]
-    Yaml(#[from] serde_yaml::Error),
+    Yaml(#[from] serde_saphyr::Error),
+    #[error("YAML serialize error: {0}")]
+    YamlWrite(#[from] serde_saphyr::ser::Error),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
     #[error("API error: {0}")]
@@ -43,12 +45,12 @@ impl TunnelConfig {
             return Err(ConfigError::NotFound(path.display().to_string()));
         }
         let raw = fs::read_to_string(path)?;
-        let config: Self = serde_yaml::from_str(&raw)?;
+        let config: Self = serde_saphyr::from_str(&raw)?;
         Ok(config)
     }
 
     pub fn save(&self, path: &Path) -> Result<(), ConfigError> {
-        let yaml = serde_yaml::to_string(self)?;
+        let yaml = serde_saphyr::to_string(self)?;
         fs::write(path, yaml)?;
         Ok(())
     }
@@ -241,7 +243,7 @@ ingress:
 
     #[test]
     fn parse_valid_config() {
-        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
         assert_eq!(config.tunnel, "abc-123-def");
         assert_eq!(config.ingress.len(), 3);
         assert_eq!(
@@ -253,16 +255,16 @@ ingress:
 
     #[test]
     fn config_yaml_roundtrip() {
-        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
-        let yaml = serde_yaml::to_string(&config).unwrap();
-        let config2: TunnelConfig = serde_yaml::from_str(&yaml).unwrap();
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        let yaml = serde_saphyr::to_string(&config).unwrap();
+        let config2: TunnelConfig = serde_saphyr::from_str(&yaml).unwrap();
         assert_eq!(config.tunnel, config2.tunnel);
         assert_eq!(config.ingress.len(), config2.ingress.len());
     }
 
     #[test]
     fn config_json_serialization() {
-        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
         let json = serde_json::to_string(&config).unwrap();
         let value: serde_json::Value = serde_json::from_str(&json).unwrap();
         assert_eq!(value["tunnel"], "abc-123-def");
@@ -282,7 +284,7 @@ ingress:
         let _ = fs::create_dir_all(&dir);
         let path = dir.join("test_config.yml");
 
-        let config: TunnelConfig = serde_yaml::from_str(SAMPLE_YAML).unwrap();
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
         config.save(&path).unwrap();
 
         let loaded = TunnelConfig::load(&path).unwrap();
@@ -295,7 +297,7 @@ ingress:
 
     #[test]
     fn ingress_rule_hostname_none_for_catchall() {
-        let rule: IngressRule = serde_yaml::from_str("service: http_status:404").unwrap();
+        let rule: IngressRule = serde_saphyr::from_str("service: http_status:404").unwrap();
         assert!(rule.hostname.is_none());
         assert!(rule.path.is_none());
         assert_eq!(rule.service, "http_status:404");
@@ -304,7 +306,7 @@ ingress:
     #[test]
     fn ingress_rule_with_path() {
         let yaml = "hostname: lab.primals.eco\npath: \"/api/.*\"\nservice: http://127.0.0.1:8000\n";
-        let rule: IngressRule = serde_yaml::from_str(yaml).unwrap();
+        let rule: IngressRule = serde_saphyr::from_str(yaml).unwrap();
         assert_eq!(rule.path.as_deref(), Some("/api/.*"));
     }
 }

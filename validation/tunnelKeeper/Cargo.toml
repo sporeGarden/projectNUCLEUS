@@ -2,7 +2,7 @@
 name = "tunnel-keeper"
 version = "0.2.0"
 edition = "2024"
-description = "Tunnel Keeper — Pure Rust Cloudflare tunnel manager with BearDog crypto and Songbird transport evolution path"
+description = "Tunnel Keeper — Pure Rust tunnel manager. YAML via serde-saphyr, crypto via ChaCha20/Ed25519, transport evolution: CF→Songbird→BearDog"
 license = "AGPL-3.0-or-later"
 
 [[bin]]
@@ -18,7 +18,7 @@ access-apps = []
 clap = { version = "4", features = ["derive", "env"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-serde_yaml = { package = "yaml_serde", version = "0.10" }
+serde-saphyr = "0.0.26"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 reqwest = { version = "0.13", default-features = false, features = ["rustls", "webpki-roots", "json"] }
 chacha20poly1305 = "0.10"

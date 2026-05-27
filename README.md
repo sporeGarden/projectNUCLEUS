@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE (2026-05-27)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 55)**. **55 Rust tests PASS** (darkforest 34, tunnelKeeper 21). Provenance trio 10/10 PASS. FlockGate H3-11 tracked.
+**Sovereignty evolution ACTIVE (2026-05-27)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 55)**. **65 Rust tests PASS** (darkforest 44, tunnelKeeper 21). Provenance trio 10/10 PASS. NC-1→NC-5 tracked. FlockGate H3-11 tracked.
 
 ### Infrastructure
 
@@ -104,7 +104,8 @@ Gates connect to each other through chemical bonding patterns:
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
 - **`biomeos.spring_status` IMPLEMENTED** (v3.78): Binary discovery + workload counts. Registry at **460 methods** (Wave 55 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed errors, env_keys centralized)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
-- **Wave 46 upstream zero gate debt**: primalSpring v0.9.27 — 49 scenarios, 44-cell deployment matrix, 784 tests. All 14 primals pulled to latest. Deploy graphs 12/12 `secure_by_default`. `deny.toml` + `yaml_serde` pure Rust migration. 55 Rust tests PASS (darkforest 34, tunnelKeeper 21). FlockGate gap tracked (H3-11)
+- **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. 65 Rust tests PASS (darkforest 44, tunnelKeeper 21). Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps.
+- **Wave 46 upstream zero gate debt**: primalSpring v0.9.27 — 49 scenarios, 44-cell deployment matrix, 784 tests. All 14 primals pulled to latest. Deploy graphs 12/12 `secure_by_default`. `deny.toml` enforced. FlockGate gap tracked (H3-11)
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **LIVE**, S5 DNS **LIVE** (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
 
 ### Services (all persistent via systemd)

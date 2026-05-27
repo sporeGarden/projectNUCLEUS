@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # cargo-deny configuration — tunnelKeeper
-# TLS via rustls (aws-lc-rs backend). ring allowed as transitive only.
+# YAML via serde-saphyr (pure Rust, no libyaml). TLS via rustls (aws-lc-rs backend).
+# ring allowed as transitive only. libyaml eliminated Wave 55.
 
 [advisories]
 vulnerability = "deny"
@@ -30,6 +31,7 @@ deny = [
     { crate = "openssl", reason = "Use rustls — no OpenSSL in ecoPrimals" },
     { crate = "openssl-sys", reason = "C binding — use rustls" },
     { crate = "native-tls", reason = "Platform TLS — use rustls" },
+    { crate = "unsafe-libyaml", reason = "C YAML parser — use serde-saphyr (pure Rust)" },
 ]
 allow = [
     { crate = "ring", reason = "Transitive via rustls/quinn — monitored for removal" },

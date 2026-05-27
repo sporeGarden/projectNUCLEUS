@@ -167,14 +167,14 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 ## Aggregate Test Summary
 
 ```
-darkforest           34 tests  (crypto, check, report, discovery)
+darkforest           44 tests  (crypto, check, report, discovery, net)
 tunnelKeeper         21 tests  (config, crypto, health)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)
 5-layer security    267 checks (pentest, fuzz, crypto, observer, gate)
 ───────────────────────────────────────────────────────────────────
-Total               464+ validations, 0 failures
+Total               474+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),

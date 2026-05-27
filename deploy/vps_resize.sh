@@ -7,7 +7,10 @@
 # Defaults to s-1vcpu-2gb ($12/mo, recommended for Tower + NestGate + knot-dns).
 # The droplet will be powered off, resized, then powered on.
 
-set -uo pipefail
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh" 2>/dev/null || true
 
 DROPLET_NAME="${DROPLET_NAME:-membrane-relay}"
 TARGET_SIZE="${1:-s-1vcpu-2gb}"

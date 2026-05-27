@@ -257,7 +257,7 @@ shadow_deploy() {
     done < <(parse_graph_nodes "$graph_file")
 
     # Validate workload TOMLs via toadstool.validate if toadStool is running
-    local toadstool_port=9400
+    local toadstool_port="${TOADSTOOL_PORT:-9400}"
     if curl -sf --max-time 2 "http://$bind_address:$toadstool_port" \
         -X POST -H 'Content-Type: application/json' \
         -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' >/dev/null 2>&1; then

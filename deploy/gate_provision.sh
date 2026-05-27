@@ -31,7 +31,7 @@ source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
   || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
 
 TUNNEL_NAME="nucleus-lab"
-CF_CRED_FILE="${CLOUDFLARED_DIR}/d4c15fb6-d047-40fe-82d6-e324a5593421.json"
+CF_CRED_FILE="${CLOUDFLARED_DIR}/${CF_TUNNEL_ID}.json"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -165,11 +165,11 @@ ingress:
 
   # Static observer surface
   - hostname: lab.primals.eco
-    service: http://127.0.0.1:8866
+    service: http://127.0.0.1:${OBSERVER_STATIC_PORT}
 
   # Forgejo (sovereign git)
   - hostname: git.primals.eco
-    service: http://127.0.0.1:3000
+    service: http://127.0.0.1:${FORGEJO_PORT}
 
   - service: http_status:404"
 else
@@ -184,11 +184,11 @@ credentials-file: ${REMOTE_HOME}/.cloudflared/$(basename "$CF_CRED_FILE")
 ingress:
   # Static observer surface
   - hostname: lab.primals.eco
-    service: http://127.0.0.1:8866
+    service: http://127.0.0.1:${OBSERVER_STATIC_PORT}
 
   # Forgejo (sovereign git)
   - hostname: git.primals.eco
-    service: http://127.0.0.1:3000
+    service: http://127.0.0.1:${FORGEJO_PORT}
 
   - service: http_status:404"
 fi

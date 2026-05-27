@@ -105,12 +105,12 @@ if [[ "$LAYER" == "all" || "$LAYER" == "below" ]]; then
     done
 
     # JupyterHub binding
-    HUB_BIND=$(echo "$LISTENING" | grep ":8000 " | head -1)
+    HUB_BIND=$(echo "$LISTENING" | grep ":${JUPYTERHUB_PORT} " | head -1)
     hub_local=$(echo "$HUB_BIND" | awk '{print $4}')
     if echo "$hub_local" | grep -q "^127\.0\.0\.1:" 2>/dev/null; then
-        pass "JupyterHub (8000) bound to 127.0.0.1 — tunnel-only access"
+        pass "JupyterHub (${JUPYTERHUB_PORT}) bound to 127.0.0.1 — tunnel-only access"
     elif echo "$hub_local" | grep -q "^0\.0\.0\.0:" 2>/dev/null; then
-        fail "JupyterHub (8000) bound to 0.0.0.0 — directly exposed"
+        fail "JupyterHub (${JUPYTERHUB_PORT}) bound to 0.0.0.0 — directly exposed"
     fi
 
     # 1b: Unnecessary services
@@ -301,7 +301,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     log ""
     log "── 3a: JupyterHub Security Headers ──"
 
-    HEADERS=$(curl -sf -D - "http://127.0.0.1:8000/hub/login" -o /dev/null 2>/dev/null)
+    HEADERS=$(curl -sf -D - "http://127.0.0.1:${JUPYTERHUB_PORT}/hub/login" -o /dev/null 2>/dev/null)
     echo "$HEADERS" > "$RESULTS_DIR/hub_headers.txt"
 
     for header in "X-Frame-Options" "X-Content-Type-Options" "Content-Security-Policy" "X-XSS-Protection"; do
@@ -328,7 +328,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     log "── 3b: Authentication Enforcement ──"
 
     # Try to access user API without auth
-    UNAUTH_API=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/hub/api/users" 2>/dev/null || echo "000")
+    UNAUTH_API=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${JUPYTERHUB_PORT}/hub/api/users" 2>/dev/null || echo "000")
     if [[ "$UNAUTH_API" == "403" || "$UNAUTH_API" == "401" ]]; then
         pass "JupyterHub /hub/api/users requires auth (HTTP $UNAUTH_API)"
     else
@@ -336,7 +336,7 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     fi
 
     # Try to access spawn endpoint without auth
-    UNAUTH_SPAWN=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:8000/hub/api/users/testuser/server" 2>/dev/null || echo "000")
+    UNAUTH_SPAWN=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${JUPYTERHUB_PORT}/hub/api/users/testuser/server" 2>/dev/null || echo "000")
     if [[ "$UNAUTH_SPAWN" == "403" || "$UNAUTH_SPAWN" == "401" || "$UNAUTH_SPAWN" == "302" ]]; then
         pass "JupyterHub spawn endpoint requires auth (HTTP $UNAUTH_SPAWN)"
     else
@@ -355,10 +355,10 @@ if [[ "$LAYER" == "all" || "$LAYER" == "above" ]]; then
     )
 
     for path in "${TRAVERSAL_PATHS[@]}"; do
-        resp=$(curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$path" --max-time 5 2>/dev/null || echo "000")
+        resp=$(curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:${JUPYTERHUB_PORT}$path" --max-time 5 2>/dev/null || echo "000")
         if [[ "$resp" == "200" ]]; then
             # Check if we actually got /etc/passwd content
-            content=$(curl -sf "http://127.0.0.1:8000$path" --max-time 5 2>/dev/null | head -1)
+            content=$(curl -sf "http://127.0.0.1:${JUPYTERHUB_PORT}$path" --max-time 5 2>/dev/null | head -1)
             if echo "$content" | grep -q "root:" 2>/dev/null; then
                 fail "Path traversal succeeded: $path"
             else

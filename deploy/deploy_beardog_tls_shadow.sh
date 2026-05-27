@@ -20,7 +20,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/nucleus_config.sh"
 
-SHADOW_PORT="${1:-8443}"
+SHADOW_PORT="${BTSP_SHADOW_PORT:-8443}"
 BEARDOG_BIN="${PLASMIDBIN_DIR:-$GATE_HOME/plasmidBin}/primals/beardog"
 BASELINE_DIR="${SCRIPT_DIR}/../validation/baselines"
 SHADOW_LOG="/tmp/beardog-tls-shadow.log"
@@ -29,6 +29,8 @@ AUDIT_DIR="${GATE_HOME:?}/.beardog/audit"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --port) SHADOW_PORT="$2"; shift 2 ;;
+        --cert) CERT_PATH="$2"; shift 2 ;;
+        --key) KEY_PATH="$2"; shift 2 ;;
         *) shift ;;
     esac
 done

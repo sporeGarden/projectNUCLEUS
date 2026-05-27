@@ -59,6 +59,19 @@ PETALTONGUE_PORT="${PETALTONGUE_PORT:-9900}"
 PETALTONGUE_WEB_PORT="${PETALTONGUE_WEB_PORT:-8080}"
 SKUNKBAT_PORT="${SKUNKBAT_PORT:-9140}"
 
+# --- Service ports (non-primal) ---
+JUPYTERHUB_PORT="${JUPYTERHUB_PORT:-8000}"
+OBSERVER_STATIC_PORT="${OBSERVER_STATIC_PORT:-8866}"
+SPOREPRINT_LOCAL_PORT="${SPOREPRINT_LOCAL_PORT:-8880}"
+FORGEJO_PORT="${FORGEJO_PORT:-3000}"
+CHP_PROXY_PORT="${CHP_PROXY_PORT:-8001}"
+TURN_PORT="${TURN_PORT:-3478}"
+RUSTDESK_HBBS_PORT="${RUSTDESK_HBBS_PORT:-21116}"
+RUSTDESK_HBBR_PORT="${RUSTDESK_HBBR_PORT:-21117}"
+
+# GitHub Pages A records (shared by knot-dns + sporeprint_dns)
+GHPAGES_A_RECORDS=(185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153)
+
 # --- MethodGate (JH-0/JH-1, Phase 60) ---
 # "enforced" (default) = require valid ionic token with scope match (-32001 rejection)
 # "permissive" = log + allow unauthenticated calls (testing only)

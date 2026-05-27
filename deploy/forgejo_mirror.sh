@@ -8,11 +8,13 @@
 #
 # Requires: .netrc with Forgejo credentials, curl, git
 
-set -uo pipefail
+set -euo pipefail
 
-FORGEJO_URL="${FORGEJO_URL:-http://127.0.0.1:3000}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/nucleus_config.sh" 2>/dev/null || true
+
+FORGEJO_URL="${FORGEJO_URL:-http://127.0.0.1:${FORGEJO_PORT}}"
 FORGEJO_TOKEN="${FORGEJO_TOKEN:-}"
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$HOME/Development/ecoPrimals}"
 DRY_RUN=false
 PUSH_ALL=false
 

@@ -18,7 +18,7 @@ source "$SCRIPT_DIR/../../../deploy/nucleus_config.sh"
 
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 BASELINE=""
-BTSP_URL="https://127.0.0.1:8443/hub/login"
+BTSP_URL="https://${BTSP_SHADOW_HOST:-127.0.0.1}:${BTSP_SHADOW_PORT:-8443}/hub/login"
 SAMPLES=10
 
 while [[ $# -gt 0 ]]; do

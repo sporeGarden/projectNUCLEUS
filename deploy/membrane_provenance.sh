@@ -18,7 +18,7 @@
 #
 # See: deploy/provenance_pipeline.sh (local full-rigor version)
 
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -75,33 +75,33 @@ RHIZOCRYPT_LIVE=false
 LOAMSPINE_LIVE=false
 SWEETGRASS_LIVE=false
 
-ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:9500/health 2>/dev/null" || true)
+ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:${NESTGATE_PORT}/health 2>/dev/null" || true)
 if echo "$ng_resp" | grep -q '"status":"ok"'; then
-    pass "TRIO-01" "NestGate healthy (:9500 HTTP REST)"
+    pass "TRIO-01" "NestGate healthy (:${NESTGATE_PORT} HTTP REST)"
     NESTGATE_LIVE=true
 else
     skip "TRIO-01" "NestGate not responding (Nest Atomic not deployed)"
 fi
 
-rc_resp=$(rpc_remote 9602 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
+rc_resp=$(rpc_remote "${RHIZOCRYPT_RPC_PORT}" '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
 if echo "$rc_resp" | grep -q '"result"'; then
-    pass "TRIO-02" "rhizoCrypt healthy (:9602 JSON-RPC)"
+    pass "TRIO-02" "rhizoCrypt healthy (:${RHIZOCRYPT_RPC_PORT} JSON-RPC)"
     RHIZOCRYPT_LIVE=true
 else
     skip "TRIO-02" "rhizoCrypt not responding (Nest Atomic not deployed)"
 fi
 
-ls_resp=$(rpc_remote_http 9700 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
+ls_resp=$(rpc_remote_http "${LOAMSPINE_PORT}" '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
 if echo "$ls_resp" | grep -q '"result"'; then
-    pass "TRIO-03" "loamSpine healthy (:9700)"
+    pass "TRIO-03" "loamSpine healthy (:${LOAMSPINE_PORT})"
     LOAMSPINE_LIVE=true
 else
     skip "TRIO-03" "loamSpine not responding (Nest Atomic not deployed)"
 fi
 
-sg_resp=$(rpc_remote 9850 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
+sg_resp=$(rpc_remote "${SWEETGRASS_PORT}" '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
 if echo "$sg_resp" | grep -q '"result"'; then
-    pass "TRIO-04" "sweetGrass healthy (:9850)"
+    pass "TRIO-04" "sweetGrass healthy (:${SWEETGRASS_PORT})"
     SWEETGRASS_LIVE=true
 else
     skip "TRIO-04" "sweetGrass not responding (Nest Atomic not deployed)"

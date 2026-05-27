@@ -78,6 +78,19 @@ pub fn resolve_primals(host: &str) -> Vec<ResolvedPrimal> {
         .collect()
 }
 
+/// Resolve a single primal's port via env var or compiled default.
+pub fn port_for(primal: &str) -> u16 {
+    COMPILED_DEFAULTS
+        .iter()
+        .find(|(name, _, _)| *name == primal)
+        .map_or(0, |(_, env_key, default_port)| {
+            std::env::var(env_key)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(*default_port)
+        })
+}
+
 /// Ask biomeOS for the live primal topology via `primal.list`.
 ///
 /// Wave 20 canonical response: `{ "primals": [...], "count": N }`

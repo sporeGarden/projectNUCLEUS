@@ -13,7 +13,7 @@
 #   - SSH access to cellMembrane VPS (key-based)
 #   - nucleus_config.sh sourced for MEMBRANE_VPS_IP
 
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -98,20 +98,20 @@ fi
 echo "═══ MEM-04: TURN relay reachable ═══"
 turn_tcp=false
 turn_udp=false
-nc -z -w 5 "$VPS_IP" 3478 2>/dev/null && turn_tcp=true
-nc -z -u -w 5 "$VPS_IP" 3478 2>/dev/null && turn_udp=true
+nc -z -w 5 "$VPS_IP" "${TURN_PORT}" 2>/dev/null && turn_tcp=true
+nc -z -u -w 5 "$VPS_IP" "${TURN_PORT}" 2>/dev/null && turn_udp=true
 if $turn_tcp || $turn_udp; then
     local_proto=""
     $turn_tcp && local_proto="TCP"
     $turn_udp && local_proto="${local_proto:+$local_proto+}UDP"
-    pass "MEM-04" "TURN :3478 reachable ($local_proto)"
+    pass "MEM-04" "TURN :${TURN_PORT} reachable ($local_proto)"
 else
-    fail "MEM-04" "TURN :3478 unreachable"
+    fail "MEM-04" "TURN :${TURN_PORT} unreachable"
 fi
 
 # ─── MEM-05: TURN rejects unauthenticated relay ────────────────────────────
 echo "═══ MEM-05: TURN unauthenticated rejection ═══"
-unauth_bytes=$(echo -ne '\x00\x03\x00\x00' | nc -w 3 "$VPS_IP" 3478 2>/dev/null | wc -c)
+unauth_bytes=$(echo -ne '\x00\x03\x00\x00' | nc -w 3 "$VPS_IP" "${TURN_PORT}" 2>/dev/null | wc -c)
 unauth_bytes="${unauth_bytes// /}"
 if [[ "$unauth_bytes" -lt 10 ]] 2>/dev/null; then
     pass "MEM-05" "TURN does not relay without credentials ($unauth_bytes bytes returned)"
@@ -265,14 +265,13 @@ else
 fi
 
 # ─── MEM-14: NestGate health (Nest Atomic) ─────────────────────────────────
-# NestGate serves HTTP REST on :9500 (not JSON-RPC). Probe /health endpoint.
 echo "═══ MEM-14: NestGate health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-14" "SSH checks skipped"
 else
-    ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:9500/health 2>/dev/null" || true)
+    ng_resp=$(ssh_cmd "curl -sf --max-time 3 http://127.0.0.1:${NESTGATE_PORT}/health 2>/dev/null" || true)
     if echo "$ng_resp" | grep -q '"status":"ok"'; then
-        pass "MEM-14" "NestGate healthy on :9500 (HTTP REST)"
+        pass "MEM-14" "NestGate healthy on :${NESTGATE_PORT} (HTTP REST)"
     elif ssh_cmd "pgrep -x nestgate >/dev/null 2>&1"; then
         fail "MEM-14" "NestGate process running but /health not responding"
     else
@@ -281,16 +280,15 @@ else
 fi
 
 # ─── MEM-15: rhizoCrypt DAG health (Nest Atomic) ──────────────────────────
-# rhizoCrypt: tarpc on :9601, JSON-RPC (newline-delimited) on :9602.
 echo "═══ MEM-15: rhizoCrypt health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-15" "SSH checks skipped"
 else
-    rc_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9602 2>/dev/null | head -1" || true)
+    rc_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:${RHIZOCRYPT_RPC_PORT} 2>/dev/null | head -1" || true)
     if echo "$rc_resp" | grep -q '"result"'; then
-        pass "MEM-15" "rhizoCrypt healthy on :9602 (JSON-RPC)"
+        pass "MEM-15" "rhizoCrypt healthy on :${RHIZOCRYPT_RPC_PORT} (JSON-RPC)"
     elif ssh_cmd "pgrep -x rhizocrypt >/dev/null 2>&1"; then
-        fail "MEM-15" "rhizoCrypt process running but not responding on :9602"
+        fail "MEM-15" "rhizoCrypt process running but not responding on :${RHIZOCRYPT_RPC_PORT}"
     else
         skip "MEM-15" "rhizoCrypt not deployed (Nest Atomic pending CM-1)"
     fi
@@ -301,9 +299,9 @@ echo "═══ MEM-16: loamSpine health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-16" "SSH checks skipped"
 else
-    ls_resp=$(ssh_cmd "curl -sf --max-time 3 -X POST http://127.0.0.1:9700 -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' 2>/dev/null" || true)
+    ls_resp=$(ssh_cmd "curl -sf --max-time 3 -X POST http://127.0.0.1:${LOAMSPINE_PORT} -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' 2>/dev/null" || true)
     if echo "$ls_resp" | grep -q '"result"'; then
-        pass "MEM-16" "loamSpine healthy on :9700 (HTTP)"
+        pass "MEM-16" "loamSpine healthy on :${LOAMSPINE_PORT} (HTTP)"
     elif ssh_cmd "pgrep -x loamspine >/dev/null 2>&1"; then
         fail "MEM-16" "loamSpine process running but not responding"
     else
@@ -316,9 +314,9 @@ echo "═══ MEM-17: sweetGrass health (Nest Atomic) ═══"
 if $SKIP_SSH; then
     skip "MEM-17" "SSH checks skipped"
 else
-    sg_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:9850 2>/dev/null | head -1" || true)
+    sg_resp=$(ssh_cmd "echo '{\"jsonrpc\":\"2.0\",\"method\":\"health.liveness\",\"id\":1}' | timeout 3 socat -t 0.5 - TCP:127.0.0.1:${SWEETGRASS_PORT} 2>/dev/null | head -1" || true)
     if echo "$sg_resp" | grep -q '"result"'; then
-        pass "MEM-17" "sweetGrass healthy on :9850"
+        pass "MEM-17" "sweetGrass healthy on :${SWEETGRASS_PORT}"
     elif ssh_cmd "pgrep -x sweetgrass >/dev/null 2>&1"; then
         fail "MEM-17" "sweetGrass process running but not responding"
     else

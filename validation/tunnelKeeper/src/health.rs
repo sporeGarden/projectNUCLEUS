@@ -221,14 +221,17 @@ fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
             .strip_prefix("http://")
             .or_else(|| svc.strip_prefix("https://"))
     {
+        let Ok(socket_addr) = addr.parse::<std::net::SocketAddr>() else {
+            eprintln!("WARN: cannot parse service address '{addr}' — skipping connectivity check");
+            return ConnectivityHealth {
+                local_reachable: false,
+                latency_ms: None,
+                cf_edge: None,
+            };
+        };
         let start = Instant::now();
-        let reachable = TcpStream::connect_timeout(
-            &addr
-                .parse()
-                .unwrap_or_else(|_| std::net::SocketAddr::from(([127, 0, 0, 1], 8000))),
-            Duration::from_secs(3),
-        )
-        .is_ok();
+        let reachable =
+            TcpStream::connect_timeout(&socket_addr, Duration::from_secs(3)).is_ok();
         let latency = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
         return ConnectivityHealth {
@@ -246,11 +249,15 @@ fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
 }
 
 fn check_dns(config: &TunnelConfig) -> DnsHealth {
-    let hostname = config
-        .ingress
-        .iter()
-        .find_map(|r| r.hostname.as_deref())
-        .unwrap_or("lab.primals.eco");
+    let fallback_host;
+    let hostname = if let Some(h) = config.ingress.iter().find_map(|r| r.hostname.as_deref()) { h } else {
+        fallback_host = std::env::var("TUNNEL_HOSTNAME")
+            .unwrap_or_else(|_| "lab.primals.eco".to_string());
+        if fallback_host == "lab.primals.eco" {
+            eprintln!("WARN: no ingress hostname in config — using default lab.primals.eco");
+        }
+        &fallback_host
+    };
 
     // Try getent (most portable), then host, then dig
     let resolvers: Vec<(&str, Vec<&str>)> = vec![

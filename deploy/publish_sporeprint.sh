@@ -117,7 +117,7 @@ main() {
     log "Next: run nestgate_content_parity.sh to verify shadow parity"
     log "  infra/benchScale/scenarios/nestgate_content_parity.sh \\"
     log "    --ghpages-url https://primals.eco \\"
-    log "    --nestgate-url http://127.0.0.1:9901"
+    log "    --nestgate-url http://127.0.0.1:\${NESTGATE_PORT:-9500}"
 }
 
 main

@@ -19,6 +19,7 @@ name = "nuc-intake"
 role = "Tunnel termination, reverse proxy, external-facing intake"
 location = "Sovereign cluster — USB-C to ironGate"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 model = "GMKtec NucBox M6"

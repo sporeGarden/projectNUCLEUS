@@ -11,6 +11,7 @@ name = "strandgate"
 role = "Bioinformatics, multi-GPU + neuromorphic, heavy compute"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "Dual AMD EPYC 7452"

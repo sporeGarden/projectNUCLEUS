@@ -215,12 +215,12 @@ cat > "$RESULTS_DIR/PROVENANCE_MEMBRANE_REPORT.md" << EOF
 
 | Primal | Port | Status |
 |--------|------|--------|
-| NestGate | :9500 | $($NESTGATE_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
-| rhizoCrypt | :9601 | $($RHIZOCRYPT_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
-| loamSpine | :9700 | $($LOAMSPINE_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
-| sweetGrass | :9850 | $($SWEETGRASS_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
-| BearDog | :9100 | $(echo "$bd_resp" | grep -q result && echo "LIVE" || echo "DEGRADED") |
-| Songbird | UDP :3478 | $([[ -n "$sb_resp" ]] && echo "LIVE" || echo "DEGRADED") |
+| NestGate | :${NESTGATE_PORT} | $($NESTGATE_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
+| rhizoCrypt | :${RHIZOCRYPT_PORT} | $($RHIZOCRYPT_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
+| loamSpine | :${LOAMSPINE_PORT} | $($LOAMSPINE_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
+| sweetGrass | :${SWEETGRASS_PORT} | $($SWEETGRASS_LIVE && echo "LIVE" || echo "NOT DEPLOYED") |
+| BearDog | :${BEARDOG_PORT} | $(echo "$bd_resp" | grep -q result && echo "LIVE" || echo "DEGRADED") |
+| Songbird | UDP :${TURN_PORT} | $([[ -n "$sb_resp" ]] && echo "LIVE" || echo "DEGRADED") |
 
 ## Trio Pipeline
 

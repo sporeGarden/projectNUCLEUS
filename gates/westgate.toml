@@ -11,6 +11,7 @@ name = "westgate"
 role = "Cold storage, NAS, caching layer"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "Intel i7-4771"

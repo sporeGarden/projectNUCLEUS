@@ -84,10 +84,10 @@ else
         else
             fail "MEM-03" "Port 22 not in UFW rules"
         fi
-        if echo "$ufw" | grep -q "3478"; then
-            pass "MEM-03" "Port 3478 (TURN) allowed"
+        if echo "$ufw" | grep -q "${TURN_PORT:-3478}"; then
+            pass "MEM-03" "Port ${TURN_PORT:-3478} (TURN) allowed"
         else
-            fail "MEM-03" "Port 3478 not in UFW rules"
+            fail "MEM-03" "Port ${TURN_PORT:-3478} not in UFW rules"
         fi
     else
         fail "MEM-03" "UFW not active"
@@ -194,7 +194,7 @@ if $SKIP_SSH; then
 else
     # Phase 0.5: SSH + TURN + RustDesk + Tower (BearDog + SkunkBat) + Caddy TLS
     # + Shadow services: BearDog TLS :8443, petalTongue web :8080
-    expected_ports="22 53 5355 3478 21115 21116 21117 21118 21119 9100 9140 80 443 2019 8443 8080 9500 9601 9602 9700 9001 9850 8091"
+    expected_ports="22 53 5355 ${TURN_PORT:-3478} ${RUSTDESK_HBBS_PORT:-21116} ${RUSTDESK_HBBR_PORT:-21117} 21115 21118 21119 ${BEARDOG_PORT:-9100} ${SKUNKBAT_PORT:-9140} 80 443 2019 ${BTSP_SHADOW_PORT:-8443} ${PETALTONGUE_PORT:-8080} ${NESTGATE_PORT:-9500} ${RHIZOCRYPT_PORT:-9601} ${RHIZOCRYPT_RPC_PORT:-9602} ${LOAMSPINE_PORT:-9700} 9001 ${SWEETGRASS_PORT:-9850} 8091"
     listeners=$(ssh_cmd "ss -tlnp 2>/dev/null | grep LISTEN" || true)
     unexpected=0
     while IFS= read -r line; do
@@ -258,10 +258,11 @@ fi
 
 # ─── MEM-13: RustDesk ports reachable ───────────────────────────────────────
 echo "═══ MEM-13: RustDesk ports reachable ═══"
-if nc -z -w 5 "$VPS_IP" 21116 2>/dev/null; then
-    pass "MEM-13" "RustDesk :21116 reachable (TCP)"
+RUSTDESK_CHECK_PORT="${RUSTDESK_HBBS_PORT:-21116}"
+if nc -z -w 5 "$VPS_IP" "$RUSTDESK_CHECK_PORT" 2>/dev/null; then
+    pass "MEM-13" "RustDesk :${RUSTDESK_CHECK_PORT} reachable (TCP)"
 else
-    fail "MEM-13" "RustDesk :21116 unreachable"
+    fail "MEM-13" "RustDesk :${RUSTDESK_CHECK_PORT} unreachable"
 fi
 
 # ─── MEM-14: NestGate health (Nest Atomic) ─────────────────────────────────

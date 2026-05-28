@@ -95,14 +95,21 @@ impl CloudflareTunnelTransport {
         }
     }
 
-    fn check_binary(&self) -> Result<String, TransportError> {
-        let output = std::process::Command::new(&self.cloudflared_bin)
+    fn check_binary_blocking(bin: &str) -> Result<String, TransportError> {
+        let output = std::process::Command::new(bin)
             .arg("--version")
             .output()
             .map_err(|e| TransportError::Unavailable(format!("cloudflared not found: {e}")))?;
 
         let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
         Ok(version)
+    }
+
+    fn is_running_blocking() -> bool {
+        std::process::Command::new("pgrep")
+            .args(["-f", "cloudflared.*tunnel"])
+            .output()
+            .is_ok_and(|o| o.status.success())
     }
 }
 
@@ -116,22 +123,20 @@ impl TunnelTransport for CloudflareTunnelTransport {
         config: &crate::config::TunnelConfig,
     ) -> Pin<Box<dyn Future<Output = Result<TunnelHandle, TransportError>> + Send + '_>> {
         let tunnel_name = config.tunnel.clone();
+        let bin = self.cloudflared_bin.clone();
         Box::pin(async move {
-            let version = self.check_binary()?;
+            let (version, running) = tokio::task::spawn_blocking(move || {
+                let v = Self::check_binary_blocking(&bin)?;
+                let r = Self::is_running_blocking();
+                Ok::<_, TransportError>((v, r))
+            })
+            .await
+            .map_err(|e| TransportError::Process(format!("task panicked: {e}")))??;
 
-            // Check if already running
-            let pgrep = std::process::Command::new("pgrep")
-                .args(["-f", "cloudflared.*tunnel"])
-                .output();
-
-            let status = match pgrep {
-                Ok(o) if o.status.success() => "running".to_string(),
-                _ => "stopped".to_string(),
-            };
-
+            let status = if running { "running" } else { "stopped" };
             Ok(TunnelHandle {
                 transport_name: format!("cloudflare ({version})"),
-                status,
+                status: status.to_string(),
                 endpoint: tunnel_name,
             })
         })
@@ -140,13 +145,15 @@ impl TunnelTransport for CloudflareTunnelTransport {
     fn health(
         &self,
     ) -> Pin<Box<dyn Future<Output = Result<TransportHealth, TransportError>> + Send + '_>> {
+        let bin = self.cloudflared_bin.clone();
         Box::pin(async move {
-            let version = self.check_binary()?;
-
-            let running = std::process::Command::new("pgrep")
-                .args(["-f", "cloudflared.*tunnel"])
-                .output()
-                .is_ok_and(|o| o.status.success());
+            let (version, running) = tokio::task::spawn_blocking(move || {
+                let v = Self::check_binary_blocking(&bin)?;
+                let r = Self::is_running_blocking();
+                Ok::<_, TransportError>((v, r))
+            })
+            .await
+            .map_err(|e| TransportError::Process(format!("task panicked: {e}")))??;
 
             Ok(TransportHealth {
                 transport_name: format!("cloudflare ({version})"),

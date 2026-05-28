@@ -5,6 +5,7 @@ set -euo pipefail
 # Run after 7 days of hourly capture to produce the reference baseline.
 
 BASELINES_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${BASELINES_DIR}/../../deploy/nucleus_config.sh" 2>/dev/null || true
 CSV_DIR="${BASELINES_DIR}/daily"
 OUTPUT="${BASELINES_DIR}/cloudflare_tunnel_7day.toml"
 
@@ -62,12 +63,12 @@ else
 fi
 
 cat > "$OUTPUT" << EOF
-# Cloudflare Tunnel Baseline — lab.primals.eco
+# Cloudflare Tunnel Baseline — ${LAB_URL:-https://lab.primals.eco}
 # Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 # Source: ${COUNT} days of hourly captures (${TOTAL_SAMPLES} total samples)
 
 [metadata]
-target = "https://lab.primals.eco/hub/login"
+target = "${LAB_URL:-https://lab.primals.eco}/hub/login"
 capture_days = ${COUNT}
 total_samples = ${TOTAL_SAMPLES}
 generated_at = "$(date -u +%Y-%m-%dT%H:%M:%SZ)"

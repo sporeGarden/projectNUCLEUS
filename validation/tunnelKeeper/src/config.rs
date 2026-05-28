@@ -51,6 +51,15 @@ impl TunnelConfig {
         Ok(config)
     }
 
+    pub async fn load_async(path: &Path) -> Result<Self, ConfigError> {
+        if !path.exists() {
+            return Err(ConfigError::NotFound(path.display().to_string()));
+        }
+        let raw = tokio::fs::read_to_string(path).await?;
+        let config: Self = serde_saphyr::from_str(&raw)?;
+        Ok(config)
+    }
+
     pub fn save(&self, path: &Path) -> Result<(), ConfigError> {
         let yaml = serde_saphyr::to_string(self)?;
         fs::write(path, yaml)?;
@@ -82,12 +91,14 @@ pub async fn sync(
     pull: bool,
     json: bool,
 ) -> Result<(), ConfigError> {
-    let config = TunnelConfig::load(config_path)?;
+    let config = TunnelConfig::load_async(config_path).await?;
     let token = api_token.ok_or_else(|| {
         ConfigError::Other("CF_API_TOKEN required for sync (set --api-token or env var)".into())
     })?;
 
-    let creds_raw = fs::read_to_string(&config.credentials_file)?;
+    let creds_raw = tokio::fs::read_to_string(&config.credentials_file)
+        .await
+        .map_err(ConfigError::Io)?;
     let creds: serde_json::Value = serde_json::from_str(&creds_raw)
         .map_err(|e| ConfigError::Other(format!("credentials parse error: {e}")))?;
     let account_id = creds

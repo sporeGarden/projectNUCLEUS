@@ -11,6 +11,7 @@ name = "flockgate"
 role = "Flock compute / remote covalent mesh"
 location = "Remote household — WAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "Intel i9-13900K"

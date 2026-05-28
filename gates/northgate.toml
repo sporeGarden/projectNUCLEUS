@@ -11,6 +11,7 @@ name = "northgate"
 role = "Personal gaming primary, remote compute secondary"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "AMD Ryzen 9 9950X3D"

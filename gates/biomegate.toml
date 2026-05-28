@@ -11,6 +11,7 @@ name = "biomegate"
 role = "HBM2 sovereign compiler development, semi-mobile heavy compute"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "AMD Threadripper 3970X"

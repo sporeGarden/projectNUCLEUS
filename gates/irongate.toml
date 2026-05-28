@@ -12,6 +12,7 @@ name = "irongate"
 role = "Agentic development, composition validation, clean deploys"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
+secure_by_default = true
 
 [hardware]
 cpu = "Intel i9-14900K"

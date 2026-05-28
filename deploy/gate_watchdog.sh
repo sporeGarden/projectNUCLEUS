@@ -64,12 +64,12 @@ probe() {
 
 do_check() {
     local lab_status observer_status git_status
-    lab_status=$(probe "https://lab.primals.eco/")
-    git_status=$(probe "https://git.primals.eco/")
+    lab_status=$(probe "${LAB_URL}/")
+    git_status=$(probe "${GIT_URL}/")
 
     # Also check the extracellular surface (informational only)
     local public_status
-    public_status=$(probe "https://primals.eco/")
+    public_status=$(probe "${SITE_URL}/")
 
     local channels_up=0
     local channels_total=2
@@ -112,9 +112,9 @@ do_status() {
     state=$(get_state)
 
     local lab_status git_status public_status
-    lab_status=$(probe "https://lab.primals.eco/")
-    git_status=$(probe "https://git.primals.eco/")
-    public_status=$(probe "https://primals.eco/")
+    lab_status=$(probe "${LAB_URL}/")
+    git_status=$(probe "${GIT_URL}/")
+    public_status=$(probe "${SITE_URL}/")
 
     echo "Cell Membrane Status"
     echo ""

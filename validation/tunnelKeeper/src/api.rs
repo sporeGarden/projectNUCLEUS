@@ -151,6 +151,10 @@ impl Client {
     /// List all Access Applications for the account.
     /// Used by operational scripts — not yet wired into a CLI subcommand.
     #[cfg(feature = "access-apps")]
+    #[expect(
+        dead_code,
+        reason = "Wired by operational scripts via JSON output, not CLI subcommand yet"
+    )]
     pub async fn list_access_apps(&self) -> Result<Vec<serde_json::Value>, ApiError> {
         let url = format!("{}/accounts/{}/access/apps", self.base_url, self.account_id);
         let resp = self.http.get(&url).send().await?;
@@ -166,5 +170,62 @@ impl Client {
         }
 
         Ok(body.result.unwrap_or_default())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cf_error_message_joins_errors() {
+        let errors = vec![
+            CfError {
+                code: 1000,
+                message: "auth failed".to_string(),
+            },
+            CfError {
+                code: 2000,
+                message: "rate limited".to_string(),
+            },
+        ];
+        assert_eq!(cf_error_message(&errors), "auth failed; rate limited");
+    }
+
+    #[test]
+    fn cf_error_message_empty() {
+        let errors: Vec<CfError> = vec![];
+        assert_eq!(cf_error_message(&errors), "");
+    }
+
+    #[test]
+    fn cf_response_deserialization() {
+        let json = r#"{"success":true,"errors":[],"result":{"id":"abc","name":"test","status":"healthy","connections":[]}}"#;
+        let resp: CfResponse<TunnelInfo> = serde_json::from_str(json).unwrap();
+        assert!(resp.success);
+        assert!(resp.errors.is_empty());
+        assert_eq!(resp.result.unwrap().name, "test");
+    }
+
+    #[test]
+    fn api_error_display() {
+        let e = ApiError::Cloudflare {
+            status: 403,
+            message: "forbidden".to_string(),
+        };
+        assert!(e.to_string().contains("403"));
+        assert!(e.to_string().contains("forbidden"));
+    }
+
+    #[test]
+    fn tunnel_info_serialization() {
+        let info = TunnelInfo {
+            id: "abc".to_string(),
+            name: "test-tunnel".to_string(),
+            status: "active".to_string(),
+            connections: vec![],
+        };
+        let json = serde_json::to_string(&info).unwrap();
+        assert!(json.contains("test-tunnel"));
     }
 }

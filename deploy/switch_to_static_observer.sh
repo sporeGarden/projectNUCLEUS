@@ -62,11 +62,11 @@ else
     exit 1
 fi
 
-HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://127.0.0.1:8866/ --max-time 5 2>/dev/null || echo "000")
+HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:${OBSERVER_STATIC_PORT}/" --max-time 5 2>/dev/null || echo "000")
 if [ "$HTTP_CODE" = "200" ]; then
-    echo "PASS: port 8866 returns HTTP 200"
+    echo "PASS: port ${OBSERVER_STATIC_PORT} returns HTTP 200"
 else
-    echo "WARN: port 8866 returned HTTP ${HTTP_CODE}"
+    echo "WARN: port ${OBSERVER_STATIC_PORT} returned HTTP ${HTTP_CODE}"
 fi
 
 echo ""

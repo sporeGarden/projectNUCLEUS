@@ -183,4 +183,57 @@ mod tests {
         let home = gate_home();
         assert!(!home.as_os_str().is_empty());
     }
+
+    #[test]
+    fn cookie_secret_path_ends_with_cookie_secret_filename() {
+        let path = cookie_secret_path();
+        assert_eq!(
+            path.file_name().and_then(|n| n.to_str()),
+            Some("jupyterhub_cookie_secret")
+        );
+    }
+
+    #[test]
+    fn sqlite_path_ends_with_sqlite_filename() {
+        let path = sqlite_path();
+        assert_eq!(
+            path.file_name().and_then(|n| n.to_str()),
+            Some("jupyterhub.sqlite")
+        );
+    }
+
+    #[test]
+    fn cf_dir_defaults_under_gate_home() {
+        let path = cf_dir();
+        assert_eq!(
+            path.file_name().and_then(|n| n.to_str()),
+            Some(".cloudflared")
+        );
+    }
+
+    #[test]
+    fn crypto_config_stores_provided_paths() {
+        let cfg = CryptoConfig {
+            hub_port: 8080,
+            beardog_port: 9100,
+            cookie_secret: PathBuf::from("/tmp/secret"),
+            sqlite: PathBuf::from("/tmp/db.sqlite"),
+            cloudflared_dir: PathBuf::from("/tmp/.cloudflared"),
+        };
+        assert_eq!(cfg.hub_port, 8080);
+        assert_eq!(cfg.beardog_port, 9100);
+        assert_eq!(cfg.cookie_secret, PathBuf::from("/tmp/secret"));
+        assert_eq!(cfg.sqlite, PathBuf::from("/tmp/db.sqlite"));
+        assert_eq!(cfg.cloudflared_dir, PathBuf::from("/tmp/.cloudflared"));
+    }
+
+    #[test]
+    fn hex_decode_single_byte() {
+        assert_eq!(hex_decode("00"), Some(vec![0x00]));
+    }
+
+    #[test]
+    fn hex_decode_non_hex_char_in_middle_returns_none() {
+        assert_eq!(hex_decode("deaxbeef"), None);
+    }
 }

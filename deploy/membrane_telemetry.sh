@@ -119,7 +119,7 @@ if [[ "$MODE" == "external" || "$MODE" == "all" ]]; then
         fi
         emit "turn_udp" "${host}:${port}" "$latency_ms" "$status"
     }
-    probe_turn_udp "$VPS_IP" "3478"
+    probe_turn_udp "$VPS_IP" "$TURN_PORT"
 
     # RustDesk hbbs reachability
     probe_tcp "rustdesk_hbbs" "$VPS_IP" "21116"

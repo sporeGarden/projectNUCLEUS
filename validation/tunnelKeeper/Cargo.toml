@@ -19,12 +19,11 @@ clap = { version = "4", features = ["derive", "env"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde-saphyr = "0.0.26"
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs"] }
 reqwest = { version = "0.13", default-features = false, features = ["rustls", "webpki-roots", "json"] }
 chacha20poly1305 = "0.10"
 ed25519-dalek = { version = "2", features = ["rand_core"] }
 rand_core = "0.6"
-chrono = { version = "0.4", features = ["serde"] }
 thiserror = "2"
 
 [lints.clippy]

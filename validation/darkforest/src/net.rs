@@ -31,6 +31,26 @@ pub fn send_raw(host: &str, port: u16, data: &[u8], timeout_ms: u64) -> Option<V
     Some(total)
 }
 
+/// Send a newline-delimited JSON-RPC request over raw TCP.
+///
+/// Most NUCLEUS primals (`BearDog`, skunkBat, Squirrel, `ToadStool`, barraCuda,
+/// coralReef, `NestGate`, biomeOS, sweetGrass, petalTongue) use this framing.
+/// Only loamSpine uses HTTP POST JSON-RPC.
+pub fn send_jsonrpc_newline(
+    host: &str,
+    port: u16,
+    payload: &str,
+    timeout_ms: u64,
+) -> Option<String> {
+    let mut msg = payload.as_bytes().to_vec();
+    if !msg.ends_with(b"\n") {
+        msg.push(b'\n');
+    }
+    let resp = send_raw(host, port, &msg, timeout_ms)?;
+    let text = String::from_utf8_lossy(&resp).trim().to_string();
+    if text.is_empty() { None } else { Some(text) }
+}
+
 pub fn send_jsonrpc(
     host: &str,
     port: u16,
@@ -199,11 +219,49 @@ mod tests {
 
     #[test]
     fn send_jsonrpc_to_unreachable_returns_none() {
-        assert!(send_jsonrpc("192.0.2.1", 1, r#"{"jsonrpc":"2.0","method":"test","id":1}"#, 200).is_none());
+        assert!(
+            send_jsonrpc(
+                "192.0.2.1",
+                1,
+                r#"{"jsonrpc":"2.0","method":"test","id":1}"#,
+                200
+            )
+            .is_none()
+        );
     }
 
     #[test]
     fn http_get_to_unreachable_returns_none() {
         assert!(http_get("192.0.2.1", 1, "/", "", 200).is_none());
+    }
+
+    #[test]
+    fn send_jsonrpc_newline_to_unreachable_returns_none() {
+        assert!(
+            send_jsonrpc_newline(
+                "192.0.2.1",
+                1,
+                r#"{"jsonrpc":"2.0","method":"test","id":1}"#,
+                200
+            )
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn http_method_to_unreachable_returns_none() {
+        assert!(http_method("192.0.2.1", 1, "DELETE", "/test", 200).is_none());
+    }
+
+    #[test]
+    fn http_post_to_unreachable_returns_none() {
+        assert!(http_post("192.0.2.1", 1, "/", "application/json", "{}", "", 200).is_none());
+    }
+
+    #[test]
+    fn sudo_cmd_nonexistent_user_returns_error() {
+        let (code, output) = sudo_cmd("__nonexistent_user__", "echo test");
+        // Either sudo fails or the command fails — we just verify it doesn't panic
+        assert!(code != 0 || output.contains("error") || output.contains("test"));
     }
 }

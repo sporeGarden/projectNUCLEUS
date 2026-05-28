@@ -5,6 +5,10 @@ use std::fmt::Write as _;
 use std::net::TcpStream;
 use std::time::{Duration, Instant};
 
+const FUZZ_PAYLOAD_TIMEOUT_MS: u64 = 2000;
+const FUZZ_TIMING_TIMEOUT_MS: u64 = 5000;
+const HUB_FUZZ_TIMEOUT_MS: u64 = 5000;
+
 pub fn run_primals(host: &str, rounds: u32, results: &mut Vec<CheckResult>) {
     let mut primals = discovery::resolve_primals(host);
     println!("\n══ Protocol Fuzzing ══");
@@ -41,8 +45,8 @@ fn fuzz_primal(
 ) {
     let suite = format!("fuzz.{name}");
 
-    let reachable =
-        send_raw(host, port, b"", 2000).is_some() || send_raw(host, port, b"test", 2000).is_some();
+    let reachable = send_raw(host, port, b"", FUZZ_PAYLOAD_TIMEOUT_MS).is_some()
+        || send_raw(host, port, b"test", FUZZ_PAYLOAD_TIMEOUT_MS).is_some();
     if !reachable {
         results.push(
             CheckBuilder::new(
@@ -91,10 +95,10 @@ fn fuzz_primal(
 
     let mut crashed = false;
     for (pname, payload) in &payloads {
-        let resp = send_raw(host, port, payload, 3000);
+        let resp = send_raw(host, port, payload, FUZZ_PAYLOAD_TIMEOUT_MS);
         if resp.is_none() {
             std::thread::sleep(Duration::from_millis(500));
-            if send_raw(host, port, b"", 2000).is_none() {
+            if send_raw(host, port, b"", FUZZ_PAYLOAD_TIMEOUT_MS).is_none() {
                 results.push(
                     CheckBuilder::new(
                         &format!("FUZ-{name}-crash"),
@@ -143,7 +147,7 @@ fn fuzz_primal(
             Severity::Medium,
         )
         .remediation("Primal must reject non-JSON-RPC protocol probes");
-        let resp = send_raw(host, port, bdata, 2000);
+        let resp = send_raw(host, port, bdata, FUZZ_PAYLOAD_TIMEOUT_MS);
         if let Some(ref data) = resp {
             let text = String::from_utf8_lossy(data);
             if text.contains("200 OK") || text.contains("result") {
@@ -170,10 +174,10 @@ fn fuzz_primal(
         Severity::Medium,
     )
     .remediation("Primal must handle oversized payloads without crashing");
-    let resp = send_raw(host, port, &big, 5000);
+    let resp = send_raw(host, port, &big, FUZZ_TIMING_TIMEOUT_MS);
     if resp.is_none() {
         std::thread::sleep(Duration::from_secs(1));
-        if send_raw(host, port, b"", 2000).is_none() {
+        if send_raw(host, port, b"", FUZZ_PAYLOAD_TIMEOUT_MS).is_none() {
             results.push(cb.fail(
                 &format!("{name} crashed on 100KB payload"),
                 "100KB JSON-RPC",
@@ -203,7 +207,7 @@ fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut
         let payload = format!(r#"{{"jsonrpc":"2.0","method":"{method}","id":1}}"#);
         for _ in 0..rounds {
             let t0 = Instant::now();
-            let result = send_jsonrpc(host, port, &payload, 3000);
+            let result = send_jsonrpc(host, port, &payload, FUZZ_TIMING_TIMEOUT_MS);
             let elapsed = t0.elapsed().as_secs_f64();
             if result.is_some() {
                 times.push(elapsed);
@@ -262,7 +266,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let headers = format!("Cookie: jupyterhub-session-id={cookie_val}\r\n");
     let cb = CheckBuilder::new("FUZ-HUB-01", suite, Category::Fuzz, Severity::Medium)
         .remediation("Hub should handle oversized cookies gracefully (400 or 431)");
-    match http_get(host, hub_port, "/hub/login", &headers, 5000) {
+    match http_get(host, hub_port, "/hub/login", &headers, HUB_FUZZ_TIMEOUT_MS) {
         Some((code, _, _)) if [200, 302, 400, 403, 431].contains(&code) => {
             results.push(cb.pass(
                 &format!("Hub handles oversized cookie (HTTP {code})"),
@@ -289,7 +293,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
         "application/x-www-form-urlencoded",
         &body,
         "",
-        5000,
+        HUB_FUZZ_TIMEOUT_MS,
     ) {
         Some((200, ref rb)) if rb.contains(&marker) => {
             results.push(cb.fail(
@@ -316,7 +320,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let hdr = format!("Authorization: token {fake_tok}\r\n");
     let cb = CheckBuilder::new("FUZ-HUB-03", suite, Category::Auth, Severity::Critical)
         .remediation("Token validation must reject invalid tokens");
-    match http_get(host, hub_port, "/hub/api/users", &hdr, 5000) {
+    match http_get(host, hub_port, "/hub/api/users", &hdr, HUB_FUZZ_TIMEOUT_MS) {
         Some((200, _, _)) => results.push(cb.fail(
             "Fake token accepted on /hub/api/users",
             "HTTP 200 with fake token",
@@ -342,7 +346,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
             "application/x-www-form-urlencoded",
             &body,
             "",
-            5000,
+            HUB_FUZZ_TIMEOUT_MS,
         );
     }
     results.push(
@@ -359,7 +363,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
         hub_port,
         r#"/hub/login?next="><script>alert(1)</script>"#,
         "",
-        5000,
+        HUB_FUZZ_TIMEOUT_MS,
     ) {
         Some((_, _, body)) if body.contains("<script>alert(1)</script>") => {
             results.push(cb.fail(
@@ -381,7 +385,13 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
             Severity::Medium,
         )
         .remediation("Restrict HTTP methods to GET/POST on API endpoints");
-        if let Some(code) = http_method(host, hub_port, method, "/hub/api/users", 5000) {
+        if let Some(code) = http_method(
+            host,
+            hub_port,
+            method,
+            "/hub/api/users",
+            HUB_FUZZ_TIMEOUT_MS,
+        ) {
             if code == 200 && (method == "DELETE" || method == "PUT") {
                 results.push(cb.fail(
                     &format!("{method} /hub/api/users returns 200"),
@@ -398,7 +408,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
 
     let cb = CheckBuilder::new("FUZ-HUB-TRACE", suite, Category::Fuzz, Severity::Medium)
         .remediation("Block TRACE method to prevent XST attacks");
-    match http_method(host, hub_port, "TRACE", "/hub/", 5000) {
+    match http_method(host, hub_port, "TRACE", "/hub/", HUB_FUZZ_TIMEOUT_MS) {
         Some(200) => results.push(cb.fail(
             "TRACE method echoes request — XST vulnerability",
             "HTTP 200",
@@ -422,7 +432,7 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     }
     drop(sockets);
     std::thread::sleep(Duration::from_secs(1));
-    match http_get(host, hub_port, "/hub/login", "", 5000) {
+    match http_get(host, hub_port, "/hub/login", "", HUB_FUZZ_TIMEOUT_MS) {
         Some((code, _, _)) if code == 200 || code == 302 => {
             results.push(cb.pass(
                 "Hub survives 50 concurrent connections",
@@ -439,5 +449,102 @@ fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
             "Hub degraded after connection flood",
             "No response post-flood",
         )),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fuzz_constants_are_sane() {
+        assert!(FUZZ_PAYLOAD_TIMEOUT_MS >= 1000);
+        assert!(FUZZ_TIMING_TIMEOUT_MS >= FUZZ_PAYLOAD_TIMEOUT_MS);
+        assert!(HUB_FUZZ_TIMEOUT_MS >= 1000);
+    }
+
+    #[test]
+    fn batch_100_payload_is_valid_json() {
+        let mut s = String::from("[");
+        for i in 0..100 {
+            if i > 0 {
+                s.push(',');
+            }
+            use std::fmt::Write as _;
+            let _ = write!(
+                s,
+                r#"{{"jsonrpc":"2.0","method":"health.liveness","id":{i}}}"#
+            );
+        }
+        s.push(']');
+        let parsed: serde_json::Value =
+            serde_json::from_str(&s).expect("batch payload must be valid JSON");
+        assert_eq!(parsed.as_array().unwrap().len(), 100);
+    }
+
+    #[test]
+    fn big_payload_structure() {
+        let mut big = br#"{"jsonrpc":"2.0","method":"health.liveness","params":{"data":""#.to_vec();
+        big.extend(std::iter::repeat_n(b'A', 1000));
+        big.extend(br#""},"id":1}"#);
+        let text = String::from_utf8(big).expect("big payload should be valid UTF-8");
+        assert!(text.len() > 1000, "big payload should exceed 1KB");
+        let parsed: serde_json::Value =
+            serde_json::from_str(&text).expect("big payload must be valid JSON");
+        assert_eq!(parsed["method"], "health.liveness");
+    }
+
+    #[test]
+    fn all_malformed_payloads_are_valid_byte_sequences() {
+        let payloads: Vec<(&str, Vec<u8>)> = vec![
+            ("empty_string", vec![]),
+            ("null_byte", vec![0]),
+            ("null_json", b"null".to_vec()),
+            ("empty_object", b"{}".to_vec()),
+            (
+                "no_jsonrpc",
+                br#"{"method":"health.liveness","id":1}"#.to_vec(),
+            ),
+            ("no_method", br#"{"jsonrpc":"2.0","id":1}"#.to_vec()),
+            (
+                "no_id",
+                br#"{"jsonrpc":"2.0","method":"health.liveness"}"#.to_vec(),
+            ),
+        ];
+        for (name, payload) in &payloads {
+            // Every payload must be constructable without panic
+            assert!(payload.len() <= 65536, "{name} payload is too large");
+        }
+    }
+
+    #[test]
+    fn binary_probes_are_non_empty() {
+        let probes: &[(&str, &[u8])] = &[
+            (
+                "tls_clienthello",
+                b"\x16\x03\x01\x00\xf1\x01\x00\x00\xed\x03\x03",
+            ),
+            ("http2_preface", b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"),
+            ("ssh_banner", b"SSH-2.0-OpenSSH_9.0\r\n"),
+            ("redis_ping", b"*1\r\n$4\r\nPING\r\n"),
+            ("memcached_stats", b"stats\r\n"),
+        ];
+        for (name, data) in probes {
+            assert!(!data.is_empty(), "{name} probe is empty");
+        }
+    }
+
+    #[test]
+    fn sqli_payloads_are_non_empty_strings() {
+        for sqli in [
+            "admin'--",
+            "admin' OR '1'='1",
+            r#"" OR ""="#,
+            r#"admin"; DROP TABLE users;--"#,
+        ] {
+            assert!(!sqli.is_empty(), "SQLi payload is empty");
+            let body = format!("username={sqli}&password=test");
+            assert!(body.contains(sqli));
+        }
     }
 }

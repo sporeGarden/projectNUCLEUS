@@ -277,6 +277,33 @@ mod tests {
     }
 
     #[test]
+    fn find_creds_explicit_path_returns_it() {
+        let p = Path::new("/tmp/test.json");
+        let result = find_creds_file(Some(p));
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), p);
+    }
+
+    #[test]
+    fn key_file_write_and_read_roundtrip() {
+        let dir = std::env::temp_dir().join("tunnelkeeper_key_gen_test");
+        let _ = fs::create_dir_all(&dir);
+        let key_path = dir.join(KEY_FILE);
+
+        let signing = ed25519_dalek::SigningKey::generate(&mut OsRng);
+        let key_bytes = signing.to_bytes();
+        fs::write(&key_path, key_bytes).unwrap();
+
+        let raw = fs::read(&key_path).unwrap();
+        assert!(raw.len() >= 32);
+        let mut key = [0u8; 32];
+        key.copy_from_slice(&raw[..32]);
+        assert_eq!(key, key_bytes);
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
     fn file_encrypt_decrypt_roundtrip() {
         let dir = std::env::temp_dir().join("tunnelkeeper_crypto_test");
         let _ = fs::create_dir_all(&dir);

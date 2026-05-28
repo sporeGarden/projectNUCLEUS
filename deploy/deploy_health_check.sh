@@ -3,6 +3,9 @@
 #
 # Sourced by deploy.sh. Expects the following variables:
 #   PLASMIDBIN_DIR, RUNTIME_DIR, FAMILY_ID, UDS_ONLY, PRIMALS, and all *_PORT variables.
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null || true
 #
 # Wave 56: UDS-only mode uses socket file existence checks instead of TCP probes.
 #

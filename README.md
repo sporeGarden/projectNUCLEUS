@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE (2026-05-27)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 56)**. **65 Rust tests PASS** (darkforest 44, tunnelKeeper 21). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1→NC-5 tracked. FlockGate H3-11 tracked.
+**Sovereignty evolution ACTIVE (2026-05-28)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 incl. knot-dns DNSSEC). Registry **460 methods (Wave 56)**. **166 Rust tests PASS** (darkforest 125, tunnelKeeper 41). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1→NC-5 tracked. FlockGate H3-11 tracked.
 
 ### Infrastructure
 
@@ -105,7 +105,8 @@ Gates connect to each other through chemical bonding patterns:
 - **`biomeos.spring_status` IMPLEMENTED** (v3.78): Binary discovery + workload counts. Registry at **460 methods** (Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed errors, env_keys centralized; cell graph `vps_standard` tagging; 12 primordial scripts archived to fossilRecord)
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 - **Wave 56 deployment standard**: `deploy.sh --uds-only` suppresses TCP ports across all 13 primals (VPS standard). `deploy_graph.sh` + `deploy_primal_start.sh` + `deploy_health_check.sh` all UDS-aware. Socket-based health checks in UDS-only mode. `primalspring checksums` + `primalspring registry` replace shell validation scripts
-- **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. 65 Rust tests PASS (darkforest 44, tunnelKeeper 21). Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
+- **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. **166 Rust tests PASS** (darkforest 125, tunnelKeeper 41). Coverage: darkforest 40.77%, tunnelKeeper 52.67%. Test runtime: darkforest 3s, tunnelKeeper 1s
+- **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
 - **Wave 46→56 upstream zero gate debt**: primalSpring v0.9.30 — 56 scenarios, 44-cell deployment matrix, 813 tests. All 14 primals pulled to latest. Deploy graphs 12/12 `secure_by_default`. `deny.toml` enforced. FlockGate gap tracked (H3-11). `--uds-only` VPS standard shipped Wave 56
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **LIVE**, S5 DNS **LIVE** (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
 
@@ -174,8 +175,8 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
 - **All primal ports bound `127.0.0.1`** — 13 primals + auxiliary ports (Phase 60 PG-55 default)
-- **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL)
-- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Replica count, unique origins, edge colo detection. Error-propagating API client, gate-agnostic credential paths
+- **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL). **125 unit tests** covering check, crypto, discovery, fuzz, net, observer, pentest, report modules. Newline-delimited JSON-RPC discovery (primal wire-native). 1.1 MB release binary, zero C deps
+- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Replica count, unique origins, edge colo detection. Error-propagating API client, gate-agnostic credential paths. Async-correct: blocking health checks on `spawn_blocking`, `tokio::fs` for credential reads. **41 unit tests**, 173 transitive deps (pure Rust except rustls TLS backend). 6.5 MB release binary
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 - **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 

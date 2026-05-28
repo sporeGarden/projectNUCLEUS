@@ -1,4 +1,8 @@
-use crate::net::send_jsonrpc;
+use crate::net::send_jsonrpc_newline;
+
+const DISCOVERY_TIMEOUT_MS: u64 = 3000;
+const LIVENESS_TIMEOUT_MS: u64 = 2000;
+const CAPABILITY_TIMEOUT_MS: u64 = 2000;
 
 /// Primal endpoint resolved through discovery or fallback
 #[derive(Debug, Clone)]
@@ -102,7 +106,7 @@ fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
         .unwrap_or(9800);
 
     let payload = r#"{"jsonrpc":"2.0","method":"primal.list","params":{},"id":1}"#;
-    let Some((_status, body)) = send_jsonrpc(host, biomeos_port, payload, 3000) else {
+    let Some(body) = send_jsonrpc_newline(host, biomeos_port, payload, DISCOVERY_TIMEOUT_MS) else {
         return Vec::new();
     };
 
@@ -155,7 +159,7 @@ fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
 /// Probe a single primal for liveness via JSON-RPC `health.liveness`
 pub fn probe_liveness(host: &str, primal: &mut ResolvedPrimal) {
     let payload = r#"{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":1}"#;
-    if let Some((_status, body)) = send_jsonrpc(host, primal.port, payload, 2000)
+    if let Some(body) = send_jsonrpc_newline(host, primal.port, payload, LIVENESS_TIMEOUT_MS)
         && let Ok(v) = serde_json::from_str::<serde_json::Value>(&body)
     {
         primal.live = v.get("result").is_some();
@@ -168,7 +172,7 @@ pub fn probe_liveness(host: &str, primal: &mut ResolvedPrimal) {
 /// Also accepts legacy `{ "methods": [...] }` or raw array for backward compat.
 pub fn probe_capabilities(host: &str, primal: &mut ResolvedPrimal) {
     let payload = r#"{"jsonrpc":"2.0","method":"capability.list","params":{},"id":1}"#;
-    if let Some((_status, body)) = send_jsonrpc(host, primal.port, payload, 2000)
+    if let Some(body) = send_jsonrpc_newline(host, primal.port, payload, CAPABILITY_TIMEOUT_MS)
         && let Ok(v) = serde_json::from_str::<serde_json::Value>(&body)
         && let Some(result) = v.get("result")
     {
@@ -265,6 +269,27 @@ mod tests {
 
         let none = by_capability(&primals, "nonexistent");
         assert!(none.is_empty());
+    }
+
+    #[test]
+    fn port_for_returns_known_primal_port() {
+        assert_eq!(port_for("beardog"), 9100);
+        assert_eq!(port_for("biomeos"), 9800);
+        assert_eq!(port_for("sweetgrass"), 9850);
+    }
+
+    #[test]
+    fn port_for_returns_zero_for_unknown() {
+        assert_eq!(port_for("nonexistent"), 0);
+    }
+
+    #[test]
+    fn resolve_primals_all_have_names_and_ports() {
+        let primals = resolve_primals("192.0.2.1");
+        for p in &primals {
+            assert!(!p.name.is_empty(), "primal has empty name");
+            assert!(p.port > 1024, "{} port {} too low", p.name, p.port);
+        }
     }
 
     #[test]

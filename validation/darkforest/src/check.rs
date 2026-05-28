@@ -1,5 +1,4 @@
 use serde::Serialize;
-use std::process::Command;
 use std::time::Instant;
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq)]
@@ -117,10 +116,35 @@ impl CheckBuilder {
 }
 
 pub fn iso_now() -> String {
-    Command::new("date").arg("-Iseconds").output().map_or_else(
-        |_| String::from("unknown"),
-        |o| String::from_utf8_lossy(&o.stdout).trim().to_string(),
-    )
+    use std::time::SystemTime;
+
+    let now = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or_default();
+    let secs = now.as_secs();
+
+    // Convert to UTC broken-down time (no external crate needed)
+    let days = secs / 86400;
+    let time_of_day = secs % 86400;
+    let hours = time_of_day / 3600;
+    let minutes = (time_of_day % 3600) / 60;
+    let seconds = time_of_day % 60;
+
+    // Days since 1970-01-01 to Y-M-D (civil_from_days algorithm)
+    #[allow(clippy::cast_possible_wrap)]
+    let z = days as i64 + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097) as u64;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
+    #[allow(clippy::cast_possible_wrap)]
+    let y = (yoe as i64) + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+
+    format!("{y:04}-{m:02}-{d:02}T{hours:02}:{minutes:02}:{seconds:02}+00:00")
 }
 
 pub struct Primal {
@@ -152,9 +176,17 @@ pub fn hub_port() -> u16 {
         .unwrap_or(8000)
 }
 
-pub const COMPUTE_USER: &str = "tamison";
-pub const REVIEWER_USER: &str = "abgreviewer";
-pub const OBSERVER_USER: &str = "abg-test";
+pub fn compute_user() -> String {
+    std::env::var("DARKFOREST_COMPUTE_USER").unwrap_or_else(|_| "tamison".into())
+}
+
+pub fn reviewer_user() -> String {
+    std::env::var("DARKFOREST_REVIEWER_USER").unwrap_or_else(|_| "abgreviewer".into())
+}
+
+pub fn observer_user() -> String {
+    std::env::var("DARKFOREST_OBSERVER_USER").unwrap_or_else(|_| "abg-test".into())
+}
 
 #[cfg(test)]
 mod tests {
@@ -261,5 +293,23 @@ mod tests {
     fn category_serde_roundtrip() {
         let json = serde_json::to_string(&Category::InfoLeak).unwrap();
         assert_eq!(json, "\"info_leak\"");
+    }
+
+    #[test]
+    fn iso_now_returns_valid_iso8601() {
+        let ts = iso_now();
+        assert!(
+            ts.contains('T'),
+            "timestamp should contain T separator: {ts}"
+        );
+        assert!(
+            ts.contains('-'),
+            "timestamp should contain date dashes: {ts}"
+        );
+        assert!(
+            ts.contains(':'),
+            "timestamp should contain time colons: {ts}"
+        );
+        assert!(ts.len() >= 19, "timestamp too short: {ts}");
     }
 }

@@ -61,10 +61,17 @@ pub async fn run(
 ) -> Result<(), ConfigError> {
     let config = TunnelConfig::load(config_path)?;
 
-    let process = check_process();
-    let connectivity = check_connectivity(&config);
-    let dns = check_dns(&config);
-    let config_health = check_config(&config);
+    let cfg_for_blocking = config.clone();
+    let (process, connectivity, dns, config_health) = tokio::task::spawn_blocking(move || {
+        let process = check_process();
+        let connectivity = check_connectivity(&cfg_for_blocking);
+        let dns = check_dns(&cfg_for_blocking);
+        let config_health = check_config(&cfg_for_blocking);
+        (process, connectivity, dns, config_health)
+    })
+    .await
+    .map_err(|e| ConfigError::Other(format!("health check task failed: {e}")))?;
+
     let replicas = check_replicas(api_token, &config).await;
 
     let overall =
@@ -102,10 +109,8 @@ pub async fn run(
     };
 
     if json {
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&report).unwrap_or_default()
-        );
+        let json_str = serde_json::to_string_pretty(&report)?;
+        println!("{json_str}");
     } else {
         print_report(&report);
     }
@@ -163,7 +168,9 @@ async fn check_replicas(api_token: Option<&str>, config: &TunnelConfig) -> Repli
 }
 
 async fn try_cf_api_check(token: &str, config: &TunnelConfig) -> Option<api::TunnelInfo> {
-    let raw = std::fs::read_to_string(&config.credentials_file).ok()?;
+    let raw = tokio::fs::read_to_string(&config.credentials_file)
+        .await
+        .ok()?;
     let creds: serde_json::Value = serde_json::from_str(&raw).ok()?;
     let account_id = creds.get("AccountTag")?.as_str()?;
     let client = api::Client::new(token, account_id).ok()?;
@@ -230,8 +237,7 @@ fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
             };
         };
         let start = Instant::now();
-        let reachable =
-            TcpStream::connect_timeout(&socket_addr, Duration::from_secs(3)).is_ok();
+        let reachable = TcpStream::connect_timeout(&socket_addr, Duration::from_secs(3)).is_ok();
         let latency = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
         return ConnectivityHealth {
@@ -250,9 +256,11 @@ fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
 
 fn check_dns(config: &TunnelConfig) -> DnsHealth {
     let fallback_host;
-    let hostname = if let Some(h) = config.ingress.iter().find_map(|r| r.hostname.as_deref()) { h } else {
-        fallback_host = std::env::var("TUNNEL_HOSTNAME")
-            .unwrap_or_else(|_| "lab.primals.eco".to_string());
+    let hostname = if let Some(h) = config.ingress.iter().find_map(|r| r.hostname.as_deref()) {
+        h
+    } else {
+        fallback_host =
+            std::env::var("TUNNEL_HOSTNAME").unwrap_or_else(|_| "lab.primals.eco".to_string());
         if fallback_host == "lab.primals.eco" {
             eprintln!("WARN: no ingress hostname in config — using default lab.primals.eco");
         }
@@ -452,7 +460,43 @@ mod tests {
     }
 
     #[test]
-    fn dns_health_returns_a_result() {
+    fn dns_hostname_extracted_from_first_ingress() {
+        let config = test_config();
+        // Verify hostname extraction without running DNS resolution
+        let hostname = config
+            .ingress
+            .iter()
+            .find_map(|r| r.hostname.as_deref())
+            .unwrap();
+        assert_eq!(hostname, "lab.test.eco");
+    }
+
+    #[test]
+    fn dns_resolves_localhost() {
+        let config = TunnelConfig {
+            tunnel: "t".to_string(),
+            credentials_file: String::new(),
+            ingress: vec![
+                IngressRule {
+                    hostname: Some("localhost".to_string()),
+                    path: None,
+                    service: "http://127.0.0.1:8000".to_string(),
+                },
+                IngressRule {
+                    hostname: None,
+                    path: None,
+                    service: "http_status:404".to_string(),
+                },
+            ],
+        };
+        let dns = check_dns(&config);
+        assert_eq!(dns.hostname, "localhost");
+        assert!(dns.resolves, "localhost should resolve");
+    }
+
+    #[test]
+    #[ignore = "slow: attempts real DNS resolution of non-existent domain (65s)"]
+    fn dns_health_returns_a_result_slow() {
         let config = test_config();
         let dns = check_dns(&config);
         assert_eq!(dns.hostname, "lab.test.eco");
@@ -464,6 +508,53 @@ mod tests {
         if !process.running {
             assert!(process.pid.is_none());
         }
+    }
+
+    #[test]
+    fn check_config_with_credentials_file() {
+        let dir = std::env::temp_dir().join("tk_test_health_creds");
+        let _ = std::fs::create_dir_all(&dir);
+        let creds_path = dir.join("creds.json");
+        std::fs::write(&creds_path, r#"{"AccountTag":"abc"}"#).unwrap();
+
+        let config = TunnelConfig {
+            tunnel: "test-id".to_string(),
+            credentials_file: creds_path.to_string_lossy().to_string(),
+            ingress: vec![IngressRule {
+                hostname: Some("test.eco".to_string()),
+                path: None,
+                service: "http://127.0.0.1:8000".to_string(),
+            }],
+        };
+        let health = check_config(&config);
+        assert!(health.valid);
+        assert!(health.credentials_readable);
+        assert_eq!(health.ingress_rules, 1);
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn check_config_empty_credentials_file_not_readable() {
+        let dir = std::env::temp_dir().join("tk_test_health_empty_creds");
+        let _ = std::fs::create_dir_all(&dir);
+        let creds_path = dir.join("empty.json");
+        std::fs::write(&creds_path, "").unwrap();
+
+        let config = TunnelConfig {
+            tunnel: "test-id".to_string(),
+            credentials_file: creds_path.to_string_lossy().to_string(),
+            ingress: vec![IngressRule {
+                hostname: Some("test.eco".to_string()),
+                path: None,
+                service: "http://127.0.0.1:8000".to_string(),
+            }],
+        };
+        let health = check_config(&config);
+        assert!(health.valid);
+        assert!(!health.credentials_readable);
+
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]

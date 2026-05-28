@@ -3,6 +3,60 @@ use crate::check::{Category, CheckBuilder, CheckResult, Severity};
 use crate::net::sudo_cmd;
 use std::time::SystemTime;
 
+fn cookie_permissions_acceptable(perms: &str, owner: &str) -> bool {
+    let perms_ok = perms == "600" || perms == "400";
+    let owner_ok = owner == "root" || owner == "irongate";
+    perms_ok && owner_ok
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SensitiveModeVerdict {
+    Ok,
+    WorldReadable,
+    GroupReadable,
+}
+
+fn classify_sensitive_file_mode(perms: &str) -> SensitiveModeVerdict {
+    let mode: u32 = perms.parse().unwrap_or(777);
+    let world_readable = mode % 10 >= 4;
+    let group_readable = (mode / 10) % 10 >= 4;
+
+    if world_readable {
+        SensitiveModeVerdict::WorldReadable
+    } else if group_readable && mode != 640 {
+        SensitiveModeVerdict::GroupReadable
+    } else {
+        SensitiveModeVerdict::Ok
+    }
+}
+
+fn ls_line_world_accessible(line: &str) -> bool {
+    let chars: Vec<char> = line.chars().collect();
+    chars.len() > 9 && (chars[7] == 'r' || chars[8] == 'w')
+}
+
+fn evaluate_cookie_secret_content(content: &str) -> Result<(f64, usize), &'static str> {
+    let secret = content.trim();
+    if secret.is_empty() {
+        return Err("empty");
+    }
+
+    let raw = hex_decode(secret);
+    let byte_len = raw.as_ref().map_or(secret.len(), Vec::len);
+
+    if byte_len < 32 {
+        return Err("short");
+    }
+
+    let data = raw.as_deref().unwrap_or(secret.as_bytes());
+    let ent = shannon_entropy(data);
+    if ent < 4.0 {
+        return Err("low_entropy");
+    }
+
+    Ok((ent, byte_len))
+}
+
 pub fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>) {
     println!("── CRY-01: Cookie Secret Entropy ──");
     let cb = CheckBuilder::new("CRY-01", "crypto", Category::Crypto, Severity::Critical)
@@ -15,30 +69,36 @@ pub fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>)
         return;
     }
 
-    let secret = content.trim();
-    let raw = hex_decode(secret);
-    let byte_len = raw.as_ref().map_or(secret.len(), Vec::len);
-
-    if byte_len < 32 {
-        results.push(cb.fail(
-            &format!("Cookie secret too short: {byte_len} bytes (need >= 32)"),
-            &format!("length={byte_len}"),
-        ));
-        return;
-    }
-
-    let data = raw.as_deref().unwrap_or(secret.as_bytes());
-    let ent = shannon_entropy(data);
-    if ent < 4.0 {
-        results.push(cb.fail(
-            &format!("Cookie secret low entropy: {ent:.2} bits/byte (need >= 4.0)"),
-            &format!("entropy={ent:.2}, length={byte_len}"),
-        ));
-    } else {
-        results.push(cb.pass(
-            &format!("Cookie secret entropy OK: {ent:.2} bits/byte, {byte_len} bytes"),
-            &format!("entropy={ent:.2}, length={byte_len}"),
-        ));
+    match evaluate_cookie_secret_content(&content) {
+        Err("empty") => {
+            results.push(cb.fail("Cookie secret file not readable or empty", &secret_path));
+        }
+        Err("short") => {
+            let secret = content.trim();
+            let byte_len = hex_decode(secret).map_or(secret.len(), |v| v.len());
+            results.push(cb.fail(
+                &format!("Cookie secret too short: {byte_len} bytes (need >= 32)"),
+                &format!("length={byte_len}"),
+            ));
+        }
+        Err("low_entropy") => {
+            let secret = content.trim();
+            let raw = hex_decode(secret);
+            let byte_len = raw.as_ref().map_or(secret.len(), Vec::len);
+            let data = raw.as_deref().unwrap_or(secret.as_bytes());
+            let ent = shannon_entropy(data);
+            results.push(cb.fail(
+                &format!("Cookie secret low entropy: {ent:.2} bits/byte (need >= 4.0)"),
+                &format!("entropy={ent:.2}, length={byte_len}"),
+            ));
+        }
+        Ok((ent, byte_len)) => {
+            results.push(cb.pass(
+                &format!("Cookie secret entropy OK: {ent:.2} bits/byte, {byte_len} bytes"),
+                &format!("entropy={ent:.2}, length={byte_len}"),
+            ));
+        }
+        Err(_) => unreachable!(),
     }
 }
 
@@ -94,10 +154,7 @@ pub fn cry_03_cookie_permissions(cfg: &CryptoConfig, results: &mut Vec<CheckResu
     let perms = parts.first().unwrap_or(&"???");
     let owner = parts.get(1).unwrap_or(&"???");
 
-    let perms_ok = *perms == "600" || *perms == "400";
-    let owner_ok = *owner == "root" || *owner == "irongate";
-
-    if perms_ok && owner_ok {
+    if cookie_permissions_acceptable(perms, owner) {
         results.push(cb.pass(
             &format!("Cookie secret permissions OK: mode={perms}, owner={owner}"),
             &format!("{perms} {owner}"),
@@ -136,25 +193,25 @@ pub fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<C
         }
 
         let perms = stat_out.trim();
-        let mode: u32 = perms.parse().unwrap_or(777);
-        let world_readable = mode % 10 >= 4;
-        let group_readable = (mode / 10) % 10 >= 4;
-
-        if world_readable {
-            results.push(cb.fail(
-                &format!("{label}: world-readable ({perms})"),
-                &format!("{path} mode={perms}"),
-            ));
-        } else if group_readable && mode != 640 {
-            results.push(cb.dark(
-                &format!("{label}: group-readable ({perms}) — review group membership"),
-                &format!("{path} mode={perms}"),
-            ));
-        } else {
-            results.push(cb.pass(
-                &format!("{label}: permissions OK ({perms})"),
-                &format!("{path} mode={perms}"),
-            ));
+        match classify_sensitive_file_mode(perms) {
+            SensitiveModeVerdict::WorldReadable => {
+                results.push(cb.fail(
+                    &format!("{label}: world-readable ({perms})"),
+                    &format!("{path} mode={perms}"),
+                ));
+            }
+            SensitiveModeVerdict::GroupReadable => {
+                results.push(cb.dark(
+                    &format!("{label}: group-readable ({perms}) — review group membership"),
+                    &format!("{path} mode={perms}"),
+                ));
+            }
+            SensitiveModeVerdict::Ok => {
+                results.push(cb.pass(
+                    &format!("{label}: permissions OK ({perms})"),
+                    &format!("{path} mode={perms}"),
+                ));
+            }
         }
     }
 
@@ -173,10 +230,7 @@ pub fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<C
             Severity::Critical,
         )
         .remediation("chmod 600 ~/.cloudflared/*.json");
-        let has_world = creds_out.lines().any(|l| {
-            let chars: Vec<char> = l.chars().collect();
-            chars.len() > 9 && (chars[7] == 'r' || chars[8] == 'w')
-        });
+        let has_world = creds_out.lines().any(ls_line_world_accessible);
         if has_world {
             results.push(cb.fail(
                 "Tunnel credential files world-readable",
@@ -188,5 +242,121 @@ pub fn cry_13_sensitive_file_permissions(cfg: &CryptoConfig, results: &mut Vec<C
                 "Not world-readable",
             ));
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn cookie_permissions_acceptable_for_root_600() {
+        assert!(cookie_permissions_acceptable("600", "root"));
+    }
+
+    #[test]
+    fn cookie_permissions_acceptable_for_irongate_400() {
+        assert!(cookie_permissions_acceptable("400", "irongate"));
+    }
+
+    #[test]
+    fn cookie_permissions_rejects_world_readable() {
+        assert!(!cookie_permissions_acceptable("644", "root"));
+    }
+
+    #[test]
+    fn cookie_permissions_rejects_wrong_owner() {
+        assert!(!cookie_permissions_acceptable("600", "nobody"));
+    }
+
+    #[test]
+    fn classify_sensitive_file_mode_secure() {
+        assert_eq!(
+            classify_sensitive_file_mode("600"),
+            SensitiveModeVerdict::Ok
+        );
+    }
+
+    #[test]
+    fn classify_sensitive_file_mode_world_readable() {
+        assert_eq!(
+            classify_sensitive_file_mode("644"),
+            SensitiveModeVerdict::WorldReadable
+        );
+    }
+
+    #[test]
+    fn classify_sensitive_file_mode_group_readable_not_640() {
+        assert_eq!(
+            classify_sensitive_file_mode("660"),
+            SensitiveModeVerdict::GroupReadable
+        );
+    }
+
+    #[test]
+    fn classify_sensitive_file_mode_640_is_ok() {
+        assert_eq!(
+            classify_sensitive_file_mode("640"),
+            SensitiveModeVerdict::Ok
+        );
+    }
+
+    #[test]
+    fn ls_line_world_accessible_detects_world_read() {
+        let line = "-rw-r--r-- 1 root root 123 Jan 1 00:00 cred.json";
+        assert!(ls_line_world_accessible(line));
+    }
+
+    #[test]
+    fn ls_line_world_accessible_secure_line() {
+        let line = "-rw------- 1 root root 123 Jan 1 00:00 cred.json";
+        assert!(!ls_line_world_accessible(line));
+    }
+
+    #[test]
+    fn evaluate_cookie_secret_content_rejects_empty() {
+        assert_eq!(evaluate_cookie_secret_content("   \n"), Err("empty"));
+    }
+
+    #[test]
+    fn evaluate_cookie_secret_content_rejects_short_secret() {
+        assert_eq!(evaluate_cookie_secret_content("abcd"), Err("short"));
+    }
+
+    #[test]
+    fn evaluate_cookie_secret_content_rejects_low_entropy() {
+        let secret = "aa".repeat(32);
+        assert_eq!(evaluate_cookie_secret_content(&secret), Err("low_entropy"));
+    }
+
+    #[test]
+    fn evaluate_cookie_secret_content_accepts_high_entropy_hex() {
+        let secret = (0..32u32)
+            .map(|i| format!("{:02x}", (i.wrapping_mul(37).wrapping_add(13)) & 0xFF))
+            .collect::<String>();
+        let result = evaluate_cookie_secret_content(&secret);
+        assert!(result.is_ok());
+        let (ent, byte_len) = result.unwrap();
+        assert_eq!(byte_len, 32);
+        assert!(ent >= 4.0);
+    }
+
+    #[test]
+    fn evaluate_cookie_secret_from_temp_file() {
+        let dir = std::env::temp_dir().join("darkforest_test_cookie_secret");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("jupyterhub_cookie_secret");
+        let secret = (0..32u32)
+            .map(|i| format!("{:02x}", (i.wrapping_mul(53).wrapping_add(7)) & 0xFF))
+            .collect::<String>();
+        fs::write(&path, &secret).expect("write secret");
+
+        let content = fs::read_to_string(&path).expect("read secret");
+        let result = evaluate_cookie_secret_content(&content);
+        assert!(result.is_ok());
+
+        let _ = fs::remove_file(&path);
+        let _ = fs::remove_dir(&dir);
     }
 }

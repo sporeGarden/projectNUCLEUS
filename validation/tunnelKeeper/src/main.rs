@@ -152,7 +152,11 @@ async fn main() {
     if let Err(e) = result {
         if cli.json {
             let err = serde_json::json!({"error": e.to_string()});
-            eprintln!("{}", serde_json::to_string_pretty(&err).unwrap_or_default());
+            eprintln!(
+                "{}",
+                serde_json::to_string_pretty(&err)
+                    .unwrap_or_else(|_| format!("{{\"error\": \"{e}\"}}"))
+            );
         } else {
             eprintln!("ERROR: {e}");
         }

@@ -178,4 +178,18 @@ mod tests {
         let _ = fs::remove_file(&path);
         let _ = fs::remove_dir(&dir);
     }
+
+    #[test]
+    fn print_functions_do_not_panic() {
+        let results = vec![
+            CheckBuilder::new("T-01", "test", Category::Network, Severity::Info)
+                .pass("ok", "evidence"),
+            CheckBuilder::new("T-02", "test", Category::Crypto, Severity::High)
+                .fail("bad", "evidence"),
+        ];
+        print_pipe(&results);
+        let report = Report::build(results, "127.0.0.1", "test", "2026-01-01T00:00:00Z", 100);
+        print_banner("test", "2026-01-01T00:00:00Z");
+        print_summary(&report);
+    }
 }

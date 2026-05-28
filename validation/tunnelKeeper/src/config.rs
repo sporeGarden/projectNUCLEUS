@@ -18,6 +18,8 @@ pub enum ConfigError {
     Api(#[from] api::ApiError),
     #[error("crypto error: {0}")]
     Crypto(#[from] crate::crypto::CryptoError),
+    #[error("JSON serialization failed: {0}")]
+    Json(#[from] serde_json::Error),
     #[error("{0}")]
     Other(String),
 }
@@ -59,10 +61,8 @@ impl TunnelConfig {
 pub fn show(config_path: &Path, json: bool) -> Result<(), ConfigError> {
     let config = TunnelConfig::load(config_path)?;
     if json {
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&config).unwrap_or_default()
-        );
+        let json_str = serde_json::to_string_pretty(&config)?;
+        println!("{json_str}");
     } else {
         println!("Tunnel: {}", config.tunnel);
         println!("Credentials: {}", config.credentials_file);
@@ -103,16 +103,14 @@ pub async fn sync(
         if !json {
             println!("Remote config for tunnel '{}':", config.tunnel);
         }
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&remote).unwrap_or_default()
-        );
+        let json_str = serde_json::to_string_pretty(&remote)?;
+        println!("{json_str}");
     } else {
         let ingress_payload: Vec<serde_json::Value> = config
             .ingress
             .iter()
-            .filter_map(|r| serde_json::to_value(r).ok())
-            .collect();
+            .map(serde_json::to_value)
+            .collect::<Result<Vec<_>, _>>()?;
 
         client
             .put_tunnel_config(&config.tunnel, &ingress_payload)
@@ -138,10 +136,8 @@ pub async fn sync(
 pub fn route_list(config_path: &Path, json: bool) -> Result<(), ConfigError> {
     let config = TunnelConfig::load(config_path)?;
     if json {
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&config.ingress).unwrap_or_default()
-        );
+        let json_str = serde_json::to_string_pretty(&config.ingress)?;
+        println!("{json_str}");
     } else {
         println!("Ingress rules ({}):", config.ingress.len());
         for (i, rule) in config.ingress.iter().enumerate() {
@@ -308,5 +304,108 @@ ingress:
         let yaml = "hostname: lab.primals.eco\npath: \"/api/.*\"\nservice: http://127.0.0.1:8000\n";
         let rule: IngressRule = serde_saphyr::from_str(yaml).unwrap();
         assert_eq!(rule.path.as_deref(), Some("/api/.*"));
+    }
+
+    #[test]
+    fn route_add_inserts_before_catchall() {
+        let dir = std::env::temp_dir().join("tk_test_route_add");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("config.yml");
+
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        config.save(&path).unwrap();
+
+        route_add(
+            &path,
+            "new.primals.eco",
+            None,
+            "http://127.0.0.1:9999",
+            false,
+        )
+        .unwrap();
+
+        let loaded = TunnelConfig::load(&path).unwrap();
+        assert_eq!(loaded.ingress.len(), 4);
+        // New rule should be before the catch-all (last)
+        assert_eq!(
+            loaded.ingress[2].hostname.as_deref(),
+            Some("new.primals.eco")
+        );
+        assert!(loaded.ingress[3].hostname.is_none()); // catch-all stays last
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn route_rm_removes_matching_path() {
+        let dir = std::env::temp_dir().join("tk_test_route_rm");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("config.yml");
+
+        let mut config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        config.ingress.insert(
+            1,
+            IngressRule {
+                hostname: Some("test.eco".to_string()),
+                path: Some("/api/.*".to_string()),
+                service: "http://127.0.0.1:9000".to_string(),
+            },
+        );
+        config.save(&path).unwrap();
+
+        route_rm(&path, "/api/.*", false).unwrap();
+
+        let loaded = TunnelConfig::load(&path).unwrap();
+        assert!(
+            loaded
+                .ingress
+                .iter()
+                .all(|r| r.path.as_deref() != Some("/api/.*"))
+        );
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn route_rm_nonexistent_returns_error() {
+        let dir = std::env::temp_dir().join("tk_test_route_rm_err");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("config.yml");
+
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        config.save(&path).unwrap();
+
+        let result = route_rm(&path, "/nonexistent", false);
+        assert!(result.is_err());
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn show_json_does_not_panic() {
+        let dir = std::env::temp_dir().join("tk_test_show_json");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("config.yml");
+
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        config.save(&path).unwrap();
+
+        show(&path, true).unwrap();
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn route_list_json_does_not_panic() {
+        let dir = std::env::temp_dir().join("tk_test_route_list_json");
+        let _ = fs::create_dir_all(&dir);
+        let path = dir.join("config.yml");
+
+        let config: TunnelConfig = serde_saphyr::from_str(SAMPLE_YAML).unwrap();
+        config.save(&path).unwrap();
+
+        route_list(&path, true).unwrap();
+
+        let _ = fs::remove_dir_all(&dir);
     }
 }

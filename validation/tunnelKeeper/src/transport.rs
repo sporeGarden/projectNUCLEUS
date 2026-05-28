@@ -35,6 +35,10 @@ pub struct TransportHealth {
 /// The dual-architecture pattern: external service (Cloudflare) is primary,
 /// primal implementation (Songbird/BearDog) runs as shadow, until parity
 /// metrics confirm the primal path is equivalent or better.
+#[expect(
+    dead_code,
+    reason = "Planned transport evolution: common interface for Cloudflare, Songbird, and BearDog backends"
+)]
 pub trait TunnelTransport {
     fn name(&self) -> &str;
 
@@ -48,6 +52,10 @@ pub trait TunnelTransport {
     ) -> Pin<Box<dyn Future<Output = Result<TransportHealth, TransportError>> + Send + '_>>;
 }
 
+#[expect(
+    dead_code,
+    reason = "Planned transport evolution: error surface for Songbird/BearDog transport backends"
+)]
 #[derive(Debug, thiserror::Error)]
 pub enum TransportError {
     #[error("transport unavailable: {0}")]
@@ -74,6 +82,13 @@ impl Default for CloudflareTunnelTransport {
 
 impl CloudflareTunnelTransport {
     #[must_use]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Planned transport evolution: constructor for custom cloudflared binary path"
+        )
+    )]
     pub fn new(bin_path: &str) -> Self {
         Self {
             cloudflared_bin: bin_path.to_string(),
@@ -147,36 +162,53 @@ impl TunnelTransport for CloudflareTunnelTransport {
     }
 }
 
-// ─── v0.2: Songbird Transport (planned) ────────────────────────────
-//
-// When songbird-quic and songbird-tls are wired as library dependencies:
-//
-// ```rust
-// pub struct SongbirdTransport {
-//     quic_config: songbird_quic::QuicConfig,
-//     tls_config: songbird_tls::TlsConfig,
-//     crypto_provider: songbird_crypto_provider::Provider,
-// }
-//
-// impl TunnelTransport for SongbirdTransport {
-//     fn name(&self) -> &str { "songbird" }
-//     // QUIC connection establishment via songbird-quic
-//     // TLS 1.3 handshake via songbird-tls
-//     // Crypto delegation to BearDog via songbird-crypto-provider IPC
-// }
-// ```
+// Planned transports (see specs/TUNNEL_EVOLUTION.md):
+// - v0.2 SongbirdTransport: Pure Rust QUIC + TLS via songbird-quic/songbird-tls
+// - v0.3 BearDogAuthTransport: Primal-native auth (Ed25519 ionic) + tunnel crypto (ChaCha20-Poly1305)
 
-// ─── v0.3: BearDog Auth Transport (planned) ────────────────────────
-//
-// Full primal-native transport with BearDog handling:
-// - Identity (beardog-auth): Ed25519/X25519 ionic tokens
-// - Tunnel crypto (beardog-tunnel): ChaCha20-Poly1305 tunnel encryption
-// - Threat detection (beardog-threat): Dark Forest challenge-response
-//
-// ```rust
-// pub struct BearDogAuthTransport {
-//     auth: beardog_auth::AuthClient,
-//     tunnel: beardog_tunnel::TunnelClient,
-//     songbird: SongbirdTransport,
-// }
-// ```
+#[cfg(all(test, feature = "songbird-transport"))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cloudflare_transport_default_has_cloudflared_bin() {
+        let t = CloudflareTunnelTransport::default();
+        assert_eq!(t.cloudflared_bin, "cloudflared");
+    }
+
+    #[test]
+    fn cloudflare_transport_new_sets_bin_path() {
+        let t = CloudflareTunnelTransport::new("/usr/local/bin/cloudflared");
+        assert_eq!(t.cloudflared_bin, "/usr/local/bin/cloudflared");
+    }
+
+    #[test]
+    fn transport_error_display() {
+        let e = TransportError::Unavailable("test".to_string());
+        assert!(e.to_string().contains("test"));
+    }
+
+    #[test]
+    fn tunnel_handle_serialization() {
+        let h = TunnelHandle {
+            transport_name: "cloudflare (2024.1.0)".to_string(),
+            status: "running".to_string(),
+            endpoint: "test-tunnel".to_string(),
+        };
+        let json = serde_json::to_string(&h).unwrap();
+        assert!(json.contains("cloudflare"));
+    }
+
+    #[test]
+    fn transport_health_serialization() {
+        let h = TransportHealth {
+            transport_name: "cloudflare".to_string(),
+            healthy: true,
+            latency_ms: Some(5),
+            detail: "ok".to_string(),
+        };
+        let json = serde_json::to_string(&h).unwrap();
+        let v: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v["healthy"], true);
+    }
+}

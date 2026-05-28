@@ -304,3 +304,225 @@ pub fn run(host: &str, results: &mut Vec<CheckResult>) {
     check_response_headers(host, results);
     check_dir_blocking(host, results);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::check::Status;
+    use std::fs;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    fn temp_html_export() -> (PathBuf, PathBuf) {
+        let n = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let base = std::env::temp_dir().join(format!("darkforest_observer_test_{n}"));
+        let dir = base.join("html_export");
+        let _ = fs::remove_dir_all(&base);
+        fs::create_dir_all(&dir).expect("create html_export");
+        (base, dir)
+    }
+
+    fn write_page(dir: &Path, name: &str, body: &str) {
+        fs::write(dir.join(name), body).expect("write html");
+    }
+
+    fn good_page_body() -> String {
+        format!(
+            "<html><head>{THEME_MARKER}</head><body><nav ><a href=\"index.html\">Home</a></nav></body></html>"
+        )
+    }
+
+    fn cleanup(base: &Path) {
+        let _ = fs::remove_dir_all(base);
+    }
+
+    #[test]
+    fn collect_html_finds_nested_files() {
+        let (base, dir) = temp_html_export();
+        let nested = dir.join("subdir");
+        fs::create_dir_all(&nested).expect("mkdir");
+        write_page(&dir, "index.html", "<html></html>");
+        write_page(&nested, "page.html", "<html></html>");
+        fs::write(dir.join("notes.txt"), "skip").expect("write txt");
+
+        let files = collect_html(&dir);
+        assert_eq!(files.len(), 2);
+        assert!(files.iter().any(|p| p.ends_with("page.html")));
+
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_html_exists_fails_on_empty_dir() {
+        let (base, dir) = temp_html_export();
+        let mut results = Vec::new();
+        let files = check_html_exists(&dir, &mut results);
+        assert!(files.is_empty());
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_html_exists_passes_with_files() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let mut results = Vec::new();
+        let files = check_html_exists(&dir, &mut results);
+        assert_eq!(files.len(), 1);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_theme_passes_with_marker() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_theme(&dir, &files, &mut results);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_theme_fails_without_marker() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", "<html><body>plain</body></html>");
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_theme(&dir, &files, &mut results);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_theme_skips_index_html() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "index.html", "<html><body>no theme</body></html>");
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_theme(&dir, &files, &mut results);
+        assert!(results.is_empty());
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_nav_passes_with_home_link() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_nav(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_nav_fails_without_nav() {
+        let (base, dir) = temp_html_export();
+        write_page(
+            &dir,
+            "page.html",
+            &format!("<html><head>{THEME_MARKER}</head><body>no nav</body></html>"),
+        );
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_nav(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_no_voila_links_passes_when_clean() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_no_voila_links(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_no_voila_links_fails_when_present() {
+        let (base, dir) = temp_html_export();
+        write_page(
+            &dir,
+            "page.html",
+            &format!("<html>{VOILA_LINK}{THEME_MARKER}</html>"),
+        );
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_no_voila_links(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_no_tracebacks_passes_when_clean() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_no_tracebacks(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_no_tracebacks_fails_when_present() {
+        let (base, dir) = temp_html_export();
+        write_page(
+            &dir,
+            "page.html",
+            &format!("<html>{TRACEBACK}{THEME_MARKER}</html>"),
+        );
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_no_tracebacks(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_source_stripped_passes_without_input_prompt() {
+        let (base, dir) = temp_html_export();
+        write_page(&dir, "page.html", &good_page_body());
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_source_stripped(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Pass);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn check_source_stripped_fails_with_input_prompt() {
+        let (base, dir) = temp_html_export();
+        write_page(
+            &dir,
+            "page.html",
+            &format!("<html>{INPUT_PROMPT_MARKER}{THEME_MARKER}</html>"),
+        );
+        let files = collect_html(&dir);
+        let mut results = Vec::new();
+        check_source_stripped(&dir, &files, &mut results);
+        assert_eq!(results[0].status, Status::Fail);
+        cleanup(&base);
+    }
+
+    #[test]
+    fn html_dir_ends_with_html_export() {
+        let dir = html_dir();
+        assert!(dir.ends_with("public/.pappusCast/html_export"));
+    }
+
+    #[test]
+    fn observer_port_defaults_to_8866() {
+        let port = observer_port();
+        assert!(port == 8866 || std::env::var("VOILA_PORT").is_ok());
+    }
+}

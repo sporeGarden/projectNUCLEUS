@@ -126,13 +126,13 @@ echo "── Phase 2: DAG Session (rhizoCrypt) ──"
 
 if $RHIZOCRYPT_LIVE; then
     SESSION_NAME="membrane-verify-$(date +%Y%m%d-%H%M%S)"
-    dag_resp=$(rpc_remote 9602 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"name\":\"$SESSION_NAME\"},\"id\":10}")
+    dag_resp=$(rpc_remote "$RHIZOCRYPT_RPC_PORT" "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"name\":\"$SESSION_NAME\"},\"id\":10}")
     SESSION_ID=$(echo "$dag_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('result',''))" 2>/dev/null || true)
 
     if [[ -n "$SESSION_ID" && "$SESSION_ID" != "None" && "$SESSION_ID" != "" ]]; then
         pass "TRIO-05" "DAG session created: ${SESSION_ID:0:20}..."
 
-        event_resp=$(rpc_remote 9602 "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"type\":\"membrane_verify\",\"timestamp\":\"$(date -Iseconds)\"}},\"id\":11}")
+        event_resp=$(rpc_remote "$RHIZOCRYPT_RPC_PORT" "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"type\":\"membrane_verify\",\"timestamp\":\"$(date -Iseconds)\"}},\"id\":11}")
         if echo "${event_resp:-}" | grep -q '"result"'; then
             pass "TRIO-06" "DAG event appended"
         else
@@ -152,7 +152,7 @@ echo ""
 echo "── Phase 3: Spine (loamSpine) ──"
 
 if $LOAMSPINE_LIVE; then
-    spine_resp=$(rpc_remote_http 9700 "{\"jsonrpc\":\"2.0\",\"method\":\"spine.create\",\"params\":{\"name\":\"membrane-verify\",\"owner\":\"cellMembrane\"},\"id\":20}")
+    spine_resp=$(rpc_remote_http "$LOAMSPINE_PORT" "{\"jsonrpc\":\"2.0\",\"method\":\"spine.create\",\"params\":{\"name\":\"membrane-verify\",\"owner\":\"cellMembrane\"},\"id\":20}")
     SPINE_ID=$(echo "$spine_resp" | python3 -c "import sys,json; r=json.load(sys.stdin).get('result',{}); print(r.get('spine_id','') if isinstance(r,dict) else r)" 2>/dev/null || true)
 
     if [[ -n "$SPINE_ID" && "$SPINE_ID" != "None" && "$SPINE_ID" != "" ]]; then
@@ -171,7 +171,7 @@ echo "── Phase 4: Braid (sweetGrass) ──"
 
 if $SWEETGRASS_LIVE; then
     VERIFY_HASH="$(date +%s | sha256sum | cut -d' ' -f1)"
-    braid_resp=$(rpc_remote 9850 "{\"jsonrpc\":\"2.0\",\"method\":\"braid.create\",\"params\":{\"data_hash\":\"$VERIFY_HASH\",\"name\":\"membrane-verify\",\"mime_type\":\"application/x-membrane-verify\",\"description\":\"Post-deploy trio verification\",\"size\":1},\"id\":30}")
+    braid_resp=$(rpc_remote "$SWEETGRASS_PORT" "{\"jsonrpc\":\"2.0\",\"method\":\"braid.create\",\"params\":{\"data_hash\":\"$VERIFY_HASH\",\"name\":\"membrane-verify\",\"mime_type\":\"application/x-membrane-verify\",\"description\":\"Post-deploy trio verification\",\"size\":1},\"id\":30}")
     BRAID_ID=$(echo "$braid_resp" | python3 -c "import sys,json; r=json.load(sys.stdin).get('result',{}); print(r.get('@id','') if isinstance(r,dict) else r)" 2>/dev/null || true)
 
     if [[ -n "$BRAID_ID" && "$BRAID_ID" != "None" && "$BRAID_ID" != "" ]]; then
@@ -188,14 +188,14 @@ echo ""
 # ─── Phase 5: Cross-check Tower ↔ Nest ────────────────────────────────────
 echo "── Phase 5: Tower ↔ Nest Cross-Check ──"
 
-bd_resp=$(rpc_remote 9100 '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
+bd_resp=$(rpc_remote "$BEARDOG_PORT" '{"jsonrpc":"2.0","method":"health.liveness","id":1}')
 if echo "$bd_resp" | grep -q '"result"'; then
     pass "TRIO-09" "BearDog (Tower) healthy alongside Nest"
 else
     fail "TRIO-09" "BearDog (Tower) not responding — Tower degraded"
 fi
 
-sb_resp=$(ssh_cmd "ss -ulnp 2>/dev/null | grep ':3478'" || true)
+sb_resp=$(ssh_cmd "ss -ulnp 2>/dev/null | grep ':$TURN_PORT'" || true)
 if [[ -n "$sb_resp" ]]; then
     pass "TRIO-10" "Songbird TURN (Tower) alive alongside Nest"
 else

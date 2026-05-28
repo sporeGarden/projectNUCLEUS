@@ -103,9 +103,18 @@ fn main() {
             suite: "discovery".to_string(),
             category: check::Category::Network,
             severity: check::Severity::Info,
-            status: if crypto_primals.is_empty() { check::Status::KnownGap } else { check::Status::Pass },
+            status: if crypto_primals.is_empty() {
+                check::Status::KnownGap
+            } else {
+                check::Status::Pass
+            },
             title: "Capability discovery: crypto providers".to_string(),
-            evidence: format!("{} primals resolved, {} have crypto: {}", primals.len(), crypto_primals.len(), names.join(", ")),
+            evidence: format!(
+                "{} primals resolved, {} have crypto: {}",
+                primals.len(),
+                crypto_primals.len(),
+                names.join(", ")
+            ),
             remediation: String::new(),
             elapsed_ms: disc_ms,
             timestamp: iso_now(),

@@ -14,6 +14,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/nucleus_config.sh" 2>/dev/null || true
 
 FORGEJO_URL="${FORGEJO_URL:-http://127.0.0.1:${FORGEJO_PORT}}"
+FORGEJO_SSH_HOST="${FORGEJO_SSH_HOST:-git.primals.eco}"
+FORGEJO_SSH_PORT="${FORGEJO_SSH_PORT:-2222}"
+FORGEJO_SSH_USER="${FORGEJO_SSH_USER:-git}"
 FORGEJO_TOKEN="${FORGEJO_TOKEN:-}"
 DRY_RUN=false
 PUSH_ALL=false
@@ -118,9 +121,9 @@ for local_path in "${!REPO_MAP[@]}"; do
     echo "EXISTS  $forgejo_path"
   fi
 
-  # Add/update forgejo remote
+  # Add/update forgejo remote (SSH preferred, HTTPS fallback)
   current_remote=$(git -C "$full_local" remote get-url forgejo 2>/dev/null || echo "")
-  target_url="$FORGEJO_URL/$forgejo_path.git"
+  target_url="ssh://${FORGEJO_SSH_USER}@${FORGEJO_SSH_HOST}:${FORGEJO_SSH_PORT}/${forgejo_path}.git"
 
   if [[ -z "$current_remote" ]]; then
     if $DRY_RUN; then
@@ -143,8 +146,7 @@ for local_path in "${!REPO_MAP[@]}"; do
   # Push if --push-all
   if $PUSH_ALL && ! $DRY_RUN; then
     default_branch=$(git -C "$full_local" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
-    cred_helper="!f() { echo username=golgiAdmin; echo password=$FORGEJO_TOKEN; }; f"
-    push_output=$(git -C "$full_local" -c "credential.helper=$cred_helper" push forgejo "$default_branch" 2>&1) && push_ok=true || push_ok=false
+    push_output=$(git -C "$full_local" push forgejo "$default_branch" 2>&1) && push_ok=true || push_ok=false
     if $push_ok; then
       echo "  PUSHED  $default_branch"
       pushed=$((pushed + 1))

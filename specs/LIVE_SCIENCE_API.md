@@ -6,7 +6,7 @@ May 12, 2026) — the canonical wire contract.
 
 **Current state**: Tier 2 ACTIVE — `toadstool.validate` **IMPLEMENTED** (S250),
 `toadstool.list_workloads` **WIRED** (S245+), `barracuda.precision.route` **IMPLEMENTED** (649 tests),
-`biomeos.spring_status` **IMPLEMENTED** (v3.78), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 56)
+`biomeos.spring_status` **IMPLEMENTED** (v3.84), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 56)
 
 **Canonical source**: `springs/primalSpring/docs/LIVE_SCIENCE_API.md`
 **Registry**: 460 methods (13 primals, 8 springs, Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added. Typed errors, env_keys centralized, stability-tier annotated. `--uds-only` VPS standard, cell graph `vps_standard` tagging)
@@ -155,7 +155,7 @@ Submit a workload for execution (compute trio IPC contract, Wave 8).
 
 | Method | Status | Notes |
 |--------|--------|-------|
-| `biomeos.spring_status` | **IMPLEMENTED** (v3.78) | Binary discovery + workload counts for Tier 2 notebooks. Also available via `capabilities.list` per primal |
+| `biomeos.spring_status` | **IMPLEMENTED** (v3.84) | Binary discovery + workload counts for Tier 2 notebooks. Also available via `capabilities.list` per primal |
 | `nestgate.artifact_query` | **Resolved** | `content.get` (by BLAKE3 hash) and `content.resolve` (by collection+path) — both SHIPPED in Session 60. Provenance chain via `dag.session.get` on rhizoCrypt |
 | `rhizocrypt.dag_summary` | **Resolved** | `dag.session.get` (returns full session state) and `dag.session.list` (enumeration) — both SHIPPED. No separate summary method needed |
 
@@ -176,7 +176,7 @@ content-addressed hashes; storage operates on opaque blob keys.
 **BTSP auth pipeline**: 13/13 primals ship `auth.public_key` → Ed25519 → cross-primal verify via
 bearDog federation. Wire through `BearDogVerifier` in biomeOS `CompositionContext`.
 
-**composition.deploy.shadow**: biomeOS v3.53+ (shipped, current v3.78) — dry-run graph validation before live deploy.
+**composition.deploy.shadow**: biomeOS v3.53+ (shipped, current v3.84) — dry-run graph validation before live deploy.
 Local implementation in `deploy_graph.sh` `shadow_deploy()` function.
 
 ---

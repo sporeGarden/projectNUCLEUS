@@ -74,7 +74,7 @@ external dependency baselines against sovereign replacements. Orchestrated by
 | S1 | TLS termination | BearDog :8443 (rustls) | Cloudflare TLS | **LIVE** | 13ms RPC vs 163ms CF TTFB |
 | S2 | NAT traversal | Songbird TURN relay | cloudflared tunnel | **LIVE** | 100% reachable (3ms UDP) |
 | S3 | Content hosting | NestGate + petalTongue | GitHub Pages | **LIVE** | 68ms VPS TTFB vs 111ms GH |
-| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **LIVE** | Dual-auth shadow active, events accumulating |
+| S4 | Auth / JupyterHub | BearDog BTSP dual-auth | OAuth2 proxy | **SHADOW LIVE** | Dual-auth shadow active, events accumulating; full cutover pending |
 | S5 | DNS resolution | knot-dns (DNSSEC) | Cloudflare NS | **LIVE** | 45ms authoritative, ECDSAP256SHA256 |
 
 ### Orchestrator Progression
@@ -167,14 +167,14 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 ## Aggregate Test Summary
 
 ```
-darkforest           44 tests  (crypto, check, report, discovery, net)
-tunnelKeeper         21 tests  (config, crypto, health)
+darkforest          125 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
+tunnelKeeper         41 tests  (api, config, crypto, health, transport)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)
 5-layer security    267 checks (pentest, fuzz, crypto, observer, gate)
 ───────────────────────────────────────────────────────────────────
-Total               474+ validations, 0 failures
+Total               576+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
@@ -201,10 +201,10 @@ Deploy tooling `--uds-only` VPS standard (Wave 56).
 
 | Goal | NC | Gate Criteria | Status |
 |------|-----|---------------|--------|
-| `biomeos nucleus ingest` on ironGate VPS | NC-1 | hotSpring pseudoSpore v1.6.1 → NUCLEUS column U | BLOCKED on biomeOS gateway |
+| `biomeos nucleus ingest` on ironGate VPS | NC-1 | hotSpring pseudoSpore v1.6.1 → NUCLEUS column U | **CODE COMPLETE** — biomeOS v3.84 shipped. Live column U gated on VPS deploy |
 | southGate 13/13 health | NC-2.1 | Songbird mesh seed fix, bidirectional SONGBIRD_PEERS | 7/13 responding |
 | Cross-gate capability call via cellMembrane | NC-2.3 | ironGate ↔ eastGate ↔ southGate mesh | OPEN |
-| knot-dns NS cutover to primary | NC-3.3 | Registrar NS delegation → sovereignty layer S2 | knot-dns RUNNING; cutover pending |
+| knot-dns NS cutover to primary | NC-3.3 | Registrar NS delegation → sovereignty DNS (S5) | knot-dns DEPLOYED; NS cutover pending registrar |
 | Forgejo binary releases | NC-3.4 / H3-02 | plasmidBin `auto-harvest.yml` publishes to Forgejo | Coordinate with plasmidBin |
 | sporePrint via NestGate | NC-3.5 | BearDog `content.*` scope → `publish_sporeprint.sh` | BLOCKED on BearDog scope |
 
@@ -214,7 +214,7 @@ Deploy tooling `--uds-only` VPS standard (Wave 56).
 |------|-----------|---------------|
 | ~~Sovereign DNS~~ | ~~E3~~ | ~~knot-dns on VPS~~ → **DEPLOYED** (H2-17, May 22). NS cutover H2-18 pending registrar. |
 | Cross-gate mesh | E2/E3 | 3+ gates connected via Songbird relay (NC-2.5 bidirectional seeding) |
-| Forgejo Actions CI | — | CI pipelines sovereign (Forgejo replaces GitHub Actions) |
+| Forgejo Actions CI | — | CI pipelines sovereign (Forgejo replaces GitHub Actions). **Wave 59 gap**: git is Forgejo-primary but CI/CD is still GitHub Actions (glacial gate observation, not stadial blocker) |
 | Membrane auto-healing | E4 | Rolling baselines auto-detect sovereignty regression |
 | Ferment transcript E2E | E5 | wetSpring braid → lithoSpore ingestion → USB artifact chain |
 

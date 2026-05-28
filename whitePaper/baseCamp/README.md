@@ -77,7 +77,7 @@ against 7-day rolling baselines. Orchestrated by `shadow_run_orchestrator.sh`.
 | S1 TLS | BearDog :8443 (rustls) | Cloudflare TLS | **6-12ms** vs 163ms (13-27× faster) |
 | S2 NAT | Songbird TURN relay | cloudflared tunnel | **100% reachable**, 3ms UDP |
 | S3 Content | petalTongue + NestGate | GitHub Pages | **67ms VPS** vs 111ms GH (40% faster) |
-| S4 Auth | BearDog BTSP dual-auth | OAuth2 proxy | **LIVE** — shadow running, 7-day cutover window |
+| S4 Auth | BearDog BTSP dual-auth | OAuth2 proxy | **SHADOW LIVE** — shadow running, full cutover pending |
 
 **Cutover gate**: All 4 tracks must demonstrate parity for 7 consecutive days.
 Sovereign p95 ≤ 1.5× commercial p95.
@@ -114,7 +114,7 @@ TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 56). `
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
-| Shadow Parity | **PASS** | **6/0/0** — S1 TLS, S2 NAT, S3 content, S4 auth, S5 DNS all LIVE |
+| Shadow Parity | **PASS** | **6/0/0** — S1 TLS, S2 NAT, S3 content LIVE; S4 auth SHADOW LIVE; S5 DNS DEPLOYED (NS cutover pending) |
 | Sovereign DNS | **DEPLOYED** | knot-dns v3.2.6, DNSSEC on VPS. NS cutover (H2-18) pending registrar |
 
 ## cellMembrane Interface (VPS 157.230.3.183)

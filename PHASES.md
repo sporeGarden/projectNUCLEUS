@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-28) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **166 Rust tests PASS** (darkforest 125, tunnelKeeper 41), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.78 — `nucleus ingest/emit` gateway scaffolded (NC-1). serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-05-28) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **162 Rust tests PASS** (darkforest 125, tunnelKeeper 37), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -340,7 +340,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
 - 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
-- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 166 Rust tests (darkforest 125, tunnelKeeper 41)
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 162 Rust tests (darkforest 125, tunnelKeeper 37)
 
 **Cell Membrane Architecture (2026-05-10)**:
 - Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)
@@ -366,7 +366,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 56: 460 methods (v0.9.30, 56 scenarios, 797 lib tests + 16 live-tier). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v3.78 gateway scaffolded. `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
+- primalSpring at Wave 56: 460 methods (v0.9.30, 56 scenarios, 797 lib tests + 16 live-tier). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v3.84 NC-1 CODE COMPLETE (`biomeos-pseudospore` shipped). `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

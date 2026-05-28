@@ -11,8 +11,8 @@
 | Metric | Before (Wave 56) | After (Wave 58) |
 |--------|-------------------|-----------------|
 | darkforest unit tests | 44 | **125** |
-| tunnelKeeper unit tests | 21 | **41** |
-| Total Rust tests | 65 | **166** |
+| tunnelKeeper unit tests | 21 | **37** (36 pass + 1 ignored slow DNS) |
+| Total Rust tests | 65 | **162** |
 | darkforest coverage (llvm-cov) | 35.56% | **40.77%** |
 | tunnelKeeper coverage (llvm-cov) | 51.81% | **52.67%** |
 | tunnelKeeper transitive deps | 175 | **173** |
@@ -125,15 +125,15 @@ All changes are internal correctness and coverage improvements. No new upstream 
 
 ---
 
-## NC-1→NC-5 Status (unchanged)
+## NC-1→NC-5 Status (Wave 59 corrections)
 
 | Gap | Status | Blocker |
 |-----|--------|---------|
-| NC-1 (spore gateway) | WIRED | biomeOS NC-1.4 |
+| NC-1 (spore gateway) | **CODE COMPLETE** | biomeOS v3.84 shipped `biomeos-pseudospore`. Live column U gated on VPS deploy |
 | NC-2 (multi-gate mesh) | IN PROGRESS | southGate ops stabilization |
-| NC-3 (cellMembrane sovereignty) | ADVANCING | Forgejo + NS cutover remaining |
-| NC-4 (spring NUCLEUS depth) | MIXED | east/iron OK, south/biome partial |
-| NC-5 (lithoSpore emission) | GATED | on NC-1 live deploy |
+| NC-3 (cellMembrane sovereignty) | **CODE CONSUMED** | Sovereignty cutovers open: NS registrar, Forgejo releases, CI |
+| NC-4 (spring NUCLEUS depth) | **ADVANCING** | Wave 58 absorbed in PRIMAL_GAPS |
+| NC-5 (lithoSpore emission) | GATED | on NC-1 live deploy (VPS v3.84) |
 
 ---
 
@@ -152,4 +152,4 @@ All changes are internal correctness and coverage improvements. No new upstream 
 
 ---
 
-*projectNUCLEUS at Wave 58. 166 Rust tests, async-correct, wire-native discovery, zero debt. Ready for primalSpring audit.*
+*projectNUCLEUS at Wave 58→59. 162 Rust tests, async-correct, wire-native discovery, zero debt. NC-1 CODE COMPLETE. Ready for primalSpring audit.*

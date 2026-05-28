@@ -90,7 +90,7 @@ for local_path in "${!REPO_MAP[@]}"; do
 
   if [[ ! -d "$full_local/.git" ]]; then
     echo "SKIP  $local_path — not a git repo"
-    ((skipped++))
+    skipped=$((skipped + 1))
     continue
   fi
 
@@ -106,11 +106,11 @@ for local_path in "${!REPO_MAP[@]}"; do
         -d "{\"name\": \"$repo\", \"private\": true, \"default_branch\": \"main\"}" 2>&1 || echo '{"message":"failed"}')
       if echo "$result" | grep -q '"full_name"' 2>/dev/null; then
         echo "CREATED  $forgejo_path"
-        ((created++))
+        created=$((created + 1))
       else
         msg=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin).get('message','?'))" 2>/dev/null || echo "unknown error")
         echo "FAIL  $forgejo_path — $msg"
-        ((failed++))
+        failed=$((failed + 1))
         continue
       fi
     fi
@@ -128,7 +128,7 @@ for local_path in "${!REPO_MAP[@]}"; do
     else
       git -C "$full_local" remote add forgejo "$target_url" 2>/dev/null || true
       echo "  REMOTE ADDED  forgejo -> $target_url"
-      ((remote_added++))
+      remote_added=$((remote_added + 1))
     fi
   elif [[ "$current_remote" != "$target_url" ]]; then
     if $DRY_RUN; then
@@ -136,20 +136,21 @@ for local_path in "${!REPO_MAP[@]}"; do
     else
       git -C "$full_local" remote set-url forgejo "$target_url"
       echo "  REMOTE UPDATED  forgejo -> $target_url"
-      ((remote_added++))
+      remote_added=$((remote_added + 1))
     fi
   fi
 
   # Push if --push-all
   if $PUSH_ALL && ! $DRY_RUN; then
     default_branch=$(git -C "$full_local" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
-    push_output=$(git -C "$full_local" push forgejo "$default_branch" 2>&1) && push_ok=true || push_ok=false
+    cred_helper="!f() { echo username=golgiAdmin; echo password=$FORGEJO_TOKEN; }; f"
+    push_output=$(git -C "$full_local" -c "credential.helper=$cred_helper" push forgejo "$default_branch" 2>&1) && push_ok=true || push_ok=false
     if $push_ok; then
       echo "  PUSHED  $default_branch"
-      ((pushed++))
+      pushed=$((pushed + 1))
     else
       echo "  PUSH FAILED  $forgejo_path: $push_output"
-      ((failed++))
+      failed=$((failed + 1))
     fi
   fi
 done

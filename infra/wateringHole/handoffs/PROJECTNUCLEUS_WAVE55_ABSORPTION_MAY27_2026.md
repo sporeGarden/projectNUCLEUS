@@ -1,5 +1,8 @@
 # projectNUCLEUS Wave 55 Absorption — May 27, 2026
 
+> **Note**: Wave 56 absorption handoff is the current canonical handoff.
+> This document records the Wave 55 niche climate absorption.
+
 **Source**: primalSpring spring river delta — Wave 55 niche climate audit
 **Scope**: Registry 458→460, NC-1→NC-5 tracked, biomeOS v3.78, southGate NC-2, cellMembrane NC-3
 

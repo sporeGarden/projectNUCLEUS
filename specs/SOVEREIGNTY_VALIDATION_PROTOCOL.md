@@ -1,5 +1,7 @@
 # Sovereignty Validation Protocol
 
+**Last refreshed**: 2026-05-27 (Wave 56 — Nest Atomic LIVE, shadow 6/0/0, `--uds-only` VPS standard)
+
 Master document governing the systematic replacement of every external
 dependency with primal-native infrastructure. Each replacement follows a
 rigorous validate-then-replace methodology: capture baseline, build

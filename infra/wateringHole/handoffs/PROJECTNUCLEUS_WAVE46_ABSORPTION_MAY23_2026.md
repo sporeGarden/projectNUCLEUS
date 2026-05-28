@@ -1,5 +1,8 @@
 # projectNUCLEUS — Wave 46 Absorption Handoff
 
+> **Fossil record**: Superseded by Wave 55 and Wave 56 absorption handoffs.
+> Metrics (458 methods, 55 tests, v0.9.27) reflect that wave's state.
+
 **Date**: 2026-05-23
 **Upstream**: primalSpring v0.9.27 (Wave 46)
 **Product**: projectNUCLEUS (gardens/projectNUCLEUS)

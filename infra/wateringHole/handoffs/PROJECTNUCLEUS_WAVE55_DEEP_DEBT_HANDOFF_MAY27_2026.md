@@ -10,7 +10,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Registry | 460 methods (Wave 55, primalSpring v0.9.30) |
+| Registry | 460 methods (Wave 56, primalSpring v0.9.30) |
 | Rust unit tests | **65** (darkforest 44, tunnelKeeper 21) — zero failures |
 | Bash validation | 267 security checks + 33 gate checks + 21 membrane checks |
 | Shadow orchestrator | **6 PASS / 0 FAIL / 0 SKIP** (S1–S5 + DNS) |

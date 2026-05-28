@@ -192,7 +192,7 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | H3-10 | NCBI / UniProt / KEGG | Local mirror + `abg_data.sh` provenance | Partial — data registry operational | Not blocking (data, not service) |
 | H3-11 | FlockGate cross-WAN deployment | Songbird TURN + cellMembrane relay + covalent mesh | **DESIGNED** — `gates/flockgate.toml` manifest exists, `basement_hpc_covalent.toml` graph ready. cellMembrane TURN relay LIVE. Needs: FlockGate NUCLEUS deploy, cross-gate routing via TURN, BTSP covalent authentication. | cellMembrane TURN + FlockGate hardware provisioning |
 
-### Niche Climate Gaps (Wave 55 — pre-stadial)
+### Niche Climate Gaps (Wave 56 — pre-stadial)
 
 **Context**: primalSpring `NICHE_CLIMATE_EVOLUTION.md` defines NC-1→NC-5 as the path to stadial entry.
 projectNUCLEUS is the ironGate sovereign deployment validator. NC-2 (multi-gate mesh) and NC-3
@@ -200,18 +200,18 @@ projectNUCLEUS is the ironGate sovereign deployment validator. NC-2 (multi-gate 
 
 | ID | Gap | Owner | Status | Blocks |
 |----|-----|-------|--------|--------|
-| NC-1 | postPrimordial spore gateway (`biomeos nucleus ingest/emit`) | biomeOS + lithoSpore | **BLOCKED** — biomeOS v3.77 scaffolded, v3.78 cleanup. NC-1.3 (pseudospore-core) COMPLETE. NC-1.4 (biomeOS uses pseudospore-core) OPEN. | Stadial entry; columns U/V/W |
-| NC-2.1 | southGate 13/13 health | Songbird + wetSpring | **BLOCKED** — 7/13 responding. Wave 54 redeploy fixes ready. Songbird mesh seed bug identified. | NC-2 multi-gate mesh |
+| NC-1 | postPrimordial spore gateway (`biomeos nucleus ingest/emit`) | biomeOS + lithoSpore | **WIRED** — biomeOS v3.77 scaffolded, v3.78 cleanup. NC-1.3 (pseudospore-core) COMPLETE. NC-1.4 (biomeOS uses pseudospore-core) last gap. | Stadial entry; columns U/V/W |
+| NC-2.1 | southGate 13/13 health | Songbird + wetSpring | **IN PROGRESS** — 7/13 responding. Wave 54 redeploy fixes ready. Songbird mesh seed bug identified. | NC-2 multi-gate mesh |
 | NC-2.3 | Cross-gate capability call via cellMembrane relay | projectNUCLEUS + cellMembrane | **OPEN** — ironGate VPS TURN LIVE, mesh not yet bidirectional | NC-2 stadial |
-| NC-3.1 | cellMembrane Nest Atomic docs sync | cellMembrane | **OPEN** — VPS_STATE.md/GLACIAL_SHIFT say Tower-only; Nest actually deployed May 22 | Unblocks NC-3.2 |
-| NC-3.2 | `membrane.toml` → `composition = "nest"` | cellMembrane | **OPEN** — enables signal channel, K-Derm boundary | Unblocks `s_kderm_boundary` |
+| NC-3.1 | cellMembrane Nest Atomic docs sync | cellMembrane | **DONE** — VPS_STATE.md/GLACIAL_SHIFT synced to Nest Atomic (deployed May 22) | Unblocks NC-3.2 |
+| NC-3.2 | `membrane.toml` → `composition = "nest"` | cellMembrane | **DONE** — composition = "nest" published, signal channel enabled | Unblocks `s_kderm_boundary` |
 | NC-3.3 | knot-dns NS cutover | cellMembrane + registrar | **OPEN** — knot-dns running (H2-17), NS record change pending | Sovereignty layer S2 |
 | NC-3.4 | Forgejo Releases (sovereign binary channel) | cellMembrane + plasmidBin | **OPEN** — coordinate `auto-harvest.yml` for Forgejo | H3-02 parallel |
 | NC-3.5 | sporePrint living content via NestGate | cellMembrane + bearDog | **BLOCKED** — needs bearDog `content.*` scope on BTSP tokens (SP-4) | Sovereign content hosting |
 
 ### cellMembrane Security Gaps (darkforest coverage — Layer 6)
 
-**Status**: `validation/darkforest_membrane.sh` implements MEM-01 through MEM-13 (17 PASS, 0 FAIL, 1 SKIP on May 15, 2026). Remaining: MEM-09 needs `b3sum` on VPS, MEM-14/MEM-15 are future work.
+**Status**: `validation/darkforest_membrane.sh` implements MEM-01 through MEM-17 (21 PASS, 0 FAIL, 1 SKIP — Nest Atomic checks MEM-14→17 added Wave 38). MEM-09 needs `b3sum` on VPS.
 
 | ID | Gap | Status | Notes |
 |----|-----|--------|-------|
@@ -245,11 +245,11 @@ These are not gaps — they are accepted constraints:
 
 ## Upstream Dependencies (primal teams)
 
-**River delta Push 3+ (May 13, 2026)**: Zero open upstream gaps. 13/13 primals at zero
+**River delta Push 3+ (May 13→27, 2026)**: Zero open upstream gaps. 13/13 primals at zero
 code debt. 8/8 delta springs at zero debt, 8,486+ tests. Tower atomic LIVE (ludoSpring 6/6).
 Nest atomic ready. Node atomic AMD live, NV FECS-gated. `toadstool.validate` S250 (74 methods).
-`barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53.
-`biomeos.spring_status` IMPLEMENTED (v3.78). Registry at **460 methods** (Wave 55, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12). `primal.list` / `capability.list` canonical schemas SHIPPED. `nucleus.ingest_spore` + `nucleus.emit_spore` registered (Wave 55).
+`barracuda.precision.route` v0.4.0 (649 tests). `composition.deploy.shadow` biomeOS v3.53+.
+`biomeos.spring_status` IMPLEMENTED (v3.78). Registry at **460 methods** (Wave 56, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12). `primal.list` / `capability.list` canonical schemas SHIPPED. `nucleus.ingest_spore` + `nucleus.emit_spore` registered. **Wave 56**: `--uds-only` VPS standard, cell graph `vps_standard` tagging, 12 primordial scripts archived, `primalspring checksums` + `primalspring registry` subcommands.
 `content.put/get` NestGate Session 60 (4-surface parity). BTSP auth pipeline live (13/13 primals).
 skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 springs (`--format json`).
 76 wire routing misroutes fixed — `security.audit_log` → skunkBat, crypto methods base64-encoded,
@@ -565,8 +565,8 @@ Horizon 2 (sovereignty):          █████████░  Nest Atomic LI
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED, H3-11 FlockGate DESIGNED
 Horizon 4 (transactions):         ██░░░░░░░░  READY — playbook + benchScale topologies wired. H4-11/12/13 ready to run.
 Shadow (Wave 38):                 ████████░░  S1-S5 LIVE. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. All tracks operational.
-Niche climate (Wave 55):          ██░░░░░░░░  NC-1 BLOCKED (biomeOS gateway). NC-2 BLOCKED (southGate 7/13). NC-3 IN PROGRESS.
-Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt. 460 methods (Wave 55).
+Niche climate (Wave 56):          ██░░░░░░░░  NC-1 WIRED (biomeOS NC-1.4 last gap). NC-2 IN PROGRESS. NC-3 ADVANCING.
+Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt. 460 methods (Wave 56).
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Stadial entry: NC-1 + NC-2 + NC-4.
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened
 ```

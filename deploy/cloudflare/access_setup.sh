@@ -5,13 +5,17 @@
 #   1. CF_API_TOKEN env var with Account:Access:Edit + Zone:Read permissions
 #   2. Account ID from tunnel credentials
 #
-# This script will be replaced by `tunnelKeeper access setup` once the Rust crate is live.
+# DEPRECATED: This script will be replaced by `tunnelKeeper access setup` once the Rust crate is live.
+# Manual ops tool — not wired into deploy flow. Run directly when reconfiguring CF Access.
 
 set -euo pipefail
 
-ACCOUNT_ID="${CF_ACCOUNT_ID:-5a7d7fef1355b283ad8b3a8a6582e291}"
-ZONE_NAME="primals.eco"
-APP_DOMAIN="lab.primals.eco"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../nucleus_config.sh" 2>/dev/null || true
+
+ACCOUNT_ID="${CF_ACCOUNT_ID:?CF_ACCOUNT_ID env var required}"
+ZONE_NAME="${CF_ZONE_NAME:-primals.eco}"
+APP_DOMAIN="lab.${ZONE_NAME}"
 
 if [ -z "${CF_API_TOKEN:-}" ]; then
     echo "CF_API_TOKEN not set. Generate one at:"

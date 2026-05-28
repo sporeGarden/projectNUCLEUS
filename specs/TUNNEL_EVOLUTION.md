@@ -25,7 +25,7 @@ generation and penetration testing framework for validation.
 
 ---
 
-## Where We Are (2026-05-14)
+## Where We Are (2026-05-27)
 
 ### Cell Membrane Model
 
@@ -35,11 +35,14 @@ The infrastructure uses a **cell membrane architecture**: the public face
 traffic to sovereign compute. Inside the membrane, the gate has total
 control.
 
-**New (May 14)**: The cellMembrane fieldMouse deployment adds an **external
-membrane** layer — a DigitalOcean VPS providing the three membrane channels
-(Signal/DNS, Relay/NAT, Surface/TLS). Channel 2 (Relay) is live. This is
-the first infrastructure that sits outside the gate but is owned and operated
-by projectNUCLEUS. See `SECURITY_VALIDATION.md` Layer 6 for the threat model.
+The cellMembrane fieldMouse deployment provides an **external membrane**
+layer — a DigitalOcean VPS running **Nest Atomic** (11 services, 7 primals):
+Tower (BearDog + SkunkBat + Songbird) + Nest (NestGate + rhizoCrypt +
+loamSpine + sweetGrass) + RustDesk + Caddy TLS + petalTongue. All three
+membrane channels operational: Channel 1 Signal/DNS (knot-dns DNSSEC),
+Channel 2 Relay/NAT (Songbird TURN), Channel 3 Surface/TLS
+(`membrane.primals.eco` ACME cert). Shadow orchestrator **6 PASS / 0 FAIL**.
+See `SECURITY_VALIDATION.md` Layer 6 for the threat model.
 
 This delineation produces clean data for skunkBat: every tunnel event is
 an authenticated membrane crossing, not CDN noise. External/internal

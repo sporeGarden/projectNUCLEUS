@@ -221,7 +221,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
   `nbconvert --execute --to html --no-input`; `observer_server.py` serves from disk on :8866
 - Zero compute per visit, instant page loads, bot-safe, inter-notebook navigation
 - Voila remains available for reviewer/user tiers behind JupyterHub auth
-- Switchover: `deploy/switch_to_static_observer.sh` / `switch_to_voila_observer.sh`
+- Switchover: `deploy/switch_to_static_observer.sh` / `deploy/legacy/switch_to_voila_observer.sh` (rollback)
 
 **Dark Forest Security Hardening (2026-05-08)**:
 - Pure Rust `validation/darkforest/` v0.2.0 — modular pen test + fuzz + crypto validator
@@ -318,7 +318,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Evolution: Python (now) → Rust binary → pappusCast primal
 
 **Multi-Tier Test Suite**:
-- `deploy/tier_test_observer.py` — structural checks, execution, HTTP behavior, source stripping
+- darkforest `--suite observer` — Rust-based static HTML validation (86 PASS). Supersedes archived `tier_test_observer.py`
 - `deploy/tier_test_reviewer.py` — access control, parse, no-write enforcement
 - `deploy/tier_test_compute.py` — venv, packages, kernels, notebook execution
 - `deploy/tier_test_all.sh` — unified runner across all tiers + pappusCast health

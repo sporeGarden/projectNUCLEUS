@@ -1,5 +1,8 @@
 # projectNUCLEUS Deep Debt Resolution — Handoff to Upstream
 
+> **Fossil record**: This is the Wave 18 initial deep debt handoff. Superseded by
+> Wave 55 deep debt handoff and Wave 56 absorption handoff. Retained as historical context.
+
 **From**: projectNUCLEUS (garden product)
 **To**: primalSpring, upstream primals teams, sibling springs
 **Date**: 2026-05-16

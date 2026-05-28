@@ -49,9 +49,10 @@ If every gate is offline, `primals.eco` still serves. The membrane channels
 (lab, git) are inherently gate-dependent — if no gate is running, there is
 no sovereign compute to access.
 
-**External membrane (May 14, 2026):** The cellMembrane fieldMouse VPS
-(157.230.3.183, DigitalOcean nyc1) provides membrane channels on external
-substrate. Unlike the gate, the VPS substrate provider has theoretical root
+**External membrane (May 14→27, 2026 — Nest Atomic):** The cellMembrane fieldMouse VPS
+(157.230.3.183, DigitalOcean nyc1) runs **Nest Atomic** (11 services, 7 primals).
+Three membrane channels operational (Signal/DNS, Relay/NAT, Surface/TLS).
+Unlike the gate, the VPS substrate provider has theoretical root
 access — Dark Forest principle applies (everything encrypted at rest, provider
 sees only noise). The VPS is owned by ironGate/projectNUCLEUS and operated via
 `plasmidBin/deploy_membrane.sh`. Private ops repo: `gardens/cellMembrane`.
@@ -134,8 +135,8 @@ Membrane (current):
   GitHub Pages CDN          → extracellular public face
   gate_watchdog.sh          → membrane health logging
 
-External membrane (LIVE — May 14):
-  cellMembrane VPS          → fieldMouse on DigitalOcean (ironGate owns)
+External membrane (LIVE — Nest Atomic, May 22):
+  cellMembrane VPS          → Nest Atomic on DigitalOcean (11 svc, 7 primals)
   Songbird TURN :3478       → Channel 2 relay for NAT traversal
   (future) knot-dns :53     → Channel 1 sovereign DNS
   (future) BearDog TLS :443 → Channel 3 sovereign surface

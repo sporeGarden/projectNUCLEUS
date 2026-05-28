@@ -151,7 +151,7 @@ Submit a workload for execution (compute trio IPC contract, Wave 8).
 
 ---
 
-## Resolved / Implemented — Method Status (May 13, 2026)
+## Resolved / Implemented — Method Status (May 13→27, 2026)
 
 | Method | Status | Notes |
 |--------|--------|-------|
@@ -176,7 +176,7 @@ content-addressed hashes; storage operates on opaque blob keys.
 **BTSP auth pipeline**: 13/13 primals ship `auth.public_key` → Ed25519 → cross-primal verify via
 bearDog federation. Wire through `BearDogVerifier` in biomeOS `CompositionContext`.
 
-**composition.deploy.shadow**: biomeOS v3.53 — dry-run graph validation before live deploy.
+**composition.deploy.shadow**: biomeOS v3.53+ (shipped, current v3.78) — dry-run graph validation before live deploy.
 Local implementation in `deploy_graph.sh` `shadow_deploy()` function.
 
 ---
@@ -195,7 +195,7 @@ Each tier adds capability without removing previous tiers.
 
 ---
 
-## Implementation Status (May 13, 2026)
+## Implementation Status (May 13→27, 2026)
 
 | Method | Owner | Status | Notes |
 |--------|-------|--------|-------|

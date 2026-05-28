@@ -4,18 +4,21 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-05-14)
+## Current State (2026-05-27)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh` (gate-local)
+**65 Rust tests PASS** (darkforest 44, tunnelKeeper 21). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
-- **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default)
+- **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default). **Wave 56 `--uds-only` VPS standard** — TCP ports suppressed in VPS deployments
 - **Ionic tokens live**: Ed25519-signed, scope-checked, expiry-verified
 - **UFW active**, hidepid=2, iptables outbound DROP for ABG UIDs, DNS exfil closed
-- **cellMembrane LIVE**: fieldMouse VPS on 157.230.3.183 (new external attack surface — Layer 6 below)
-- **BearDog TLS shadow LIVE**: :8443 alongside Cloudflare :443 (not yet in darkforest)
-- See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for full results
+- **cellMembrane LIVE — Nest Atomic**: fieldMouse VPS on 157.230.3.183 (11 services, 7 primals). Layer 6 below
+- **BearDog TLS shadow LIVE**: :8443 alongside Cloudflare :443. Shadow orchestrator 6 PASS
+- **Sovereign DNS LIVE**: knot-dns DNSSEC on VPS (H2-17). NS cutover pending
+- **Deep debt resolved**: config centralization complete (Wave 56). All ports from `nucleus_config.sh`. darkforest pentest uses `discovery::port_for()` env cascade. `#![forbid(unsafe_code)]` on both crates
+- See `validation/REVALIDATION_PHASE60_MAY08_2026.md` for initial baselines (fossil record)
 
 > The May 6 baselines below are preserved as fossil record — they document
 > the initial security posture and the gap discovery process.

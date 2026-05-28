@@ -1,10 +1,15 @@
 # Complete External Dependency Inventory
 
-**Date**: 2026-05-07
+**Date**: 2026-05-07 (initial), refreshed 2026-05-27 (Wave 56)
 **From**: projectNUCLEUS
 **Purpose**: Map every external dependency in the ecoPrimals ecosystem, classify
 by phase (build/run/dev), identify primal replacements (existing/planned/gap),
 and note calibration instruments where applicable.
+
+> **Wave 56 note**: Forgejo is now PRIMARY git host (32 repos, 3 orgs). cellMembrane
+> Nest Atomic LIVE (11 services, 7 primals). Sovereign DNS LIVE (knot-dns DNSSEC).
+> Shadow orchestrator 6 PASS. `--uds-only` VPS standard. See `EVOLUTION_GAPS.md`
+> for living tracker and `TUNNEL_EVOLUTION.md` for replacement roadmap.
 
 This inventory grounds the sovereignty evolution path. Each dependency is a
 measurement target: we capture its baseline behavior, and primal replacements

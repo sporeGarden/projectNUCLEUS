@@ -37,6 +37,14 @@ description = "Direct P2P via Songbird NAT traversal"
 auth_required = true
 latency_class = "fast"
 
+# VPS-local Forgejo (golgiBody periplasmic git surface)
+[routing.backends.vps_local]
+type = "local_service"
+endpoint = "127.0.0.1:3000"
+description = "Forgejo on VPS — golgiBody Phase A"
+auth_required = false
+latency_class = "fast"
+
 # GitHub CDN fallback (outer membrane)
 [routing.backends.fallback]
 type = "http_proxy"
@@ -77,8 +85,8 @@ reason = "Static assets cached locally"
 [[routing.rules]]
 name = "git_operations"
 match = { host = "git.primals.eco" }
-backend = "gate"
-reason = "Forgejo git operations require gate (compute + storage)"
+backend = "vps_local"
+reason = "golgiBody: Forgejo runs on VPS periplasm (Phase A)"
 
 [[routing.rules]]
 name = "lab_interactive"

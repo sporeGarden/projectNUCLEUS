@@ -39,6 +39,7 @@ REPO_MAP["gardens/cellMembrane"]="sporeGarden/cellMembrane"
 REPO_MAP["gardens/projectFOUNDATION"]="sporeGarden/projectFOUNDATION"
 REPO_MAP["gardens/lithoSpore"]="sporeGarden/lithoSpore"
 REPO_MAP["gardens/esotericWebb"]="sporeGarden/esotericWebb"
+REPO_MAP["gardens/blueFish"]="syntheticChemistry/blueFish"
 
 # ecoPrimals org
 REPO_MAP["infra/plasmidBin"]="ecoPrimals/plasmidBin"
@@ -60,6 +61,10 @@ REPO_MAP["primals/barraCuda"]="ecoPrimals/barraCuda"
 REPO_MAP["primals/coralReef"]="ecoPrimals/coralReef"
 REPO_MAP["primals/bingoCube"]="ecoPrimals/bingoCube"
 REPO_MAP["primals/sourDough"]="ecoPrimals/sourDough"
+
+REPO_MAP["infra/benchScale"]="syntheticChemistry/benchScale"
+REPO_MAP["infra/agentReagents"]="syntheticChemistry/agentReagents"
+REPO_MAP["infra/rustChip"]="syntheticChemistry/rustChip"
 
 # syntheticChemistry org
 REPO_MAP["springs/primalSpring"]="syntheticChemistry/primalSpring"

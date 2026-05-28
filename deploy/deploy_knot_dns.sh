@@ -51,8 +51,7 @@ ssh_cmd() {
 # Zone records reflect the current architecture:
 #   - VPS IP for authoritative NS (ns1.primals.eco)
 #   - GitHub Pages IPs for the apex (primals.eco A records)
-#   - Tunnel CNAME for lab/git subdomains
-#   - VPS A record for membrane.primals.eco
+#   - VPS A records for membrane, lab, git subdomains
 #   - CAA for Let's Encrypt only
 
 generate_zone() {
@@ -86,6 +85,12 @@ ns1 IN A $vps_ip
 
 ; cellMembrane VPS
 membrane IN A $vps_ip
+
+; Lab surface — pappusCast static content, future BTSP relay for JupyterHub
+lab IN A $vps_ip
+
+; golgiBody — periplasmic Forgejo (sovereign git forge)
+git IN A $vps_ip
 
 ; CAA — only Let's Encrypt may issue certs
 @ IN CAA 0 issue "letsencrypt.org"
@@ -249,7 +254,7 @@ do_status() {
 do_test() {
     log "Testing resolution against $VPS_IP..."
 
-    local domains=("primals.eco" "ns1.primals.eco" "membrane.primals.eco")
+    local domains=("primals.eco" "ns1.primals.eco" "membrane.primals.eco" "lab.primals.eco" "git.primals.eco")
     local pass=0
     local fail=0
 

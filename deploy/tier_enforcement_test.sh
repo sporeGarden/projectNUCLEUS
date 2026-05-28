@@ -139,10 +139,10 @@ run_tier_tests() {
     user_uid=$(id -u "$user" 2>/dev/null)
     if [[ "$user_uid" -ge "$ABG_UID_MIN" && "$user_uid" -le "$ABG_UID_MAX" ]]; then
         assert_fails "$tier" "net_outbound_internet" "Cannot reach internet (iptables DROP, UID $user_uid in ABG range)" "$user" \
-            "curl -sf --max-time 5 https://github.com -o /dev/null"
+            "curl -sf --max-time 5 https://primals.eco -o /dev/null"
     else
         assert_succeeds "$tier" "net_outbound_internet" "Can reach internet (UID $user_uid outside ABG range)" "$user" \
-            "curl -sf --max-time 5 https://github.com -o /dev/null"
+            "curl -sf --max-time 5 https://primals.eco -o /dev/null"
     fi
 
     # --- Network: localhost primals (JH-0 MethodGate enforced, 13/13) ---

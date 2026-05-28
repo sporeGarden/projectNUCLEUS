@@ -1,6 +1,13 @@
 # Notify sporePrint to refresh metrics on push to main.
 # Managed by primalSpring — do not edit manually.
 #
+# POSTPRIMORDIAL STATUS: Shadow period. This GitHub Actions workflow runs
+# alongside the sovereign Forgejo webhook. When the Forgejo webhook is
+# validated on VPS, this file can be archived to fossilRecord/.
+#
+# Sovereign alternative: Forgejo post-receive webhook → sporePrint refresh
+# See: infra/wateringHole/SPOREPRINT_WEBHOOK_PATTERN.md
+#
 # Install: copy to .github/workflows/notify-sporeprint.yml in your repo.
 # Secret: SPOREPRINT_DISPATCH_TOKEN (same PAT scope as PLASMIDBIN_DISPATCH_TOKEN,
 #          needs repo scope on ecoPrimals/sporePrint for repository_dispatch).

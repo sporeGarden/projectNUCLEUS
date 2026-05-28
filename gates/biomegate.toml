@@ -42,6 +42,7 @@ ten_g_ready = false
 [membrane]
 role = "intracellular"
 bonding_to_vps = "covalent (SSH key)"
+# SSOT: MEMBRANE_VPS_IP in deploy/nucleus_config.sh
 vps_ip = "157.230.3.183"
 membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 

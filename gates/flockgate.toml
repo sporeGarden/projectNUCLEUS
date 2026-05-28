@@ -39,6 +39,7 @@ latency_to_cluster_ms = "~20-40 (WAN dependent)"
 [membrane]
 role = "intracellular (remote)"
 bonding_to_vps = "covalent (SSH key)"
+# SSOT: MEMBRANE_VPS_IP in deploy/nucleus_config.sh
 vps_ip = "157.230.3.183"
 membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 multi_household = true

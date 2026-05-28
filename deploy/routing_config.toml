@@ -81,10 +81,16 @@ backend = "gate"
 reason = "Forgejo git operations require gate (compute + storage)"
 
 [[routing.rules]]
-name = "jupyter_sessions"
-match = { host = "lab.primals.eco" }
+name = "lab_interactive"
+match = { host = "lab.primals.eco", path_regex = "^/(hub|user|api|services)/" }
 backend = "gate"
 reason = "JupyterHub sessions are long-lived, need gate compute"
+
+[[routing.rules]]
+name = "lab_static"
+match = { host = "lab.primals.eco" }
+backend = "vps_cache"
+reason = "Static lab dashboard served from VPS intra layer"
 
 [[routing.rules]]
 name = "api_calls"

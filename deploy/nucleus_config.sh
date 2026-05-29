@@ -35,7 +35,8 @@ LAB_URL="${LAB_URL:-https://lab.primals.eco}"
 GIT_URL="${GIT_URL:-https://git.primals.eco}"
 SITE_URL="${SITE_URL:-https://primals.eco}"
 
-# --- Cloudflare / DNS ---
+# --- Cloudflare / DNS (legacy — retiring in favor of sovereign knot-dns) ---
+# CF_TUNNEL_ID preserved for reference; cloudflared orphaned since Wave 60.
 CF_ZONE_NAME="${CF_ZONE_NAME:-primals.eco}"
 CF_TUNNEL_ID="${CF_TUNNEL_ID:-d4c15fb6-d047-40fe-82d6-e324a5593421}"
 CF_TUNNEL_CNAME="${CF_TUNNEL_CNAME:-${CF_TUNNEL_ID}.cfargotunnel.com}"
@@ -77,14 +78,24 @@ GHPAGES_A_RECORDS=(185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.1
 # "permissive" = log + allow unauthenticated calls (testing only)
 NUCLEUS_AUTH_MODE="${NUCLEUS_AUTH_MODE:-enforced}"
 
-# --- cellMembrane (fieldMouse VPS) ---
+# --- cellMembrane (fieldMouse VPS — depot/rendezvous/signal) ---
 MEMBRANE_VPS_IP="${MEMBRANE_VPS_IP:-157.230.3.183}"
 MEMBRANE_VPS_USER="${MEMBRANE_VPS_USER:-root}"
 MEMBRANE_VPS_SIZE="${MEMBRANE_VPS_SIZE:-s-1vcpu-2gb}"  # $12/mo, 2GB RAM
 SONGBIRD_TURN_SERVER="${SONGBIRD_TURN_SERVER:-${MEMBRANE_VPS_IP}:3478}"
 SONGBIRD_TURN_USERNAME="${SONGBIRD_TURN_USERNAME:-nucleus-relay}"
+SONGBIRD_FEDERATION_HUB="${SONGBIRD_FEDERATION_HUB:-golgiBody@${MEMBRANE_VPS_IP}:7700}"
 RUSTDESK_ID_SERVER="${RUSTDESK_ID_SERVER:-${MEMBRANE_VPS_IP}}"
 RUSTDESK_RELAY_SERVER="${RUSTDESK_RELAY_SERVER:-${MEMBRANE_VPS_IP}}"
+
+# --- Binary depot (sovereign channel) ---
+# Override to fetch from Forgejo instead of GitHub:
+#   export PLASMIDBIN_RELEASE_URL="https://git.primals.eco/ecoPrimals/plasmidBin/releases/download"
+PLASMIDBIN_RELEASE_URL="${PLASMIDBIN_RELEASE_URL:-https://github.com/ecoPrimals/plasmidBin/releases/download}"
+
+# --- MitoBeacon (family identity) ---
+FAMILY_ID="${FAMILY_ID:-e8b62b6e}"
+FAMILY_SEED_PATH="${FAMILY_SEED_PATH:-$GATE_HOME/.config/biomeos/family/.beacon.seed}"
 
 # --- Channel 3: TLS Surface ---
 MEMBRANE_TLS_PORT="${MEMBRANE_TLS_PORT:-443}"

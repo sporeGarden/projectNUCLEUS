@@ -7,7 +7,7 @@ is tested here before and after replacement.
 ## Current State (2026-05-28)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh` (gate-local)
-**181 Rust tests PASS** (darkforest 139, tunnelKeeper 42). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**184 Rust tests PASS** (darkforest 139, tunnelKeeper 45). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`

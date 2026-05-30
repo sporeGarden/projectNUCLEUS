@@ -6,8 +6,8 @@ Validation experiments for sovereign NUCLEUS deployment.
 
 | ID | Name | Crate/Tool | Tests | Status |
 |----|------|-----------|-------|--------|
-| E1 | Security boundary validation | `validation/darkforest/` | 125 | PASS |
-| E2 | Transport sovereignty | `validation/tunnelKeeper/` | 37 | PASS |
+| E1 | Security boundary validation | `validation/darkforest/` | 139 | PASS |
+| E2 | Transport sovereignty | `validation/tunnelKeeper/` | 45 | PASS |
 | E3 | Sovereignty parity | `infra/benchScale/` | 4 tracks | ACTIVE |
 | E4 | Membrane security audit | `validation/darkforest_membrane.sh` | 17 checks (21 PASS) | PASS |
 | E5 | lithoSpore integration | `gardens/lithoSpore/` | 117 | PASS |
@@ -21,7 +21,7 @@ JupyterHub via JSON-RPC fuzz, HTTP pentest, crypto validation, and
 observer-tier access control.
 
 **Rust crate**: `validation/darkforest/` (v0.2.1)
-**Test coverage**: 125 unit tests (Shannon entropy, hex decode, check builder,
+**Test coverage**: 139 unit tests (Shannon entropy, hex decode, check builder,
 report roundtrip, discovery module, capability probing, HTTP parsing, net graceful failure)
 
 **Results (validated May 2026)**:
@@ -44,7 +44,7 @@ report roundtrip, discovery module, capability probing, HTTP parsing, net gracef
 while preparing Songbird sovereign replacement.
 
 **Rust crate**: `validation/tunnelKeeper/` (v0.2.0)
-**Test coverage**: 37 unit tests (YAML config roundtrip, ChaCha20 encrypt/decrypt,
+**Test coverage**: 45 unit tests (YAML config roundtrip, ChaCha20 encrypt/decrypt,
 health evaluation, JSON serialization)
 
 **Results**:
@@ -167,8 +167,8 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 ## Aggregate Test Summary
 
 ```
-darkforest          125 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
-tunnelKeeper         41 tests  (api, config, crypto, health, transport)
+darkforest          139 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
+tunnelKeeper         45 tests  (api, config, crypto, health, transport)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)

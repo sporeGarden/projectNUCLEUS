@@ -56,7 +56,7 @@ The canonical source for all 77+ graphs remains in primalSpring.
 
 | File | Signal | Steps | Status |
 |------|--------|-------|--------|
-| `nest_ingest_spore.toml` (biomeOS canonical) | `nucleus.ingest_spore` | validate → store → DAG → ledger → braid → sign | NC-1; BLOCKED on biomeOS gateway |
+| `nest_ingest_spore.toml` (biomeOS canonical) | `nucleus.ingest_spore` | validate → store → DAG → ledger → braid → sign | NC-1 CODE COMPLETE — biomeOS v3.84 `biomeos-pseudospore` shipped |
 
 The `nest_ingest_spore` signal graph originates from `primals/biomeOS/graphs/signals/` (also copied in primalSpring).
 It composes existing primal capabilities — no new capabilities required. Six sequential nodes:

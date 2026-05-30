@@ -37,7 +37,7 @@ SPOREPRINT_BUILD="$SPOREPRINT_REPO/public"
 log() { echo "[publish_sporeprint] $(date '+%H:%M:%S') $*"; }
 
 rpc_nestgate() {
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$NESTGATE_PORT" 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 "${NUCLEUS_BIND_ADDRESS}" "$NESTGATE_PORT" 2>/dev/null
 }
 
 check_nestgate_content_support() {

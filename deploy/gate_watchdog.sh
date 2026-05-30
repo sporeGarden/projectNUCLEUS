@@ -28,6 +28,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
   || { echo "ERROR: Cannot find nucleus_config.sh" >&2; exit 1; }
 
+LAB_HOSTNAME="${LAB_URL#https://}"
+LAB_HOSTNAME="${LAB_HOSTNAME#http://}"
+GIT_HOSTNAME="${GIT_URL#https://}"
+GIT_HOSTNAME="${GIT_HOSTNAME#http://}"
+SITE_HOSTNAME="${SITE_URL#https://}"
+SITE_HOSTNAME="${SITE_HOSTNAME#http://}"
+
 STATE_DIR="/tmp/gate_watchdog"
 STATE_FILE="${STATE_DIR}/membrane_state"
 LOG_FILE="${STATE_DIR}/watchdog.log"
@@ -100,7 +107,7 @@ do_check() {
 do_loop() {
     log "Membrane watchdog started (interval=${CHECK_INTERVAL}s)"
     log "  Extracellular: primals.eco → GitHub Pages CDN (no tunnel)"
-    log "  Membrane:      lab.primals.eco, git.primals.eco → tunnel"
+    log "  Membrane:      ${LAB_HOSTNAME}, ${GIT_HOSTNAME} → tunnel"
     while true; do
         do_check
         sleep "$CHECK_INTERVAL"
@@ -122,8 +129,8 @@ do_status() {
     echo "    primals.eco:       ${public_status} (GitHub Pages + Cloudflare)"
     echo ""
     echo "  Membrane channels (tunnel → sovereign compute):"
-    echo "    lab.primals.eco:   ${lab_status} (observer + JupyterHub)"
-    echo "    git.primals.eco:   ${git_status} (Forgejo)"
+    echo "    ${LAB_HOSTNAME}:   ${lab_status} (observer + JupyterHub)"
+    echo "    ${GIT_HOSTNAME}:   ${git_status} (Forgejo)"
     echo ""
     echo "  Membrane state:     ${state}"
     echo "  Check interval:     ${CHECK_INTERVAL}s"

@@ -60,10 +60,10 @@ generate_zone() {
     serial=$(date +%Y%m%d%H)
 
     cat << ZONE
-\$ORIGIN primals.eco.
+\$ORIGIN ${ZONE_DOMAIN}.
 \$TTL 300
 
-@ IN SOA ns1.primals.eco. admin.primals.eco. (
+@ IN SOA ns1.${ZONE_DOMAIN}. admin.${ZONE_DOMAIN}. (
     $serial   ; serial (YYYYMMDDHH)
     3600      ; refresh (1 hour)
     900       ; retry (15 min)
@@ -72,16 +72,13 @@ generate_zone() {
 )
 
 ; Nameservers — sovereign on cellMembrane VPS
-@ IN NS ns1.primals.eco.
+@ IN NS ns1.${ZONE_DOMAIN}.
 
 ; NS glue record
 ns1 IN A $vps_ip
 
 ; Apex — GitHub Pages CDN (extracellular, always-on)
-@ IN A 185.199.108.153
-@ IN A 185.199.109.153
-@ IN A 185.199.110.153
-@ IN A 185.199.111.153
+$(for ip in "${GHPAGES_A_RECORDS[@]}"; do echo "@ IN A $ip"; done)
 
 ; cellMembrane VPS
 membrane IN A $vps_ip
@@ -110,7 +107,7 @@ do_deploy() {
     if $DRY_RUN; then
         log "[dry-run] Would install knot-dns from Debian repos"
         log "[dry-run] Would generate /etc/knot/knot.conf"
-        log "[dry-run] Would generate /etc/knot/zones/primals.eco.zone"
+        log "[dry-run] Would generate /etc/knot/zones/${ZONE_DOMAIN}.zone"
         log "[dry-run] Would enable DNSSEC (ECDSAP256SHA256)"
         log "[dry-run] Would open UDP/TCP 53 in UFW"
         log "[dry-run] Would start knot.service"
@@ -140,7 +137,7 @@ server:
     rundir: "/run/knot"
     user: knot:knot
     listen: ${VPS_IP}@53
-    identity: "ns1.primals.eco"
+    identity: "ns1.${ZONE_DOMAIN}"
     version: ""
 
 log:
@@ -168,7 +165,7 @@ template:
     journal-content: all
 
 zone:
-  - domain: primals.eco
+  - domain: ${ZONE_DOMAIN}
     dnssec-signing: on
     dnssec-policy: ecdsap256
 CONF
@@ -176,7 +173,7 @@ CONF
     log "Phase 3: Writing zone file..."
     local zone_content
     zone_content=$(generate_zone "$VPS_IP")
-    echo "$zone_content" | ssh_cmd "cat > /etc/knot/zones/primals.eco.zone"
+    echo "$zone_content" | ssh_cmd "cat > /etc/knot/zones/${ZONE_DOMAIN}.zone"
     ssh_cmd "chown -R knot:knot /etc/knot/zones"
 
     log "Phase 4: Validating configuration..."
@@ -233,13 +230,13 @@ do_status() {
         log "  Version: $version"
         log ""
         log "  Zone status:"
-        ssh_cmd "knotc zone-status primals.eco 2>&1" | while IFS= read -r line; do
+        ssh_cmd "knotc zone-status ${ZONE_DOMAIN} 2>&1" | while IFS= read -r line; do
             log "    $line"
         done
 
         log ""
         log "  DNSSEC keys:"
-        ssh_cmd "keymgr primals.eco list 2>&1" | while IFS= read -r line; do
+        ssh_cmd "keymgr ${ZONE_DOMAIN} list 2>&1" | while IFS= read -r line; do
             log "    $line"
         done
 
@@ -254,7 +251,7 @@ do_status() {
 do_test() {
     log "Testing resolution against $VPS_IP..."
 
-    local domains=("primals.eco" "ns1.primals.eco" "membrane.primals.eco" "lab.primals.eco" "git.primals.eco")
+    local domains=("${ZONE_DOMAIN}" "ns1.${ZONE_DOMAIN}" "membrane.${ZONE_DOMAIN}" "lab.${ZONE_DOMAIN}" "git.${ZONE_DOMAIN}")
     local pass=0
     local fail=0
 

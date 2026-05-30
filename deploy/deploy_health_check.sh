@@ -32,7 +32,7 @@ port_for_primal() {
 
 rpc_health_check() {
     local port="$1"
-    curl -sf --max-time 3 "http://127.0.0.1:$port" \
+    curl -sf --max-time 3 "http://${NUCLEUS_BIND_ADDRESS}:$port" \
         -X POST -H 'Content-Type: application/json' \
         -d '{"jsonrpc":"2.0","method":"health.liveness","id":1}' 2>/dev/null
 }

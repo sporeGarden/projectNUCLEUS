@@ -62,7 +62,7 @@ else
     exit 1
 fi
 
-HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:${OBSERVER_STATIC_PORT}/" --max-time 5 2>/dev/null || echo "000")
+HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" "http://${NUCLEUS_BIND_ADDRESS}:${OBSERVER_STATIC_PORT}/" --max-time 5 2>/dev/null || echo "000")
 if [ "$HTTP_CODE" = "200" ]; then
     echo "PASS: port ${OBSERVER_STATIC_PORT} returns HTTP 200"
 else

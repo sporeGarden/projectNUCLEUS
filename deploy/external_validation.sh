@@ -22,7 +22,7 @@ source "$SCRIPT_DIR/nucleus_config.sh"
 
 PROJECT_ROOT="$NUCLEUS_PROJECT_ROOT"
 CLOUDFLARED="${CLOUDFLARED:-$(command -v cloudflared 2>/dev/null || echo "$HOME/bin/cloudflared")}"
-JUPYTERHUB_URL="http://127.0.0.1:$JUPYTERHUB_PORT"
+JUPYTERHUB_URL="http://${NUCLEUS_BIND_ADDRESS}:$JUPYTERHUB_PORT"
 TUNNEL_HOSTNAME="${TUNNEL_HOSTNAME:-}"
 MODE="local"
 RESULTS_DIR="$PROJECT_ROOT/validation/external-$(date +%Y%m%d-%H%M%S)"
@@ -84,10 +84,10 @@ for pair in "beardog:$BEARDOG_PORT" "songbird:$SONGBIRD_PORT" "toadstool:$TOADST
     name="${pair%%:*}"
     port="${pair#*:}"
     if [[ "$name" == "songbird" ]]; then
-        resp=$(curl -sf --max-time 2 "http://127.0.0.1:$port/health" 2>/dev/null) || resp=""
+        resp=$(curl -sf --max-time 2 "http://${NUCLEUS_BIND_ADDRESS}:$port/health" 2>/dev/null) || resp=""
         [[ "$resp" == "OK" ]] && PRIMAL_COUNT=$((PRIMAL_COUNT + 1))
     else
-        resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","id":1}\n' | nc -w 2 127.0.0.1 "$port" 2>/dev/null) || resp=""
+        resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","id":1}\n' | nc -w 2 "${NUCLEUS_BIND_ADDRESS}" "$port" 2>/dev/null) || resp=""
         echo "$resp" | grep -q '"result"' 2>/dev/null && PRIMAL_COUNT=$((PRIMAL_COUNT + 1))
     fi
 done
@@ -126,7 +126,7 @@ check "GET /hub/health returns 200 (got $HEALTH_STATUS)" "$( [[ "$HEALTH_STATUS"
 log ""
 log "── Stage 3: Primal API Validation ──"
 
-CAPS_RESP=$(printf '{"jsonrpc":"2.0","method":"capabilities.list","id":1}\n' | nc -w 3 127.0.0.1 "$TOADSTOOL_PORT" 2>/dev/null) || CAPS_RESP=""
+CAPS_RESP=$(printf '{"jsonrpc":"2.0","method":"capabilities.list","id":1}\n' | nc -w 3 "${NUCLEUS_BIND_ADDRESS}" "$TOADSTOOL_PORT" 2>/dev/null) || CAPS_RESP=""
 if echo "$CAPS_RESP" | grep -q '"toadstool"' 2>/dev/null; then
     check "ToadStool capabilities.list" "pass"
     TOAD_VERSION=$(echo "$CAPS_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['version'])" 2>/dev/null || echo "?")
@@ -135,7 +135,7 @@ else
     check "ToadStool capabilities.list" "fail"
 fi
 
-DAG_RESP=$(printf '{"jsonrpc":"2.0","method":"dag.session.list","id":1}\n' | nc -w 3 127.0.0.1 "$RHIZOCRYPT_RPC_PORT" 2>/dev/null) || DAG_RESP=""
+DAG_RESP=$(printf '{"jsonrpc":"2.0","method":"dag.session.list","id":1}\n' | nc -w 3 "${NUCLEUS_BIND_ADDRESS}" "$RHIZOCRYPT_RPC_PORT" 2>/dev/null) || DAG_RESP=""
 if echo "$DAG_RESP" | grep -q '"result"' 2>/dev/null; then
     check "rhizoCrypt DAG session.list" "pass"
     SESSION_COUNT=$(echo "$DAG_RESP" | python3 -c "import sys,json; r=json.load(sys.stdin)['result']; print(len(r) if isinstance(r,list) else r)" 2>/dev/null || echo "?")
@@ -144,7 +144,7 @@ else
     check "rhizoCrypt DAG session.list" "fail"
 fi
 
-SPINE_RESP=$(curl -sf --max-time 3 "http://127.0.0.1:${LOAMSPINE_PORT}" \
+SPINE_RESP=$(curl -sf --max-time 3 "http://${NUCLEUS_BIND_ADDRESS}:${LOAMSPINE_PORT}" \
     -X POST -H 'Content-Type: application/json' \
     -d '{"jsonrpc":"2.0","method":"capabilities.list","id":1}' 2>/dev/null) || SPINE_RESP=""
 if echo "$SPINE_RESP" | grep -q '"result"' 2>/dev/null; then

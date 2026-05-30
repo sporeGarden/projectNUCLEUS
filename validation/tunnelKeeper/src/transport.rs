@@ -218,4 +218,60 @@ mod tests {
         let v: serde_json::Value = serde_json::from_str(&json).unwrap();
         assert_eq!(v["healthy"], true);
     }
+
+    #[test]
+    fn transport_error_variants_display_correctly() {
+        let cases: Vec<(TransportError, &str)> = vec![
+            (
+                TransportError::Unavailable("not found".into()),
+                "transport unavailable",
+            ),
+            (
+                TransportError::Connection("refused".into()),
+                "connection failed",
+            ),
+            (TransportError::Process("panicked".into()), "process error"),
+        ];
+        for (err, expected_prefix) in &cases {
+            let msg = err.to_string();
+            assert!(
+                msg.starts_with(expected_prefix),
+                "'{msg}' should start with '{expected_prefix}'"
+            );
+        }
+    }
+
+    #[test]
+    fn tunnel_handle_fields_roundtrip() {
+        let h = TunnelHandle {
+            transport_name: "songbird".to_string(),
+            status: "healthy".to_string(),
+            endpoint: "quic://10.10.0.1:4433".to_string(),
+        };
+        let json = serde_json::to_string(&h).unwrap();
+        let v: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v["transport_name"], "songbird");
+        assert_eq!(v["status"], "healthy");
+        assert_eq!(v["endpoint"], "quic://10.10.0.1:4433");
+    }
+
+    #[test]
+    fn transport_health_none_latency() {
+        let h = TransportHealth {
+            transport_name: "beardog".to_string(),
+            healthy: false,
+            latency_ms: None,
+            detail: "process not found".to_string(),
+        };
+        let json = serde_json::to_string(&h).unwrap();
+        let v: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v["healthy"], false);
+        assert!(v["latency_ms"].is_null());
+    }
+
+    #[test]
+    fn cloudflare_transport_name_is_cloudflare() {
+        let t = CloudflareTunnelTransport::default();
+        assert_eq!(t.name(), "cloudflare");
+    }
 }

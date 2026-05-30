@@ -33,6 +33,12 @@ source "${SCRIPT_DIR}/nucleus_config.sh" 2>/dev/null \
 TUNNEL_NAME="nucleus-lab"
 CF_CRED_FILE="${CLOUDFLARED_DIR}/${CF_TUNNEL_ID}.json"
 
+# Extract bare hostnames from URL variables for cloudflared ingress rules
+LAB_HOSTNAME="${LAB_URL#https://}"
+LAB_HOSTNAME="${LAB_HOSTNAME#http://}"
+GIT_HOSTNAME="${GIT_URL#https://}"
+GIT_HOSTNAME="${GIT_HOSTNAME#http://}"
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -51,8 +57,8 @@ usage() {
     echo
     echo "Cell membrane model:"
     echo "  primals.eco       → GitHub Pages CDN (extracellular, not tunneled)"
-    echo "  lab.primals.eco   → tunnel (membrane channel → observer/JupyterHub)"
-    echo "  git.primals.eco   → tunnel (membrane channel → Forgejo)"
+    echo "  ${LAB_HOSTNAME}   → tunnel (membrane channel → observer/JupyterHub)"
+    echo "  ${GIT_HOSTNAME}   → tunnel (membrane channel → Forgejo)"
     echo
     echo "Options:"
     echo "  --dry-run   Show commands without executing"
@@ -150,26 +156,26 @@ credentials-file: ${REMOTE_HOME}/.cloudflared/$(basename "$CF_CRED_FILE")
 
 ingress:
   # JupyterHub core routes (authenticated compute access)
-  - hostname: lab.primals.eco
+  - hostname: ${LAB_HOSTNAME}
     path: /hub/.*
-    service: http://127.0.0.1:${JUPYTERHUB_PORT}
-  - hostname: lab.primals.eco
+    service: http://${NUCLEUS_BIND_ADDRESS}:${JUPYTERHUB_PORT}
+  - hostname: ${LAB_HOSTNAME}
     path: /user/.*
-    service: http://127.0.0.1:${JUPYTERHUB_PORT}
-  - hostname: lab.primals.eco
+    service: http://${NUCLEUS_BIND_ADDRESS}:${JUPYTERHUB_PORT}
+  - hostname: ${LAB_HOSTNAME}
     path: /services/.*
-    service: http://127.0.0.1:${JUPYTERHUB_PORT}
-  - hostname: lab.primals.eco
+    service: http://${NUCLEUS_BIND_ADDRESS}:${JUPYTERHUB_PORT}
+  - hostname: ${LAB_HOSTNAME}
     path: /api/.*
-    service: http://127.0.0.1:${JUPYTERHUB_PORT}
+    service: http://${NUCLEUS_BIND_ADDRESS}:${JUPYTERHUB_PORT}
 
   # Static observer surface
-  - hostname: lab.primals.eco
-    service: http://127.0.0.1:${OBSERVER_STATIC_PORT}
+  - hostname: ${LAB_HOSTNAME}
+    service: http://${NUCLEUS_BIND_ADDRESS}:${OBSERVER_STATIC_PORT}
 
   # Forgejo (sovereign git)
-  - hostname: git.primals.eco
-    service: http://127.0.0.1:${FORGEJO_PORT}
+  - hostname: ${GIT_HOSTNAME}
+    service: http://${NUCLEUS_BIND_ADDRESS}:${FORGEJO_PORT}
 
   - service: http_status:404"
 else
@@ -183,12 +189,12 @@ credentials-file: ${REMOTE_HOME}/.cloudflared/$(basename "$CF_CRED_FILE")
 
 ingress:
   # Static observer surface
-  - hostname: lab.primals.eco
-    service: http://127.0.0.1:${OBSERVER_STATIC_PORT}
+  - hostname: ${LAB_HOSTNAME}
+    service: http://${NUCLEUS_BIND_ADDRESS}:${OBSERVER_STATIC_PORT}
 
   # Forgejo (sovereign git)
-  - hostname: git.primals.eco
-    service: http://127.0.0.1:${FORGEJO_PORT}
+  - hostname: ${GIT_HOSTNAME}
+    service: http://${NUCLEUS_BIND_ADDRESS}:${FORGEJO_PORT}
 
   - service: http_status:404"
 fi

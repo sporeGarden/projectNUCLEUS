@@ -177,14 +177,14 @@ log "Phase 8: Verification"
 
 if ! $DRY_RUN; then
     sleep 5
-    HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "https://lab.primals.eco/" 2>/dev/null || echo "000")
+    HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${LAB_URL}/" 2>/dev/null || echo "000")
     if [[ "$HTTP_CODE" == "200" ]]; then
-        log "  lab.primals.eco responds 200: ${GREEN}OK${NC}"
+        log "  ${LAB_URL} responds 200: ${GREEN}OK${NC}"
     else
-        warn "  lab.primals.eco returned $HTTP_CODE — may need DNS propagation time"
+        warn "  ${LAB_URL} returned $HTTP_CODE — may need DNS propagation time"
     fi
 else
-    echo "  [dry-run] Would verify lab.primals.eco responds 200"
+    echo "  [dry-run] Would verify ${LAB_URL} responds 200"
 fi
 
 # ── Summary ──────────────────────────────────────────────────────────────

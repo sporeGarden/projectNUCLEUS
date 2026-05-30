@@ -35,22 +35,22 @@ done
 mkdir -p "$RESULTS_DIR"
 
 rpc_nestgate() {
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$NESTGATE_PORT" 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 "${NUCLEUS_BIND_ADDRESS}" "$NESTGATE_PORT" 2>/dev/null
 }
 
 rpc_rhizocrypt() {
     # rhizoCrypt serves JSON-RPC on port+1 (dual HTTP+newline), tarpc on base port
     local jsonrpc_port=$((RHIZOCRYPT_PORT + 1))
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$jsonrpc_port" 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 "${NUCLEUS_BIND_ADDRESS}" "$jsonrpc_port" 2>/dev/null
 }
 
 rpc_loamspine() {
-    curl -s -X POST "http://127.0.0.1:$LOAMSPINE_PORT" \
+    curl -s -X POST "http://${NUCLEUS_BIND_ADDRESS}:$LOAMSPINE_PORT" \
         -H 'Content-Type: application/json' -d "$1" 2>/dev/null
 }
 
 rpc_sweetgrass() {
-    printf '%s\n' "$1" | nc -w 5 127.0.0.1 "$SWEETGRASS_PORT" 2>/dev/null
+    printf '%s\n' "$1" | nc -w 5 "${NUCLEUS_BIND_ADDRESS}" "$SWEETGRASS_PORT" 2>/dev/null
 }
 
 blake3_hash() {
@@ -90,7 +90,7 @@ rpc_health() {
 
     # Songbird uses HTTP GET /health (not JSON-RPC POST)
     if [[ "$name" == "Songbird" ]]; then
-        resp=$(curl -sf --max-time 3 "http://127.0.0.1:$port/health" 2>/dev/null) || resp=""
+        resp=$(curl -sf --max-time 3 "http://${NUCLEUS_BIND_ADDRESS}:$port/health" 2>/dev/null) || resp=""
         if [[ "$resp" == "OK" ]]; then
             log "  [OK] $name (HTTP $port) healthy"
             return 0
@@ -102,7 +102,7 @@ rpc_health() {
     # rhizoCrypt serves JSON-RPC on port+1 (tarpc on base port)
     if [[ "$name" == "rhizoCrypt" ]]; then
         local jsonrpc_port=$((port + 1))
-        resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 127.0.0.1 "$jsonrpc_port" 2>/dev/null) || resp=""
+        resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 "${NUCLEUS_BIND_ADDRESS}" "$jsonrpc_port" 2>/dev/null) || resp=""
         if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
             log "  [OK] $name (TCP $jsonrpc_port) healthy"
             return 0
@@ -112,7 +112,7 @@ rpc_health() {
     fi
 
     # HTTP JSON-RPC (loamSpine, petalTongue)
-    resp=$(curl -sf --max-time 3 "http://127.0.0.1:$port" \
+    resp=$(curl -sf --max-time 3 "http://${NUCLEUS_BIND_ADDRESS}:$port" \
         -X POST -H 'Content-Type: application/json' \
         -d '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}' 2>/dev/null) || resp=""
     if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
@@ -121,7 +121,7 @@ rpc_health() {
     fi
 
     # Newline-delimited JSON-RPC (BearDog, ToadStool, NestGate, sweetGrass, etc.)
-    resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 127.0.0.1 "$port" 2>/dev/null) || resp=""
+    resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 "${NUCLEUS_BIND_ADDRESS}" "$port" 2>/dev/null) || resp=""
     if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
         log "  [OK] $name (TCP $port) healthy"
         return 0

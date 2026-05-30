@@ -58,7 +58,7 @@ echo "  Starting BearDog on :${SHADOW_PORT}..."
 export BEARDOG_FAMILY_SEED="${BEACON_SEED:-$(head -c 32 /dev/urandom | base64)}"
 
 nohup "$BEARDOG_BIN" server \
-    --listen "127.0.0.1:${SHADOW_PORT}" \
+    --listen "${NUCLEUS_BIND_ADDRESS}:${SHADOW_PORT}" \
     --family-id "${FAMILY_ID:-nucleus}" \
     --audit-dir "$AUDIT_DIR" \
     > "$SHADOW_LOG" 2>&1 &
@@ -81,7 +81,7 @@ beardog_health() {
     local start_ns end_ns elapsed_ms
     start_ns=$(date +%s%N)
     if echo '{"jsonrpc":"2.0","method":"health.liveness","id":1}' | \
-        nc -w 2 127.0.0.1 "$SHADOW_PORT" 2>/dev/null | grep -q "result"; then
+        nc -w 2 "${NUCLEUS_BIND_ADDRESS}" "$SHADOW_PORT" 2>/dev/null | grep -q "result"; then
         end_ns=$(date +%s%N)
         elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
         echo "$elapsed_ms"
@@ -92,7 +92,7 @@ beardog_health() {
 
 bd_time=$(beardog_health)
 cf_time=$(curl -so /dev/null -w '%{time_total}' --max-time 5 \
-    "https://lab.primals.eco" 2>/dev/null || echo "unreachable")
+    "${LAB_URL}" 2>/dev/null || echo "unreachable")
 
 echo "  Cloudflare latency:  ${cf_time}s"
 echo "  BearDog RPC latency: ${bd_time}ms"

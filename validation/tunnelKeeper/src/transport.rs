@@ -173,7 +173,7 @@ impl TunnelTransport for CloudflareTunnelTransport {
 // - v0.2 SongbirdTransport: Pure Rust QUIC + TLS via songbird-quic/songbird-tls
 // - v0.3 BearDogAuthTransport: Primal-native auth (Ed25519 ionic) + tunnel crypto (ChaCha20-Poly1305)
 
-#[cfg(all(test, feature = "songbird-transport"))]
+#[cfg(test)]
 mod tests {
     use super::*;
 

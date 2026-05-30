@@ -59,7 +59,7 @@ pub async fn run(
     api_token: Option<&str>,
     json: bool,
 ) -> Result<(), ConfigError> {
-    let config = TunnelConfig::load(config_path)?;
+    let config = TunnelConfig::load_async(config_path).await?;
 
     let cfg_for_blocking = config.clone();
     let (process, connectivity, dns, config_health) = tokio::task::spawn_blocking(move || {

@@ -90,7 +90,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-28) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **162 Rust tests PASS** (darkforest 125, tunnelKeeper 37), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-05-28) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **181 Rust tests PASS** (darkforest 139, tunnelKeeper 42), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)

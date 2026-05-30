@@ -4,7 +4,6 @@ mod api;
 mod config;
 mod crypto;
 mod health;
-#[cfg(feature = "songbird-transport")]
 mod transport;
 
 use clap::{Parser, Subcommand};

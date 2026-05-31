@@ -1,4 +1,5 @@
 mod config;
+mod deploy;
 mod provenance;
 mod rpc;
 mod security;
@@ -9,6 +10,7 @@ use std::process;
 use clap::{Parser, Subcommand};
 
 use config::NucleusConfig;
+use deploy::{Composition, DeployAction};
 use provenance::ProvenanceArgs;
 use security::{Layer, SecurityArgs};
 
@@ -54,6 +56,33 @@ enum Commands {
         #[arg(long)]
         results_dir: Option<PathBuf>,
     },
+
+    /// Deploy a NUCLEUS composition to a gate
+    Deploy {
+        /// Composition to deploy
+        #[arg(long, value_enum, default_value = "node")]
+        composition: Composition,
+
+        /// Gate name (matches `gates/<name>.toml`)
+        #[arg(long)]
+        gate: Option<String>,
+
+        /// Family name for seed initialization
+        #[arg(long)]
+        family_name: Option<String>,
+
+        /// VPS standard: no TCP ports
+        #[arg(long)]
+        uds_only: bool,
+
+        /// Stop all running primals
+        #[arg(long)]
+        stop: bool,
+
+        /// Show status of running primals
+        #[arg(long)]
+        status: bool,
+    },
 }
 
 #[tokio::main]
@@ -92,6 +121,34 @@ async fn main() {
                 results_dir,
             };
             match provenance::run(&cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        Commands::Deploy {
+            composition,
+            gate,
+            family_name,
+            uds_only,
+            stop,
+            status,
+        } => {
+            let action = if stop {
+                DeployAction::Stop
+            } else if status {
+                DeployAction::Status
+            } else {
+                DeployAction::Start {
+                    composition,
+                    gate,
+                    family_name,
+                    uds_only,
+                }
+            };
+            match deploy::run(&cfg, &action).await {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("ERROR: {e}");

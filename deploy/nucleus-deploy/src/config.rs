@@ -23,7 +23,6 @@ pub struct NucleusConfig {
     pub project_root: PathBuf,
     pub ecoprimals_root: PathBuf,
     pub plasmidbin_dir: PathBuf,
-    #[expect(dead_code, reason = "used by deploy subcommand (Wave 65)")]
     pub runtime_dir: PathBuf,
 
     pub bind_address: String,

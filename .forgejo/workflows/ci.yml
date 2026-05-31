@@ -1,0 +1,72 @@
+# Forgejo Actions CI — projectNUCLEUS shadow CI
+# Runs in parallel with GitHub Actions for validation parity.
+# Target: promote to primary in Wave 66 once validated.
+#
+# Runner: ironGate self-hosted (host mode, Rust toolchain preinstalled)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust toolchain info
+        run: |
+          rustc --version
+          cargo --version
+          rustup show active-toolchain
+
+      - name: Check formatting
+        working-directory: validation/darkforest
+        run: cargo fmt --check
+
+      - name: Clippy lint (darkforest)
+        working-directory: validation/darkforest
+        run: cargo clippy -- -D warnings
+
+      - name: Test darkforest
+        working-directory: validation/darkforest
+        run: cargo test
+
+      - name: Check formatting (tunnelKeeper)
+        working-directory: validation/tunnelKeeper
+        run: cargo fmt --check
+
+      - name: Clippy lint (tunnelKeeper)
+        working-directory: validation/tunnelKeeper
+        run: cargo clippy -- -D warnings
+
+      - name: Test tunnelKeeper
+        working-directory: validation/tunnelKeeper
+        run: cargo test
+
+      - name: Check formatting (nucleus-deploy)
+        working-directory: deploy/nucleus-deploy
+        run: cargo fmt --check
+
+      - name: Clippy lint (nucleus-deploy)
+        working-directory: deploy/nucleus-deploy
+        run: cargo clippy -- -D warnings
+
+      - name: Test nucleus-deploy
+        working-directory: deploy/nucleus-deploy
+        run: cargo test
+
+      - name: Shell script syntax check
+        run: |
+          fail=0
+          for script in deploy/*.sh; do
+            if ! bash -n "$script" 2>/dev/null; then
+              echo "FAIL: $script"
+              fail=$((fail + 1))
+            fi
+          done
+          echo "Checked $(ls deploy/*.sh | wc -l) scripts, $fail failures"
+          exit $fail

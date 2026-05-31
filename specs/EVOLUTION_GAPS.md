@@ -13,7 +13,7 @@ without waiting on upstream unless noted.
 **Upstream status**: All upstream gaps resolved. 13/13 primals zero code debt, 8/8 delta springs zero debt (8,486+ tests). Tower atomic LIVE (ludoSpring 6/6). Nest atomic ready (GAP-36 resolved). Node atomic AMD live, NV FECS-gated.
 **Tier 2 Science API**: `toadstool.validate` IMPLEMENTED (S250, 74 methods), `barracuda.precision.route` v0.4.0 (649 tests), `composition.deploy.shadow` biomeOS v3.53 SHIPPED, `biomeos.spring_status` IMPLEMENTED (v3.84). Registry at **460 methods** (Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed `DispatchError`/`IonicProtocolError`/`PhasedIpcError` thiserror-derived). Canonical `primal.list` / `capability.list` schemas SHIPPED. `env_keys.rs` centralization. biomeOS v3.84 `biomeos-pseudospore` + emit materialization shipped (NC-1 CODE COMPLETE). **Wave 56**: `nucleus_launcher --uds-only`, cell graph `vps_standard` tagging, 12 primordial scripts archived, `primalspring checksums` + `primalspring registry` subcommands replace shell validation.
 **cellMembrane**: fieldMouse deployment LIVE on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **Nest Atomic composition (Wave 38)**: Tower (BearDog :9100, SkunkBat :9140, Songbird :3478) + NestGate :9500 + rhizoCrypt :9602 + loamSpine :9700 + sweetGrass :9850 + RustDesk :21115-17 + Caddy TLS :80/:443 + petalTongue :8080 + BearDog TLS shadow :8443. **11 services, 7 primals**. Provenance trio pipeline verified end-to-end (10/10 PASS). darkforest membrane 21 PASS, 0 FAIL, 1 SKIP. Shadow 6/0/0 FULL PASS (S1-S5 + DNS). DO token encrypted (BearDog AES-256-GCM). 1.6 GB free. Owned by ironGate/projectNUCLEUS.
-**Forgejo**: PRIMARY git host — 32 repos across 3 orgs (sporeGarden, ecoPrimals, syntheticChemistry). `.netrc` credential caching. `forgejo_mirror.sh` for org/repo creation + dual-push. GitHub is push mirror (outer membrane).
+**Forgejo**: PRIMARY git host — 39 repos across 3 orgs (sporeGarden, ecoPrimals, syntheticChemistry). K-Derm diderm relay: gate → golgiBody (cis) → peptidoglycan (sync) → golgiBody-ext (trans) → GitHub. Push to forgejo only — relay handles GitHub automatically.
 
 Related specs:
 - [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
@@ -183,7 +183,7 @@ composition. Not actionable until Horizon 2 steps validate the patterns.
 | H3-01 | JupyterHub (notebook UX) | petalTongue dashboards + biomeOS dispatch | Gap — no notebook execution in petalTongue | Horizon 2 complete |
 | H3-02 | GitHub Releases (plasmidBin) | NestGate blob storage + manifest queries | **UNBLOCKED** — NestGate `content.put` shipped (Session 60). Wire `fetch.sh` to NestGate. | Local: update fetch URLs |
 | H3-03 | GitHub Actions (CI/CD) | Forgejo Actions or self-hosted runners | Gap — 74 workflow files to port | Forgejo primary adoption |
-| H3-04 | GitHub repos (source hosting) | Forgejo primary, GitHub mirror | **ACTIVE** — 32 repos mirrored, dual-push configured | CI still on GitHub Actions (H3-03 open) |
+| H3-04 | GitHub repos (source hosting) | Forgejo primary, GitHub mirror | **ACTIVE** — 39 repos, K-Derm diderm relay (push forgejo only, relay → GitHub) | CI still on GitHub Actions (H3-03 open) |
 | H3-05 | Docker Hub / ghcr.io | NestGate OCI blob store | **UNBLOCKED** — NestGate `content.put` shipped. Wire toadStool config. | Local: OCI store wiring |
 | H3-06 | Anthropic / OpenAI | Ollama + barraCuda WGSL inference | Partial — Ollama works locally | barraCuda shader maturity |
 | H3-07 | JH-11 cross-primal token federation | biomeOS composition forwarding with `_resource_envelope` | **UNBLOCKED** — bearDog `auth.public_key` + biomeOS `BearDogVerifier` live | Local: wire `CompositionContext` |
@@ -330,7 +330,7 @@ No cutover proceeds without a PASS from the corresponding gate.
 | **H2-13→16: Songbird NAT (replaces cloudflared)** | `songbird_nat_parity.sh` baseline, `darkforest_membrane.sh` MEM-01→MEM-13 | `membrane_telemetry.sh` TURN reachability, `membrane_summary.sh` parity | `darkforest_membrane.sh` full PASS, `songbird_nat_parity.sh` parity MET | `security_validation.sh` Layer 6 re-sweep |
 | **H2-17→20: Sovereign DNS (replaces Cloudflare NS)** | `dot_sovereign_parity.sh` DoT baseline (accuracy + timing) | `dot_sovereign_parity.sh` sovereign vs Cloudflare daily | 10/10 accuracy, latency within 20% of DoT, 7-day clean | `security_validation.sh` full sweep after each NS change |
 | **H3-03: Forgejo Actions (replaces GitHub Actions)** | Port `notify-sporeprint.yml` first (smallest CI surface) | Manual comparison: Forgejo run output vs GitHub Actions output | 100% workflow parity on pilot workflow | Expand to remaining 73 workflow files incrementally |
-| **H3-04: Forgejo Primary (replaces GitHub repos)** | `dark_forest_gate_local.sh` (all graphs valid post-remote-switch) | Dual-push verification via `forgejo_mirror.sh --push-all` | Forgejo post-receive auto-mirror to GitHub working | Periodic `dark_forest_gate_local.sh` + content parity |
+| **H3-04: Forgejo Primary (replaces GitHub repos)** | `dark_forest_gate_local.sh` (all graphs valid post-remote-switch) | K-Derm diderm relay verification (push forgejo → relay → GitHub) | Forgejo post-receive relay to GitHub via peptidoglycan/golgiBody-ext | Periodic `dark_forest_gate_local.sh` + temporal position parity |
 
 ### Validation Cadence
 
@@ -561,7 +561,7 @@ available**, current 8 services use 108 MB. Nest trio ~40-60 MB.
 
 ```
 Horizon 1 (external security):    ██████████  COMPLETE — all resolved, darkforest v0.2.1 authoritative
-Horizon 2 (sovereignty):          █████████░  Nest Atomic LIVE (11 svc), Ch3 TLS LIVE (ACME), Forgejo primary (32 repos), shadow 6/0/0
+Horizon 2 (sovereignty):          █████████░  Nest Atomic LIVE (11 svc), Ch3 TLS LIVE (ACME), Forgejo primary (39 repos, diderm relay), shadow 6/0/0
 Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo ACTIVE, H3-07/H3-08 UNBLOCKED, H3-11 FlockGate DESIGNED
 Horizon 4 (transactions):         ██░░░░░░░░  READY — playbook + benchScale topologies wired. H4-11/12/13 ready to run.
 Shadow (Wave 38→59):              ████████░░  S1-S3 LIVE, S4 SHADOW LIVE, S5 DEPLOYED. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**.

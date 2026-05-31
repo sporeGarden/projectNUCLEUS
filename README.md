@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE (2026-05-28)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S3 LIVE, S4 SHADOW LIVE, S5 DNS DEPLOYED). Registry **460 methods (Wave 59)**. **184 Rust tests PASS** (darkforest 139, tunnelKeeper 45). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1 **CODE COMPLETE** (biomeOS v3.84, live gated on VPS deploy). NC-2→NC-5 tracked. FlockGate H3-11 tracked.
+**Sovereignty evolution ACTIVE (2026-05-31)** — Forgejo primary (39 repos, K-Derm diderm relay). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S3 LIVE, S4 SHADOW LIVE, S5 DNS DEPLOYED). Registry **460 methods (Wave 59)**. **184 Rust tests PASS** (darkforest 139, tunnelKeeper 45). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1 **CODE COMPLETE** (biomeOS v3.84, live gated on VPS deploy). NC-2→NC-5 tracked. FlockGate H3-11 tracked.
 
 ### Infrastructure
 
@@ -117,7 +117,7 @@ Gates connect to each other through chemical bonding patterns:
 | primals.eco | `primals.eco` | — | Extracellular | GitHub Pages + Cloudflare CDN (always on, no gate) |
 | Observer (static) | `lab.primals.eco` | 8866 | Membrane | Pre-rendered HTML, open/unauthenticated |
 | JupyterHub | `lab.primals.eco` (gated) | 8000 | Membrane | PAM auth + Cloudflare Access, reviewer/user tiers |
-| Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 32 repos, 3 orgs. GitHub = push mirror |
+| Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 39 repos, 3 orgs. K-Derm diderm relay → GitHub |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
 | cellMembrane | 157.230.3.183 | 3478, 9100–9850, 80, 443 | Inner Membrane | **Nest Atomic** (2GB): Tower (BearDog + SkunkBat + Songbird) + Nest (NestGate + rhizoCrypt + loamSpine + sweetGrass) + RustDesk + Caddy TLS + petalTongue + BearDog TLS shadow. 11 services, 7 primals. `membrane.primals.eco` ACME cert. DigitalOcean nyc1 |
@@ -184,7 +184,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 - **Three-membrane architecture**: outer (GitHub mirror) / inner (VPS touchpoint) / intracellular (gate source of truth)
 - **VPS as touchpoint, gate as source**: VPS terminates TLS, relays traffic, caches content. Gate hardware runs full NUCLEUS
-- **Forgejo PRIMARY**: 32 repos mirrored across 3 orgs. `forgejo_mirror.sh` dual-push. GitHub is outer membrane
+- **Forgejo PRIMARY**: 39 repos across 3 orgs. K-Derm diderm relay (push forgejo only → relay → GitHub via golgiBody-ext)
 - **Content-aware routing**: `routing_config.toml` — static→VPS cache, auth/API/git→gate, large→Songbird P2P
 - **Trust model**: covalent/ionic/metallic/weak bonding maps to content access scopes in routing
 - **VPS Tower LIVE**: BearDog crypto + SkunkBat audit + Songbird relay + RustDesk + Caddy TLS shadow
@@ -281,7 +281,7 @@ gates/              Gate inventory and hardware configs
 deploy/             Deployment tooling, test suites, pappusCast daemon, membrane infrastructure
   signal_executor.sh Signal plan executor: intent → squirrel signal_plan → biomeOS signal.dispatch
   nucleus_config.sh Gate-agnostic config (all paths, ports, env vars, routing, membrane — single source of truth)
-  forgejo_mirror.sh Forgejo org/repo creation + dual-push for all repos
+  forgejo_mirror.sh Forgejo org/repo creation + relay push for all repos
   vps_resize.sh     doctl VPS resize automation
   routing_config.toml Content-aware routing rules (trust model, backends, cache policy, telemetry)
   membrane_telemetry.sh Unified probe across both membranes (cron-ready, 15-min interval)

@@ -3,6 +3,7 @@ mod deploy;
 mod provenance;
 mod rpc;
 mod security;
+mod spore;
 
 use std::path::PathBuf;
 use std::process;
@@ -13,6 +14,7 @@ use config::NucleusConfig;
 use deploy::{Composition, DeployAction};
 use provenance::ProvenanceArgs;
 use security::{Layer, SecurityArgs};
+use spore::SporeArgs;
 
 #[derive(Parser)]
 #[command(
@@ -83,6 +85,29 @@ enum Commands {
         #[arg(long)]
         status: bool,
     },
+
+    /// Execute workloads and emit pseudoSpores — replicable data objects
+    Spore {
+        /// Single workload TOML to process
+        #[arg(long)]
+        workload: Option<PathBuf>,
+
+        /// Directory of workload TOMLs to batch-process
+        #[arg(long)]
+        workloads_dir: Option<PathBuf>,
+
+        /// Output directory for pseudoSpore artifacts
+        #[arg(long, default_value = "./spores")]
+        output: PathBuf,
+
+        /// Skip trio provenance (DAG/spine/braid) — emit with stub provenance
+        #[arg(long)]
+        skip_provenance: bool,
+
+        /// Path to litho binary (auto-discovered if not set)
+        #[arg(long)]
+        litho_bin: Option<PathBuf>,
+    },
 }
 
 #[tokio::main]
@@ -149,6 +174,28 @@ async fn main() {
                 }
             };
             match deploy::run(&cfg, &action).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        Commands::Spore {
+            workload,
+            workloads_dir,
+            output,
+            skip_provenance,
+            litho_bin,
+        } => {
+            let args = SporeArgs {
+                workload,
+                workloads_dir,
+                output,
+                skip_provenance,
+                litho_bin,
+            };
+            match spore::run(&cfg, &args).await {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("ERROR: {e}");

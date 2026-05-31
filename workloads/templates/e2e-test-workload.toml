@@ -1,0 +1,24 @@
+# Synthetic workload for end-to-end pseudoSpore pipeline testing
+# Produces validation-style output without requiring spring binaries
+
+[metadata]
+name = "e2e-test-validation"
+description = "Synthetic validation workload for spore pipeline testing — 5/5 checks"
+version = "0.1.0"
+spring = "airSpring"
+
+[execution]
+type = "native"
+command = "/bin/bash"
+args = ["-c", "echo '[OK] Mass conservation: ΔM = 0.0000'; echo '[OK] Energy balance: ε = 1.2e-6'; echo '[OK] Python-Rust parity: max_diff = 3.1e-8'; echo '[OK] Water balance closure: P = ET + RO + ΔS within 0.01mm'; echo '[OK] Temporal stability: 80yr drift = 0.00%'; echo ''; echo 'RESULT: PASS (5/5 checks)'"]
+working_dir = "/tmp"
+
+[output]
+format = "text"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_percent = 10.0
+
+[security]
+isolation_level = "None"

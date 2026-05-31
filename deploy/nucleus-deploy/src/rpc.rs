@@ -27,7 +27,6 @@ pub enum RpcError {
 }
 
 pub struct RpcResponse {
-    #[expect(dead_code, reason = "available for diagnostic logging")]
     pub raw: String,
     pub parsed: Value,
 }

@@ -21,9 +21,7 @@ pub struct PrimalPort {
 #[derive(Debug, Clone)]
 pub struct NucleusConfig {
     pub project_root: PathBuf,
-    #[expect(dead_code, reason = "used by deploy subcommand (Wave 65)")]
     pub ecoprimals_root: PathBuf,
-    #[expect(dead_code, reason = "used by deploy subcommand (Wave 65)")]
     pub plasmidbin_dir: PathBuf,
     #[expect(dead_code, reason = "used by deploy subcommand (Wave 65)")]
     pub runtime_dir: PathBuf,

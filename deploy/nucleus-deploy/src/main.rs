@@ -1,4 +1,5 @@
 mod config;
+mod provenance;
 mod rpc;
 mod security;
 
@@ -8,6 +9,7 @@ use std::process;
 use clap::{Parser, Subcommand};
 
 use config::NucleusConfig;
+use provenance::ProvenanceArgs;
 use security::{Layer, SecurityArgs};
 
 #[derive(Parser)]
@@ -41,6 +43,17 @@ enum Commands {
         #[arg(long)]
         results: Option<PathBuf>,
     },
+
+    /// Provenance pipeline — full rigor through the Nest Atomic
+    Provenance {
+        /// Directory containing workload TOML files
+        #[arg(long)]
+        workloads_dir: Option<PathBuf>,
+
+        /// Directory for results output
+        #[arg(long)]
+        results_dir: Option<PathBuf>,
+    },
 }
 
 #[tokio::main]
@@ -67,6 +80,22 @@ async fn main() {
                 Err(e) => {
                     eprintln!("ERROR: {e}");
                     2
+                }
+            }
+        }
+        Commands::Provenance {
+            workloads_dir,
+            results_dir,
+        } => {
+            let args = ProvenanceArgs {
+                workloads_dir,
+                results_dir,
+            };
+            match provenance::run(&cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
                 }
             }
         }

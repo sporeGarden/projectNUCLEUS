@@ -31,8 +31,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/nucleus_config.sh" 2>/dev/null || true
 
-SQUIRREL_URL="http://${NUCLEUS_BIND_ADDRESS}:${SQUIRREL_PORT:-9300}"
-BIOMEOS_URL="http://${NUCLEUS_BIND_ADDRESS}:${BIOMEOS_PORT:-9800}"
+SQUIRREL_URL="http://127.0.0.1:${SQUIRREL_PORT:-9300}"
+BIOMEOS_URL="http://127.0.0.1:${BIOMEOS_PORT:-9800}"
 SIGNAL_TOOLS="${SIGNAL_TOOLS:-}"
 
 PLAN_ONLY=false
@@ -49,8 +49,8 @@ while [[ $# -gt 0 ]]; do
         --shadow)      SHADOW=true; shift ;;
         --signal)      DIRECT_SIGNAL="$2"; shift 2 ;;
         --params)      DIRECT_PARAMS="$2"; shift 2 ;;
-        --squirrel)    SQUIRREL_URL="http://${NUCLEUS_BIND_ADDRESS}:$2"; shift 2 ;;
-        --biomeos)     BIOMEOS_URL="http://${NUCLEUS_BIND_ADDRESS}:$2"; shift 2 ;;
+        --squirrel)    SQUIRREL_URL="http://127.0.0.1:$2"; shift 2 ;;
+        --biomeos)     BIOMEOS_URL="http://127.0.0.1:$2"; shift 2 ;;
         --tools)       SIGNAL_TOOLS="$2"; shift 2 ;;
         --help)
             echo "Usage: $0 [OPTIONS] \"intent\""

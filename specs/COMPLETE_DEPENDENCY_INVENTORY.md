@@ -6,7 +6,7 @@
 by phase (build/run/dev), identify primal replacements (existing/planned/gap),
 and note calibration instruments where applicable.
 
-> **Wave 63 note**: Forgejo is PRIMARY git host (39 repos, 3 orgs, K-Derm diderm relay). cellMembrane
+> **Wave 56 note**: Forgejo is now PRIMARY git host (32 repos, 3 orgs). cellMembrane
 > Nest Atomic LIVE (11 services, 7 primals). Sovereign DNS LIVE (knot-dns DNSSEC).
 > Shadow orchestrator 6 PASS. `--uds-only` VPS standard. See `EVOLUTION_GAPS.md`
 > for living tracker and `TUNNEL_EVOLUTION.md` for replacement roadmap.

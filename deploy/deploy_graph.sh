@@ -58,7 +58,7 @@ wait_for_health() {
     local attempt=0
 
     while [[ $attempt -lt $max_attempts ]]; do
-        if curl -sf --max-time 2 "http://${NUCLEUS_BIND_ADDRESS}:$port" \
+        if curl -sf --max-time 2 "http://127.0.0.1:$port" \
             -X POST -H 'Content-Type: application/json' \
             -d "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1}" \
             >/dev/null 2>&1; then
@@ -154,7 +154,7 @@ start_primal_from_graph() {
 shadow_deploy() {
     local graph_file="$1"
     local plasmidbin_dir="$2"
-    local bind_address="${3:-${NUCLEUS_BIND_ADDRESS}}"
+    local bind_address="${3:-127.0.0.1}"
     local mode="${4:-fresh}"
 
     if [[ ! -f "$graph_file" ]]; then

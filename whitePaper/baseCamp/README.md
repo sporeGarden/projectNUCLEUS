@@ -113,7 +113,7 @@ TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 56). `
 | Primal Capabilities | **PASS** | 460 methods (Wave 56), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
-| Composition | **ACTIVE** | Forgejo PRIMARY (39 repos, 3 orgs), K-Derm diderm relay |
+| Composition | **ACTIVE** | Forgejo PRIMARY (32 repos, 3 orgs), dual-push mirror |
 | Shadow Parity | **PASS** | **6/0/0** — S1 TLS, S2 NAT, S3 content LIVE; S4 auth SHADOW LIVE; S5 DNS DEPLOYED (NS cutover pending) |
 | Sovereign DNS | **DEPLOYED** | knot-dns v3.2.6, DNSSEC on VPS. NS cutover (H2-18) pending registrar |
 
@@ -175,8 +175,8 @@ availability:
 
 ### What is sovereign today
 
-- **Code**: Forgejo at git.primals.eco is PRIMARY. 39 repos, 3 orgs. GitHub is
-  extracellular ledger (K-Derm diderm relay via golgiBody-ext). All code AGPL-3.0-or-later.
+- **Code**: Forgejo at git.primals.eco is PRIMARY. 32 repos, 3 orgs. GitHub is
+  read-only mirror (dual-push). All code AGPL-3.0-or-later.
 - **TLS**: BearDog rustls terminates on :8443. ACME cert via Caddy on :443.
   BearDog is 13-27× faster than Cloudflare tunnel (6-12ms vs 163ms).
 - **NAT**: Songbird TURN relay on UDP :3478. 100% reachable. 5-tier

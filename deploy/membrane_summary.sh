@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy summary` (Rust) instead. Wave 64.
 # membrane_summary.sh — Rolling 7-day membrane summary with cutover gates
 #
 # Reads daily membrane_telemetry CSVs and produces a unified TOML summary

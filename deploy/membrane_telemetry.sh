@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy telemetry` (Rust) instead. Wave 64.
 # membrane_telemetry.sh — Unified shadow collection across both membranes
 #
 # Collects telemetry from the external membrane (VPS) and internal membrane

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy provenance` (Rust) instead. Wave 64.
 # Provenance Pipeline — Full rigor through the Nest Atomic
 #
 # Wraps each toadStool workload execution with provenance operations:

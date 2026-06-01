@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy deploy` (Rust) instead. Wave 64.
 # projectNUCLEUS/deploy/deploy.sh — Deploy a NUCLEUS composition to a gate
 #
 # Wraps plasmidBin's bootstrap with lessons learned from live deployment:

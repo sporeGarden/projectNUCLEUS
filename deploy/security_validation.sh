@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy security` (Rust) instead. Wave 64.
 # Security Validation Pipeline — Five-Layer Penetration Testing
 #
 # Tests security posture above, at, and below the primal layer:

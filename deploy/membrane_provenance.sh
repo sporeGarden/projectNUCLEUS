@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy verify` (Rust) instead. Wave 64.
 # membrane_provenance.sh — Post-deploy trio verification for cellMembrane
 #
 # After deploying Nest Atomic (CM-1), verifies the provenance pipeline

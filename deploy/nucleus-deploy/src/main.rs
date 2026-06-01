@@ -1,9 +1,14 @@
 mod config;
 mod deploy;
+mod dns;
 mod provenance;
+mod provision;
 mod rpc;
 mod security;
 mod spore;
+mod summary;
+mod telemetry;
+mod verify;
 
 use std::path::PathBuf;
 use std::process;
@@ -12,9 +17,14 @@ use clap::{Parser, Subcommand};
 
 use config::NucleusConfig;
 use deploy::{Composition, DeployAction};
+use dns::{DnsArgs, DnsMode};
 use provenance::ProvenanceArgs;
+use provision::ProvisionArgs;
 use security::{Layer, SecurityArgs};
 use spore::SporeArgs;
+use summary::SummaryArgs;
+use telemetry::{TelemetryArgs, TelemetryMode};
+use verify::VerifyArgs;
 
 #[derive(Parser)]
 #[command(
@@ -108,14 +118,87 @@ enum Commands {
         #[arg(long)]
         litho_bin: Option<PathBuf>,
     },
+
+    /// Collect membrane telemetry — probe external VPS and internal gate
+    Telemetry {
+        /// Which membrane(s) to probe
+        #[arg(long, value_enum, default_value = "all")]
+        mode: TelemetryMode,
+
+        /// Override telemetry output directory
+        #[arg(long)]
+        telemetry_dir: Option<PathBuf>,
+    },
+
+    /// Generate membrane 7-day summary from telemetry data
+    Summary {
+        /// Number of days to summarize
+        #[arg(long, default_value = "7")]
+        days: u32,
+
+        /// Override telemetry input directory
+        #[arg(long)]
+        telemetry_dir: Option<PathBuf>,
+
+        /// Override output path for the TOML summary
+        #[arg(long)]
+        output: Option<PathBuf>,
+    },
+
+    /// Verify remote provenance trio (`NestGate`, `rhizoCrypt`, `loamSpine`, `sweetGrass`)
+    Verify {
+        /// Skip SSH (offline mode)
+        #[arg(long)]
+        skip_ssh: bool,
+
+        /// Override VPS IP
+        #[arg(long)]
+        vps_ip: Option<String>,
+    },
+
+    /// Provision a gate — sovereign mesh (SSH + plasmidBin + Songbird)
+    Provision {
+        /// SSH-reachable target (user@host or host)
+        target: String,
+
+        /// Show what would happen without executing
+        #[arg(long)]
+        dry_run: bool,
+
+        /// Full mode (primary gate with all services)
+        #[arg(long)]
+        full: bool,
+
+        /// Path to plasmidBin directory with pre-built binaries
+        #[arg(long)]
+        plasmid_bin: Option<PathBuf>,
+    },
+
+    /// Deploy or manage knot-dns authoritative server
+    Dns {
+        /// Action to perform
+        #[arg(long, value_enum, default_value = "deploy")]
+        mode: DnsMode,
+
+        /// Show what would happen without executing
+        #[arg(long)]
+        dry_run: bool,
+
+        /// Override VPS IP
+        #[arg(long)]
+        vps_ip: Option<String>,
+    },
 }
 
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
     let cfg = NucleusConfig::from_env();
+    process::exit(dispatch(cli.command, &cfg).await);
+}
 
-    let exit_code = match cli.command {
+async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
+    match cmd {
         Commands::Security {
             layer,
             tunnel_url,
@@ -128,7 +211,7 @@ async fn main() {
                 target_host: target,
                 results_dir: results,
             };
-            match security::run(&cfg, &args).await {
+            match security::run(cfg, &args).await {
                 Ok(true) => 0,
                 Ok(false) => 1,
                 Err(e) => {
@@ -145,7 +228,7 @@ async fn main() {
                 workloads_dir,
                 results_dir,
             };
-            match provenance::run(&cfg, &args).await {
+            match provenance::run(cfg, &args).await {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("ERROR: {e}");
@@ -173,7 +256,7 @@ async fn main() {
                     uds_only,
                 }
             };
-            match deploy::run(&cfg, &action).await {
+            match deploy::run(cfg, &action).await {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("ERROR: {e}");
@@ -195,7 +278,7 @@ async fn main() {
                 skip_provenance,
                 litho_bin,
             };
-            match spore::run(&cfg, &args).await {
+            match spore::run(cfg, &args).await {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("ERROR: {e}");
@@ -203,7 +286,105 @@ async fn main() {
                 }
             }
         }
-    };
+        _ => unreachable!(),
+    }
+}
 
-    process::exit(exit_code);
+async fn dispatch_extended(cmd: Commands, cfg: &NucleusConfig) -> i32 {
+    match cmd {
+        Commands::Telemetry {
+            mode,
+            telemetry_dir,
+        } => {
+            let args = TelemetryArgs {
+                mode,
+                telemetry_dir,
+            };
+            match telemetry::run(cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        Commands::Summary {
+            days,
+            telemetry_dir,
+            output,
+        } => {
+            let args = SummaryArgs {
+                days,
+                telemetry_dir,
+                output,
+            };
+            match summary::run(cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        Commands::Verify { skip_ssh, vps_ip } => {
+            let args = VerifyArgs { skip_ssh, vps_ip };
+            match verify::run(cfg, &args).await {
+                Ok(true) => 0,
+                Ok(false) => 1,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    2
+                }
+            }
+        }
+        Commands::Provision {
+            target,
+            dry_run,
+            full,
+            plasmid_bin,
+        } => {
+            let args = ProvisionArgs {
+                target,
+                dry_run,
+                full,
+                plasmid_bin,
+            };
+            match provision::run(cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        Commands::Dns {
+            mode,
+            dry_run,
+            vps_ip,
+        } => {
+            let args = DnsArgs {
+                mode,
+                dry_run,
+                vps_ip,
+            };
+            match dns::run(cfg, &args).await {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("ERROR: {e}");
+                    1
+                }
+            }
+        }
+        _ => unreachable!(),
+    }
+}
+
+async fn dispatch(cmd: Commands, cfg: &NucleusConfig) -> i32 {
+    match cmd {
+        Commands::Security { .. }
+        | Commands::Provenance { .. }
+        | Commands::Deploy { .. }
+        | Commands::Spore { .. } => dispatch_original(cmd, cfg).await,
+        _ => dispatch_extended(cmd, cfg).await,
+    }
 }

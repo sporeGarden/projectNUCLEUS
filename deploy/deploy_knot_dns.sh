@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
+# DEPRECATED: Use `nucleus-deploy dns` (Rust) instead. Wave 64.
 #
 # deploy_knot_dns.sh — Deploy knot-dns authoritative for primals.eco
 #

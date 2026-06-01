@@ -8,6 +8,7 @@ mod security;
 mod spore;
 mod summary;
 mod telemetry;
+mod util;
 mod verify;
 
 use std::path::PathBuf;

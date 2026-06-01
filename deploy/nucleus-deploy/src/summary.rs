@@ -1,4 +1,4 @@
-use chrono::{Local, Utc};
+use chrono::Utc;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
@@ -21,7 +21,7 @@ pub struct SummaryArgs {
 }
 
 fn log(msg: &str) {
-    eprintln!("[{}] {msg}", Local::now().format("%H:%M:%S"));
+    crate::util::tlog(msg);
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &SummaryArgs) -> Result<(), SummaryError> {
@@ -182,8 +182,8 @@ fn compute_metrics(rows: &[TelemetryRow]) -> Metrics {
         0.0
     };
 
-    let cf_ttfb_p50 = percentile(rows, "cloudflare_tunnel", 0.50);
-    let cf_ttfb_p95 = percentile(rows, "cloudflare_tunnel", 0.95);
+    let cf_ttfb_p50 = percentile(rows, "lab_endpoint", 0.50);
+    let cf_ttfb_p95 = percentile(rows, "lab_endpoint", 0.95);
 
     let (btsp_total, pam_total) = count_auth(rows);
     let auth_total = btsp_total + pam_total;
@@ -311,8 +311,8 @@ vps_ram_free_mb = {ram}
 
 [internal_membrane]
 primal_health_pct = {primal:.1}
-cloudflare_ttfb_p50_ms = {cf_p50:.1}
-cloudflare_ttfb_p95_ms = {cf_p95:.1}
+lab_endpoint_ttfb_p50_ms = {cf_p50:.1}
+lab_endpoint_ttfb_p95_ms = {cf_p95:.1}
 btsp_auth_pct = {btsp:.1}
 content_hash_match_pct = 100.0
 

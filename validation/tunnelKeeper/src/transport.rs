@@ -169,8 +169,106 @@ impl TunnelTransport for CloudflareTunnelTransport {
     }
 }
 
-// Planned transports (see specs/TUNNEL_EVOLUTION.md):
-// - v0.2 SongbirdTransport: Pure Rust QUIC + TLS via songbird-quic/songbird-tls
+// ─── v0.2: Songbird Sovereign Transport ─────────────────────────────
+
+/// Sovereign mesh transport via Songbird federation.
+///
+/// Discovers Songbird via env `SONGBIRD_FEDERATION_PORT` (default 7700),
+/// probes TCP connectivity, and reports federation health.
+pub struct SongbirdTransport {
+    federation_port: u16,
+}
+
+impl Default for SongbirdTransport {
+    fn default() -> Self {
+        let port = std::env::var("SONGBIRD_FEDERATION_PORT")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(7700);
+        Self {
+            federation_port: port,
+        }
+    }
+}
+
+impl SongbirdTransport {
+    #[must_use]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Public constructor for downstream use and test-time configuration"
+        )
+    )]
+    pub const fn with_port(port: u16) -> Self {
+        Self {
+            federation_port: port,
+        }
+    }
+
+    fn is_running_blocking() -> bool {
+        std::process::Command::new("pgrep")
+            .args(["-f", "songbird"])
+            .output()
+            .is_ok_and(|o| o.status.success())
+    }
+}
+
+impl TunnelTransport for SongbirdTransport {
+    fn name(&self) -> &'static str {
+        "songbird"
+    }
+
+    fn establish(
+        &self,
+        _config: &crate::config::TunnelConfig,
+    ) -> Pin<Box<dyn Future<Output = Result<TunnelHandle, TransportError>> + Send + '_>> {
+        let port = self.federation_port;
+        Box::pin(async move {
+            let running = tokio::task::spawn_blocking(Self::is_running_blocking)
+                .await
+                .map_err(|e| TransportError::Process(format!("task panicked: {e}")))?;
+
+            let status = if running { "running" } else { "stopped" };
+            Ok(TunnelHandle {
+                transport_name: "songbird".to_string(),
+                status: status.to_string(),
+                endpoint: format!("tcp://127.0.0.1:{port}"),
+            })
+        })
+    }
+
+    fn health(
+        &self,
+    ) -> Pin<Box<dyn Future<Output = Result<TransportHealth, TransportError>> + Send + '_>> {
+        let port = self.federation_port;
+        Box::pin(async move {
+            let start = std::time::Instant::now();
+            let addr = format!("127.0.0.1:{port}");
+            let connected = tokio::time::timeout(
+                std::time::Duration::from_secs(2),
+                tokio::net::TcpStream::connect(&addr),
+            )
+            .await;
+
+            let (healthy, detail) = match connected {
+                Ok(Ok(_)) => (true, "songbird federation port reachable".into()),
+                Ok(Err(e)) => (false, format!("connection failed: {e}")),
+                Err(_) => (false, "connection timed out".into()),
+            };
+
+            let latency = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
+            Ok(TransportHealth {
+                transport_name: "songbird".to_string(),
+                healthy,
+                latency_ms: Some(latency),
+                detail,
+            })
+        })
+    }
+}
+
+// Planned:
 // - v0.3 BearDogAuthTransport: Primal-native auth (Ed25519 ionic) + tunnel crypto (ChaCha20-Poly1305)
 
 #[cfg(test)]
@@ -273,5 +371,23 @@ mod tests {
     fn cloudflare_transport_name_is_cloudflare() {
         let t = CloudflareTunnelTransport::default();
         assert_eq!(t.name(), "cloudflare");
+    }
+
+    #[test]
+    fn songbird_transport_default_port() {
+        let t = SongbirdTransport::default();
+        assert!(t.federation_port > 0);
+    }
+
+    #[test]
+    fn songbird_transport_custom_port() {
+        let t = SongbirdTransport::with_port(9900);
+        assert_eq!(t.federation_port, 9900);
+    }
+
+    #[test]
+    fn songbird_transport_name() {
+        let t = SongbirdTransport::default();
+        assert_eq!(t.name(), "songbird");
     }
 }

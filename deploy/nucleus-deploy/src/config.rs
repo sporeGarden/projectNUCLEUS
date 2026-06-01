@@ -26,6 +26,8 @@ pub struct NucleusConfig {
     pub runtime_dir: PathBuf,
 
     pub bind_address: String,
+    pub vps_ip: String,
+    pub vps_user: String,
     pub jupyterhub_port: u16,
 
     pub beardog_port: u16,
@@ -71,6 +73,8 @@ impl NucleusConfig {
             ecoprimals_root,
 
             bind_address: env_or("NUCLEUS_BIND_ADDRESS", "127.0.0.1"),
+            vps_ip: env_or("MEMBRANE_VPS_IP", "157.230.3.183"),
+            vps_user: env_or("MEMBRANE_VPS_USER", "root"),
             jupyterhub_port: env_or_u16("JUPYTERHUB_PORT", 8000),
 
             beardog_port: env_or_u16("BEARDOG_PORT", 9100),
@@ -187,5 +191,12 @@ mod tests {
     fn bind_address_default() {
         let cfg = NucleusConfig::from_env();
         assert_eq!(cfg.bind_address, "127.0.0.1");
+    }
+
+    #[test]
+    fn vps_defaults() {
+        let cfg = NucleusConfig::from_env();
+        assert_eq!(cfg.vps_ip, "157.230.3.183");
+        assert_eq!(cfg.vps_user, "root");
     }
 }

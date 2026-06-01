@@ -84,8 +84,7 @@ struct SporeResult {
 }
 
 fn log(msg: &str) {
-    let line = format!("[{}] {msg}", Local::now().format("%H:%M:%S"));
-    eprintln!("{line}");
+    crate::util::tlog(msg);
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &SporeArgs) -> Result<(), SporeError> {
@@ -164,7 +163,7 @@ fn resolve_litho(cfg: &NucleusConfig, args: &SporeArgs) -> Result<PathBuf, Spore
         cfg.plasmidbin_dir.join("primals/litho"),
         cfg.ecoprimals_root
             .join("gardens/lithoSpore/target/release/litho"),
-        PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "/home/irongate".into()))
+        PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "/tmp".into()))
             .join(".local/bin/litho"),
     ];
 
@@ -203,7 +202,7 @@ fn resolve_toadstool(cfg: &NucleusConfig) -> Result<PathBuf, SporeError> {
 
     let candidates = [
         cfg.plasmidbin_dir.join("primals/toadstool"),
-        PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "/home/irongate".into()))
+        PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "/tmp".into()))
             .join(".local/bin/toadstool"),
     ];
 
@@ -364,7 +363,7 @@ async fn execute_workload(
             .await
     } else {
         log("   [INFO] toadStool not found — executing workload directly");
-        direct_execute(toml_path).await
+        direct_execute(cfg, toml_path).await
     };
 
     let output = output.map_err(|e| SporeError::ExecutionFailed {
@@ -407,7 +406,10 @@ async fn execute_workload(
     })
 }
 
-async fn direct_execute(toml_path: &Path) -> std::io::Result<std::process::Output> {
+async fn direct_execute(
+    cfg: &NucleusConfig,
+    toml_path: &Path,
+) -> std::io::Result<std::process::Output> {
     let raw = fs::read_to_string(toml_path).await?;
     let workload: WorkloadToml = toml::from_str(&raw)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
@@ -429,7 +431,7 @@ async fn direct_execute(toml_path: &Path) -> std::io::Result<std::process::Outpu
 
     let springs_root = std::env::var("SPRINGS_ROOT").unwrap_or_else(|_| {
         std::env::var("ECOPRIMALS_ROOT").map_or_else(
-            |_| "/home/irongate/Development/ecoPrimals/springs".into(),
+            |_| cfg.ecoprimals_root.join("springs").display().to_string(),
             |r| format!("{r}/springs"),
         )
     });
@@ -746,23 +748,11 @@ async fn inject_provenance(
 }
 
 fn extract_hex(v: &Value) -> String {
-    match v {
-        Value::Array(arr) => arr
-            .iter()
-            .filter_map(|b| b.as_u64().map(|n| format!("{n:02x}")))
-            .collect(),
-        Value::String(s) => s.clone(),
-        _ => format!("{v}"),
-    }
+    crate::util::value_to_hex(v)
 }
 
 async fn blake3_hash(path: &Path) -> Option<String> {
-    let output = Command::new("b3sum").arg(path).output().await.ok()?;
-    if !output.status.success() {
-        return None;
-    }
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    stdout.split_whitespace().next().map(String::from)
+    crate::util::blake3_hash(path).await
 }
 
 #[cfg(test)]

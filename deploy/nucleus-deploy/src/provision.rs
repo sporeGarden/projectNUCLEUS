@@ -397,4 +397,11 @@ mod tests {
         let result = list_binaries(std::path::Path::new("/nonexistent/path"));
         assert!(result.is_empty());
     }
+
+    #[test]
+    fn observer_service_contains_restart_policy() {
+        let unit = observer_service("/home/test", "127.0.0.1");
+        assert!(unit.contains("Restart=always"));
+        assert!(unit.contains("[Install]"));
+    }
 }

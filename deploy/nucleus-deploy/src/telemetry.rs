@@ -1,4 +1,4 @@
-use chrono::{Local, Utc};
+use chrono::Utc;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
@@ -26,7 +26,7 @@ pub struct TelemetryArgs {
 }
 
 fn log(msg: &str) {
-    eprintln!("[{}] {msg}", Local::now().format("%H:%M:%S"));
+    crate::util::tlog(msg);
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &TelemetryArgs) -> Result<(), TelemetryError> {
@@ -177,8 +177,8 @@ async fn probe_tcp(csv_path: &Path, probe_name: &str, host: &str, port: u16) {
     .await;
 }
 
-async fn probe_external(_cfg: &NucleusConfig, csv_path: &Path) {
-    let vps_ip = std::env::var("MEMBRANE_VPS_IP").unwrap_or_else(|_| "157.230.3.183".into());
+async fn probe_external(cfg: &NucleusConfig, csv_path: &Path) {
+    let vps_ip = cfg.vps_ip.clone();
     let vps_http: u16 = std::env::var("MEMBRANE_HTTP_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
@@ -220,7 +220,7 @@ async fn probe_external(_cfg: &NucleusConfig, csv_path: &Path) {
         .await;
     }
 
-    let vps_user = std::env::var("MEMBRANE_VPS_USER").unwrap_or_else(|_| "root".into());
+    let vps_user = cfg.vps_user.clone();
     let ssh_check = Command::new("ssh")
         .args([
             "-o",
@@ -264,12 +264,7 @@ async fn probe_external(_cfg: &NucleusConfig, csv_path: &Path) {
 
 async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
     let lab_url = std::env::var("LAB_URL").unwrap_or_else(|_| "https://lab.primals.eco".into());
-    probe_http(
-        csv_path,
-        "cloudflare_tunnel",
-        &format!("{lab_url}/hub/login"),
-    )
-    .await;
+    probe_http(csv_path, "lab_endpoint", &format!("{lab_url}/hub/login")).await;
 
     let primals: &[(&str, u16)] = &[
         ("beardog", cfg.beardog_port),
@@ -283,7 +278,7 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
         probe_rpc_primal(csv_path, &format!("primal_{name}"), host, port).await;
     }
 
-    let vps_ip = std::env::var("MEMBRANE_VPS_IP").unwrap_or_else(|_| "157.230.3.183".into());
+    let vps_ip = cfg.vps_ip.clone();
     let vps_http: u16 = std::env::var("MEMBRANE_HTTP_PORT")
         .ok()
         .and_then(|v| v.parse().ok())

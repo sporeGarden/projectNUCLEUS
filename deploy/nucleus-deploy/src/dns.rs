@@ -45,11 +45,9 @@ fn warn(msg: &str) {
     eprintln!("[knot-dns] WARNING: {msg}");
 }
 
-pub async fn run(_cfg: &NucleusConfig, args: &DnsArgs) -> Result<(), DnsError> {
-    let vps_ip = args.vps_ip.clone().unwrap_or_else(|| {
-        std::env::var("MEMBRANE_VPS_IP").unwrap_or_else(|_| "157.230.3.183".into())
-    });
-    let vps_user = std::env::var("MEMBRANE_VPS_USER").unwrap_or_else(|_| "root".into());
+pub async fn run(cfg: &NucleusConfig, args: &DnsArgs) -> Result<(), DnsError> {
+    let vps_ip = args.vps_ip.clone().unwrap_or_else(|| cfg.vps_ip.clone());
+    let vps_user = cfg.vps_user.clone();
 
     match args.mode {
         DnsMode::Deploy => do_deploy(&vps_user, &vps_ip, args.dry_run).await,

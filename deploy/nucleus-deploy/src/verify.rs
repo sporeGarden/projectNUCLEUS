@@ -1,4 +1,4 @@
-use chrono::{Local, Utc};
+use chrono::Utc;
 use serde_json::Value;
 use std::path::Path;
 use thiserror::Error;
@@ -74,14 +74,12 @@ struct PrimalStatus {
 }
 
 fn log(msg: &str) {
-    eprintln!("[{}] {msg}", Local::now().format("%H:%M:%S"));
+    crate::util::tlog(msg);
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyError> {
-    let vps_ip = args.vps_ip.clone().unwrap_or_else(|| {
-        std::env::var("MEMBRANE_VPS_IP").unwrap_or_else(|_| "157.230.3.183".into())
-    });
-    let vps_user = std::env::var("MEMBRANE_VPS_USER").unwrap_or_else(|_| "root".into());
+    let vps_ip = args.vps_ip.clone().unwrap_or_else(|| cfg.vps_ip.clone());
+    let vps_user = cfg.vps_user.clone();
 
     let results_dir = cfg.project_root.join(format!(
         "validation/membrane-provenance-{}",

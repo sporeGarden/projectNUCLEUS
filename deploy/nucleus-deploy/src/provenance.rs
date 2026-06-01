@@ -54,8 +54,7 @@ struct WorkloadRecord {
 }
 
 fn log(msg: &str) {
-    let line = format!("[{}] {msg}", Local::now().format("%H:%M:%S"));
-    eprintln!("{line}");
+    crate::util::tlog(msg);
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &ProvenanceArgs) -> Result<(), ProvenanceError> {
@@ -402,14 +401,7 @@ async fn register_artifact(
 }
 
 async fn blake3_hash(path: &Path) -> Option<String> {
-    let output = Command::new("b3sum").arg(path).output().await.ok()?;
-
-    if !output.status.success() {
-        return None;
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    stdout.split_whitespace().next().map(String::from)
+    crate::util::blake3_hash(path).await
 }
 
 // ── Phase 5: Execute Workloads ───────────────────────────────────────────
@@ -586,14 +578,7 @@ async fn phase_merkle_root(host: &str, rhizocrypt_port: u16, state: &ProvenanceS
 }
 
 fn value_to_hex(v: &Value) -> String {
-    match v {
-        Value::Array(arr) => arr
-            .iter()
-            .filter_map(|b| b.as_u64().map(|n| format!("{n:02x}")))
-            .collect(),
-        Value::String(s) => s.clone(),
-        _ => format!("{v}"),
-    }
+    crate::util::value_to_hex(v)
 }
 
 // ── Phase 7: LoamSpine Commit ────────────────────────────────────────────
@@ -660,13 +645,7 @@ async fn phase_loamspine_commit(
 }
 
 fn hex_to_byte_array(hex: &str) -> Vec<u8> {
-    (0..hex.len())
-        .step_by(2)
-        .filter_map(|i| {
-            hex.get(i..i + 2)
-                .and_then(|byte_str| u8::from_str_radix(byte_str, 16).ok())
-        })
-        .collect()
+    crate::util::hex_to_bytes(hex)
 }
 
 // ── Phase 8: SweetGrass Braid ────────────────────────────────────────────

@@ -1,0 +1,69 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: sporePrint Composition — Nest Atomic + petalTongue content renderer
+#
+# Deploys sporePrint as a pure-primal content publishing system:
+# - Nest Atomic provides storage, security, and provenance
+# - petalTongue renders markdown content as a Universal User Interface
+# - spore-validate provides certification (guideStone)
+#
+# Content pipeline: NestGate (CAS) → petalTongue (render) → multi-modal output
+# Accessibility: visual (HTML), description (screen reader), braille, audio
+#
+# gen5 EVOLUTION: Zola is the validation oracle; petalTongue is the production renderer.
+# The VPS Caddy reverse-proxies primals.eco:443 → petaltongue:8080.
+
+[fragment]
+name = "sporeprint_composition"
+description = "sporePrint as Nest Atomic + petalTongue content renderer (pure-primal publishing)"
+version = "1.0.0"
+includes = ["nest_atomic"]
+node_count = 9
+secure_by_default = true
+
+# --- Inherited from nest_atomic (7 nodes): ---
+# beardog, songbird, skunkbat, nestgate, rhizocrypt, loamspine, sweetgrass
+
+# --- Additional nodes for sporePrint: ---
+
+[[fragment.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 8
+required = true
+depends_on = ["nestgate", "songbird"]
+args = ["web", "--backend", "content-provider", "--port", "8080"]
+health_method = "health.liveness"
+by_capability = "render"
+security_model = "tower_delegated"
+capabilities = ["render", "ui", "accessibility", "content.render"]
+
+[[fragment.nodes]]
+name = "spore-validate"
+binary = "spore-validate"
+order = 9
+required = false
+depends_on = ["nestgate"]
+args = ["certify", "--emit"]
+run_once = true
+by_capability = "certification"
+security_model = "tower_delegated"
+capabilities = ["certify.manifest", "certify.validate"]
+
+# --- Deployment hints ---
+
+[deployment]
+target = "vps-direct"
+reverse_proxy = "caddy"
+domain = "primals.eco"
+upstream = "petaltongue:8080"
+
+[deployment.publish]
+description = "Push raw markdown + config.toml to NestGate before petalTongue serves"
+script = "publish_sporeprint.sh"
+content_source = "sporePrint/content/"
+config_source = "sporePrint/config.toml"
+
+[deployment.validation]
+description = "Build with Zola as oracle, compare against petalTongue output"
+scenario = "sporeprint_pure_primal_parity"

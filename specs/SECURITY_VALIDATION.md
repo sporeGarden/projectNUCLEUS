@@ -7,7 +7,7 @@ is tested here before and after replacement.
 ## Current State (2026-05-28)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh` (gate-local)
-**162 Rust tests PASS** (darkforest 125, tunnelKeeper 37). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**184 Rust tests PASS** (darkforest 139, tunnelKeeper 45). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
@@ -353,17 +353,17 @@ Phase 4:  skunkBat feeds into sweetGrass → security events provenance-tracked
 ## Running the Pipeline
 
 ```bash
-# Full three-layer scan (localhost)
-bash deploy/security_validation.sh --layer all
+# Full five-layer scan (localhost) — Rust CLI
+nucleus-deploy security --layer all
 
 # Test only primal APIs
-bash deploy/security_validation.sh --layer at
+nucleus-deploy security --layer at
 
 # Include tunnel TLS validation
-bash deploy/security_validation.sh --layer all --tunnel-url https://your-tunnel.trycloudflare.com
+nucleus-deploy security --layer all --tunnel-url https://membrane.primals.eco
 
 # From another machine on the LAN (test external exposure)
-bash deploy/security_validation.sh --layer below --target 192.168.1.238
+nucleus-deploy security --layer below --target 192.168.1.238
 ```
 
 Results are written to `validation/security-YYYYMMDD-HHMMSS/` with:

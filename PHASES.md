@@ -1,5 +1,10 @@
 # Phase Architecture — projectNUCLEUS
 
+> **Wave 67 note**: All bash deploy scripts referenced below have been evolved
+> to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
+> with DEPRECATED headers as fossil record. Use `nucleus-deploy security`,
+> `nucleus-deploy deploy`, `nucleus-deploy telemetry`, etc.
+
 Each phase builds on the previous. No phase is thrown away — Phase 1 covalent
 bonding remains the foundation even when Phase 4 metallic federation is live.
 
@@ -90,7 +95,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-28) — Forgejo primary (32 repos), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **162 Rust tests PASS** (darkforest 125, tunnelKeeper 37), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-05-31) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **184 Rust tests PASS** (darkforest 139, tunnelKeeper 45), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -182,8 +187,8 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Forgejo PRIMARY Git Host (2026-05-07 → 2026-05-15)**:
 - Forgejo v15.0.0 installed as `forgejo.service` on port 3000
 - Accessible via `git.primals.eco` (Cloudflare tunnel ingress)
-- **32 repos across 3 orgs** (sporeGarden, ecoPrimals, syntheticChemistry) mirrored
-- SSH server enabled (:2222), `.netrc` credential caching, `forgejo_mirror.sh` for dual-push
+- **39 repos across 3 orgs** (sporeGarden, ecoPrimals, syntheticChemistry) — K-Derm diderm relay to GitHub
+- SSH server enabled (:2222), K-Derm diderm relay (push forgejo only → relay → GitHub)
 - GitHub is push mirror (outer membrane). Forgejo is source of truth
 
 **RootPulse Commit Workflow (2026-05-07)**:
@@ -340,7 +345,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
 - 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
-- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 162 Rust tests (darkforest 125, tunnelKeeper 37)
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 184 Rust tests (darkforest 139, tunnelKeeper 45)
 
 **Cell Membrane Architecture (2026-05-10)**:
 - Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)

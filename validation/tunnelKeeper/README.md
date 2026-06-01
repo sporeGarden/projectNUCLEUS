@@ -1,19 +1,19 @@
 # tunnelKeeper
 
-Pure Rust Cloudflare tunnel manager for NUCLEUS. Manages tunnel configuration,
+Pure Rust tunnel manager for NUCLEUS. Manages tunnel configuration,
 health probes, ingress routing, and credential encryption at rest using BearDog
-crypto patterns.
+crypto patterns. Dual-transport: Cloudflare (legacy) + Songbird (sovereign).
 
 ## Dual-Architecture Evolution
 
-tunnelKeeper is designed for incremental sovereignty — Cloudflare remains the
-primary transport while primal equivalents are built and validated:
+tunnelKeeper is designed for incremental sovereignty — Cloudflare transport
+is maintained while sovereign Songbird transport is validated:
 
 | Version | Transport | Status |
 |---------|-----------|--------|
-| v0.1 | `CloudflareTunnelTransport` — wraps `cloudflared` process | Superseded |
+| v0.1 | `CloudflareTunnelTransport` — wraps `cloudflared` process | Legacy |
+| v0.2 | `SongbirdTransport` — sovereign TCP probe on federation port | **Current** |
 | v0.2 | Health, config, routing, credential encryption (pure Rust) | **Current** |
-| v0.3 | `SongbirdTransport` — `songbird-quic` + `songbird-tls` as library deps | Planned |
 | v0.3 | `BearDogAuthTransport` — `beardog-auth` replaces CF Access | Planned |
 
 The `TunnelTransport` trait defines the boundary. Shadow-run protocol validates
@@ -34,12 +34,12 @@ tunnelKeeper creds decrypt                  # restore for cloudflared
 ## Dependencies (all pure Rust)
 
 - `clap` — CLI (same pattern as darkforest)
-- `serde` / `serde_json` / `serde_yaml` — config parsing
+- `serde` / `serde_json` / `serde-saphyr` — config parsing (pure Rust YAML, no libyaml C)
 - `reqwest` 0.13 with `rustls` + `webpki-roots` — CF API v4 client (no OpenSSL, no `ring`)
 - `tokio` — async runtime
 - `chacha20poly1305` — credential encryption (BearDog pattern)
 - `ed25519-dalek` — key derivation (BearDog pattern)
-- `chrono` — timestamps
+- `thiserror` — error handling
 
 ## Primal Integration Points
 

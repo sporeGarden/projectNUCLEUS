@@ -1,0 +1,52 @@
+# Gate: grapheneGate — Portable Anchor (GrapheneOS)
+#
+# Pixel 8a running GrapheneOS. First portable_anchor gate class.
+# Roles: mesh beacon, BTSP relay seed, sovereign mobile node.
+# See: GRAPHENEGATE_BOOTSTRAP_STANDARD.md for hardware keystore roadmap.
+# Created 2026-06-02 (Wave 69).
+
+[gate]
+name = "graphenegate"
+role = "Portable mesh beacon, BTSP relay, sovereign mobile"
+location = "Mobile — carried"
+bonding = "ionic"
+secure_by_default = true
+gate_class = "portable_anchor"
+
+[hardware]
+device = "Google Pixel 8a"
+cpu = "Google Tensor G3"
+cores = 9
+ram_gb = 8
+storage_gb = 128
+os = "GrapheneOS"
+arch = "aarch64"
+
+[network]
+lan_speed = "WiFi 6E"
+wan_speed = "5G"
+interface = "wireless"
+mesh_role = "beacon"
+
+[membrane]
+role = "extracellular"
+bonding_to_vps = "ionic (NAT traversal via Songbird)"
+vps_ip = "157.230.3.183"
+
+[composition]
+atomic = "tower_atomic"
+primals = [
+    "beardog", "songbird", "skunkbat",
+]
+fragment = "tower_atomic (portable_anchor)"
+
+[ports]
+beardog = 9100
+songbird = 9200
+skunkbat = 9300
+
+[identity]
+family_name = "irongate-sovereign"
+family_id = "9b32f3a8"
+node_id = "graphenegate"
+family_seed_path = "/data/local/biomeos/family/.beacon.seed"

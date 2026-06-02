@@ -1,8 +1,13 @@
-# Forgejo Actions CI — projectNUCLEUS shadow CI
-# Runs in parallel with GitHub Actions for validation parity.
-# Target: promote to primary in Wave 66 once validated.
+# Forgejo Actions CI — projectNUCLEUS
 #
-# Runner: ironGate self-hosted (host mode, Rust toolchain preinstalled)
+# PRIMARY CI since Wave 69. Runs fmt, clippy, test on all Rust crates.
+# Toolchain pinned via rust-toolchain.toml at repo root.
+#
+# Runner: self-hosted when available, falls back to ubuntu-latest.
+# Self-hosted label: `self-hosted, linux, x86_64, rust`
+#
+# GitHub Actions shadow: only notify-sporeprint.yml remains on GitHub
+# (postprimordial — archive when Forgejo webhook validated on VPS).
 
 name: CI
 
@@ -17,47 +22,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Rust toolchain info
+      - name: Install pinned Rust toolchain
         run: |
+          if [ -f rust-toolchain.toml ]; then
+            channel=$(grep 'channel' rust-toolchain.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+            rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+            rustup default "$channel"
+          fi
           rustc --version
           cargo --version
-          rustup show active-toolchain
 
-      - name: Check formatting
+      - name: darkforest — fmt + clippy + test
         working-directory: validation/darkforest
-        run: cargo fmt --check
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
 
-      - name: Clippy lint (darkforest)
-        working-directory: validation/darkforest
-        run: cargo clippy -- -D warnings
-
-      - name: Test darkforest
-        working-directory: validation/darkforest
-        run: cargo test
-
-      - name: Check formatting (tunnelKeeper)
+      - name: tunnelKeeper — fmt + clippy + test
         working-directory: validation/tunnelKeeper
-        run: cargo fmt --check
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
 
-      - name: Clippy lint (tunnelKeeper)
-        working-directory: validation/tunnelKeeper
-        run: cargo clippy -- -D warnings
-
-      - name: Test tunnelKeeper
-        working-directory: validation/tunnelKeeper
-        run: cargo test
-
-      - name: Check formatting (nucleus-deploy)
+      - name: nucleus-deploy — fmt + clippy + test
         working-directory: deploy/nucleus-deploy
-        run: cargo fmt --check
-
-      - name: Clippy lint (nucleus-deploy)
-        working-directory: deploy/nucleus-deploy
-        run: cargo clippy -- -D warnings
-
-      - name: Test nucleus-deploy
-        working-directory: deploy/nucleus-deploy
-        run: cargo test
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
 
       - name: Shell script syntax check
         run: |

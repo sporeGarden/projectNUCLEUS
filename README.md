@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 64 deep debt COMPLETE (2026-05-31)** — Forgejo primary (39 repos, K-Derm diderm relay). cellMembrane **Nest Atomic LIVE** (VPS: 11 services, 7 primals). Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S3 LIVE, S4 SHADOW LIVE, S5 DNS DEPLOYED). Registry **460 methods (Wave 59)**. **234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46). Deploy tooling: `nucleus-deploy` Rust binary with 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns). All bash deploy scripts evolved to Rust; originals deprecated in place. Security module split into 6 focused submodules. Shared `util.rs` deduplicates blake3/hex/logging. `SongbirdTransport` (v0.2) alongside Cloudflare in tunnelKeeper. VPS IP/user centralized in `NucleusConfig`. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 69 (2026-06-02)** — Forgejo CI promoted to primary (Rust toolchain pinned, `rust-toolchain.toml`). grapheneGate deploy graph added (`portable_anchor` gate class). Gate manifest extended to all 8 gates. 7 deprecated bash deploy scripts archived to `deploy/legacy/`. Hardcoded `127.0.0.1` evolved to `${NUCLEUS_BIND_ADDRESS}`. Doc test counts synced to actual **234 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46). Wave 68 deep debt: temporal.rs split, divergence policy explicit, 204 GB build debris cleaned. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

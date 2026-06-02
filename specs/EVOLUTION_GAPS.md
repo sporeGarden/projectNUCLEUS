@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-05-30 (Wave 64 — 460 methods, NC-1 CODE COMPLETE, biomeOS v3.84, 234 Rust tests, 14 scripts evolved)
+**Last updated**: 2026-06-02 (Wave 69 — 460 methods, NC-1 CODE COMPLETE, biomeOS v3.84, 234 Rust tests, Forgejo CI primary, grapheneGate graph added, 7 deprecated bash scripts archived)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate. **234 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46), coverage: darkforest 40.77%, tunnelKeeper 52.67%
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)

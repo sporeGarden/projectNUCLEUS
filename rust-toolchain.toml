@@ -1,0 +1,6 @@
+# Rust toolchain pin — ensures CI and local builds use the same version.
+# Update when upgrading Rust across the ecosystem.
+
+[toolchain]
+channel = "1.96.0"
+components = ["rustfmt", "clippy"]

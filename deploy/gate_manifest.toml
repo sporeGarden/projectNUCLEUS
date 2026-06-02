@@ -4,9 +4,10 @@
 # deploy.sh reads this to determine what to start on each gate.
 #
 # Add a gate: create a gates/<name>.toml and add an entry here.
+# All 8 gates in the ironGate sovereign cluster are listed.
 
 [manifest]
-version = "0.2.0"
+version = "0.3.0"
 bonding_default = "covalent"
 btsp_phase = 3
 wire_standard = "L3"
@@ -21,7 +22,63 @@ composition = "nest_atomic + node_atomic_compute"
 graph = "../graphs/nucleus_complete.toml"
 
 [[gates]]
+name = "biomegate"
+atomic = "heavy_node"
+config = "../gates/biomegate.toml"
+status = "active"
+primals = 5
+composition = "heavy_node_atomic + hbm2_bench"
+graph = "../graphs/node_atomic.toml"
+
+[[gates]]
+name = "strandgate"
+atomic = "heavy_node"
+config = "../gates/strandgate.toml"
+status = "active"
+primals = 6
+composition = "heavy_node_atomic + dual_vendor_gpu"
+graph = "../graphs/node_atomic.toml"
+
+[[gates]]
+name = "flockgate"
+atomic = "nest"
+config = "../gates/flockgate.toml"
+status = "active"
+primals = 5
+composition = "nest_atomic"
+graph = "../graphs/nest_atomic.toml"
+
+[[gates]]
+name = "northgate"
+atomic = "tower"
+config = "../gates/northgate.toml"
+status = "active"
+primals = 3
+composition = "tower_atomic"
+graph = "../graphs/tower_atomic.toml"
+
+[[gates]]
+name = "westgate"
+atomic = "tower"
+config = "../gates/westgate.toml"
+status = "planned"
+primals = 3
+composition = "tower_atomic"
+graph = "../graphs/tower_atomic.toml"
+
+[[gates]]
+name = "graphenegate"
+atomic = "tower"
+config = "../gates/graphenegate.toml"
+status = "planned"
+primals = 3
+composition = "tower_atomic (portable_anchor)"
+graph = "../graphs/graphene_portable.toml"
+gate_class = "portable_anchor"
+
+[[gates]]
 name = "nuc-intake"
 atomic = "tower"
 config = "../gates/nuc-intake.toml"
 status = "planned"
+primals = 3

@@ -1,0 +1,64 @@
+# Deploy Graph: graphene_portable — Portable Anchor Beacon
+#
+# Minimal Tower Atomic for portable_anchor gate class.
+# Runs on GrapheneOS (aarch64-linux-android). Three primals only:
+# BearDog (auth), Songbird (mesh relay), skunkBat (capability routing).
+#
+# Dark Forest compliance: tower_atomic subset (3 primals).
+# Binary source: plasmidBin aarch64-android (NOT YET BUILT — blocked).
+#
+# Wave 69: Role 1 beacon test (P2, assigned eastGate + southGate).
+
+[graph]
+name = "graphene_portable"
+version = "0.1.0"
+gate_class = "portable_anchor"
+atomic = "tower_atomic"
+description = "Minimal beacon node for portable gates (GrapheneOS, iOS)"
+
+[graph.requirements]
+arch = "aarch64"
+min_ram_mb = 512
+min_storage_mb = 256
+
+# ── Tower Atomic ────────────────────────────────────────────────────
+
+[primals.beardog]
+binary = "beardog"
+port = 9100
+health_method = "health.version"
+required = true
+role = "BTSP authentication + method gating"
+start_order = 1
+
+[primals.songbird]
+binary = "songbird"
+port = 9200
+health_method = "health.version"
+required = true
+role = "Mesh relay + NAT traversal beacon"
+depends_on = ["beardog"]
+start_order = 2
+
+[primals.skunkbat]
+binary = "skunkbat"
+port = 9300
+health_method = "health.version"
+required = true
+role = "Capability routing + dynamic composition"
+depends_on = ["beardog"]
+start_order = 3
+
+# ── Beacon behavior ────────────────────────────────────────────────
+
+[beacon]
+advertise = true
+mesh_seed = true
+discovery_interval_s = 30
+nat_traversal = "songbird"
+
+# ── Blockers ────────────────────────────────────────────────────────
+
+[blockers]
+plasmidbin_android = "aarch64-android binaries not yet built"
+hardware_keystore = "GrapheneOS hardware keystore integration not started"

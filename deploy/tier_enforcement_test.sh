@@ -148,7 +148,7 @@ run_tier_tests() {
     # --- Network: localhost primals (JH-0 MethodGate enforced, 13/13) ---
     # MethodGate enforced on 13/13 primals. Unauthenticated calls return -32001.
     local rpc_result
-    rpc_result=$(sudo -u "$user" bash -c "echo '{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}' | timeout 3 nc -q1 127.0.0.1 ${BEARDOG_PORT} 2>/dev/null" || echo "")
+    rpc_result=$(sudo -u "$user" bash -c "echo '{\"jsonrpc\":\"2.0\",\"method\":\"auth.mode\",\"id\":1}' | timeout 3 nc -q1 ${NUCLEUS_BIND_ADDRESS} ${BEARDOG_PORT} 2>/dev/null" || echo "")
     if echo "$rpc_result" | grep -q '"permissive"' 2>/dev/null; then
         pass "$tier" "net_primal_rpc" "MethodGate live (permissive) — RPC logged but allowed (JH-0 adopted)"
     elif echo "$rpc_result" | grep -q '"enforced"' 2>/dev/null; then

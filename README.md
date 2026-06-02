@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Sovereignty evolution ACTIVE (2026-05-28)** — Forgejo primary (32 repos). cellMembrane **Nest Atomic LIVE** (157.230.3.183: 11 services, 7 primals). Channel 3 TLS LIVE. Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S3 LIVE, S4 SHADOW LIVE, S5 DNS DEPLOYED). Registry **460 methods (Wave 59)**. **162 Rust tests PASS** (darkforest 125, tunnelKeeper 37). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). Provenance trio 10/10 PASS. Deploy tooling **`--uds-only` VPS standard** (Wave 56). NC-1 **CODE COMPLETE** (biomeOS v3.84, live gated on VPS deploy). NC-2→NC-5 tracked. FlockGate H3-11 tracked.
+**Wave 64 deep debt COMPLETE (2026-05-31)** — Forgejo primary (39 repos, K-Derm diderm relay). cellMembrane **Nest Atomic LIVE** (VPS: 11 services, 7 primals). Shadow orchestrator **6 PASS / 0 FAIL / 0 SKIP** (S1-S3 LIVE, S4 SHADOW LIVE, S5 DNS DEPLOYED). Registry **460 methods (Wave 59)**. **234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46). Deploy tooling: `nucleus-deploy` Rust binary with 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns). All bash deploy scripts evolved to Rust; originals deprecated in place. Security module split into 6 focused submodules. Shared `util.rs` deduplicates blake3/hex/logging. `SongbirdTransport` (v0.2) alongside Cloudflare in tunnelKeeper. VPS IP/user centralized in `NucleusConfig`. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 
@@ -105,7 +105,8 @@ Gates connect to each other through chemical bonding patterns:
 - **`biomeos.spring_status` IMPLEMENTED** (v3.84): Binary discovery + workload counts. Registry at **460 methods** (Wave 56 — `nucleus.ingest_spore` + `nucleus.emit_spore` added; typed errors, env_keys centralized; cell graph `vps_standard` tagging; 12 primordial scripts archived to fossilRecord). NC-1 **CODE COMPLETE** — `biomeos-pseudospore` + emit materialization shipped. Live column U gated on VPS deploy
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 - **Wave 56 deployment standard**: `deploy.sh --uds-only` suppresses TCP ports across all 13 primals (VPS standard). `deploy_graph.sh` + `deploy_primal_start.sh` + `deploy_health_check.sh` all UDS-aware. Socket-based health checks in UDS-only mode. `primalspring checksums` + `primalspring registry` replace shell validation scripts
-- **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. **162 Rust tests PASS** (darkforest 125, tunnelKeeper 37). Coverage: darkforest 40.77%, tunnelKeeper 52.67%. Test runtime: darkforest 3s, tunnelKeeper 1s
+- **Wave 64 Rust evolution**: All deploy scripts evolved to idiomatic Rust — `nucleus-deploy` binary with 9 subcommands: `security`, `provenance`, `deploy`, `spore`, `telemetry`, `summary`, `verify`, `provision`, `dns`. `clap` CLI, `tokio` async, zero `unwrap()` in production, `unsafe_code = "forbid"` in all Cargo.toml. Security module split into `security/` directory (6 submodules). Shared `util.rs` deduplicates `blake3_hash`, `value_to_hex`, `hex_to_bytes`, timestamped logging. VPS IP/user centralized in `NucleusConfig` (was hardcoded across 3 modules). Bash originals deprecated in place. Cloudflare artifacts fossilized to `deploy/legacy/`. `SongbirdTransport` v0.2 in tunnelKeeper (sovereign TCP probe alongside cloudflared). **234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46)
+- **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. Transport module ungated (+9 tests), pentest coverage expanded (+12 tests), health.rs async load fix. 14 deploy scripts evolved from hardcoded IPs/hostnames to `nucleus_config.sh` variables
 - **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
 - **Wave 46→56 upstream zero gate debt**: primalSpring v0.9.30 — 56 scenarios, 44-cell deployment matrix, 813 tests. All 14 primals pulled to latest. Deploy graphs 12/12 `secure_by_default`. `deny.toml` enforced. FlockGate gap tracked (H3-11). `--uds-only` VPS standard shipped Wave 56
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **SHADOW LIVE** (cutover pending), S5 DNS **DEPLOYED** (NS cutover pending) (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
@@ -117,22 +118,22 @@ Gates connect to each other through chemical bonding patterns:
 | primals.eco | `primals.eco` | — | Extracellular | GitHub Pages + Cloudflare CDN (always on, no gate) |
 | Observer (static) | `lab.primals.eco` | 8866 | Membrane | Pre-rendered HTML, open/unauthenticated |
 | JupyterHub | `lab.primals.eco` (gated) | 8000 | Membrane | PAM auth + Cloudflare Access, reviewer/user tiers |
-| Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 32 repos, 3 orgs. GitHub = push mirror |
+| Forgejo | `git.primals.eco` | 3000 | Intracellular | **Primary git host** — 39 repos, 3 orgs. K-Derm diderm relay → GitHub |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
-| Cloudflare Tunnel | — | outbound | Membrane | Routes lab + git subdomains (membrane channels) |
-| cellMembrane | 157.230.3.183 | 3478, 9100–9850, 80, 443 | Inner Membrane | **Nest Atomic** (2GB): Tower (BearDog + SkunkBat + Songbird) + Nest (NestGate + rhizoCrypt + loamSpine + sweetGrass) + RustDesk + Caddy TLS + petalTongue + BearDog TLS shadow. 11 services, 7 primals. `membrane.primals.eco` ACME cert. DigitalOcean nyc1 |
+| K-Derm Relay | — | outbound | Membrane | Diderm relay: gate → golgiBody-inner → peptidoglycan → golgiBody-ext → GitHub |
+| cellMembrane VPS | `MEMBRANE_VPS_IP` | 3478, 9100–9850, 80, 443 | Inner Membrane | **Nest Atomic** (2GB): Tower + Nest (7 primals) + RustDesk + Caddy TLS + petalTongue. `membrane.primals.eco` ACME cert |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
 
-Three-tier model simplified from four. Observer is the default, open landing page.
-Reviewer and user tiers are gated by Cloudflare Access + PAM.
+Three-tier model. Observer is the default, open landing page.
+Reviewer and user tiers are gated by BTSP dual-auth (PAM + ionic token).
 
 | Tier | Access | Capabilities | Surface |
 |------|--------|-------------|---------|
 | **Observer** | Open — no login | Read-only rendered notebooks, data, dashboards | Static HTML at `lab.primals.eco` |
-| **Reviewer** | Cloudflare Access + PAM | Read + run notebooks (showcase) | JupyterHub (showcase-only view) |
-| **User** | Cloudflare Access + PAM | Read + write + run, shared workspace | JupyterHub (full workspace) |
+| **Reviewer** | BTSP + PAM | Read + run notebooks (showcase) | JupyterHub (showcase-only view) |
+| **User** | BTSP + PAM | Read + write + run, shared workspace | JupyterHub (full workspace) |
 
 ### Auto-Propagation (pappusCast)
 
@@ -156,7 +157,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **External Membrane**: cellMembrane fieldMouse on DigitalOcean VPS — Channel 2 (TURN relay) for NAT traversal across gate boundaries
 - **Intracellular**: sovereign compute, primals, data — total control inside the gate
 - **Gate-portable**: `deploy/gate_switch.sh <target>` migrates compute; replicas stay in membrane pool
-- **Provisioning**: `deploy/gate_provision.sh <host>` adds a new membrane replica (friend's house, etc.)
+- **Provisioning**: `nucleus-deploy provision --target <host>` provisions sovereign gates via SSH
 - **Membrane watchdog**: `deploy/gate_watchdog.sh` logs membrane health for skunkBat audit
 
 ### Security
@@ -175,16 +176,16 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
 - **All primal ports bound `127.0.0.1`** — 13 primals + auxiliary ports (Phase 60 PG-55 default)
-- **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL). **125 unit tests** covering check, crypto, discovery, fuzz, net, observer, pentest, report modules. Newline-delimited JSON-RPC discovery (primal wire-native). 1.1 MB release binary, zero C deps
-- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Replica count, unique origins, edge colo detection. Error-propagating API client, gate-agnostic credential paths. Async-correct: blocking health checks on `spawn_blocking`, `tokio::fs` for credential reads. **41 unit tests**, 173 transitive deps (pure Rust except rustls TLS backend). 6.5 MB release binary
+- **darkforest v0.2.1**: modular Rust security + observer validator — 8 source modules including `observer.rs` (static HTML quality: theme, nav, links, tracebacks, source stripping, headers, directory blocking). Env-var-driven config with compiled fallback. `--suite observer` for static surface validation (86 PASS, 0 FAIL). **140 unit tests** covering check, crypto, discovery, fuzz, net, observer, pentest, report modules. Newline-delimited JSON-RPC discovery (primal wire-native). 1.1 MB release binary, zero C deps
+- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Dual-transport: `CloudflareTunnelTransport` (v0.1) + `SongbirdTransport` (v0.2 sovereign TCP probe). Error-propagating API client, gate-agnostic credential paths. Async-correct: blocking health checks on `spawn_blocking`, `tokio::fs` for credential reads. **48 unit tests**, `unsafe_code = "forbid"`. 6.5 MB release binary
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 - **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 
 ### Sovereignty Evolution
 
-- **Three-membrane architecture**: outer (GitHub mirror) / inner (VPS touchpoint) / intracellular (gate source of truth)
+- **K-Derm diderm architecture**: outer (GitHub extracellular ledger) / inner (VPS golgiBody) / intracellular (gate source of truth)
 - **VPS as touchpoint, gate as source**: VPS terminates TLS, relays traffic, caches content. Gate hardware runs full NUCLEUS
-- **Forgejo PRIMARY**: 32 repos mirrored across 3 orgs. `forgejo_mirror.sh` dual-push. GitHub is outer membrane
+- **Forgejo PRIMARY**: 39 repos across 3 orgs. K-Derm diderm relay (push forgejo only → relay → GitHub via golgiBody-ext). No dual-push
 - **Content-aware routing**: `routing_config.toml` — static→VPS cache, auth/API/git→gate, large→Songbird P2P
 - **Trust model**: covalent/ionic/metallic/weak bonding maps to content access scopes in routing
 - **VPS Tower LIVE**: BearDog crypto + SkunkBat audit + Songbird relay + RustDesk + Caddy TLS shadow
@@ -206,18 +207,20 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 ## Quick Start
 
 ```bash
-# Deploy a Node Atomic to the current machine
-cd deploy/
-bash deploy.sh --composition node --gate mygate
+# Deploy a Node Atomic via Rust CLI
+nucleus-deploy deploy --composition node --gate mygate
 
 # Deploy VPS standard (Wave 56): zero TCP ports, UDS-only
-bash deploy.sh --composition nest --uds-only
+nucleus-deploy deploy --composition nest --uds-only
 
-# Deploy the Agent composition (Tower + biomeOS + Squirrel)
-bash deploy.sh --composition agent --graph-deploy
+# Run five-layer security validation
+nucleus-deploy security --layer all
 
-# Execute a workload through toadStool
-toadstool execute workloads/wetspring/wetspring-16s-rust-validation.toml
+# Collect membrane telemetry
+nucleus-deploy telemetry --mode all
+
+# Emit pseudoSpore from workload
+nucleus-deploy spore --workload workloads/wetspring/wetspring-16s-rust-validation.toml
 ```
 
 ### Agent Loop (signal_plan → signal.dispatch)
@@ -278,24 +281,15 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ```
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
-deploy/             Deployment tooling, test suites, pappusCast daemon, membrane infrastructure
-  signal_executor.sh Signal plan executor: intent → squirrel signal_plan → biomeOS signal.dispatch
-  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars, routing, membrane — single source of truth)
-  forgejo_mirror.sh Forgejo org/repo creation + dual-push for all repos
-  vps_resize.sh     doctl VPS resize automation
-  routing_config.toml Content-aware routing rules (trust model, backends, cache policy, telemetry)
-  membrane_telemetry.sh Unified probe across both membranes (cron-ready, 15-min interval)
-  membrane_summary.sh  Rolling 7-day membrane summary with cutover gates → membrane_7day.toml
-  nucleus_paths.py  Python config module (imports GATE_HOME, ABG_SHARED, etc. from env)
-  observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
-  pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
-  gate_provision.sh Provision new membrane replicas (tunnel-only gates)
+deploy/             Deployment tooling, test suites, pappusCast daemon
+  nucleus-deploy/   Rust binary: 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns)
+  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
+  forgejo_mirror.sh Forgejo org/repo creation + relay push for all repos
   gate_watchdog.sh  Membrane health monitor (lab/git endpoints, logs for skunkBat)
   gate_switch.sh    Migrate compute services between gates
-  tier_test_all.sh  Unified test runner across all tiers + pappusCast health
-  cloudflare/       Cloudflare Access setup and tunnel configuration
-  cloudflared/      Tunnel config templates (config-full.yml, config-static.yml)
-  nucleus_config.sh includes cellMembrane VPS config (MEMBRANE_VPS_IP, TURN credentials)
+  pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
+  observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
+  legacy/           Fossilized scripts: cloudflare configs, cloudflared provisioning, songbird relay
 graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
   tower_agent.toml  Agent composition: Tower + biomeOS neural-api + Squirrel (agentic AI)
 workloads/          Workload catalog (TOML specs for toadStool)
@@ -305,7 +299,7 @@ validation/         Composition validation, security pen tests, upstream gap han
   dark_forest_gate_local.sh  Dark Forest Glacial Gate 5-pillar structural validation (33 checks)
   darkforest_membrane.sh     cellMembrane VPS remote audit (MEM-01 through MEM-13)
   darkforest/       Pure Rust security validator (v0.2.1 — pen test + fuzz + crypto, modular submodules)
-  tunnelKeeper/     Rust crate for Cloudflare tunnel health/management
+  tunnelKeeper/     Rust crate for tunnel health (Cloudflare v0.1 + Songbird v0.2)
   baselines/        Tunnel metrics + unified membrane telemetry (cron CSVs + membrane_7day.toml)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling

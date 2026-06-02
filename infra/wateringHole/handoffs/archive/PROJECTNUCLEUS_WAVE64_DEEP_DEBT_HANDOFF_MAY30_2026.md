@@ -10,9 +10,10 @@
 
 | Metric | Wave 58 | Wave 64 | Delta |
 |--------|---------|---------|-------|
-| Rust tests | 164 | **184** | +20 |
-| darkforest tests | 127 | **139** | +12 |
-| tunnelKeeper tests | 36 | **45** | +9 |
+| Rust tests | 164 | **234** | +70 |
+| darkforest tests | 127 | **140** | +13 |
+| tunnelKeeper tests | 36 | **48** | +12 |
+| nucleus-deploy tests | — | **46** | — |
 | Unsafe blocks | 0 | 0 | — |
 | Files >800L | 0 | 0 | — |
 | Production mocks | 0 | 0 | — |
@@ -69,7 +70,7 @@ Remaining `127.0.0.1` references are exclusively:
 - **__pycache__**: 8 `.pyc` files removed
 - **One-off report**: `membrane-provenance-20260522-102535` moved to `validation/archive/`
 - **6 pre-Wave 64 handoffs**: archived to central `infra/wateringHole/handoffs/archive/`
-- **Root docs synced**: README.md, PHASES.md, EVOLUTION_GAPS.md, SECURITY_VALIDATION.md — all at 184 tests
+- **Root docs synced**: README.md, PHASES.md, EVOLUTION_GAPS.md, SECURITY_VALIDATION.md — all at 234 tests
 
 ---
 
@@ -79,7 +80,7 @@ Remaining `127.0.0.1` references are exclusively:
 |-------|--------|
 | `cargo clippy --all-features -- -D warnings` | **CLEAN** (both crates) |
 | `cargo fmt --check` | **CLEAN** (both crates) |
-| `cargo test` | **184 PASS**, 1 ignored (slow DNS) |
+| `cargo test` | **234 PASS**, 1 ignored (slow DNS) |
 | `bash -n` (14 modified scripts) | **ALL PASS** |
 | TODO/FIXME/HACK in `.rs` | **0** |
 | TODO/FIXME in `.sh` | **0** |
@@ -94,11 +95,13 @@ Remaining `127.0.0.1` references are exclusively:
 
 No upstream gaps. All Wave 63 tasks completed (reported in WAVE63_RESPONSE). Wave 64 is internal deep debt — no external dependencies or blockers.
 
-**Remaining evolution trajectory** (tracked, not blocking):
-- Deploy scripts bash → Rust (`deploy.sh`, `security_validation.sh`, `provenance_pipeline.sh`)
+**Remaining evolution trajectory** (tracked, not blocking — Wave 68 status):
+- Core deploy pipeline bash → Rust **COMPLETE** (`nucleus-deploy`: security, provenance, deploy, spore, telemetry, summary, verify, provision, dns)
+- Temporal/cascade logic **in Rust** (nucleus-deploy modules)
+- Divergence policy **explicit** (documented in deploy specs)
 - CI sovereignty (GitHub Actions → Forgejo Actions, glacial gate)
 - NS registrar cutover (knot-dns deployed, external registrar action)
 
 ---
 
-*projectNUCLEUS at Wave 64. 184 Rust tests, zero deep debt, 14 scripts evolved. Clean codebase. Ready for primalSpring audit.*
+*projectNUCLEUS at Wave 68. 234 Rust tests (darkforest 140, tunnelKeeper 48, nucleus-deploy 46), zero deep debt, 14 scripts evolved. Clean codebase. Ready for primalSpring audit.*

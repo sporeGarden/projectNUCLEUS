@@ -6,8 +6,8 @@ is tested here before and after replacement.
 
 ## Current State (2026-05-28)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `deploy/security_validation.sh` (gate-local)
-**184 Rust tests PASS** (darkforest 139, tunnelKeeper 45). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
+**234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
@@ -200,7 +200,7 @@ from the inside during external probing.
 ## Layer Model (originally 3, now 5)
 
 > **Update**: Layers 4 (ABG tier enforcement) and 5 (dark forest pentest + protocol fuzz) 
-> were added 2026-05-08. See `deploy/security_validation.sh` for the live implementation.
+> were added 2026-05-08. See `nucleus-deploy security` for the live implementation.
 
 ### Historical Three-Layer Model (May 6 baseline)
 
@@ -321,7 +321,7 @@ difference between normal primal traffic and probe/fuzz traffic.
 ### Evolution Path
 
 ```
-Now:      security_validation.sh probes → skunkBat observes passively
+Now:      nucleus-deploy security probes → skunkBat observes passively
 Phase 2b: skunkBat detects fuzz patterns → alerts to BearDog
 Phase 3:  skunkBat auto-quarantines → defensive response tested
 Phase 4:  skunkBat feeds into sweetGrass → security events provenance-tracked
@@ -329,7 +329,7 @@ Phase 4:  skunkBat feeds into sweetGrass → security events provenance-tracked
 
 ### What skunkBat Needs (upstream feedback)
 
-1. **Baseline learning** — run security_validation.sh repeatedly so
+1. **Baseline learning** — run `nucleus-deploy security` repeatedly so
    skunkBat can distinguish normal health checks from probe patterns
 2. **BearDog integration** — BTSP rejection events should flow to skunkBat
 3. **Network awareness** — skunkBat should detect port scans and
@@ -386,12 +386,12 @@ Results are written to `validation/security-YYYYMMDD-HHMMSS/` with:
 - Shadow run orchestrator tying all parity tests together
 
 benchScale topologies model **multi-node** security scenarios (untrusted
-external node probing a defended mesh). `security_validation.sh` tests
+external node probing a defended mesh). `nucleus-deploy security` tests
 **single-gate** security posture. darkforest `--suite membrane` (when built)
 tests external substrate posture. All three are needed:
 
 ```
-security_validation.sh     →  single gate, production posture (Layers 1-5)
+nucleus-deploy security    →  single gate, production posture (Layers 1-5)
 darkforest --suite membrane →  external substrate, VPS posture (Layer 6)
 benchScale topologies      →  multi-node, simulated adversary
 benchScale scenarios       →  sovereignty parity (TLS, NAT, DoT, content)

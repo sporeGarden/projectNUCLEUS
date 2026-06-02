@@ -295,7 +295,8 @@ async fn process_workload(
 
     // Stage 2: Optional provenance capture
     let (session_id, provenance_braid) = if args.skip_provenance {
-        log("   [SKIP] Provenance — trio not required");
+        log("   [SKIP] Provenance — trio bypassed (dev-only, not deployment-grade)");
+        eprintln!("⚠ --skip-provenance: pseudoSpore has no DAG/spine/braid witness");
         (None, None)
     } else {
         capture_provenance(cfg, name, &outputs_dir, &braids_dir).await

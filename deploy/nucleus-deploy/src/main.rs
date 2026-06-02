@@ -111,7 +111,8 @@ enum Commands {
         #[arg(long, default_value = "./spores")]
         output: PathBuf,
 
-        /// Skip trio provenance (DAG/spine/braid) — emit with stub provenance
+        /// Skip trio provenance (DAG/spine/braid) — development only.
+        /// `PseudoSpores` emitted without provenance are NOT deployment-grade.
         #[arg(long)]
         skip_provenance: bool,
 

@@ -51,7 +51,7 @@ pub fn shannon_entropy(data: &[u8]) -> f64 {
     for &count in &freq {
         if count > 0 {
             let p = count as f64 / len;
-            entropy -= p * p.log2();
+            entropy = p.mul_add(-p.log2(), entropy);
         }
     }
     entropy

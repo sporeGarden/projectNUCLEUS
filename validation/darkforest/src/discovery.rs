@@ -34,7 +34,10 @@ impl std::fmt::Display for DiscoverySource {
     }
 }
 
-/// Well-known primal port defaults — only used when discovery and env vars fail
+/// Well-known primal port defaults — only used when discovery and env vars fail.
+///
+/// Source of truth: `nucleus-deploy/src/config.rs` `NucleusConfig`.
+/// If ports change there, update this table and the `defaults_match_deploy` test.
 const COMPILED_DEFAULTS: &[(&str, &str, u16)] = &[
     ("barracuda", "BARRACUDA_PORT", 9740),
     ("beardog", "BEARDOG_PORT", 9100),
@@ -289,6 +292,38 @@ mod tests {
         for p in &primals {
             assert!(!p.name.is_empty(), "primal has empty name");
             assert!(p.port > 1024, "{} port {} too low", p.name, p.port);
+        }
+    }
+
+    #[test]
+    fn defaults_match_deploy_config() {
+        let expected: &[(&str, u16)] = &[
+            ("barracuda", 9740),
+            ("beardog", 9100),
+            ("biomeos", 9800),
+            ("coralreef", 9730),
+            ("loamspine", 9700),
+            ("nestgate", 9500),
+            ("petaltongue", 9900),
+            ("rhizocrypt", 9601),
+            ("rhizocrypt-rpc", 9602),
+            ("skunkbat", 9140),
+            ("songbird", 9200),
+            ("squirrel", 9300),
+            ("sweetgrass", 9850),
+            ("toadstool", 9400),
+        ];
+        for &(name, port) in expected {
+            let compiled = COMPILED_DEFAULTS.iter().find(|&&(n, _, _)| n == name);
+            assert!(
+                compiled.is_some(),
+                "missing {name} in COMPILED_DEFAULTS — sync with nucleus-deploy/src/config.rs"
+            );
+            assert_eq!(
+                compiled.unwrap().2,
+                port,
+                "{name} port mismatch — sync with nucleus-deploy/src/config.rs"
+            );
         }
     }
 

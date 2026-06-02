@@ -69,7 +69,8 @@ pub(super) async fn phase_write_manifest(
         1. Confirm BLAKE3 hashes of NCBI FASTQs match the values above\n\
         2. Re-run the same workload TOMLs through toadStool\n\
         3. Query loamSpine for spine `{spine_id}` to see the full audit trail\n\
-        4. Query sweetGrass for braid `{braid_id}` to verify the ed25519 witness\n",
+        4. Query sweetGrass for braid `{braid_id}` to verify the ed25519 witness\n\
+        5. Braid witness signature: `{braid_witness}`\n",
         date = Local::now().to_rfc3339(),
         session_id = state.session_id,
         spine_id = state.spine_id,
@@ -82,7 +83,6 @@ pub(super) async fn phase_write_manifest(
         "  [OK] Manifest: {}/PROVENANCE_MANIFEST.md",
         results_dir.display()
     ));
-    let _ = braid_witness;
 
     Ok(())
 }

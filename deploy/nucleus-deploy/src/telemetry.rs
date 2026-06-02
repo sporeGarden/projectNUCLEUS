@@ -267,11 +267,11 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
     probe_http(csv_path, "lab_endpoint", &format!("{lab_url}/hub/login")).await;
 
     let primals: &[(&str, u16)] = &[
-        ("beardog", cfg.beardog_port),
-        ("songbird", cfg.songbird_port),
-        ("nestgate", cfg.nestgate_port),
-        ("skunkbat", cfg.skunkbat_port),
-        ("biomeos", cfg.biomeos_port),
+        ("beardog", cfg.port_for("beardog")),
+        ("songbird", cfg.port_for("songbird")),
+        ("nestgate", cfg.port_for("nestgate")),
+        ("skunkbat", cfg.port_for("skunkbat")),
+        ("biomeos", cfg.port_for("biomeos")),
     ];
 
     for &(name, port) in primals {

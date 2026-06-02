@@ -309,12 +309,17 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
+ "nucleus-primals",
  "serde",
  "serde_json",
  "thiserror",
  "tokio",
  "toml",
 ]
+
+[[package]]
+name = "nucleus-primals"
+version = "0.1.0"
 
 [[package]]
 name = "num-traits"

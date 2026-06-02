@@ -461,7 +461,7 @@ fn configure_primal_cmd(
 
     match name {
         "beardog" => {
-            let port = port_for(cfg.beardog_port);
+            let port = port_for(cfg.port_for("beardog"));
             let transport = if port > 0 {
                 format!("UDS + TCP {port}")
             } else {
@@ -477,7 +477,7 @@ fn configure_primal_cmd(
             }
         }
         "songbird" => {
-            let port = port_for(cfg.songbird_port);
+            let port = port_for(cfg.port_for("songbird"));
             let transport = if port > 0 {
                 format!("HTTP {port}")
             } else {
@@ -495,7 +495,7 @@ fn configure_primal_cmd(
             }
         }
         "toadstool" => {
-            let port = port_for(cfg.toadstool_port);
+            let port = port_for(cfg.port_for("toadstool"));
             eprintln!("  Starting toadstool (TCP {port})...");
             cmd.env("TOADSTOOL_FAMILY_ID", family_id);
             cmd.env("TOADSTOOL_NODE_ID", ctx.node_id);
@@ -506,7 +506,7 @@ fn configure_primal_cmd(
             }
         }
         "nestgate" => {
-            let port = port_for(cfg.nestgate_port);
+            let port = port_for(cfg.port_for("nestgate"));
             eprintln!("  Starting nestgate (TCP {port})...");
             cmd.env("NESTGATE_FAMILY_ID", family_id);
             cmd.args(["daemon", "--socket-only"]);
@@ -515,7 +515,7 @@ fn configure_primal_cmd(
             }
         }
         "rhizocrypt" => {
-            let port = port_for(cfg.rhizocrypt_port);
+            let port = port_for(cfg.port_for("rhizocrypt"));
             eprintln!("  Starting rhizocrypt (TCP {port})...");
             cmd.env("FAMILY_SEED", ctx.beacon_seed);
             cmd.arg("server");
@@ -524,7 +524,7 @@ fn configure_primal_cmd(
             }
         }
         "loamspine" => {
-            let port = port_for(cfg.loamspine_port);
+            let port = port_for(cfg.port_for("loamspine"));
             eprintln!("  Starting loamspine (TCP {port})...");
             cmd.arg("server");
             if port > 0 {
@@ -532,7 +532,7 @@ fn configure_primal_cmd(
             }
         }
         "sweetgrass" => {
-            let port = port_for(cfg.sweetgrass_port);
+            let port = port_for(cfg.port_for("sweetgrass"));
             eprintln!("  Starting sweetgrass (TCP {port})...");
             cmd.arg("server");
             if port > 0 {
@@ -558,15 +558,7 @@ fn configure_primal_cmd(
 }
 
 fn port_for_name(cfg: &NucleusConfig, name: &str) -> u16 {
-    match name {
-        "barracuda" => cfg.barracuda_port,
-        "coralreef" => cfg.coralreef_port,
-        "squirrel" => cfg.squirrel_port,
-        "skunkbat" => cfg.skunkbat_port,
-        "biomeos" => cfg.biomeos_port,
-        "petaltongue" => cfg.petaltongue_port,
-        _ => 0,
-    }
+    cfg.port_for(name)
 }
 
 async fn verify_primals(

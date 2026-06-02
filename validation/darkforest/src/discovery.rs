@@ -34,48 +34,27 @@ impl std::fmt::Display for DiscoverySource {
     }
 }
 
-/// Well-known primal port defaults — only used when discovery and env vars fail.
-///
-/// Source of truth: `nucleus-deploy/src/config.rs` `NucleusConfig`.
-/// If ports change there, update this table and the `defaults_match_deploy` test.
-const COMPILED_DEFAULTS: &[(&str, &str, u16)] = &[
-    ("barracuda", "BARRACUDA_PORT", 9740),
-    ("beardog", "BEARDOG_PORT", 9100),
-    ("biomeos", "BIOMEOS_PORT", 9800),
-    ("coralreef", "CORALREEF_PORT", 9730),
-    ("loamspine", "LOAMSPINE_PORT", 9700),
-    ("nestgate", "NESTGATE_PORT", 9500),
-    ("petaltongue", "PETALTONGUE_PORT", 9900),
-    ("rhizocrypt", "RHIZOCRYPT_PORT", 9601),
-    ("rhizocrypt-rpc", "RHIZOCRYPT_RPC_PORT", 9602),
-    ("skunkbat", "SKUNKBAT_PORT", 9140),
-    ("songbird", "SONGBIRD_PORT", 9200),
-    ("squirrel", "SQUIRREL_PORT", 9300),
-    ("sweetgrass", "SWEETGRASS_PORT", 9850),
-    ("toadstool", "TOADSTOOL_PORT", 9400),
-];
-
 /// Resolve all known primals using the discovery cascade:
 /// 1. Try biomeOS `primal.list` for runtime topology
 /// 2. Fall back to env vars for each primal
-/// 3. Last resort: compiled defaults
+/// 3. Last resort: compiled defaults from `nucleus-primals` shared registry
 pub fn resolve_primals(host: &str) -> Vec<ResolvedPrimal> {
     let discovered = try_biomeos_discovery(host);
     if !discovered.is_empty() {
         return discovered;
     }
 
-    COMPILED_DEFAULTS
+    nucleus_primals::PRIMALS
         .iter()
-        .map(|(name, env_key, default_port)| {
-            let (port, source) = std::env::var(env_key)
+        .map(|def| {
+            let (port, source) = std::env::var(def.env_key)
                 .ok()
                 .and_then(|v| v.parse().ok())
-                .map_or((*default_port, DiscoverySource::CompiledDefault), |p| {
+                .map_or((def.default_port, DiscoverySource::CompiledDefault), |p| {
                     (p, DiscoverySource::EnvOverride)
                 });
             ResolvedPrimal {
-                name: (*name).to_string(),
+                name: def.slug.to_string(),
                 port,
                 source,
                 capabilities: Vec::new(),
@@ -87,15 +66,7 @@ pub fn resolve_primals(host: &str) -> Vec<ResolvedPrimal> {
 
 /// Resolve a single primal's port via env var or compiled default.
 pub fn port_for(primal: &str) -> u16 {
-    COMPILED_DEFAULTS
-        .iter()
-        .find(|(name, _, _)| *name == primal)
-        .map_or(0, |(_, env_key, default_port)| {
-            std::env::var(env_key)
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(*default_port)
-        })
+    nucleus_primals::lookup(primal).map_or(0, nucleus_primals::resolve_port)
 }
 
 /// Ask biomeOS for the live primal topology via `primal.list`.
@@ -211,16 +182,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn compiled_defaults_has_14_entries() {
-        assert_eq!(COMPILED_DEFAULTS.len(), 14);
-    }
-
-    #[test]
-    fn compiled_defaults_all_have_env_keys() {
-        for &(name, env_key, port) in COMPILED_DEFAULTS {
-            assert!(!name.is_empty());
-            assert!(env_key.ends_with("_PORT"), "{env_key} missing _PORT suffix");
-            assert!(port > 1024, "{name} port {port} in privileged range");
+    fn registry_all_have_env_keys() {
+        for def in nucleus_primals::PRIMALS {
+            assert!(!def.slug.is_empty());
+            assert!(
+                def.env_key.ends_with("_PORT"),
+                "{} missing _PORT suffix",
+                def.env_key
+            );
+            assert!(
+                def.default_port > 1024,
+                "{} port {} in privileged range",
+                def.slug,
+                def.default_port
+            );
         }
     }
 
@@ -296,33 +271,25 @@ mod tests {
     }
 
     #[test]
-    fn defaults_match_deploy_config() {
-        let expected: &[(&str, u16)] = &[
-            ("barracuda", 9740),
-            ("beardog", 9100),
-            ("biomeos", 9800),
-            ("coralreef", 9730),
-            ("loamspine", 9700),
-            ("nestgate", 9500),
-            ("petaltongue", 9900),
-            ("rhizocrypt", 9601),
-            ("rhizocrypt-rpc", 9602),
-            ("skunkbat", 9140),
-            ("songbird", 9200),
-            ("squirrel", 9300),
-            ("sweetgrass", 9850),
-            ("toadstool", 9400),
-        ];
-        for &(name, port) in expected {
-            let compiled = COMPILED_DEFAULTS.iter().find(|&&(n, _, _)| n == name);
+    fn shared_registry_has_14_primals() {
+        assert_eq!(nucleus_primals::PRIMALS.len(), 14);
+    }
+
+    #[test]
+    fn resolve_uses_shared_registry_defaults() {
+        let primals = resolve_primals("192.0.2.1");
+        for def in nucleus_primals::PRIMALS {
+            let resolved = primals.iter().find(|p| p.name == def.slug);
             assert!(
-                compiled.is_some(),
-                "missing {name} in COMPILED_DEFAULTS — sync with nucleus-deploy/src/config.rs"
+                resolved.is_some(),
+                "shared registry slug '{}' missing from resolve output",
+                def.slug
             );
             assert_eq!(
-                compiled.unwrap().2,
-                port,
-                "{name} port mismatch — sync with nucleus-deploy/src/config.rs"
+                resolved.unwrap().port,
+                def.default_port,
+                "{} port mismatch with shared registry",
+                def.slug
             );
         }
     }

@@ -26,7 +26,7 @@ pub(super) async fn capture_provenance(
 ) -> (Option<String>, Option<String>) {
     let host = &cfg.bind_address;
 
-    if !rpc::check_liveness(host, cfg.rhizocrypt_rpc_port).await {
+    if !rpc::check_liveness(host, cfg.port_for("rhizocrypt-rpc")).await {
         log("   [SKIP] Provenance — trio primals not live");
         return (None, None);
     }
@@ -40,24 +40,25 @@ pub(super) async fn capture_provenance(
 
     let session_req =
         rpc::jsonrpc_request_with_params("dag.session.create", &json!({"name": &session_name}), 1);
-    let session_id = match rpc::send_jsonrpc(host, cfg.rhizocrypt_rpc_port, &session_req).await {
-        Ok(r) => {
-            let id = r
-                .result()
-                .and_then(|v| {
-                    v.as_str()
-                        .map(String::from)
-                        .or_else(|| serde_json::to_string(v).ok())
-                })
-                .unwrap_or_else(|| "unknown".into());
-            log(&format!("   [OK] DAG session: {id}"));
-            id
-        }
-        Err(e) => {
-            log(&format!("   [WARN] DAG session failed: {e}"));
-            return (None, None);
-        }
-    };
+    let session_id =
+        match rpc::send_jsonrpc(host, cfg.port_for("rhizocrypt-rpc"), &session_req).await {
+            Ok(r) => {
+                let id = r
+                    .result()
+                    .and_then(|v| {
+                        v.as_str()
+                            .map(String::from)
+                            .or_else(|| serde_json::to_string(v).ok())
+                    })
+                    .unwrap_or_else(|| "unknown".into());
+                log(&format!("   [OK] DAG session: {id}"));
+                id
+            }
+            Err(e) => {
+                log(&format!("   [WARN] DAG session failed: {e}"));
+                return (None, None);
+            }
+        };
 
     if let Ok(mut entries) = fs::read_dir(outputs_dir).await {
         while let Ok(Some(entry)) = entries.next_entry().await {
@@ -74,7 +75,7 @@ pub(super) async fn capture_provenance(
                         &json!({"key": &key, "value": format!("blake3:{hash}")}),
                         10,
                     );
-                    let _ = rpc::send_jsonrpc(host, cfg.nestgate_port, &store_req).await;
+                    let _ = rpc::send_jsonrpc(host, cfg.port_for("nestgate"), &store_req).await;
                 }
             }
         }
@@ -85,7 +86,7 @@ pub(super) async fn capture_provenance(
         &json!({"session_id": &session_id}),
         900,
     );
-    let merkle_hex = rpc::send_jsonrpc(host, cfg.rhizocrypt_rpc_port, &merkle_req)
+    let merkle_hex = rpc::send_jsonrpc(host, cfg.port_for("rhizocrypt-rpc"), &merkle_req)
         .await
         .map_or_else(
             |_| "0".repeat(64),
@@ -107,7 +108,7 @@ pub(super) async fn capture_provenance(
         902,
     );
 
-    let braid_id = match rpc::send_jsonrpc(host, cfg.sweetgrass_port, &braid_req).await {
+    let braid_id = match rpc::send_jsonrpc(host, cfg.port_for("sweetgrass"), &braid_req).await {
         Ok(r) => {
             let result = r.result().cloned().unwrap_or(Value::Null);
             let id = result

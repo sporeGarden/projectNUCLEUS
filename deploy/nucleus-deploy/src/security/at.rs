@@ -19,13 +19,13 @@ async fn unauth_probes(report: &mut SecurityReport, host: &str, cfg: &NucleusCon
     report.log("── 2a: Unauthenticated API Probe ──");
 
     let targets: &[(&str, u16)] = &[
-        ("beardog", cfg.beardog_port),
-        ("toadstool", cfg.toadstool_port),
-        ("nestgate", cfg.nestgate_port),
-        ("rhizocrypt", cfg.rhizocrypt_rpc_port),
-        ("loamspine", cfg.loamspine_port),
-        ("sweetgrass", cfg.sweetgrass_port),
-        ("skunkbat", cfg.skunkbat_port),
+        ("beardog", cfg.port_for("beardog")),
+        ("toadstool", cfg.port_for("toadstool")),
+        ("nestgate", cfg.port_for("nestgate")),
+        ("rhizocrypt", cfg.port_for("rhizocrypt-rpc")),
+        ("loamspine", cfg.port_for("loamspine")),
+        ("sweetgrass", cfg.port_for("sweetgrass")),
+        ("skunkbat", cfg.port_for("skunkbat")),
     ];
 
     for &(name, port) in targets {
@@ -64,10 +64,10 @@ async fn input_fuzzing(report: &mut SecurityReport, host: &str, cfg: &NucleusCon
     report.log("── 2b: Input Fuzzing (Malformed Requests) ──");
 
     let fuzz_targets: &[(&str, u16)] = &[
-        ("beardog", cfg.beardog_port),
-        ("toadstool", cfg.toadstool_port),
-        ("nestgate", cfg.nestgate_port),
-        ("skunkbat", cfg.skunkbat_port),
+        ("beardog", cfg.port_for("beardog")),
+        ("toadstool", cfg.port_for("toadstool")),
+        ("nestgate", cfg.port_for("nestgate")),
+        ("skunkbat", cfg.port_for("skunkbat")),
     ];
 
     let big_value = "A".repeat(10_000);
@@ -124,9 +124,9 @@ async fn method_enumeration(report: &mut SecurityReport, host: &str, cfg: &Nucle
     ];
 
     let targets: &[(&str, u16)] = &[
-        ("beardog", cfg.beardog_port),
-        ("toadstool", cfg.toadstool_port),
-        ("nestgate", cfg.nestgate_port),
+        ("beardog", cfg.port_for("beardog")),
+        ("toadstool", cfg.port_for("toadstool")),
+        ("nestgate", cfg.port_for("nestgate")),
     ];
 
     for &(name, port) in targets {
@@ -154,8 +154,8 @@ async fn btsp_enforcement(report: &mut SecurityReport, host: &str, cfg: &Nucleus
     report.log("── 2d: BTSP Enforcement ──");
 
     let btsp_targets: &[(&str, u16)] = &[
-        ("sweetgrass", cfg.sweetgrass_port),
-        ("rhizocrypt", cfg.rhizocrypt_port),
+        ("sweetgrass", cfg.port_for("sweetgrass")),
+        ("rhizocrypt", cfg.port_for("rhizocrypt")),
     ];
 
     let dur = Duration::from_secs(2);

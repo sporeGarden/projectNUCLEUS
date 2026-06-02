@@ -121,7 +121,13 @@ pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyE
     log("");
     log("── Phase 2: DAG Session (rhizoCrypt) ──");
     let session_id = if status.rhizocrypt {
-        test_dag_session(&vps_user, &vps_ip, cfg.rhizocrypt_rpc_port, &mut report).await
+        test_dag_session(
+            &vps_user,
+            &vps_ip,
+            cfg.port_for("rhizocrypt-rpc"),
+            &mut report,
+        )
+        .await
     } else {
         report.skip("TRIO-05", "rhizoCrypt not live — DAG session skipped");
         report.skip("TRIO-06", "rhizoCrypt not live — DAG event skipped");
@@ -131,7 +137,7 @@ pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyE
     log("");
     log("── Phase 3: Spine (loamSpine) ──");
     if status.loamspine {
-        test_spine(&vps_user, &vps_ip, cfg.loamspine_port, &mut report).await;
+        test_spine(&vps_user, &vps_ip, cfg.port_for("loamspine"), &mut report).await;
     } else {
         report.skip("TRIO-07", "loamSpine not live — spine skipped");
     }
@@ -139,7 +145,7 @@ pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyE
     log("");
     log("── Phase 4: Braid (sweetGrass) ──");
     if status.sweetgrass {
-        test_braid(&vps_user, &vps_ip, cfg.sweetgrass_port, &mut report).await;
+        test_braid(&vps_user, &vps_ip, cfg.port_for("sweetgrass"), &mut report).await;
     } else {
         report.skip("TRIO-08", "sweetGrass not live — braid skipped");
     }
@@ -150,7 +156,7 @@ pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyE
         &vps_user,
         &vps_ip,
         "BearDog",
-        cfg.beardog_port,
+        cfg.port_for("beardog"),
         &mut report,
         "TRIO-09",
     )
@@ -231,7 +237,7 @@ async fn check_all_nest_primals(
         user,
         ip,
         "NestGate",
-        cfg.nestgate_port,
+        cfg.port_for("nestgate"),
         "http",
         report,
         "TRIO-01",
@@ -241,7 +247,7 @@ async fn check_all_nest_primals(
         user,
         ip,
         "rhizoCrypt",
-        cfg.rhizocrypt_rpc_port,
+        cfg.port_for("rhizocrypt-rpc"),
         "rpc",
         report,
         "TRIO-02",
@@ -251,7 +257,7 @@ async fn check_all_nest_primals(
         user,
         ip,
         "loamSpine",
-        cfg.loamspine_port,
+        cfg.port_for("loamspine"),
         "http-rpc",
         report,
         "TRIO-03",
@@ -261,7 +267,7 @@ async fn check_all_nest_primals(
         user,
         ip,
         "sweetGrass",
-        cfg.sweetgrass_port,
+        cfg.port_for("sweetgrass"),
         "rpc",
         report,
         "TRIO-04",

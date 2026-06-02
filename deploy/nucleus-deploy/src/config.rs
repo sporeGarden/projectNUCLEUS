@@ -1,5 +1,8 @@
+use std::collections::HashMap;
 use std::env;
 use std::path::PathBuf;
+
+pub use nucleus_primals::{self, PRIMALS};
 
 fn env_or(key: &str, default: &str) -> String {
     env::var(key).unwrap_or_else(|_| default.to_string())
@@ -30,20 +33,8 @@ pub struct NucleusConfig {
     pub vps_user: String,
     pub jupyterhub_port: u16,
 
-    pub beardog_port: u16,
-    pub songbird_port: u16,
-    pub squirrel_port: u16,
-    pub toadstool_port: u16,
-    pub nestgate_port: u16,
-    pub rhizocrypt_port: u16,
-    pub rhizocrypt_rpc_port: u16,
-    pub loamspine_port: u16,
-    pub coralreef_port: u16,
-    pub barracuda_port: u16,
-    pub biomeos_port: u16,
-    pub sweetgrass_port: u16,
-    pub petaltongue_port: u16,
-    pub skunkbat_port: u16,
+    /// Resolved primal ports (env override → compiled default).
+    ports: HashMap<&'static str, u16>,
 }
 
 impl NucleusConfig {
@@ -59,6 +50,11 @@ impl NucleusConfig {
                 .and_then(|p| p.parent())
                 .map_or_else(|| ".".into(), |p| p.display().to_string()),
         ));
+
+        let ports = PRIMALS
+            .iter()
+            .map(|def| (def.slug, nucleus_primals::resolve_port(def)))
+            .collect();
 
         Self {
             plasmidbin_dir: PathBuf::from(env_or(
@@ -77,92 +73,27 @@ impl NucleusConfig {
             vps_user: env_or("MEMBRANE_VPS_USER", "root"),
             jupyterhub_port: env_or_u16("JUPYTERHUB_PORT", 8000),
 
-            beardog_port: env_or_u16("BEARDOG_PORT", 9100),
-            songbird_port: env_or_u16("SONGBIRD_PORT", 9200),
-            squirrel_port: env_or_u16("SQUIRREL_PORT", 9300),
-            toadstool_port: env_or_u16("TOADSTOOL_PORT", 9400),
-            nestgate_port: env_or_u16("NESTGATE_PORT", 9500),
-            rhizocrypt_port: env_or_u16("RHIZOCRYPT_PORT", 9601),
-            rhizocrypt_rpc_port: env_or_u16("RHIZOCRYPT_RPC_PORT", 9602),
-            loamspine_port: env_or_u16("LOAMSPINE_PORT", 9700),
-            coralreef_port: env_or_u16("CORALREEF_PORT", 9730),
-            barracuda_port: env_or_u16("BARRACUDA_PORT", 9740),
-            biomeos_port: env_or_u16("BIOMEOS_PORT", 9800),
-            sweetgrass_port: env_or_u16("SWEETGRASS_PORT", 9850),
-            petaltongue_port: env_or_u16("PETALTONGUE_PORT", 9900),
-            skunkbat_port: env_or_u16("SKUNKBAT_PORT", 9140),
+            ports,
         }
     }
 
-    pub fn all_primal_ports(&self) -> Vec<PrimalPort> {
-        vec![
-            PrimalPort {
-                name: "beardog",
-                port: self.beardog_port,
-            },
-            PrimalPort {
-                name: "songbird",
-                port: self.songbird_port,
-            },
-            PrimalPort {
-                name: "squirrel",
-                port: self.squirrel_port,
-            },
-            PrimalPort {
-                name: "toadstool",
-                port: self.toadstool_port,
-            },
-            PrimalPort {
-                name: "nestgate",
-                port: self.nestgate_port,
-            },
-            PrimalPort {
-                name: "rhizocrypt",
-                port: self.rhizocrypt_port,
-            },
-            PrimalPort {
-                name: "rhizocrypt-rpc",
-                port: self.rhizocrypt_rpc_port,
-            },
-            PrimalPort {
-                name: "loamspine",
-                port: self.loamspine_port,
-            },
-            PrimalPort {
-                name: "coralreef",
-                port: self.coralreef_port,
-            },
-            PrimalPort {
-                name: "barracuda",
-                port: self.barracuda_port,
-            },
-            PrimalPort {
-                name: "biomeos",
-                port: self.biomeos_port,
-            },
-            PrimalPort {
-                name: "sweetgrass",
-                port: self.sweetgrass_port,
-            },
-            PrimalPort {
-                name: "petaltongue",
-                port: self.petaltongue_port,
-            },
-            PrimalPort {
-                name: "skunkbat",
-                port: self.skunkbat_port,
-            },
-        ]
+    /// Look up a single primal's resolved port by slug.
+    /// Panics in debug builds if the slug is unknown (compile-time registry).
+    pub fn port_for(&self, slug: &str) -> u16 {
+        self.ports.get(slug).copied().unwrap_or_else(|| {
+            debug_assert!(false, "unknown primal slug: {slug}");
+            0
+        })
     }
 
-    #[expect(
-        dead_code,
-        reason = "used by provenance and deploy subcommands (Wave 65)"
-    )]
-    pub fn primal_port_map(&self) -> std::collections::HashMap<&'static str, u16> {
-        self.all_primal_ports()
-            .into_iter()
-            .map(|pp| (pp.name, pp.port))
+    /// All resolved primal ports.
+    pub fn all_primal_ports(&self) -> Vec<PrimalPort> {
+        PRIMALS
+            .iter()
+            .map(|def| PrimalPort {
+                name: def.slug,
+                port: self.port_for(def.slug),
+            })
             .collect()
     }
 }
@@ -198,5 +129,13 @@ mod tests {
         let cfg = NucleusConfig::from_env();
         assert_eq!(cfg.vps_ip, "157.230.3.183");
         assert_eq!(cfg.vps_user, "root");
+    }
+
+    #[test]
+    fn port_for_known_primals() {
+        let cfg = NucleusConfig::from_env();
+        assert_eq!(cfg.port_for("beardog"), 9100);
+        assert_eq!(cfg.port_for("songbird"), 9200);
+        assert_eq!(cfg.port_for("petaltongue"), 9900);
     }
 }

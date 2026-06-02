@@ -88,10 +88,7 @@ pub fn cry_08_ionic_expiry_enforcement(
 }
 
 pub fn cry_09_btsp_cipher_negotiation(host: &str, results: &mut Vec<CheckResult>) {
-    let sweetgrass_port: u16 = std::env::var("SWEETGRASS_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .unwrap_or(9850);
+    let sweetgrass_port = crate::discovery::port_for("sweetgrass");
     println!("── CRY-09: BTSP Cipher Negotiation ──");
     let cb = CheckBuilder::new("CRY-09", "crypto", Category::Crypto, Severity::High)
         .remediation("BTSP must negotiate chacha20_poly1305 in production");
@@ -123,10 +120,7 @@ pub fn cry_09_btsp_cipher_negotiation(host: &str, results: &mut Vec<CheckResult>
 }
 
 pub fn cry_10_btsp_null_rejection(host: &str, results: &mut Vec<CheckResult>) {
-    let rhizocrypt_port: u16 = std::env::var("RHIZOCRYPT_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .unwrap_or(9601);
+    let rhizocrypt_port = crate::discovery::port_for("rhizocrypt");
     println!("── CRY-10: BTSP Null Cipher Rejection ──");
     let cb = CheckBuilder::new("CRY-10", "crypto", Category::Crypto, Severity::High)
         .remediation("BTSP must reject null cipher in production mode");

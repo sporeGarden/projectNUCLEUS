@@ -88,10 +88,11 @@ pub async fn run(cfg: &NucleusConfig, args: &ProvenanceArgs) -> Result<(), Prove
 
     // Phase 2: Create DAG session
     let session_name = format!("abg-pipeline-{}", Local::now().format("%Y%m%d-%H%M%S"));
-    let session_id = phase_create_dag_session(host, cfg.rhizocrypt_port, &session_name).await?;
+    let session_id =
+        phase_create_dag_session(host, cfg.port_for("rhizocrypt"), &session_name).await?;
 
     // Phase 3: Create loamSpine spine
-    let spine_id = phase_create_spine(host, cfg.loamspine_port, &session_name).await?;
+    let spine_id = phase_create_spine(host, cfg.port_for("loamspine"), &session_name).await?;
 
     let mut state = ProvenanceState {
         session_id,
@@ -108,15 +109,16 @@ pub async fn run(cfg: &NucleusConfig, args: &ProvenanceArgs) -> Result<(), Prove
     phase_execute_workloads(cfg, host, &workloads_dir, &results_dir, &mut state).await;
 
     // Phase 6: Dehydrate → Merkle root
-    let merkle_hex = phase_merkle_root(host, cfg.rhizocrypt_port, &state).await;
+    let merkle_hex = phase_merkle_root(host, cfg.port_for("rhizocrypt"), &state).await;
 
     // Phase 7: Commit to loamSpine
-    let commit_index = phase_loamspine_commit(host, cfg.loamspine_port, &state, &merkle_hex).await;
+    let commit_index =
+        phase_loamspine_commit(host, cfg.port_for("loamspine"), &state, &merkle_hex).await;
 
     // Phase 8: Create sweetGrass braid
     let (braid_id, braid_witness) = phase_sweetgrass_braid(
         host,
-        cfg.sweetgrass_port,
+        cfg.port_for("sweetgrass"),
         &state,
         &session_name,
         &merkle_hex,
@@ -156,15 +158,15 @@ async fn phase_health_checks(cfg: &NucleusConfig, host: &str) -> Result<(), Prov
     log("── Phase 1: Health Checks ──");
 
     let required: &[(&str, u16)] = &[
-        ("BearDog", cfg.beardog_port),
-        ("ToadStool", cfg.toadstool_port),
-        ("NestGate", cfg.nestgate_port),
-        ("rhizoCrypt", cfg.rhizocrypt_port),
-        ("loamSpine", cfg.loamspine_port),
-        ("sweetGrass", cfg.sweetgrass_port),
+        ("BearDog", cfg.port_for("beardog")),
+        ("ToadStool", cfg.port_for("toadstool")),
+        ("NestGate", cfg.port_for("nestgate")),
+        ("rhizoCrypt", cfg.port_for("rhizocrypt")),
+        ("loamSpine", cfg.port_for("loamspine")),
+        ("sweetGrass", cfg.port_for("sweetgrass")),
     ];
 
-    let optional: &[(&str, u16)] = &[("Songbird", cfg.songbird_port)];
+    let optional: &[(&str, u16)] = &[("Songbird", cfg.port_for("songbird"))];
 
     let mut failures = 0u32;
 
@@ -387,7 +389,7 @@ async fn register_artifact(
         &json!({"key": artifact_key, "value": format!("blake3:{hash} size:{size}")}),
         state.event_idx + 100,
     );
-    let _ = rpc::send_jsonrpc(host, cfg.nestgate_port, &store_req).await;
+    let _ = rpc::send_jsonrpc(host, cfg.port_for("nestgate"), &store_req).await;
 
     state.event_idx += 1;
     state.artifact_hashes.push(ArtifactRecord {
@@ -499,7 +501,7 @@ async fn execute_with_provenance(
 
         let _ = rpc::send_jsonrpc(
             host,
-            cfg.nestgate_port,
+            cfg.port_for("nestgate"),
             &rpc::jsonrpc_request_with_params(
                 "storage.store",
                 &json!({

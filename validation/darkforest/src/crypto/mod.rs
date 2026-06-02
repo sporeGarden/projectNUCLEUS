@@ -72,10 +72,7 @@ pub fn hex_decode(s: &str) -> Option<Vec<u8>> {
 pub fn run(host: &str, results: &mut Vec<CheckResult>) {
     let cfg = CryptoConfig {
         hub_port: hub_port(),
-        beardog_port: std::env::var("BEARDOG_PORT")
-            .ok()
-            .and_then(|v| v.parse().ok())
-            .unwrap_or(9100),
+        beardog_port: crate::discovery::port_for("beardog"),
         cookie_secret: cookie_secret_path(),
         sqlite: sqlite_path(),
         cloudflared_dir: cf_dir(),

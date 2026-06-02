@@ -88,7 +88,7 @@ async fn install_gate_env(
     let gate_env = format!(
         "GATE_HOME={remote_home}\nGATE_NAME={hostname}\nGATE_ROLE={role}\nGATE_BIND={bind}\nSONGBIRD_FEDERATION_PORT={songbird}\n",
         bind = cfg.bind_address,
-        songbird = cfg.songbird_port,
+        songbird = cfg.port_for("songbird"),
     );
 
     if args.dry_run {
@@ -158,7 +158,7 @@ async fn configure_songbird(
 
     let songbird_env = format!(
         "SONGBIRD_FEDERATION_PORT={}\nSONGBIRD_PEERS={}\n",
-        cfg.songbird_port,
+        cfg.port_for("songbird"),
         std::env::var("SONGBIRD_PEERS").unwrap_or_default(),
     );
 

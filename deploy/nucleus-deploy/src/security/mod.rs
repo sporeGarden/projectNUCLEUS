@@ -76,7 +76,7 @@ pub async fn run(cfg: &NucleusConfig, args: &SecurityArgs) -> Result<bool, Secur
     report.log(&format!("  Results: {}", results_dir.display()));
     report.log("═══════════════════════════════════════════════════════════");
 
-    helpers::notify_skunkbat(&mut report, target, cfg.skunkbat_port).await;
+    helpers::notify_skunkbat(&mut report, target, cfg.port_for("skunkbat")).await;
 
     let layer = args.layer;
 
@@ -100,7 +100,8 @@ pub async fn run(cfg: &NucleusConfig, args: &SecurityArgs) -> Result<bool, Secur
         external::layer_darkforest(&mut report, cfg).await;
     }
 
-    helpers::collect_skunkbat_metrics(&mut report, target, cfg.skunkbat_port, &results_dir).await;
+    helpers::collect_skunkbat_metrics(&mut report, target, cfg.port_for("skunkbat"), &results_dir)
+        .await;
 
     let pass = report.count(Verdict::Pass);
     let fail = report.count(Verdict::Fail);

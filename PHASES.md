@@ -1,5 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
+> **Wave 69 note**: `nucleus-primals` shared registry crate (7 tests) — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
 > with DEPRECATED headers as fossil record. Use `nucleus-deploy security`,
@@ -30,7 +31,7 @@ science workloads.
 
 ### What Works
 
-- Full NUCLEUS (13 primals) deployed via `deploy.sh --composition full --gate <active-gate>`
+- Full NUCLEUS (13 primals) deployed via `deploy.sh --composition full --gate <active-gate>` (now `nucleus-deploy deploy`, script in `deploy/legacy/`)
 - toadStool dispatches workloads from TOML specs (native runtime)
 - wetSpring science validated through composition dispatch (235+ checks):
   - 16S Pipeline: 37/37 checks PASS
@@ -56,8 +57,8 @@ science workloads.
 
 ### What projectNUCLEUS Provides
 
-- `deploy.sh`: Automates seed creation, primal startup, health verification
-- `provenance_pipeline.sh`: Wraps workload execution with full provenance chain
+- `deploy.sh` (now `nucleus-deploy deploy`, archived in `deploy/legacy/`): Automates seed creation, primal startup, health verification
+- `provenance_pipeline.sh` (now `nucleus-deploy provenance`, archived in `deploy/legacy/`): Wraps workload execution with full provenance chain
 - Gate manifest: Hardware inventory with atomic assignment
 - Workload catalog: Validated TOML specs + templates for new workloads
 - Validation logs: Reproducible evidence of composition correctness
@@ -95,7 +96,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-31) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-05-31) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **242 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -216,7 +217,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Automated Tier Enforcement (2026-05-08)**:
 - `deploy/tier_enforcement_test.sh` — 44 OS-level assertions via `sudo -u` (filesystem, network, process)
 - `deploy/jupyterhub_tier_test.py` — 18 JupyterHub API probes (kernels, terminals, file write, Voila)
-- Wired into `security_validation.sh` as Layer 4 (total: 62 assertions, 0 FAIL, 0 KNOWN_GAP in enforced mode)
+- Wired into `security_validation.sh` (now `nucleus-deploy security`, archived in `deploy/legacy/`) as Layer 4 (total: 62 assertions, 0 FAIL, 0 KNOWN_GAP in enforced mode)
 - **JH-6 found**: `KernelSpecManager.allowed_kernelspecs` only filters listing, not creation — bypassed by NoKernelManager
 - **JH-7 found**: Voila executes notebooks as hub user — mitigated by restricting to curated showcase only
 
@@ -231,9 +232,9 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 **Dark Forest Security Hardening (2026-05-08)**:
 - Pure Rust `validation/darkforest/` v0.2.0 — modular pen test + fuzz + crypto validator
 - 14 primals + JupyterHub fuzzed, 3 threat actors (external, compute, reviewer/observer)
-- `security_validation.sh` invokes Rust darkforest binary directly
+- `security_validation.sh` (now `nucleus-deploy security`, archived in `deploy/legacy/`) invokes Rust darkforest binary directly
 - Legacy bash/python scripts archived to `validation/archive/legacy/`
-- **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. Verified: all 14 primal ports on localhost, no UFW workaround needed. deploy.sh DF-1 comments removed
+- **DF-1 RESOLVED**: Phase 60 binaries (PG-55) default all 13 primals to `127.0.0.1`. Verified: all 14 primal ports on localhost, no UFW workaround needed. deploy.sh (now `nucleus-deploy deploy`, archived in `deploy/legacy/`) DF-1 comments removed
 - **JH-8 FIXED**: DNS port 53 was open to all external servers — exfiltration channel closed, restricted to local stub resolver only
 - **JH-9 FIXED**: Shared conda envs group-writable — now root-owned with 755 permissions
 - **JH-10 found**: `/hub/api/` version disclosure is a built-in handler that cannot be overridden via config. X-JupyterHub-Version and Server headers suppressed
@@ -259,12 +260,12 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **1 KNOWN_GAP remaining**: `nestgate storage.list` accessible without auth in permissive mode (will auto-resolve when `NUCLEUS_AUTH_MODE=enforced`)
 - **4 DARK_FOREST findings**: version disclosure (JH-10), systemd service enumeration, reviewer python3 access (terminals blocked), null byte reflection (CSP mitigates)
 - **2 WARN**: sweetgrass secondary port on 0.0.0.0 (ephemeral, not configured port), rustdesk listener
-- Removed DF-1 workaround code from `security_validation.sh`, `deploy.sh`
+- Removed DF-1 workaround code from `security_validation.sh` (now `nucleus-deploy security`), `deploy.sh` (now `nucleus-deploy deploy`; both archived in `deploy/legacy/`)
 - plasmidBin `sync.sh` verified: 13/13 binaries checksum-matched
 
 **Enforced Mode Activation (2026-05-08)**:
 - Switched `NUCLEUS_AUTH_MODE` from `permissive` to `enforced` — default for all deployments
-- `deploy.sh` now exports `*_AUTH_MODE=enforced` env vars for all 13 primals
+- `deploy.sh` (now `nucleus-deploy deploy`, archived in `deploy/legacy/`) now exports `*_AUTH_MODE=enforced` env vars for all 13 primals
 - **JH-0 FULLY RESOLVED**: 10/13 primals confirmed enforced via TCP at this date (now 13/13). All unauthenticated RPC calls return `-32001 PERMISSION_DENIED`
 - **Ionic token flow validated**: `identity.create` → `auth.issue_session(purpose="jupyterhub")` → scoped Ed25519 token → `_bearer_token` in RPC params → MethodGate accepts → method dispatches
 - **Scope rejection confirmed**: Token with `crypto.*` scope can call `capabilities.list` but token verified on nestgate can't call `storage.list` (wrong scope)
@@ -278,7 +279,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Refactored `validation/darkforest/` into 7 modules: `check.rs`, `net.rs`, `pentest.rs`, `fuzz.rs`, `crypto.rs`, `report.rs`, `main.rs`
 - 13 cryptographic strength checks (CRY-01 → CRY-13): cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep
 - Structured JSON output (`--output <path>`) for auditable, machine-readable reports
-- **175 PASS, 0 FAIL, 6 DARK_FOREST** (authoritative count; supersedes `security_validation.sh` pipeline totals)
+- **175 PASS, 0 FAIL, 6 DARK_FOREST** (authoritative count; supersedes `security_validation.sh` (now `nucleus-deploy security`) pipeline totals)
 - Legacy scripts (`deploy/darkforest_pentest.sh`, `deploy/darkforest_fuzz.py`) archived to `validation/archive/legacy/`
 
 **ABG Workspace Scaffolding (2026-05-08)**:
@@ -341,11 +342,11 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `deploy/nucleus_paths.py` provides equivalent Python config module for tier tests and pappusCast
 - tunnelKeeper: `Client::new()` returns `Result` (zero `expect()`), tokio slimmed to `rt-multi-thread+macros`, `rand` replaced by `rand_core`, credential paths env-var-driven
 - darkforest: PRIMALS array loaded from env with compiled fallback, rhizoCrypt RPC 9602 added to roster, crypto/pentest paths gate-agnostic via `CryptoConfig` struct
-- `security_validation.sh` invokes Rust darkforest binary directly (archived bash/python scripts)
+- `security_validation.sh` (now `nucleus-deploy security`, archived in `deploy/legacy/`) invokes Rust darkforest binary directly (archived bash/python scripts)
 - `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
 - 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
-- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 234 Rust tests (darkforest 140, tunnelKeeper 48, nucleus-deploy 46)
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 242 Rust tests (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7)
 
 **Cell Membrane Architecture (2026-05-10)**:
 - Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)

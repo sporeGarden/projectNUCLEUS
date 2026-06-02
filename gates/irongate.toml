@@ -41,7 +41,7 @@ bonding_to_vps = "covalent (SSH key)"
 # SSOT: MEMBRANE_VPS_IP in deploy/nucleus_config.sh
 vps_ip = "157.230.3.183"
 tls_surface = "membrane.primals.eco"
-telemetry = "deploy/membrane_telemetry.sh (15-min cron)"
+telemetry = "nucleus-deploy telemetry (15-min cron)"
 membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 
 [composition]

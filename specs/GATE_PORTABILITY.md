@@ -71,9 +71,10 @@ failover, invisible to users.
 
 **Provisioning a new gate:**
 ```
-deploy/gate_provision.sh <target-host>           # replica (observer + git)
-deploy/gate_provision.sh <target-host> --full    # primary (all services)
+nucleus-deploy provision <target-host>           # replica (observer + git)
+nucleus-deploy provision <target-host> --full    # primary (all services)
 ```
+_(Was `deploy/gate_provision.sh`, now in `deploy/legacy/`.)_
 
 **Membrane watchdog:**
 `deploy/gate_watchdog.sh` runs as a systemd service, checking membrane

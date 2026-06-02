@@ -4,10 +4,10 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-05-28)
+## Current State (2026-06-02)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
-**234 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**242 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
@@ -345,7 +345,7 @@ Phase 4:  skunkBat feeds into sweetGrass → security events provenance-tracked
 | Every tunnel evolution step | All | Full three-layer scan |
 | New primal added to composition | At | API fuzzing + enumeration |
 | New ABG user added | Above | Auth + tier enforcement |
-| After deploy.sh --composition | Below + At | Port binding + health |
+| After deploy.sh --composition (now `nucleus-deploy deploy`, archived in `deploy/legacy/`) | Below + At | Port binding + health |
 | Weekly (automated, future) | All | Regression baseline |
 
 ---
@@ -413,7 +413,7 @@ skunkBat showcase/         →  violation detection scenarios
 
 ### After Fix (same day)
 
-`deploy.sh` updated with `BIND_ADDRESS` (default `127.0.0.1`):
+`deploy.sh` (now `nucleus-deploy deploy`, archived in `deploy/legacy/`) updated with `BIND_ADDRESS` (default `127.0.0.1`):
 
 | Category | Before | After |
 |----------|--------|-------|

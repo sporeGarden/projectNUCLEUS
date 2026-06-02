@@ -4,8 +4,8 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-06-02 (Wave 69 — 460 methods, NC-1 CODE COMPLETE, biomeOS v3.84, 234 Rust tests, Forgejo CI primary, grapheneGate graph added, 7 deprecated bash scripts archived)
-**Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate. **234 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 46), coverage: darkforest 40.77%, tunnelKeeper 52.67%
+**Last updated**: 2026-06-02 (Wave 69 — 460 methods, NC-1 CODE COMPLETE, biomeOS v3.84, 242 Rust tests, Forgejo CI primary, grapheneGate graph added, 7 deprecated bash scripts archived)
+**Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate. **242 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7), coverage: darkforest 40.77%, tunnelKeeper 52.67%
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)
 **Multi-tier tests**: observer (darkforest Rust) + reviewer + compute + hub + pappusCast + sporePrint (`deploy/tier_test_all.sh`)
@@ -255,7 +255,7 @@ skunkBat audit pipeline JH-5 Phase 3 operational. Tier 2 JSON-RPC on all 7 sprin
 76 wire routing misroutes fixed — `security.audit_log` → skunkBat, crypto methods base64-encoded,
 `provenance.*` → sweetGrass. `s_routing_consistency` scenario prevents drift.
 
-See: `infra/wateringHole/handoffs/PRIMALSPRING_POST_INTERSTADIAL_DOWNSTREAM_HANDOFF_MAY10_2026.md`
+Post-interstadial downstream handoff delivered May 10, 2026 (upstream wateringHole; see interstadial exit criteria in `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`).
 
 ### All Resolved
 
@@ -312,8 +312,8 @@ No cutover proceeds without a PASS from the corresponding gate.
 | `darkforest` (Rust) | `validation/darkforest/` | 34 modular pentest checks, crypto, observer | JSON report, per-check severity |
 | `dark_forest_gate_local.sh` | `validation/` | 33 structural checks across 5 pillars for deploy graphs | PASS/FAIL per pillar |
 | `darkforest_membrane.sh` | `validation/` | MEM-01 through MEM-13 remote VPS validation | PASS/FAIL/SKIP per MEM-ID |
-| `membrane_telemetry.sh` | `deploy/` | Unified probe: Caddy, TURN, BearDog TLS, SSH, Cloudflare, primal RPC, TTFB | CSV + daily append |
-| `membrane_summary.sh` | `deploy/` | Rolling 7-day `membrane_7day.toml` with parity checks and cutover gates | TOML report |
+| `nucleus-deploy telemetry` | `deploy/nucleus-deploy/` | Unified probe: Caddy, TURN, BearDog TLS, SSH, Cloudflare, primal RPC, TTFB (was `membrane_telemetry.sh` in `deploy/legacy/`) | CSV + daily append |
+| `nucleus-deploy summary` | `deploy/nucleus-deploy/` | Rolling 7-day `membrane_7day.toml` with parity checks and cutover gates (was `membrane_summary.sh` in `deploy/legacy/`) | TOML report |
 | `tier_test_all.sh` | `deploy/` | Multi-tier user validation: observer, reviewer, compute, hub | Per-tier PASS/FAIL |
 | `btsp_tls_parity.sh` | `deploy/` | BearDog TLS vs Cloudflare TLS latency/availability comparison | Parity metrics |
 | `songbird_nat_parity.sh` | `deploy/` | Songbird TURN relay vs cloudflared NAT comparison | Reachability + latency |
@@ -324,10 +324,10 @@ No cutover proceeds without a PASS from the corresponding gate.
 
 | Phase Transition | Pre-Transition Gate | During Shadow | Cutover Gate | Post-Cutover Verify |
 |-----------------|---------------------|---------------|--------------|---------------------|
-| **H2-01→04: BTSP Auth (replaces PAM)** | `tier_test_all.sh` baseline (all tiers PASS with PAM) | `membrane_telemetry.sh` BTSP auth events, dual-auth success rate logging | BTSP success ≥ 99.9%, latency < 50ms overhead, 7-day clean shadow | `tier_test_all.sh` re-run (all tiers PASS with BTSP-only) |
-| **H2-05→09: petalTongue Content (replaces GitHub Pages)** | `membrane_telemetry.sh` content TTFB baseline, `membrane_summary.sh` parity snapshot | `membrane_telemetry.sh` NestGate TTFB vs GitHub Pages TTFB | Content parity 100%, TTFB within 10% of Zola/Pages | `darkforest --suite observer` (OBS-01→OBS-09 against sovereign surface) |
-| **H2-10→12: BearDog TLS (replaces Cloudflare TLS)** | `btsp_tls_parity.sh` baseline capture (7 days) | `membrane_telemetry.sh` BearDog :8443 latency, `membrane_summary.sh` daily parity | `membrane_summary.sh` cutover gate MET (latency + availability parity) | `nucleus-deploy security` full sweep, `darkforest` crypto suite (CRY-01→CRY-13) |
-| **H2-13→16: Songbird NAT (replaces cloudflared)** | `songbird_nat_parity.sh` baseline, `darkforest_membrane.sh` MEM-01→MEM-13 | `membrane_telemetry.sh` TURN reachability, `membrane_summary.sh` parity | `darkforest_membrane.sh` full PASS, `songbird_nat_parity.sh` parity MET | `nucleus-deploy security` Layer 6 re-sweep |
+| **H2-01→04: BTSP Auth (replaces PAM)** | `tier_test_all.sh` baseline (all tiers PASS with PAM) | `nucleus-deploy telemetry` BTSP auth events, dual-auth success rate logging (was `membrane_telemetry.sh`) | BTSP success ≥ 99.9%, latency < 50ms overhead, 7-day clean shadow | `tier_test_all.sh` re-run (all tiers PASS with BTSP-only) |
+| **H2-05→09: petalTongue Content (replaces GitHub Pages)** | `nucleus-deploy telemetry` content TTFB baseline, `nucleus-deploy summary` parity snapshot (was `membrane_telemetry.sh` / `membrane_summary.sh`) | `nucleus-deploy telemetry` NestGate TTFB vs GitHub Pages TTFB | Content parity 100%, TTFB within 10% of Zola/Pages | `darkforest --suite observer` (OBS-01→OBS-09 against sovereign surface) |
+| **H2-10→12: BearDog TLS (replaces Cloudflare TLS)** | `btsp_tls_parity.sh` baseline capture (7 days) | `nucleus-deploy telemetry` BearDog :8443 latency, `nucleus-deploy summary` daily parity (was `membrane_telemetry.sh` / `membrane_summary.sh`) | `nucleus-deploy summary` cutover gate MET (latency + availability parity) | `nucleus-deploy security` full sweep, `darkforest` crypto suite (CRY-01→CRY-13) |
+| **H2-13→16: Songbird NAT (replaces cloudflared)** | `songbird_nat_parity.sh` baseline, `darkforest_membrane.sh` MEM-01→MEM-13 | `nucleus-deploy telemetry` TURN reachability, `nucleus-deploy summary` parity (was `membrane_telemetry.sh` / `membrane_summary.sh`) | `darkforest_membrane.sh` full PASS, `songbird_nat_parity.sh` parity MET | `nucleus-deploy security` Layer 6 re-sweep |
 | **H2-17→20: Sovereign DNS (replaces Cloudflare NS)** | `dot_sovereign_parity.sh` DoT baseline (accuracy + timing) | `dot_sovereign_parity.sh` sovereign vs Cloudflare daily | 10/10 accuracy, latency within 20% of DoT, 7-day clean | `nucleus-deploy security` full sweep after each NS change |
 | **H3-03: Forgejo Actions (replaces GitHub Actions)** | Port `notify-sporeprint.yml` first (smallest CI surface) | Manual comparison: Forgejo run output vs GitHub Actions output | 100% workflow parity on pilot workflow | Expand to remaining 73 workflow files incrementally |
 | **H3-04: Forgejo Primary (replaces GitHub repos)** | `dark_forest_gate_local.sh` (all graphs valid post-remote-switch) | K-Derm diderm relay verification (push forgejo → relay → GitHub) | Forgejo post-receive relay to GitHub via peptidoglycan/golgiBody-ext | Periodic `dark_forest_gate_local.sh` + temporal position parity |
@@ -336,8 +336,8 @@ No cutover proceeds without a PASS from the corresponding gate.
 
 | Frequency | Validation | Purpose |
 |-----------|-----------|---------|
-| Continuous (15-min cron) | `membrane_telemetry.sh` | Sovereignty channel health |
-| Daily | `membrane_summary.sh` | Rolling 7-day parity report |
+| Continuous (15-min cron) | `nucleus-deploy telemetry` (was `membrane_telemetry.sh`) | Sovereignty channel health |
+| Daily | `nucleus-deploy summary` (was `membrane_summary.sh`) | Rolling 7-day parity report |
 | Pre/post any deployment | `dark_forest_gate_local.sh` | Deploy graph structural integrity |
 | Pre/post any VPS change | `darkforest_membrane.sh` | Membrane security posture |
 | Weekly | `nucleus-deploy security` | Full multi-layer security sweep |
@@ -361,7 +361,7 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 | H2-17→20 | DoT sovereign DNS | P2 (NUCLEUS) | **H2-17 DEPLOYED** — knot-dns v3.2.6 on cellMembrane VPS (157.230.3.183:53), DNSSEC ECDSAP256SHA256 auto-signed, `primals.eco` zone authoritative, 45ms from gate. H2-18 (NS transfer) pending registrar action. H2-19/H2-20 (BTSP direct + unbound recursive) planned. |
 | TIER-2 | Tier 2 Science API (toadstool.validate) | P2 (NUCLEUS) | **WIRED** — S250 implemented, 12 workload TOMLs with `toadstool-validate-v1` schema |
 | SHADOW | composition.deploy.shadow | P2 (NUCLEUS) | **WIRED** — `shadow_deploy()` in `deploy_graph.sh`, biomeOS v3.53 |
-| ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Graph capabilities reconciled (GAP-36 canonical names); provenance_pipeline.sh exercises dag.*/spine.*/braid.* |
+| ABG-WCM | Thread 1 WCM compositions via provenance trio | P3 (ABG) | Graph capabilities reconciled (GAP-36 canonical names); `nucleus-deploy provenance` (was `provenance_pipeline.sh` in `deploy/legacy/`) exercises dag.*/spine.*/braid.* |
 | LITHO-INT | lithoSpore workload integration | P4 (lithoSpore) | **EXCEEDED** — 7/7 modules PASS Tier 2 (75/75 checks, 117 tests), cross-tier parity 7/7 MATCH, Tier 3 wired (trio JSON-RPC), litho-core shared library, liveSpore tracking |
 | FND-10 | Foundation 10/10 threads active | P5 (Foundation) | **DONE** — all threads seeded, TOML-driven fetch |
 
@@ -451,7 +451,7 @@ extend the sovereign organism from compute into transactions.
 Deploy graph: `graphs/sovereignty_shadow.toml`
 Protocol: calibrate → shadow → cutover (`wateringHole/SOVEREIGNTY_STANDARDS.md` §2)
 Orchestrator: `infra/benchScale/scenarios/shadow_run_orchestrator.sh`
-Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `validation/baselines/membrane_7day.toml`
+Telemetry: `nucleus-deploy telemetry` → `nucleus-deploy summary` → `validation/baselines/membrane_7day.toml` (was `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh`, now in `deploy/legacy/`)
 
 ### Shadow Status
 
@@ -472,7 +472,7 @@ Telemetry: `deploy/membrane_telemetry.sh` → `deploy/membrane_summary.sh` → `
 - [x] `specs/ACME_TLS_INTEGRATION_PATH.md` exists (7.5KB design doc)
 - [x] `deny.toml` ring wrappers reconciled: `["rustls", "rustls-webpki"]`
 - [ ] bearDog ACME Phase 3: renewal daemon integration (12h check, 30-day-before-expiry)
-- [ ] 7-day continuous p50/p95/p99 measurement via `membrane_telemetry.sh`
+- [ ] 7-day continuous p50/p95/p99 measurement via `nucleus-deploy telemetry` (was `membrane_telemetry.sh`)
 - [ ] Cutover gate: sovereign p95 ≤ 1.5× commercial p95 for 7 consecutive days
 
 **S2 — Songbird NAT (READY, relay deployment pending)**
@@ -518,7 +518,7 @@ Per `wateringHole/SOVEREIGNTY_STANDARDS.md`:
 | S3 Content | VPS TTFB | ≤ 110% GitHub Pages TTFB | 7 consecutive days |
 | S4 Auth | Auth latency | < 50ms p95 | 7 consecutive days |
 
-Cutover gate: `deploy/membrane_summary.sh` computes rolling 7-day window.
+Cutover gate: `nucleus-deploy summary` (was `deploy/membrane_summary.sh`, now in `deploy/legacy/`) computes rolling 7-day window.
 All 4 tracks must pass simultaneously before DNS switch.
 
 ### Upstream Blockers (for primal teams)

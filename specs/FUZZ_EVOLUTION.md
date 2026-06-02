@@ -13,10 +13,10 @@
 
 | Layer | Tool | Coverage | Location |
 |-------|------|----------|----------|
-| OS/Network | `security_validation.sh` Layer 1 | UFW, hidepid, iptables, DNS exfil | `deploy/security_validation.sh` |
-| Primal API | `security_validation.sh` Layer 2 | MethodGate (13/13), 127.0.0.1 binding | Same |
-| Application | `security_validation.sh` Layer 3 | JupyterHub headers, tier enforcement | Same |
-| ABG Tier | `security_validation.sh` Layer 4 | Ionic tokens, scope validation | Same |
+| OS/Network | `nucleus-deploy security` Layer 1 | UFW, hidepid, iptables, DNS exfil | `nucleus-deploy` (was `deploy/security_validation.sh`, now in `deploy/legacy/`) |
+| Primal API | `nucleus-deploy security` Layer 2 | MethodGate (13/13), 127.0.0.1 binding | Same |
+| Application | `nucleus-deploy security` Layer 3 | JupyterHub headers, tier enforcement | Same |
+| ABG Tier | `nucleus-deploy security` Layer 4 | Ionic tokens, scope validation | Same |
 | Dark Forest | `darkforest` (Rust) | JSON-RPC fuzz, crypto, observer HTML | `validation/darkforest/` |
 | Per-primal fuzz | cargo-fuzz (libfuzzer) | Parser/deserializer coverage | `primals/*/fuzz/` |
 | BenchScale | Python/bash helpers | JSON-RPC fuzz, three-layer scan, tunnel probe | `infra/benchScale/pentest/` |
@@ -213,7 +213,7 @@ for corpus replication when backbone activates.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  deploy/security_validation.sh (5-layer, runs on demand)     │
+│  nucleus-deploy security (5-layer, runs on demand)            │
 │    ├── Layer 1: OS/network                                   │
 │    ├── Layer 2: Primal API (MethodGate)                      │
 │    ├── Layer 3: Application (JupyterHub)                     │

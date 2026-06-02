@@ -3,7 +3,7 @@
 # Source: 1 days of telemetry (117 total probes)
 # Window: 7 days | Cutover gate: 7 consecutive days
 # NOTE: This file is a point-in-time snapshot from early telemetry.
-# Regenerate via: deploy/membrane_summary.sh (requires cron telemetry data)
+# Regenerate via: nucleus-deploy summary (requires cron telemetry data)
 
 [metadata]
 generated_at = "2026-05-15T19:46:06Z"

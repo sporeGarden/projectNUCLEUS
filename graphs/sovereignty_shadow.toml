@@ -129,8 +129,8 @@ description = "composition.deploy.shadow dry-run validation layer"
 
 # --- Telemetry integration ---
 [graph.telemetry]
-collection_script = "deploy/membrane_telemetry.sh"
-summary_script = "deploy/membrane_summary.sh"
+collection_command = "nucleus-deploy telemetry"
+summary_command = "nucleus-deploy summary"
 orchestrator = "infra/benchScale/scenarios/shadow_run_orchestrator.sh"
 baseline_file = "validation/baselines/membrane_7day.toml"
 cadence_seconds = 900

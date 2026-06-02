@@ -20,7 +20,7 @@
 # for projectNUCLEUS deploy_graph.sh compatibility.
 #
 # Usage:
-#   bash deploy/deploy.sh --composition agent --graph-deploy
+#   nucleus-deploy deploy --composition agent --graph-deploy
 #   biomeos deploy --graph graphs/tower_agent.toml
 
 [graph]

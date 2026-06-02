@@ -60,8 +60,8 @@ CloudflareTunnelTransport) + BearDogAuthTransport replaces CF Access.
 
 **Methodology**: Shadow-run protocol (calibrate → shadow → cutover) compares
 external dependency baselines against sovereign replacements. Orchestrated by
-`shadow_run_orchestrator.sh`, measured by `membrane_telemetry.sh`, gated by
-7-day rolling window via `membrane_summary.sh`.
+`shadow_run_orchestrator.sh`, measured by `nucleus-deploy telemetry` (was `membrane_telemetry.sh`), gated by
+7-day rolling window via `nucleus-deploy summary` (was `membrane_summary.sh`).
 
 **Location**: `infra/benchScale/`
 **Deploy graph**: `graphs/sovereignty_shadow.toml`
@@ -169,13 +169,14 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 ```
 darkforest          140 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
 tunnelKeeper         48 tests  (api, config, crypto, health, transport)
-nucleus-deploy       46 tests  (security, provenance, deploy, spore, telemetry, util)
+nucleus-deploy       47 tests  (security, provenance, deploy, spore, telemetry, util)
+nucleus-primals       7 tests  (shared primal registry)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)
 5-layer security    267 checks (pentest, fuzz, crypto, observer, gate)
 ───────────────────────────────────────────────────────────────────
-Total               576+ validations, 0 failures
+Total               584+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
@@ -196,7 +197,7 @@ Deploy tooling `--uds-only` VPS standard (Wave 56).
 | S3 content mirror | E3 | SHA-256 content hash match + TTFB ≤ 110% GH Pages |
 | S4 auth integration | E3 | BearDog dual-auth latency < 50ms p95 for 7 days |
 | ACME Phase 3 | E1/E3 | Automated cert renewal (12h check, 30-day-before-expiry) |
-| Cron telemetry | E3 | `membrane_telemetry.sh` every 15min → 7-day rolling baseline |
+| Cron telemetry | E3 | `nucleus-deploy telemetry` every 15min → 7-day rolling baseline (was `membrane_telemetry.sh`) |
 
 ### Wave 56 — Niche Climate (NC-1→NC-5, pre-stadial)
 
@@ -231,7 +232,7 @@ Deploy tooling `--uds-only` VPS standard (Wave 56).
 
 ### Ongoing validation (continuous)
 
-- `membrane_telemetry.sh` → `membrane_summary.sh` → `membrane_7day.toml` (15-min cadence)
+- `nucleus-deploy telemetry` → `nucleus-deploy summary` → `membrane_7day.toml` (15-min cadence; was `membrane_telemetry.sh` → `membrane_summary.sh`)
 - `darkforest_membrane.sh` run after every VPS change
 - `shadow_run_orchestrator.sh --parity-only` weekly until cutover
 - lithoSpore parity maintained as upstream springs evolve

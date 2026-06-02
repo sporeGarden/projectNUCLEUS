@@ -77,8 +77,8 @@ This document ties together:
 | Activity | Tool | Output |
 |----------|------|--------|
 | Capture latency (DNS, TCP, TLS, TTFB) | `baselines/capture_tunnel_metrics.sh` (cron) | `baselines/daily/tunnel_metrics_YYYY-MM-DD.csv` |
-| Unified membrane telemetry | `deploy/membrane_telemetry.sh` (cron) | `baselines/daily/membrane_telemetry_YYYY-MM-DD.csv` |
-| Compute percentiles | `deploy/membrane_summary.sh` | `baselines/membrane_7day.toml` (or legacy `cloudflare_tunnel_7day.toml`) |
+| Unified membrane telemetry | `nucleus-deploy telemetry` (cron) | `baselines/daily/membrane_telemetry_YYYY-MM-DD.csv` |
+| Compute percentiles | `nucleus-deploy summary` | `baselines/membrane_7day.toml` (or legacy `cloudflare_tunnel_7day.toml`) |
 | Run scenario-specific baseline | `scenarios/cloudflare_tunnel_baseline.sh` | `baselines/tunnel_baseline_*.toml` |
 | Security scan | `pentest/three_layer_scan.sh` | `reports/security_*/benchscale_summary.toml` |
 | Record in provenance | sweetGrass `braid.witness` | Braid URN in manifest |

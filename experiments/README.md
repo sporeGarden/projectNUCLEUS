@@ -170,7 +170,7 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 darkforest          140 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
 tunnelKeeper         48 tests  (api, config, crypto, health, transport)
 nucleus-deploy       47 tests  (security, provenance, deploy, spore, telemetry, util)
-nucleus-primals       7 tests  (shared primal registry)
+nucleus-primals      12 tests  (shared primal registry + composition constants)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)

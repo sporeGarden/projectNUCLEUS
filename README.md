@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 71 (2026-06-02)** — Forgejo CI promoted to primary (Rust toolchain pinned, `rust-toolchain.toml`); nucleus-primals added to CI pipeline. grapheneGate deploy graph added (`portable_anchor` gate class). biomeGate marked OFFLINE (recovery). Gate manifest extended to all 8 gates. genomeBin packaging manifest created (14 primals, harvest script). skunkBat port drift fixed (9300 → 9140 canonical). 7 deprecated bash deploy scripts archived to `deploy/legacy/`. Hardcoded `127.0.0.1` evolved to `${NUCLEUS_BIND_ADDRESS}`. Doc test counts synced to actual **242 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7). Wave 68 deep debt: temporal.rs split, divergence policy explicit, 204+ GB build debris cleaned. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 74 (2026-06-03)** — Forgejo CI expanded to 3 repos (projectNUCLEUS, primalSpring, bearDog). Self-hosted runner provisioning script + activation runbook. genomeBin CAS upload to NestGate via `storage.store_blob` (BLAKE3-addressed, cas-manifest.toml). Deploy graphs created for strandGate (10 primals, heavy compute) and westGate (7 primals, 76 TB ZFS cold storage). `plasmidbin launch` auto-creates capability symlinks (security/discovery/orchestration.sock). Deep debt: VPS IP hardcoding eliminated (env-only), deploy compositions centralized in `nucleus_primals::COMP_*`, spring_map deduplicated. Gate manifest synced to actual gate TOMLs. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 
@@ -284,7 +284,7 @@ gates/              Gate inventory and hardware configs
 genomeBin/          Binary packaging manifest + harvest script (14 primals)
 deploy/             Deployment tooling, test suites, pappusCast daemon
   nucleus-deploy/   Rust binary: 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns)
-  nucleus-primals/  Shared primal registry crate — slug/env/port mappings (7 tests)
+  nucleus-primals/  Shared primal registry crate — slug/env/port/composition mappings (12 tests)
   nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
   forgejo_mirror.sh Forgejo org/repo creation + relay push for all repos
   gate_watchdog.sh  Membrane health monitor (lab/git endpoints, logs for skunkBat)
@@ -292,7 +292,7 @@ deploy/             Deployment tooling, test suites, pappusCast daemon
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
   observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
   legacy/           Fossilized scripts: cloudflare configs, cloudflared provisioning, songbird relay
-graphs/             Deploy graph TOMLs — curated from primalSpring + RootPulse workflows
+graphs/             16 deploy graph TOMLs — curated from primalSpring + gate-specific graphs
   tower_agent.toml  Agent composition: Tower + biomeOS neural-api + Squirrel (agentic AI)
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
@@ -305,6 +305,7 @@ validation/         Composition validation, security pen tests, upstream gap han
   baselines/        Tunnel metrics + unified membrane telemetry (cron CSVs + membrane_7day.toml)
   archive/          Timestamped provenance runs, prior security scans, legacy scripts
 infra/              Infrastructure tooling
+  ci/               Forgejo CI: runner provisioning, workflow templates, activation runbook
   benchScale/       Load generation and pen testing framework for sovereignty validation
 docs/               Architecture primers and external-facing docs
 ```

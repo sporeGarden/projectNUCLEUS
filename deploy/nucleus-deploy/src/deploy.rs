@@ -628,19 +628,21 @@ mod tests {
     }
 
     #[test]
-    fn tower_has_beardog_and_songbird() {
+    fn tower_has_beardog_songbird_skunkbat() {
         let p = primals_for_composition(Composition::Tower);
         assert!(p.contains(&"beardog"));
         assert!(p.contains(&"songbird"));
-        assert_eq!(p.len(), 2);
+        assert!(p.contains(&"skunkbat"));
+        assert_eq!(p.len(), 3);
     }
 
     #[test]
-    fn full_has_all_13_primals() {
+    fn full_has_all_14_primals() {
         let p = primals_for_composition(Composition::Full);
-        assert_eq!(p.len(), 13);
+        assert_eq!(p.len(), 14);
         assert!(p.contains(&"beardog"));
         assert!(p.contains(&"petaltongue"));
+        assert!(p.contains(&"primalspring"));
     }
 
     #[test]

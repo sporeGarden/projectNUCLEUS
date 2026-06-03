@@ -52,7 +52,7 @@ membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 [composition]
 atomic = "heavy_node_atomic"
 primals = [
-    "beardog", "songbird",
+    "beardog", "songbird", "skunkbat",
     "toadstool", "barracuda", "coralreef",
 ]
 fragment = "heavy_node_atomic + hbm2_bench"
@@ -60,6 +60,7 @@ fragment = "heavy_node_atomic + hbm2_bench"
 [ports]
 beardog = 9100
 songbird = 9200
+skunkbat = 9140
 toadstool = 9400
 barracuda = 9740
 coralreef = 9730

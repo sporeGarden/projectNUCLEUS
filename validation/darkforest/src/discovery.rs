@@ -199,7 +199,7 @@ mod tests {
     #[test]
     fn resolve_primals_returns_all_defaults_offline() {
         let primals = resolve_primals("192.0.2.1");
-        assert_eq!(primals.len(), 14);
+        assert_eq!(primals.len(), 15);
         for p in &primals {
             assert!(
                 matches!(
@@ -268,8 +268,8 @@ mod tests {
     }
 
     #[test]
-    fn shared_registry_has_14_primals() {
-        assert_eq!(nucleus_primals::PRIMALS.len(), 14);
+    fn shared_registry_has_15_primals() {
+        assert_eq!(nucleus_primals::PRIMALS.len(), 15);
     }
 
     #[test]

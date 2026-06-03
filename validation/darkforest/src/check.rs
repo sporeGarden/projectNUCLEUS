@@ -249,9 +249,9 @@ mod tests {
     }
 
     #[test]
-    fn load_primals_returns_14_defaults() {
+    fn load_primals_returns_15_defaults() {
         let primals = load_primals();
-        assert_eq!(primals.len(), 14, "should have 14 default primals");
+        assert_eq!(primals.len(), 15, "should have 15 default primals");
     }
 
     #[test]

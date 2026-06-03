@@ -31,12 +31,13 @@ os = "Linux (minimal)"
 
 [composition]
 atomic = "tower"
-primals = ["beardog", "songbird"]
+primals = ["beardog", "songbird", "skunkbat"]
 fragment = "tower_atomic"
 
 [ports]
 beardog = 9100
 songbird = 9200
+skunkbat = 9140
 
 [identity]
 family_name = "pop-os-sovereign"

@@ -103,9 +103,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_config_has_all_14_ports() {
+    fn default_config_has_all_15_ports() {
         let cfg = NucleusConfig::from_env();
-        assert_eq!(cfg.all_primal_ports().len(), 14);
+        assert_eq!(cfg.all_primal_ports().len(), 15);
     }
 
     #[test]

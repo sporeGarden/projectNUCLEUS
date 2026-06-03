@@ -92,6 +92,11 @@ pub const PRIMALS: &[PrimalDef] = &[
         env_key: "PETALTONGUE_PORT",
         default_port: 9900,
     },
+    PrimalDef {
+        slug: "primalspring",
+        env_key: "PRIMALSPRING_PORT",
+        default_port: 9990,
+    },
 ];
 
 /// Look up a primal by slug. Returns `None` if the slug is unknown.
@@ -117,8 +122,8 @@ pub fn all_slugs() -> Vec<&'static str> {
 
 // ── Composition constants (atomic groupings) ──────────────────────
 
-/// Tower Atomic (electron): security + discovery.
-pub const COMP_TOWER: &[&str] = &["beardog", "songbird"];
+/// Tower Atomic (electron): security + discovery + defense.
+pub const COMP_TOWER: &[&str] = &["beardog", "songbird", "skunkbat"];
 
 /// Node Atomic (proton): tower + compute trio + defense.
 pub const COMP_NODE: &[&str] = &[
@@ -136,11 +141,11 @@ pub const COMP_AGENT: &[&str] = &[
     "beardog", "songbird", "skunkbat", "biomeos", "squirrel",
 ];
 
-/// Full NUCLEUS: all 13 domain primals (excludes rhizocrypt-rpc alias).
+/// Full NUCLEUS: all 14 domain primals (excludes rhizocrypt-rpc alias).
 pub const COMP_FULL: &[&str] = &[
     "beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate",
     "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "skunkbat", "biomeos",
-    "petaltongue",
+    "petaltongue", "primalspring",
 ];
 
 #[cfg(test)]
@@ -148,8 +153,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn registry_has_14_entries() {
-        assert_eq!(PRIMALS.len(), 14);
+    fn registry_has_15_entries() {
+        assert_eq!(PRIMALS.len(), 15);
     }
 
     #[test]
@@ -216,8 +221,8 @@ mod tests {
     }
 
     #[test]
-    fn comp_full_has_13_primals() {
-        assert_eq!(COMP_FULL.len(), 13, "COMP_FULL should list all 13 domain primals");
+    fn comp_full_has_14_primals() {
+        assert_eq!(COMP_FULL.len(), 14, "COMP_FULL should list all 14 domain primals");
     }
 
     #[test]

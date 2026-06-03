@@ -17,7 +17,7 @@ name = "irongate"
 atomic = "nest+toadstool"
 config = "../gates/irongate.toml"
 status = "active"
-primals = 9
+primals = 13
 composition = "nest_atomic + node_atomic_compute"
 graph = "../graphs/nucleus_complete.toml"
 
@@ -28,7 +28,7 @@ config = "../gates/biomegate.toml"
 status = "offline"
 offline_since = "2026-06-02"
 offline_reason = "recovery — no deployments during biomeGate recovery (Wave 71)"
-primals = 5
+primals = 6
 composition = "heavy_node_atomic + hbm2_bench"
 graph = "../graphs/node_atomic.toml"
 
@@ -46,7 +46,7 @@ name = "flockgate"
 atomic = "node_atomic"
 config = "../gates/flockgate.toml"
 status = "active"
-primals = 5
+primals = 6
 composition = "node_atomic_compute"
 graph = "../graphs/node_atomic.toml"
 
@@ -55,7 +55,7 @@ name = "northgate"
 atomic = "node_atomic"
 config = "../gates/northgate.toml"
 status = "active"
-primals = 5
+primals = 6
 composition = "node_atomic_compute"
 graph = "../graphs/node_atomic.toml"
 
@@ -83,6 +83,6 @@ name = "nuc-intake"
 atomic = "tower"
 config = "../gates/nuc-intake.toml"
 status = "planned"
-primals = 2
+primals = 3
 composition = "tower_atomic"
 graph = "../graphs/tower_atomic.toml"

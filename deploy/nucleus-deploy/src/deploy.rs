@@ -53,40 +53,11 @@ pub enum DeployAction {
 
 fn primals_for_composition(comp: Composition) -> Vec<&'static str> {
     match comp {
-        Composition::Tower => vec!["beardog", "songbird"],
-        Composition::Agent => vec!["beardog", "songbird", "skunkbat", "biomeos", "squirrel"],
-        Composition::Node => vec![
-            "beardog",
-            "songbird",
-            "toadstool",
-            "barracuda",
-            "coralreef",
-            "skunkbat",
-        ],
-        Composition::Nest => vec![
-            "beardog",
-            "songbird",
-            "nestgate",
-            "rhizocrypt",
-            "loamspine",
-            "sweetgrass",
-            "skunkbat",
-        ],
-        Composition::Full => vec![
-            "beardog",
-            "songbird",
-            "toadstool",
-            "barracuda",
-            "coralreef",
-            "nestgate",
-            "rhizocrypt",
-            "loamspine",
-            "sweetgrass",
-            "squirrel",
-            "skunkbat",
-            "biomeos",
-            "petaltongue",
-        ],
+        Composition::Tower => nucleus_primals::COMP_TOWER.to_vec(),
+        Composition::Agent => nucleus_primals::COMP_AGENT.to_vec(),
+        Composition::Node => nucleus_primals::COMP_NODE.to_vec(),
+        Composition::Nest => nucleus_primals::COMP_NEST.to_vec(),
+        Composition::Full => nucleus_primals::COMP_FULL.to_vec(),
     }
 }
 

@@ -52,8 +52,12 @@ pub async fn run(cfg: &NucleusConfig, args: &TelemetryArgs) -> Result<(), Teleme
     let host = &cfg.bind_address;
 
     if args.mode == TelemetryMode::All || args.mode == TelemetryMode::External {
-        log("  Probing external membrane (VPS)...");
-        probe_external(cfg, &csv_path).await;
+        if cfg.vps_ip.is_empty() {
+            log("  SKIP external probes — MEMBRANE_VPS_IP not set");
+        } else {
+            log("  Probing external membrane (VPS)...");
+            probe_external(cfg, &csv_path).await;
+        }
     }
 
     if args.mode == TelemetryMode::All || args.mode == TelemetryMode::Internal {

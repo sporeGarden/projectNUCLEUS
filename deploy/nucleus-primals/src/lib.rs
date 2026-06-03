@@ -115,6 +115,34 @@ pub fn all_slugs() -> Vec<&'static str> {
     PRIMALS.iter().map(|p| p.slug).collect()
 }
 
+// ── Composition constants (atomic groupings) ──────────────────────
+
+/// Tower Atomic (electron): security + discovery.
+pub const COMP_TOWER: &[&str] = &["beardog", "songbird"];
+
+/// Node Atomic (proton): tower + compute trio + defense.
+pub const COMP_NODE: &[&str] = &[
+    "beardog", "songbird", "toadstool", "barracuda", "coralreef", "skunkbat",
+];
+
+/// Nest Atomic (neutron): tower + storage + provenance trio + defense.
+pub const COMP_NEST: &[&str] = &[
+    "beardog", "songbird", "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "skunkbat",
+];
+
+/// Agent composition: tower + defense + orchestration + agent.
+pub const COMP_AGENT: &[&str] = &[
+    "beardog", "songbird", "skunkbat", "biomeos", "squirrel",
+];
+
+/// Full NUCLEUS: all 13 domain primals (excludes rhizocrypt-rpc alias).
+pub const COMP_FULL: &[&str] = &[
+    "beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate",
+    "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "skunkbat", "biomeos",
+    "petaltongue",
+];
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -164,5 +192,40 @@ mod tests {
     fn resolve_port_uses_default_without_env() {
         let def = lookup("songbird").expect("songbird should exist");
         assert_eq!(resolve_port(def), 9200);
+    }
+
+    #[test]
+    fn comp_tower_is_subset_of_full() {
+        for slug in COMP_TOWER {
+            assert!(COMP_FULL.contains(slug), "{slug} not in COMP_FULL");
+        }
+    }
+
+    #[test]
+    fn comp_node_is_subset_of_full() {
+        for slug in COMP_NODE {
+            assert!(COMP_FULL.contains(slug), "{slug} not in COMP_FULL");
+        }
+    }
+
+    #[test]
+    fn comp_nest_is_subset_of_full() {
+        for slug in COMP_NEST {
+            assert!(COMP_FULL.contains(slug), "{slug} not in COMP_FULL");
+        }
+    }
+
+    #[test]
+    fn comp_full_has_13_primals() {
+        assert_eq!(COMP_FULL.len(), 13, "COMP_FULL should list all 13 domain primals");
+    }
+
+    #[test]
+    fn all_comp_slugs_exist_in_registry() {
+        for comp in [COMP_TOWER, COMP_NODE, COMP_NEST, COMP_AGENT, COMP_FULL] {
+            for slug in comp {
+                assert!(lookup(slug).is_some(), "composition slug '{slug}' not in PRIMALS registry");
+            }
+        }
     }
 }

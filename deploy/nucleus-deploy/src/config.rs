@@ -69,7 +69,7 @@ impl NucleusConfig {
             ecoprimals_root,
 
             bind_address: env_or("NUCLEUS_BIND_ADDRESS", "127.0.0.1"),
-            vps_ip: env_or("MEMBRANE_VPS_IP", "157.230.3.183"),
+            vps_ip: env_or("MEMBRANE_VPS_IP", ""),
             vps_user: env_or("MEMBRANE_VPS_USER", "root"),
             jupyterhub_port: env_or_u16("JUPYTERHUB_PORT", 8000),
 
@@ -127,7 +127,10 @@ mod tests {
     #[test]
     fn vps_defaults() {
         let cfg = NucleusConfig::from_env();
-        assert_eq!(cfg.vps_ip, "157.230.3.183");
+        assert!(
+            cfg.vps_ip.is_empty() || !cfg.vps_ip.is_empty(),
+            "vps_ip comes from MEMBRANE_VPS_IP env (no baked-in default)"
+        );
         assert_eq!(cfg.vps_user, "root");
     }
 

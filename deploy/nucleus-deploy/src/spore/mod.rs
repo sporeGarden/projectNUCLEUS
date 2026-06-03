@@ -453,6 +453,16 @@ async fn direct_execute(
     cmd.output()
 }
 
+const SPRING_MAP: &[(&str, &str)] = &[
+    ("airspring", "airSpring"),
+    ("hotspring", "hotSpring"),
+    ("wetspring", "wetSpring"),
+    ("healthspring", "healthSpring"),
+    ("neuralspring", "neuralSpring"),
+    ("groundspring", "groundSpring"),
+    ("ludospring", "ludoSpring"),
+];
+
 fn infer_spring(metadata: &WorkloadMetadata, toml_path: &Path) -> String {
     if let Some(ref s) = metadata.spring {
         return s.clone();
@@ -464,17 +474,7 @@ fn infer_spring(metadata: &WorkloadMetadata, toml_path: &Path) -> String {
             .map(|n| n.to_string_lossy().to_string())
             .unwrap_or_default();
 
-        let spring_map = [
-            ("airspring", "airSpring"),
-            ("hotspring", "hotSpring"),
-            ("wetspring", "wetSpring"),
-            ("healthspring", "healthSpring"),
-            ("neuralspring", "neuralSpring"),
-            ("groundspring", "groundSpring"),
-            ("ludospring", "ludoSpring"),
-        ];
-
-        for (prefix, spring) in &spring_map {
+        for (prefix, spring) in SPRING_MAP {
             if dir_name == *prefix {
                 return (*spring).to_string();
             }
@@ -482,17 +482,7 @@ fn infer_spring(metadata: &WorkloadMetadata, toml_path: &Path) -> String {
     }
 
     let name_lower = metadata.name.to_lowercase();
-    let spring_prefixes = [
-        ("airspring", "airSpring"),
-        ("hotspring", "hotSpring"),
-        ("wetspring", "wetSpring"),
-        ("healthspring", "healthSpring"),
-        ("neuralspring", "neuralSpring"),
-        ("groundspring", "groundSpring"),
-        ("ludospring", "ludoSpring"),
-    ];
-
-    for (prefix, spring) in &spring_prefixes {
+    for (prefix, spring) in SPRING_MAP {
         if name_lower.starts_with(prefix) {
             return (*spring).to_string();
         }

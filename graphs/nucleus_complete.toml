@@ -4,7 +4,8 @@
 #
 # Full NUCLEUS Complete — Zero-Port Tower Atomic Standard
 #
-# 13 primals discovered from plasmidBin + primalSpring coordination validator.
+# 13 primal binaries (14 endpoints — rhizoCrypt serves :9601 + :9602).
+# Canonical registry: deploy/nucleus-primals/src/lib.rs
 # Domain: BearDog, Songbird, ToadStool, BarraCuda, CoralReef, NestGate,
 #         Squirrel, rhizoCrypt, loamSpine, sweetGrass, skunkBat.
 # Meta:   biomeOS (orchestrator), petalTongue (UI), primalSpring (coordination).

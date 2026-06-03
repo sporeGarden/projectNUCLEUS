@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 69 (2026-06-02)** — Forgejo CI promoted to primary (Rust toolchain pinned, `rust-toolchain.toml`). grapheneGate deploy graph added (`portable_anchor` gate class). Gate manifest extended to all 8 gates. 7 deprecated bash deploy scripts archived to `deploy/legacy/`. Hardcoded `127.0.0.1` evolved to `${NUCLEUS_BIND_ADDRESS}`. Doc test counts synced to actual **242 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7). Wave 68 deep debt: temporal.rs split, divergence policy explicit, 204 GB build debris cleaned. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 71 (2026-06-02)** — Forgejo CI promoted to primary (Rust toolchain pinned, `rust-toolchain.toml`); nucleus-primals added to CI pipeline. grapheneGate deploy graph added (`portable_anchor` gate class). biomeGate marked OFFLINE (recovery). Gate manifest extended to all 8 gates. genomeBin packaging manifest created (14 primals, harvest script). skunkBat port drift fixed (9300 → 9140 canonical). 7 deprecated bash deploy scripts archived to `deploy/legacy/`. Hardcoded `127.0.0.1` evolved to `${NUCLEUS_BIND_ADDRESS}`. Doc test counts synced to actual **242 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 7). Wave 68 deep debt: temporal.rs split, divergence policy explicit, 204+ GB build debris cleaned. `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 
@@ -281,6 +281,7 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 ```
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
+genomeBin/          Binary packaging manifest + harvest script (14 primals)
 deploy/             Deployment tooling, test suites, pappusCast daemon
   nucleus-deploy/   Rust binary: 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns)
   nucleus-primals/  Shared primal registry crate — slug/env/port mappings (7 tests)

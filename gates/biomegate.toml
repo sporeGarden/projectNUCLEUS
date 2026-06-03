@@ -12,6 +12,9 @@ role = "HBM2 sovereign compiler development, semi-mobile heavy compute"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
 secure_by_default = true
+status = "offline"
+offline_since = "2026-06-02"
+offline_reason = "recovery — no deployments during biomeGate recovery (Wave 71)"
 
 [hardware]
 cpu = "AMD Threadripper 3970X"

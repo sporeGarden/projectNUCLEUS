@@ -46,6 +46,13 @@ jobs:
           cargo clippy -- -D warnings
           cargo test
 
+      - name: nucleus-primals — fmt + clippy + test
+        working-directory: deploy/nucleus-primals
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
+
       - name: nucleus-deploy — fmt + clippy + test
         working-directory: deploy/nucleus-deploy
         run: |

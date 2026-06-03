@@ -43,7 +43,7 @@ fragment = "tower_atomic (portable_anchor)"
 [ports]
 beardog = 9100
 songbird = 9200
-skunkbat = 9300
+skunkbat = 9140
 
 [identity]
 family_name = "irongate-sovereign"

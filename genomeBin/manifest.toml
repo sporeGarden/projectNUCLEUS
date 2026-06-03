@@ -1,0 +1,128 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# genomeBin Packaging Manifest — projectNUCLEUS
+#
+# Maps all 14 primals (from nucleus-primals registry) to their source
+# crates, build targets, and plasmidBin output paths. Used by the
+# harvest script to build, verify, and stage binaries for gate deploys.
+#
+# Primal slugs and default ports are canonical in:
+#   deploy/nucleus-primals/src/lib.rs
+#
+# Wave 71 — initial manifest.
+
+[manifest]
+version = "0.1.0"
+registry_crate = "../deploy/nucleus-primals"
+output_dir = "stage/"
+checksum = "blake3"
+
+# ── Tower Atomic ────────────────────────────────────────────────────
+
+[primals.beardog]
+slug = "beardog"
+crate_path = "primals/bearDog"
+binary = "beardog"
+default_port = 9100
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+[primals.songbird]
+slug = "songbird"
+crate_path = "primals/songBird"
+binary = "songbird"
+default_port = 9200
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+[primals.skunkbat]
+slug = "skunkbat"
+crate_path = "primals/skunkBat"
+binary = "skunkbat"
+default_port = 9140
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+# ── Agent ───────────────────────────────────────────────────────────
+
+[primals.squirrel]
+slug = "squirrel"
+crate_path = "primals/squirrel"
+binary = "squirrel"
+default_port = 9300
+targets = ["x86_64-unknown-linux-gnu"]
+
+# ── Node Compute ────────────────────────────────────────────────────
+
+[primals.toadstool]
+slug = "toadstool"
+crate_path = "primals/toadStool"
+binary = "toadstool"
+default_port = 9400
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.coralreef]
+slug = "coralreef"
+crate_path = "primals/coralReef"
+binary = "coralreef"
+default_port = 9730
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.barracuda]
+slug = "barracuda"
+crate_path = "primals/barraCuda"
+binary = "barracuda"
+default_port = 9740
+targets = ["x86_64-unknown-linux-gnu"]
+
+# ── Nest Provenance ─────────────────────────────────────────────────
+
+[primals.nestgate]
+slug = "nestgate"
+crate_path = "primals/nestGate"
+binary = "nestgate"
+default_port = 9500
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.rhizocrypt]
+slug = "rhizocrypt"
+crate_path = "primals/rhizoCrypt"
+binary = "rhizocrypt"
+default_port = 9601
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.rhizocrypt-rpc]
+slug = "rhizocrypt-rpc"
+crate_path = "primals/rhizoCrypt"
+binary = "rhizocrypt-rpc"
+default_port = 9602
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.loamspine]
+slug = "loamspine"
+crate_path = "primals/loamSpine"
+binary = "loamspine"
+default_port = 9700
+targets = ["x86_64-unknown-linux-gnu"]
+
+[primals.sweetgrass]
+slug = "sweetgrass"
+crate_path = "primals/sweetGrass"
+binary = "sweetgrass"
+default_port = 9850
+targets = ["x86_64-unknown-linux-gnu"]
+
+# ── Meta / Orchestration ────────────────────────────────────────────
+
+[primals.biomeos]
+slug = "biomeos"
+crate_path = "primals/biomeOS"
+binary = "biomeos"
+default_port = 9800
+targets = ["x86_64-unknown-linux-gnu"]
+
+# ── Symbiotic ───────────────────────────────────────────────────────
+
+[primals.petaltongue]
+slug = "petaltongue"
+crate_path = "primals/petalTongue"
+binary = "petaltongue"
+default_port = 9900
+targets = ["x86_64-unknown-linux-gnu"]

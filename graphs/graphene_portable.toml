@@ -42,7 +42,7 @@ start_order = 2
 
 [primals.skunkbat]
 binary = "skunkbat"
-port = 9300
+port = 9140
 health_method = "health.version"
 required = true
 role = "Capability routing + dynamic composition"

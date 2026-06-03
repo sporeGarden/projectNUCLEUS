@@ -74,10 +74,7 @@ pub fn port_for(primal: &str) -> u16 {
 /// Wave 20 canonical response: `{ "primals": [...], "count": N }`
 /// Also accepts legacy raw-array form for backward compat.
 fn try_biomeos_discovery(host: &str) -> Vec<ResolvedPrimal> {
-    let biomeos_port: u16 = std::env::var("BIOMEOS_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .unwrap_or(9800);
+    let biomeos_port = port_for("biomeos");
 
     let payload = r#"{"jsonrpc":"2.0","method":"primal.list","params":{},"id":1}"#;
     let Some(body) = send_jsonrpc_newline(host, biomeos_port, payload, DISCOVERY_TIMEOUT_MS) else {

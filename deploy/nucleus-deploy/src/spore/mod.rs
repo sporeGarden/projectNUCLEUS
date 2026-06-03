@@ -46,7 +46,6 @@ pub struct SporeArgs {
 #[derive(Debug, Deserialize)]
 struct WorkloadToml {
     metadata: WorkloadMetadata,
-    #[allow(dead_code)]
     execution: WorkloadExecution,
 }
 
@@ -57,18 +56,22 @@ struct WorkloadMetadata {
     version: String,
     spring: Option<String>,
     #[serde(default)]
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "deserialized from workload TOML for future tier filtering"
+    )]
     compute_tier: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct WorkloadExecution {
     #[serde(rename = "type")]
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "deserialized from workload TOML for future type dispatch"
+    )]
     exec_type: String,
-    #[allow(dead_code)]
     command: Option<String>,
-    #[allow(dead_code)]
     working_dir: Option<String>,
 }
 

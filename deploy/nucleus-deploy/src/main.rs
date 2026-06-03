@@ -288,7 +288,10 @@ async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                 }
             }
         }
-        _ => unreachable!(),
+        _ => {
+            eprintln!("ERROR: command routed to wrong dispatch function");
+            1
+        }
     }
 }
 
@@ -377,7 +380,10 @@ async fn dispatch_extended(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                 }
             }
         }
-        _ => unreachable!(),
+        _ => {
+            eprintln!("ERROR: command routed to wrong dispatch function");
+            1
+        }
     }
 }
 

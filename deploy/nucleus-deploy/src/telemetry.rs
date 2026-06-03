@@ -191,7 +191,11 @@ async fn probe_external(cfg: &NucleusConfig, csv_path: &Path) {
     )
     .await;
 
-    probe_tcp(csv_path, "rustdesk_hbbs", &vps_ip, 21116).await;
+    let rustdesk_port: u16 = std::env::var("RUSTDESK_HBBS_PORT")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(21116);
+    probe_tcp(csv_path, "rustdesk_hbbs", &vps_ip, rustdesk_port).await;
 
     let btsp_host = std::env::var("BTSP_SHADOW_HOST").unwrap_or_else(|_| "127.0.0.1".into());
     let btsp_port: u16 = std::env::var("BTSP_SHADOW_PORT")

@@ -5,8 +5,15 @@ use std::time::SystemTime;
 
 fn cookie_permissions_acceptable(perms: &str, owner: &str) -> bool {
     let perms_ok = perms == "600" || perms == "400";
-    let owner_ok = owner == "root" || owner == "irongate";
+    let gate_user = std::env::var("DARKFOREST_GATE_USER").unwrap_or_else(|_| whoami());
+    let owner_ok = owner == "root" || owner == gate_user;
     perms_ok && owner_ok
+}
+
+fn whoami() -> String {
+    std::env::var("USER")
+        .or_else(|_| std::env::var("LOGNAME"))
+        .unwrap_or_else(|_| "root".into())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -98,7 +105,12 @@ pub fn cry_01_cookie_entropy(cfg: &CryptoConfig, results: &mut Vec<CheckResult>)
                 &format!("entropy={ent:.2}, length={byte_len}"),
             ));
         }
-        Err(_) => unreachable!(),
+        Err(reason) => {
+            results.push(cb.fail(
+                &format!("Cookie secret check failed: {reason}"),
+                &secret_path,
+            ));
+        }
     }
 }
 

@@ -44,17 +44,22 @@ vps_ip = "157.230.3.183"
 membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 
 [composition]
-atomic = "heavy_nest_atomic"
+atomic = "nest_atomic"
 primals = [
-    "beardog", "songbird",
+    "beardog", "songbird", "skunkbat",
     "nestgate",
+    "rhizocrypt", "loamspine", "sweetgrass",
 ]
-fragment = "heavy_nest_atomic (storage-focused)"
+fragment = "nest_atomic (ZFS cold storage)"
 
 [ports]
 beardog = 9100
 songbird = 9200
+skunkbat = 9140
 nestgate = 9500
+rhizocrypt = 9601
+loamspine = 9700
+sweetgrass = 9850
 
 [identity]
 family_name = "irongate-sovereign"

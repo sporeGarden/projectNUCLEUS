@@ -34,12 +34,12 @@ graph = "../graphs/node_atomic.toml"
 
 [[gates]]
 name = "strandgate"
-atomic = "heavy_node"
+atomic = "heavy_node_atomic"
 config = "../gates/strandgate.toml"
 status = "active"
-primals = 6
-composition = "heavy_node_atomic + dual_vendor_gpu"
-graph = "../graphs/node_atomic.toml"
+primals = 10
+composition = "tower_atomic + node_atomic + nest_atomic (dual_vendor_gpu)"
+graph = "../graphs/strand_heavy_compute.toml"
 
 [[gates]]
 name = "flockgate"
@@ -61,12 +61,12 @@ graph = "../graphs/node_atomic.toml"
 
 [[gates]]
 name = "westgate"
-atomic = "heavy_nest_atomic"
+atomic = "nest_atomic"
 config = "../gates/westgate.toml"
-status = "planned"
-primals = 3
-composition = "heavy_nest_atomic (storage-focused)"
-graph = "../graphs/tower_atomic.toml"
+status = "onboarding"
+primals = 7
+composition = "nest_atomic (ZFS cold storage)"
+graph = "../graphs/west_cold_storage.toml"
 
 [[gates]]
 name = "graphenegate"

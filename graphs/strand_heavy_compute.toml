@@ -1,0 +1,180 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Deploy Graph: strand_heavy_compute — strandGate
+#
+# Dual EPYC 7452 (64 cores, 128 threads), 256 GB ECC RAM.
+# Dual-vendor GPU: RTX 3090 (Ampere SM80) + RX 6950 XT (RDNA 2).
+# BrainChip Akida AKD1000 (PCIe NPU). 18 TB NVMe.
+#
+# Composition: Tower Atomic + Compute Trio + Provenance Trio + NestGate
+# = full compute + storage substrate for science springs.
+#
+# Fragments: tower_atomic, node_atomic, nest_atomic
+# Canonical ports: deploy/nucleus-primals/src/lib.rs
+#
+# Deploy target for pure-software compute builds: all GPU/CPU workloads
+# can be dispatched here via toadStool without hardware-specific setup.
+# barraCuda parity validated across both GPU vendors (SM80 + RDNA 2).
+#
+# Wave 73: gate-specific graph (replaces generic node_atomic.toml ref).
+#
+# Usage:
+#   nucleus-deploy deploy --gate strandgate --graph graphs/strand_heavy_compute.toml
+
+[graph]
+name = "strand_heavy_compute"
+version = "1.0.0"
+gate = "strandgate"
+atomic = "heavy_node_atomic"
+description = "Tower + Compute Trio + Provenance Trio + NestGate — dual EPYC heavy compute"
+coordination = "sequential"
+bonding_default = "btsp_required"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+secure_by_default = true
+transport = "uds_preferred"
+tcp_fallback = "tower_routed"
+composition_model = "nucleated"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+
+[graph.hardware]
+cpu = "Dual AMD EPYC 7452"
+cores = 64
+threads = 128
+ram_gb = 256
+gpu = ["NVIDIA RTX 3090 (24 GB)", "AMD RX 6950 XT (16 GB)"]
+npu = "BrainChip Akida AKD1000"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ── Tower Atomic (order 1–3) ───────────────────────────────────────
+
+[primals.beardog]
+binary = "beardog"
+port = 9100
+health_method = "health.liveness"
+required = true
+role = "BTSP authentication + method gating"
+start_order = 1
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
+
+[primals.songbird]
+binary = "songbird"
+port = 9200
+health_method = "health.liveness"
+required = true
+role = "Mesh discovery + relay"
+depends_on = ["beardog"]
+start_order = 2
+by_capability = "discovery"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce"]
+
+[primals.skunkbat]
+binary = "skunkbat"
+port = 9140
+health_method = "health.liveness"
+required = true
+role = "Reconnaissance + automated defense"
+depends_on = ["beardog"]
+start_order = 3
+by_capability = "defense"
+capabilities = ["defense.audit", "defense.status", "security.audit_log", "recon.scan", "threat.assess"]
+
+# ── Compute Trio (order 4–6) ───────────────────────────────────────
+
+[primals.toadstool]
+binary = "toadstool"
+port = 9400
+health_method = "health.liveness"
+required = true
+role = "Compute dispatch + workload scheduling"
+depends_on = ["beardog", "songbird"]
+start_order = 4
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "compute.status"]
+
+[primals.barracuda]
+binary = "barracuda"
+port = 9740
+health_method = "health.liveness"
+required = true
+role = "GPU/CPU tensor execution (dual-vendor: SM80 + RDNA 2)"
+depends_on = ["beardog", "songbird", "toadstool"]
+start_order = 5
+by_capability = "tensor"
+capabilities = ["tensor.matmul", "tensor.batch.submit", "tensor.create", "stats.mean", "stats.std_dev"]
+
+[primals.coralreef]
+binary = "coralreef"
+port = 9730
+health_method = "health.liveness"
+required = true
+role = "Shader compiler (WGSL → SPIR-V, dual-vendor parity)"
+depends_on = ["beardog", "songbird", "toadstool"]
+start_order = 6
+by_capability = "shader"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities"]
+
+# ── Nest + Provenance Trio (order 7–10) ────────────────────────────
+
+[primals.nestgate]
+binary = "nestgate"
+port = 9500
+health_method = "health.liveness"
+required = true
+role = "Content-addressed storage (NVMe-backed)"
+depends_on = ["beardog", "songbird"]
+start_order = 7
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
+
+[primals.rhizocrypt]
+binary = "rhizocrypt"
+port = 9601
+health_method = "health.liveness"
+required = false
+role = "Ephemeral DAG engine — lineage tracking"
+depends_on = ["beardog"]
+start_order = 8
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.proof"]
+
+[primals.loamspine]
+binary = "loamspine"
+port = 9700
+health_method = "health.liveness"
+required = false
+role = "Permanent ledger — sealed provenance entries"
+depends_on = ["beardog", "rhizocrypt"]
+start_order = 9
+by_capability = "ledger"
+capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "certificate.mint"]
+
+[primals.sweetgrass]
+binary = "sweetgrass"
+port = 9850
+health_method = "health.liveness"
+required = false
+role = "Semantic attribution — braid composition"
+depends_on = ["beardog", "loamspine"]
+start_order = 10
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "braid.get", "anchoring.anchor", "anchoring.verify"]
+
+# ── Science Domains ────────────────────────────────────────────────
+
+[science]
+primary_domains = ["wetSpring", "groundSpring", "neuralSpring"]
+workloads = [
+    "Whole-cell modeling (ABG, wetSpring) — RAM-bound, 64-core",
+    "Metagenomics (Kraken2, MetaPhlAn, assembly)",
+    "barraCuda dual-vendor shader parity (RTX 3090 vs RX 6950 XT)",
+    "groundSpring GEMM validation (large matrix, ECC memory)",
+    "Akida neuromorphic inference (toadStool dispatch)",
+]

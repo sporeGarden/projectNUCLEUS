@@ -44,19 +44,24 @@ membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
 [composition]
 atomic = "heavy_node_atomic"
 primals = [
-    "beardog", "songbird",
+    "beardog", "songbird", "skunkbat",
     "toadstool", "barracuda", "coralreef",
     "nestgate",
+    "rhizocrypt", "loamspine", "sweetgrass",
 ]
-fragment = "heavy_node_atomic + dual_vendor_gpu"
+fragment = "tower_atomic + node_atomic + nest_atomic (dual_vendor_gpu)"
 
 [ports]
 beardog = 9100
 songbird = 9200
+skunkbat = 9140
 toadstool = 9400
 nestgate = 9500
+rhizocrypt = 9601
+loamspine = 9700
 barracuda = 9740
 coralreef = 9730
+sweetgrass = 9850
 
 [identity]
 family_name = "irongate-sovereign"

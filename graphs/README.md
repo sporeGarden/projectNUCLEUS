@@ -4,7 +4,7 @@ Curated subset of primalSpring/graphs/ for projectNUCLEUS deployment.
 The canonical source for all 77+ graphs remains in primalSpring.
 
 **Dark Forest compliance (2026-06-02):**
-- All 14/14 graphs carry `secure_by_default = true` (fragments + deploy + workflow) (DF-4 requirement)
+- All 16/16 graphs carry `secure_by_default = true` (fragments + deploy + workflow) (DF-4 requirement)
 - No non-Songbird nodes advertise `http` or `tls` capabilities (DF-3)
 - All nodes declare `security_model = "btsp"` or `"tower_delegated"` (DF-4)
 - UDS-only default transport, TCP fallback opt-in via `PRIMALSPRING_TCP_TIER5` (DF-2)

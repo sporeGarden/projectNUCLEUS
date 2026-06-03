@@ -9,7 +9,13 @@
 # Primal slugs and default ports are canonical in:
 #   deploy/nucleus-primals/src/lib.rs
 #
-# Wave 71 — initial manifest.
+# Wave 72 — validated via harvest --dry-run (14/14 PASS).
+#
+# crate_path: workspace root (cargo build from workspace).
+# build_package: -p flag for workspace builds (omit if binary name
+#   matches the default workspace binary).
+# Note: rhizocrypt-rpc is the same binary as rhizocrypt, listening
+#   on a second port. No separate build needed.
 
 [manifest]
 version = "0.1.0"
@@ -36,6 +42,7 @@ targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
 [primals.skunkbat]
 slug = "skunkbat"
 crate_path = "primals/skunkBat"
+build_package = "skunk-bat-server"
 binary = "skunkbat"
 default_port = 9140
 targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
@@ -45,6 +52,7 @@ targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
 [primals.squirrel]
 slug = "squirrel"
 crate_path = "primals/squirrel"
+build_package = "squirrel"
 binary = "squirrel"
 default_port = 9300
 targets = ["x86_64-unknown-linux-gnu"]
@@ -54,6 +62,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.toadstool]
 slug = "toadstool"
 crate_path = "primals/toadStool"
+build_package = "toadstool-cli"
 binary = "toadstool"
 default_port = 9400
 targets = ["x86_64-unknown-linux-gnu"]
@@ -61,6 +70,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.coralreef]
 slug = "coralreef"
 crate_path = "primals/coralReef"
+build_package = "coralreef-core"
 binary = "coralreef"
 default_port = 9730
 targets = ["x86_64-unknown-linux-gnu"]
@@ -68,6 +78,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.barracuda]
 slug = "barracuda"
 crate_path = "primals/barraCuda"
+build_package = "barracuda-core"
 binary = "barracuda"
 default_port = 9740
 targets = ["x86_64-unknown-linux-gnu"]
@@ -84,6 +95,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.rhizocrypt]
 slug = "rhizocrypt"
 crate_path = "primals/rhizoCrypt"
+build_package = "rhizocrypt-service"
 binary = "rhizocrypt"
 default_port = 9601
 targets = ["x86_64-unknown-linux-gnu"]
@@ -91,13 +103,16 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.rhizocrypt-rpc]
 slug = "rhizocrypt-rpc"
 crate_path = "primals/rhizoCrypt"
-binary = "rhizocrypt-rpc"
+build_package = "rhizocrypt-service"
+binary = "rhizocrypt"
+alias = true # same binary as rhizocrypt, second port (:9602)
 default_port = 9602
 targets = ["x86_64-unknown-linux-gnu"]
 
 [primals.loamspine]
 slug = "loamspine"
 crate_path = "primals/loamSpine"
+build_package = "loamspine-service"
 binary = "loamspine"
 default_port = 9700
 targets = ["x86_64-unknown-linux-gnu"]
@@ -105,6 +120,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 [primals.sweetgrass]
 slug = "sweetgrass"
 crate_path = "primals/sweetGrass"
+build_package = "sweet-grass-service"
 binary = "sweetgrass"
 default_port = 9850
 targets = ["x86_64-unknown-linux-gnu"]

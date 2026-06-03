@@ -11,7 +11,7 @@
 # All values are overridable via environment variables.
 #
 # Wave 56 standard: VPS deployments use --uds-only (zero TCP ports).
-# TCP ports below are retained for desktop/debug use. Use deploy.sh --uds-only
+# TCP ports below are retained for desktop/debug use. Use nucleus-deploy --uds-only
 # or nucleus_launcher --uds-only for production VPS deployments.
 
 # --- Paths ---

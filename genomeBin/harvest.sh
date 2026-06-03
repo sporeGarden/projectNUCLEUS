@@ -56,13 +56,26 @@ SKIP=0
 SLUGS=$(grep '^\[primals\.' "$MANIFEST" | sed 's/\[primals\.\(.*\)\]/\1/')
 
 for slug in $SLUGS; do
-    crate_path=$(grep -A5 "^\[primals\.$slug\]" "$MANIFEST" | grep 'crate_path' | head -1 | sed 's/.*= *"\(.*\)"/\1/')
-    binary=$(grep -A5 "^\[primals\.$slug\]" "$MANIFEST" | grep '^binary' | head -1 | sed 's/.*= *"\(.*\)"/\1/')
-    targets_line=$(grep -A10 "^\[primals\.$slug\]" "$MANIFEST" | grep 'targets' | head -1)
+    section=$(sed -n "/^\[primals\.$slug\]/,/^\[primals\./p" "$MANIFEST" | sed '${ /^\[primals\./d }')
+    # For the last section (no following [primals.]), grab to EOF
+    if [[ -z "$section" ]]; then
+        section=$(sed -n "/^\[primals\.$slug\]/,\$p" "$MANIFEST")
+    fi
+    crate_path=$(echo "$section" | grep 'crate_path' | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    binary=$(echo "$section" | grep '^binary' | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    build_pkg=$(echo "$section" | { grep 'build_package' || true; } | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    is_alias=$(echo "$section" | { grep 'alias.*=.*true' || true; } | head -1)
+    targets_line=$(echo "$section" | grep 'targets' | head -1)
 
     if ! echo "$targets_line" | grep -q "$TARGET"; then
         log "SKIP $slug — $TARGET not in target list"
         SKIP=$((SKIP + 1))
+        continue
+    fi
+
+    if [[ -n "$is_alias" ]]; then
+        log "SKIP $slug — alias of $binary (same binary, second port)"
+        PASS=$((PASS + 1))
         continue
     fi
 
@@ -73,16 +86,21 @@ for slug in $SLUGS; do
         continue
     fi
 
-    log "Building $slug ($binary) from $crate_path ..."
+    PKG_FLAG=""
+    if [[ -n "$build_pkg" ]]; then
+        PKG_FLAG="-p $build_pkg"
+    fi
+
+    log "Building $slug ($binary) from $crate_path ${PKG_FLAG:+[$PKG_FLAG]} ..."
 
     if $DRY_RUN; then
-        log "  [dry-run] cargo build --release --target $TARGET"
+        log "  [dry-run] cargo build --release --target $TARGET $PKG_FLAG"
         log "  [dry-run] cp target/$TARGET/release/$binary → $OUTDIR/$binary"
         PASS=$((PASS + 1))
         continue
     fi
 
-    if (cd "$CRATE_DIR" && cargo build --release --target "$TARGET" 2>&1); then
+    if (cd "$CRATE_DIR" && cargo build --release --target "$TARGET" $PKG_FLAG 2>&1); then
         BIN_PATH="$CRATE_DIR/target/$TARGET/release/$binary"
         if [[ -f "$BIN_PATH" ]]; then
             cp "$BIN_PATH" "$OUTDIR/$binary"

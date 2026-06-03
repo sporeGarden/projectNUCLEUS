@@ -1,7 +1,7 @@
 # Gate Manifest — projectNUCLEUS
 #
 # Maps gates to their atomic compositions and roles.
-# deploy.sh reads this to determine what to start on each gate.
+# nucleus-deploy reads this to determine what to start on each gate.
 #
 # Add a gate: create a gates/<name>.toml and add an entry here.
 # All 8 gates in the ironGate sovereign cluster are listed.
@@ -14,7 +14,7 @@ wire_standard = "L3"
 
 [[gates]]
 name = "irongate"
-atomic = "nest+node"
+atomic = "nest+toadstool"
 config = "../gates/irongate.toml"
 status = "active"
 primals = 9
@@ -43,29 +43,29 @@ graph = "../graphs/node_atomic.toml"
 
 [[gates]]
 name = "flockgate"
-atomic = "nest"
+atomic = "node_atomic"
 config = "../gates/flockgate.toml"
 status = "active"
 primals = 5
-composition = "nest_atomic"
-graph = "../graphs/nest_atomic.toml"
+composition = "node_atomic_compute"
+graph = "../graphs/node_atomic.toml"
 
 [[gates]]
 name = "northgate"
-atomic = "tower"
+atomic = "node_atomic"
 config = "../gates/northgate.toml"
 status = "active"
-primals = 3
-composition = "tower_atomic"
-graph = "../graphs/tower_atomic.toml"
+primals = 5
+composition = "node_atomic_compute"
+graph = "../graphs/node_atomic.toml"
 
 [[gates]]
 name = "westgate"
-atomic = "tower"
+atomic = "heavy_nest_atomic"
 config = "../gates/westgate.toml"
 status = "planned"
 primals = 3
-composition = "tower_atomic"
+composition = "heavy_nest_atomic (storage-focused)"
 graph = "../graphs/tower_atomic.toml"
 
 [[gates]]
@@ -83,4 +83,6 @@ name = "nuc-intake"
 atomic = "tower"
 config = "../gates/nuc-intake.toml"
 status = "planned"
-primals = 3
+primals = 2
+composition = "tower_atomic"
+graph = "../graphs/tower_atomic.toml"

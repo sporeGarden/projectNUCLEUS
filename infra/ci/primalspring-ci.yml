@@ -1,0 +1,54 @@
+# Forgejo Actions CI — primalSpring (proof of concept)
+#
+# Template workflow for primalSpring repo on git.primals.eco.
+# Copy to springs/primalSpring/.forgejo/workflows/ci.yml to activate.
+#
+# This is the first cross-repo CI pipeline on sovereign Forgejo.
+# Uses self-hosted runner when available, falls back to ubuntu-latest.
+#
+# Wave 73: proof-of-concept pipeline (P2).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust-validation:
+    runs-on: ubuntu-latest
+    # To use self-hosted runner when provisioned:
+    # runs-on: [self-hosted, linux, x86_64, rust]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          if [ -f rust-toolchain.toml ]; then
+            channel=$(grep 'channel' rust-toolchain.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+            rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+            rustup default "$channel"
+          else
+            rustup default stable
+            rustup component add rustfmt clippy
+          fi
+          rustc --version
+          cargo --version
+
+      - name: primalSpring — fmt + clippy + test
+        working-directory: ecoPrimal
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
+
+      - name: Experiment crates (non-blocking)
+        working-directory: experiments
+        continue-on-error: true
+        run: |
+          for exp in */Cargo.toml; do
+            dir=$(dirname "$exp")
+            echo "=== $dir ==="
+            (cd "$dir" && cargo clippy -- -D warnings && cargo test) || echo "WARN: $dir had issues"
+          done

@@ -31,6 +31,8 @@ The canonical source for all 77+ graphs remains in primalSpring.
 | `node_atomic_compute.toml` | biomeOS + Node Atomic (v2.0.0) | Phase 1 |
 | `nucleus_complete.toml` | Full NUCLEUS with bonding policy (v2.0.0) | Phase 4 |
 | `graphene_portable.toml` | Tower Atomic for `portable_anchor` gates (v0.1.0) | Wave 69 |
+| `strand_heavy_compute.toml` | Tower + Compute + Nest + Provenance — dual EPYC (v1.0.0) | Wave 73 |
+| `west_cold_storage.toml` | Nest Atomic — 76 TB ZFS cold archive (v1.0.0) | Wave 73 |
 
 ## Bonding Patterns
 

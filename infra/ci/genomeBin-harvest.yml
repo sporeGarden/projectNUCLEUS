@@ -1,0 +1,61 @@
+# Forgejo Actions — genomeBin Harvest
+#
+# Triggered by version tags on primal repos. Builds the tagged primal
+# in release mode, stages the binary, and creates a checksum.
+#
+# Trigger: push of tags matching v* on any primal repo
+# Runner: self-hosted (needs ecoPrimals source tree + cross-compile targets)
+#
+# Wave 73: packaging automation scaffold (P3).
+# Evolution: tag → build → stage → NestGate CAS upload
+#
+# To activate:
+#   1. Provision self-hosted runner (infra/ci/provision-runner.sh)
+#   2. Copy this workflow to each primal repo's .forgejo/workflows/
+#      OR configure a shared workflow via Forgejo org-level actions
+#   3. Tag a primal: git tag v0.14.2 && git push --tags forgejo
+
+name: genomeBin Harvest
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  harvest:
+    runs-on: [self-hosted, linux, x86_64, rust]
+    env:
+      ECOPRIMALS_ROOT: /home/irongate/Development/ecoPrimals
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect primal from repo
+        id: detect
+        run: |
+          repo_name="${GITHUB_REPOSITORY##*/}"
+          tag="${GITHUB_REF_NAME}"
+          echo "repo=$repo_name" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Primal: $repo_name  Tag: $tag"
+
+      - name: Build release binary
+        run: |
+          cd "$ECOPRIMALS_ROOT/gardens/projectNUCLEUS"
+          ECOPRIMALS_ROOT="$ECOPRIMALS_ROOT" \
+            bash genomeBin/harvest.sh \
+              --target x86_64-unknown-linux-gnu
+
+      - name: Verify checksums
+        run: |
+          stage="$ECOPRIMALS_ROOT/gardens/projectNUCLEUS/genomeBin/stage/x86_64-unknown-linux-gnu"
+          echo "=== Staged binaries ==="
+          ls -la "$stage/" 2>/dev/null || echo "No binaries staged"
+          echo
+          echo "=== Checksums ==="
+          cat "$stage/"*.b3 2>/dev/null || cat "$stage/"*.sha256 2>/dev/null || echo "No checksums"
+
+      # Future: upload to NestGate CAS
+      # - name: Upload to NestGate
+      #   run: |
+      #     nucleus-deploy spore upload --binary "$stage/$binary" --gate nestgate

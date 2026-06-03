@@ -107,9 +107,21 @@ shadow `notify-sporeprint.yml` workflow. No Forgejo secrets configured.
 | genomeBin harvest validation | Low | Needs ecoPrimals source tree |
 | `notify-sporeprint` on Forgejo | Medium | Webhook setup on VPS |
 
+## Implementation (Wave 73)
+
+Runner provisioning script: `infra/ci/provision-runner.sh`
+- Downloads forgejo-runner, registers with git.primals.eco
+- Creates systemd user service for always-on operation
+- Labels: `self-hosted, linux, x86_64, rust`
+
+Proof-of-concept workflow: `infra/ci/primalspring-ci.yml`
+- Template for primalSpring (first cross-repo Forgejo CI)
+- Copy to `springs/primalSpring/.forgejo/workflows/ci.yml` to activate
+
 ## Evolution Path
 
 1. **Now**: Forgejo Actions primary, 4 crates, 242 tests
-2. **Next**: Add `cargo deny` step, port sporePrint notification to webhook
-3. **Future**: Self-hosted runner for release signing + genomeBin harvest
-4. **Stadial**: bearDog BTSP-mediated secrets, NestGate artifact storage
+2. **Next**: Provision runner on ironGate, activate primalSpring CI
+3. **Then**: Add `cargo deny` step, port sporePrint notification to webhook
+4. **Future**: Self-hosted runner for release signing + genomeBin harvest
+5. **Stadial**: bearDog BTSP-mediated secrets, NestGate artifact storage

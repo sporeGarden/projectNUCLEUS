@@ -114,9 +114,13 @@ Runner provisioning script: `infra/ci/provision-runner.sh`
 - Creates systemd user service for always-on operation
 - Labels: `self-hosted, linux, x86_64, rust`
 
-Proof-of-concept workflow: `infra/ci/primalspring-ci.yml`
-- Template for primalSpring (first cross-repo Forgejo CI)
-- Copy to `springs/primalSpring/.forgejo/workflows/ci.yml` to activate
+Activation runbook: `infra/ci/ACTIVATION.md`
+- Step-by-step runner registration, testing, and expansion guide
+
+Deployed workflows (Wave 74):
+- projectNUCLEUS: `.forgejo/workflows/ci.yml` — **ACTIVE** since Wave 69
+- primalSpring: `.forgejo/workflows/ci.yml` — **DEPLOYED** Wave 74
+- bearDog: `.forgejo/workflows/ci.yml` — **DEPLOYED** Wave 74
 
 ## Evolution Path
 

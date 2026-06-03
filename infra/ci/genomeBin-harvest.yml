@@ -55,7 +55,18 @@ jobs:
           echo "=== Checksums ==="
           cat "$stage/"*.b3 2>/dev/null || cat "$stage/"*.sha256 2>/dev/null || echo "No checksums"
 
-      # Future: upload to NestGate CAS
-      # - name: Upload to NestGate
-      #   run: |
-      #     nucleus-deploy spore upload --binary "$stage/$binary" --gate nestgate
+      - name: Upload to NestGate CAS
+        if: ${{ env.NESTGATE_SOCKET != '' }}
+        env:
+          NESTGATE_SOCKET: /run/user/1000/biomeos/nestgate.sock
+        run: |
+          cd "$ECOPRIMALS_ROOT/gardens/projectNUCLEUS"
+          bash genomeBin/cas-upload.sh --target x86_64-unknown-linux-gnu
+
+      - name: Archive CAS manifest
+        if: always()
+        uses: forgejo/upload-artifact@v4
+        with:
+          name: cas-manifest
+          path: genomeBin/stage/cas-manifest.toml
+          if-no-files-found: ignore

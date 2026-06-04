@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 74 (2026-06-03)** — Forgejo CI expanded to 3 repos (projectNUCLEUS, primalSpring, bearDog). Self-hosted runner provisioning script + activation runbook. genomeBin CAS upload to NestGate via `storage.store_blob` (BLAKE3-addressed, cas-manifest.toml). Deploy graphs created for strandGate (10 primals, heavy compute) and westGate (7 primals, 76 TB ZFS cold storage). `plasmidbin launch` auto-creates capability symlinks (security/discovery/orchestration.sock). Deep debt: VPS IP hardcoding eliminated (env-only), deploy compositions centralized in `nucleus_primals::COMP_*`, spring_map deduplicated. Gate manifest synced to actual gate TOMLs. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 76 (2026-06-03)** — Deep debt sweep across ecosystem. Observer port and content URL hardcoding evolved to env-var driven. Deploy graph trust validation (gate TOML cross-check). `primalspring` added to registry (15 primals). `COMP_TOWER` expanded (beardog + songbird + skunkbat). All gate TOMLs aligned. Forgejo CI on 3 repos. genomeBin CAS upload. strandGate/westGate deploy graphs complete. plasmidBin: `Result<_, String>` evolved to `thiserror` across types crate, helpers deduplicated. cellMembrane: doc contradiction fixed, admin fallback evolved. esotericWebb: gate identity evolved to env-driven. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

@@ -254,6 +254,7 @@ fn print_summary(args: &ProvisionArgs, hostname: &str, mode_str: &str) {
 
 fn observer_service(home: &str, bind: &str) -> String {
     let user = std::env::var("USER").unwrap_or_else(|_| "nobody".into());
+    let port = std::env::var("OBSERVER_PORT").unwrap_or_else(|_| "8866".into());
     format!(
         r"[Unit]
 Description=observer-static — gate static surface
@@ -263,7 +264,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User={user}
-ExecStart={home}/.local/bin/observer-static --bind {bind}:8866
+ExecStart={home}/.local/bin/observer-static --bind {bind}:{port}
 Restart=always
 RestartSec=5
 TimeoutStopSec=10
@@ -388,7 +389,7 @@ mod tests {
     fn observer_service_template() {
         let unit = observer_service("/home/test", "127.0.0.1");
         assert!(unit.contains("observer-static"));
-        assert!(unit.contains("127.0.0.1:8866"));
+        assert!(unit.contains("127.0.0.1:"));
         assert!(unit.contains("EnvironmentFile=/etc/projectnucleus/gate.env"));
     }
 

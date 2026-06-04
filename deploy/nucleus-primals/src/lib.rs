@@ -127,25 +127,44 @@ pub const COMP_TOWER: &[&str] = &["beardog", "songbird", "skunkbat"];
 
 /// Node Atomic (proton): tower + compute trio + defense.
 pub const COMP_NODE: &[&str] = &[
-    "beardog", "songbird", "toadstool", "barracuda", "coralreef", "skunkbat",
+    "beardog",
+    "songbird",
+    "toadstool",
+    "barracuda",
+    "coralreef",
+    "skunkbat",
 ];
 
 /// Nest Atomic (neutron): tower + storage + provenance trio + defense.
 pub const COMP_NEST: &[&str] = &[
-    "beardog", "songbird", "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "beardog",
+    "songbird",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
     "skunkbat",
 ];
 
 /// Agent composition: tower + defense + orchestration + agent.
-pub const COMP_AGENT: &[&str] = &[
-    "beardog", "songbird", "skunkbat", "biomeos", "squirrel",
-];
+pub const COMP_AGENT: &[&str] = &["beardog", "songbird", "skunkbat", "biomeos", "squirrel"];
 
 /// Full NUCLEUS: all 14 domain primals (excludes rhizocrypt-rpc alias).
 pub const COMP_FULL: &[&str] = &[
-    "beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate",
-    "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "skunkbat", "biomeos",
-    "petaltongue", "primalspring",
+    "beardog",
+    "songbird",
+    "toadstool",
+    "barracuda",
+    "coralreef",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
+    "squirrel",
+    "skunkbat",
+    "biomeos",
+    "petaltongue",
+    "primalspring",
 ];
 
 #[cfg(test)]
@@ -222,14 +241,21 @@ mod tests {
 
     #[test]
     fn comp_full_has_14_primals() {
-        assert_eq!(COMP_FULL.len(), 14, "COMP_FULL should list all 14 domain primals");
+        assert_eq!(
+            COMP_FULL.len(),
+            14,
+            "COMP_FULL should list all 14 domain primals"
+        );
     }
 
     #[test]
     fn all_comp_slugs_exist_in_registry() {
         for comp in [COMP_TOWER, COMP_NODE, COMP_NEST, COMP_AGENT, COMP_FULL] {
             for slug in comp {
-                assert!(lookup(slug).is_some(), "composition slug '{slug}' not in PRIMALS registry");
+                assert!(
+                    lookup(slug).is_some(),
+                    "composition slug '{slug}' not in PRIMALS registry"
+                );
             }
         }
     }

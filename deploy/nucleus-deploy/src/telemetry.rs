@@ -300,7 +300,9 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
 
     if matches!(vps_check, Ok(ref o) if o.status.success()) {
         probe_http(csv_path, "content_vps_ttfb", &vps_url).await;
-        probe_http(csv_path, "content_github_ttfb", "https://primals.eco/").await;
+        let content_url =
+            std::env::var("CONTENT_BASE_URL").unwrap_or_else(|_| "https://primals.eco".into());
+        probe_http(csv_path, "content_github_ttfb", &format!("{content_url}/")).await;
     }
 
     let auth_info = collect_auth_events().await;

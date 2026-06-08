@@ -149,7 +149,8 @@ pub const COMP_NEST: &[&str] = &[
 /// Agent composition: tower + defense + orchestration + agent.
 pub const COMP_AGENT: &[&str] = &["beardog", "songbird", "skunkbat", "biomeos", "squirrel"];
 
-/// Full NUCLEUS: all 14 domain primals (excludes rhizocrypt-rpc alias).
+/// Full NUCLEUS: all 13 deployable primals (excludes rhizocrypt-rpc alias
+/// and primalspring which is a validation spring, not a deployable primal).
 pub const COMP_FULL: &[&str] = &[
     "beardog",
     "songbird",
@@ -164,7 +165,6 @@ pub const COMP_FULL: &[&str] = &[
     "skunkbat",
     "biomeos",
     "petaltongue",
-    "primalspring",
 ];
 
 #[cfg(test)]
@@ -240,11 +240,11 @@ mod tests {
     }
 
     #[test]
-    fn comp_full_has_14_primals() {
+    fn comp_full_has_13_primals() {
         assert_eq!(
             COMP_FULL.len(),
-            14,
-            "COMP_FULL should list all 14 domain primals"
+            13,
+            "COMP_FULL should list all 13 deployable primals"
         );
     }
 

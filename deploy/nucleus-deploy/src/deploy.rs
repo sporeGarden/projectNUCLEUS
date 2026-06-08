@@ -516,6 +516,14 @@ fn configure_primal_cmd(
                 ]);
             }
         }
+        "biomeos" => {
+            let port = port_for(cfg.port_for("biomeos"));
+            eprintln!("  Starting biomeos (TCP {port})...");
+            cmd.arg("neural-api");
+            if port > 0 {
+                cmd.args(["--port", &port.to_string()]);
+            }
+        }
         _ => {
             let port = port_for_name(cfg, name);
             let p = port_for(port);
@@ -637,12 +645,11 @@ mod tests {
     }
 
     #[test]
-    fn full_has_all_14_primals() {
+    fn full_has_all_13_primals() {
         let p = primals_for_composition(Composition::Full);
-        assert_eq!(p.len(), 14);
+        assert_eq!(p.len(), 13);
         assert!(p.contains(&"beardog"));
         assert!(p.contains(&"petaltongue"));
-        assert!(p.contains(&"primalspring"));
     }
 
     #[test]

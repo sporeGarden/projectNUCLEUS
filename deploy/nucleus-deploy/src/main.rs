@@ -88,6 +88,10 @@ enum Commands {
         #[arg(long)]
         uds_only: bool,
 
+        /// Delegate to biomeOS graph.deploy instead of direct process spawning
+        #[arg(long)]
+        graph_deploy: bool,
+
         /// Stop all running primals
         #[arg(long)]
         stop: bool,
@@ -243,6 +247,7 @@ async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
             gate,
             family_name,
             uds_only,
+            graph_deploy,
             stop,
             status,
         } => {
@@ -256,6 +261,7 @@ async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                     gate,
                     family_name,
                     uds_only,
+                    graph_deploy,
                 }
             };
             match deploy::run(cfg, &action).await {

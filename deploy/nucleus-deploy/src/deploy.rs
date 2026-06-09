@@ -46,6 +46,7 @@ pub enum DeployAction {
         gate: Option<String>,
         family_name: Option<String>,
         uds_only: bool,
+        graph_deploy: bool,
     },
     Stop,
     Status,
@@ -81,17 +82,208 @@ pub async fn run(cfg: &NucleusConfig, action: &DeployAction) -> Result<(), Deplo
             gate,
             family_name,
             uds_only,
+            graph_deploy,
         } => {
-            start_composition(
-                cfg,
-                *composition,
-                gate.as_deref(),
-                family_name.as_deref(),
-                *uds_only,
-            )
-            .await
+            if *graph_deploy {
+                graph_deploy_via_biomeos(
+                    cfg,
+                    *composition,
+                    gate.as_deref(),
+                )
+                .await
+            } else {
+                start_composition(
+                    cfg,
+                    *composition,
+                    gate.as_deref(),
+                    family_name.as_deref(),
+                    *uds_only,
+                )
+                .await
+            }
         }
     }
+}
+
+// ── Graph Deploy (biomeOS orchestrated) ──────────────────────────────────
+
+async fn graph_deploy_via_biomeos(
+    cfg: &NucleusConfig,
+    composition: Composition,
+    gate: Option<&str>,
+) -> Result<(), DeployError> {
+    let graph_file = graph_for_composition(&cfg.project_root, composition);
+    let graph_id = graph_file
+        .file_stem()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| composition.to_string());
+    let hostname = hostname().await;
+    let gate_name = gate.unwrap_or(&hostname);
+
+    eprintln!();
+    eprintln!("╔══════════════════════════════════════════════╗");
+    eprintln!("║  projectNUCLEUS — Graph Deploy via biomeOS");
+    eprintln!("╚══════════════════════════════════════════════╝");
+    eprintln!();
+    eprintln!("  Gate:        {gate_name}");
+    eprintln!("  Graph:       {}", graph_file.display());
+    eprintln!("  Graph ID:    {graph_id}");
+    eprintln!();
+
+    let runtime_dir = &cfg.runtime_dir;
+    let biomeos_dir = runtime_dir.join("biomeos");
+    let neural_sock = biomeos_dir.join("neural-api-default.sock");
+
+    if !neural_sock.exists() {
+        eprintln!("ERROR: biomeOS neural-api socket not found at {}", neural_sock.display());
+        eprintln!("  biomeOS must be running for --graph-deploy.");
+        eprintln!("  Start with: nucleus-deploy deploy --composition agent");
+        eprintln!("  Then retry: nucleus-deploy deploy --composition full --graph-deploy");
+        return Err(DeployError::Io(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "biomeOS neural-api socket not found",
+        )));
+    }
+
+    eprintln!("=== Phase 1: Probe biomeOS ===");
+    let probe = jsonrpc_uds(
+        &neural_sock,
+        "health.liveness",
+        serde_json::json!({}),
+    ).await;
+
+    match &probe {
+        Ok(resp) => eprintln!("  biomeOS alive: {resp}"),
+        Err(e) => {
+            eprintln!("  biomeOS unreachable: {e}");
+            return Err(DeployError::Io(std::io::Error::new(
+                std::io::ErrorKind::ConnectionRefused,
+                format!("biomeOS unreachable: {e}"),
+            )));
+        }
+    }
+
+    let graph_content = if graph_file.exists() {
+        std::fs::read_to_string(&graph_file).ok()
+    } else {
+        None
+    };
+
+    let primals = primals_for_composition(composition);
+    eprintln!();
+    eprintln!("=== Phase 2: Deploy graph via composition.deploy ===");
+    let mut params = serde_json::json!({
+        "graph_id": graph_id,
+        "graph_path": graph_file.to_string_lossy(),
+        "gate": gate_name,
+        "primals": primals,
+    });
+    if let Some(content) = &graph_content {
+        params["graph_content"] = serde_json::Value::String(content.clone());
+    }
+    let deploy_result = jsonrpc_uds(
+        &neural_sock,
+        "composition.deploy",
+        params,
+    ).await;
+
+    match &deploy_result {
+        Ok(resp) if resp.contains("\"error\"") => {
+            eprintln!("  composition.deploy returned error: {resp}");
+            eprintln!();
+            if resp.contains("capability token") || resp.contains("Permission denied") {
+                eprintln!("  AUTH GATE: biomeOS requires a BTSP capability token.");
+                eprintln!("  Use direct deploy (without --graph-deploy) until auth is integrated.");
+                return Err(DeployError::Io(std::io::Error::new(
+                    std::io::ErrorKind::PermissionDenied,
+                    "composition.deploy requires capability token",
+                )));
+            } else if resp.contains("not found") || resp.contains("Not found") {
+                eprintln!("  GRAPH RESOLUTION: biomeOS cannot find the graph.");
+                eprintln!("  Ensure graph definitions exist in the biomeOS graph directory.");
+                return Err(DeployError::Io(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    format!("graph '{graph_id}' not found by biomeOS"),
+                )));
+            } else {
+                eprintln!("  biomeOS returned an unexpected error.");
+                return Err(DeployError::Io(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    format!("composition.deploy error: {resp}"),
+                )));
+            }
+        }
+        Ok(resp) => {
+            eprintln!("  composition.deploy result: {resp}");
+
+            let execution_id = serde_json::from_str::<serde_json::Value>(resp)
+                .ok()
+                .and_then(|v| v["result"]["execution_id"].as_str().map(String::from));
+
+            eprintln!();
+            eprintln!("=== Phase 3: Verify via graph.status ===");
+            let status_params = match &execution_id {
+                Some(eid) => serde_json::json!({ "graph_id": graph_id, "execution_id": eid }),
+                None => serde_json::json!({ "graph_id": graph_id }),
+            };
+            let status = jsonrpc_uds(&neural_sock, "graph.status", status_params).await;
+            match &status {
+                Ok(s) => eprintln!("  graph.status: {s}"),
+                Err(e) => eprintln!("  graph.status unavailable: {e}"),
+            }
+        }
+        Err(e) => {
+            eprintln!("  composition.deploy failed: {e}");
+            eprintln!("  Falling back to direct process launch...");
+            eprintln!();
+            return Err(DeployError::Io(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("composition.deploy failed: {e}"),
+            )));
+        }
+    }
+
+    eprintln!();
+    eprintln!("╔══════════════════════════════════════════════╗");
+    eprintln!("║  Graph deploy complete via biomeOS           ║");
+    eprintln!("╚══════════════════════════════════════════════╝");
+
+    Ok(())
+}
+
+async fn jsonrpc_uds(
+    sock_path: &Path,
+    method: &str,
+    params: serde_json::Value,
+) -> Result<String, String> {
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tokio::net::UnixStream;
+
+    let mut stream = UnixStream::connect(sock_path)
+        .await
+        .map_err(|e| format!("connect: {e}"))?;
+
+    let request = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    });
+    let payload = serde_json::to_vec(&request).map_err(|e| format!("serialize: {e}"))?;
+
+    stream
+        .write_all(&payload)
+        .await
+        .map_err(|e| format!("write: {e}"))?;
+    stream.shutdown().await.map_err(|e| format!("shutdown: {e}"))?;
+
+    let mut buf = Vec::new();
+    stream
+        .read_to_end(&mut buf)
+        .await
+        .map_err(|e| format!("read: {e}"))?;
+
+    String::from_utf8(buf).map_err(|e| format!("utf8: {e}"))
 }
 
 // ── Stop ─────────────────────────────────────────────────────────────────

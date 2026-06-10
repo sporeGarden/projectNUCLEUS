@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 76 (2026-06-03)** — Deep debt sweep across ecosystem. Observer port and content URL hardcoding evolved to env-var driven. Deploy graph trust validation (gate TOML cross-check). `primalspring` added to registry (15 primals). `COMP_TOWER` expanded (beardog + songbird + skunkbat). All gate TOMLs aligned. Forgejo CI on 3 repos. genomeBin CAS upload. strandGate/westGate deploy graphs complete. plasmidBin: `Result<_, String>` evolved to `thiserror` across types crate, helpers deduplicated. cellMembrane: doc contradiction fixed, admin fallback evolved. esotericWebb: gate identity evolved to env-driven. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 107 (2026-06-10)** — ZERO P1. S1-S4 GRADUATED. 4-gate mesh collective LIVE. Topology-aware routing SHIPPED. 13/13 primals clean. primalSpring: 897 lib tests, clippy-clean sweep (26+ lints resolved — `is_ok_and`, `map_or_else`, cast safety, pass-by-ref). nucleus-deploy: clippy-clean (`Error::other`, `map_or_else`, `#[expect]`). Known debt updated: skunkBat zero-port-standard RESOLVED, sporePrint cert pipeline tracked. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

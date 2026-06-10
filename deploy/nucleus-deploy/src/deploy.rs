@@ -85,12 +85,7 @@ pub async fn run(cfg: &NucleusConfig, action: &DeployAction) -> Result<(), Deplo
             graph_deploy,
         } => {
             if *graph_deploy {
-                graph_deploy_via_biomeos(
-                    cfg,
-                    *composition,
-                    gate.as_deref(),
-                )
-                .await
+                graph_deploy_via_biomeos(cfg, *composition, gate.as_deref()).await
             } else {
                 start_composition(
                     cfg,
@@ -107,16 +102,20 @@ pub async fn run(cfg: &NucleusConfig, action: &DeployAction) -> Result<(), Deplo
 
 // ── Graph Deploy (biomeOS orchestrated) ──────────────────────────────────
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-phase deploy protocol with user-facing diagnostics"
+)]
 async fn graph_deploy_via_biomeos(
     cfg: &NucleusConfig,
     composition: Composition,
     gate: Option<&str>,
 ) -> Result<(), DeployError> {
     let graph_file = graph_for_composition(&cfg.project_root, composition);
-    let graph_id = graph_file
-        .file_stem()
-        .map(|s| s.to_string_lossy().to_string())
-        .unwrap_or_else(|| composition.to_string());
+    let graph_id = graph_file.file_stem().map_or_else(
+        || composition.to_string(),
+        |s| s.to_string_lossy().to_string(),
+    );
     let hostname = hostname().await;
     let gate_name = gate.unwrap_or(&hostname);
 
@@ -135,7 +134,10 @@ async fn graph_deploy_via_biomeos(
     let neural_sock = biomeos_dir.join("neural-api-default.sock");
 
     if !neural_sock.exists() {
-        eprintln!("ERROR: biomeOS neural-api socket not found at {}", neural_sock.display());
+        eprintln!(
+            "ERROR: biomeOS neural-api socket not found at {}",
+            neural_sock.display()
+        );
         eprintln!("  biomeOS must be running for --graph-deploy.");
         eprintln!("  Start with: nucleus-deploy deploy --composition agent");
         eprintln!("  Then retry: nucleus-deploy deploy --composition full --graph-deploy");
@@ -146,11 +148,7 @@ async fn graph_deploy_via_biomeos(
     }
 
     eprintln!("=== Phase 1: Probe biomeOS ===");
-    let probe = jsonrpc_uds(
-        &neural_sock,
-        "health.liveness",
-        serde_json::json!({}),
-    ).await;
+    let probe = jsonrpc_uds(&neural_sock, "health.liveness", serde_json::json!({})).await;
 
     match &probe {
         Ok(resp) => eprintln!("  biomeOS alive: {resp}"),
@@ -181,11 +179,7 @@ async fn graph_deploy_via_biomeos(
     if let Some(content) = &graph_content {
         params["graph_content"] = serde_json::Value::String(content.clone());
     }
-    let deploy_result = jsonrpc_uds(
-        &neural_sock,
-        "composition.deploy",
-        params,
-    ).await;
+    let deploy_result = jsonrpc_uds(&neural_sock, "composition.deploy", params).await;
 
     match &deploy_result {
         Ok(resp) if resp.contains("\"error\"") => {
@@ -205,13 +199,11 @@ async fn graph_deploy_via_biomeos(
                     std::io::ErrorKind::NotFound,
                     format!("graph '{graph_id}' not found by biomeOS"),
                 )));
-            } else {
-                eprintln!("  biomeOS returned an unexpected error.");
-                return Err(DeployError::Io(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!("composition.deploy error: {resp}"),
-                )));
             }
+            eprintln!("  biomeOS returned an unexpected error.");
+            return Err(DeployError::Io(std::io::Error::other(format!(
+                "composition.deploy error: {resp}"
+            ))));
         }
         Ok(resp) => {
             eprintln!("  composition.deploy result: {resp}");
@@ -222,10 +214,10 @@ async fn graph_deploy_via_biomeos(
 
             eprintln!();
             eprintln!("=== Phase 3: Verify via graph.status ===");
-            let status_params = match &execution_id {
-                Some(eid) => serde_json::json!({ "graph_id": graph_id, "execution_id": eid }),
-                None => serde_json::json!({ "graph_id": graph_id }),
-            };
+            let status_params = execution_id.as_ref().map_or_else(
+                || serde_json::json!({ "graph_id": graph_id }),
+                |eid| serde_json::json!({ "graph_id": graph_id, "execution_id": eid }),
+            );
             let status = jsonrpc_uds(&neural_sock, "graph.status", status_params).await;
             match &status {
                 Ok(s) => eprintln!("  graph.status: {s}"),
@@ -236,10 +228,9 @@ async fn graph_deploy_via_biomeos(
             eprintln!("  composition.deploy failed: {e}");
             eprintln!("  Falling back to direct process launch...");
             eprintln!();
-            return Err(DeployError::Io(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("composition.deploy failed: {e}"),
-            )));
+            return Err(DeployError::Io(std::io::Error::other(format!(
+                "composition.deploy failed: {e}"
+            ))));
         }
     }
 
@@ -275,7 +266,10 @@ async fn jsonrpc_uds(
         .write_all(&payload)
         .await
         .map_err(|e| format!("write: {e}"))?;
-    stream.shutdown().await.map_err(|e| format!("shutdown: {e}"))?;
+    stream
+        .shutdown()
+        .await
+        .map_err(|e| format!("shutdown: {e}"))?;
 
     let mut buf = Vec::new();
     stream
@@ -611,6 +605,10 @@ async fn start_primal(ctx: &PrimalContext<'_>, name: &str) {
     sleep(Duration::from_secs(delay)).await;
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "per-primal match dispatch — single logical unit"
+)]
 fn configure_primal_cmd(
     cmd: &mut Command,
     ctx: &PrimalContext<'_>,

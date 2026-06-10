@@ -66,8 +66,7 @@ impl NucleusConfig {
             )),
             runtime_dir: PathBuf::from(env_or(
                 "RUNTIME_DIR",
-                &std::env::var("XDG_RUNTIME_DIR")
-                    .unwrap_or_else(|_| "/tmp/biomeos".to_string()),
+                &std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/tmp/biomeos".to_string()),
             )),
             project_root,
             ecoprimals_root,

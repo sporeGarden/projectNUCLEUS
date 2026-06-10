@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 107 (2026-06-10)** — ZERO P1. S1-S4 GRADUATED. 4-gate mesh collective LIVE. **BM-UDS-01 SHIPPED**: biomeOS Neural API respects `PRIMAL_BIND_MODE=tcp_only` (unblocks grapheneGate 13/13). primalSpring 901 lib tests, clippy-clean. nucleus-deploy clippy-clean. biomeOS 8,000+ tests, clippy-clean (health score `mul_add`, SIGTERM handler evolved, private module import fixed). Known debt: grapheneGate readiness 2 (BM-UDS-01 fix needs aarch64 rebuild), sporePrint cert 2. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 108 (2026-06-10)** — **ZERO P1. ZERO PRIMAL CODE BLOCKERS.** Mountain clear. All 13 primals `PRIMAL_BIND_MODE=tcp_only` adopted. grapheneGate 13/13 structurally ready (rebuild + deploy next). BM-UDS-01, CR-TARPC-01, NG-DOWNCAST-01 all resolved. 4-gate mesh collective LIVE. S1-S4 GRADUATED. primalSpring 901 tests, 55 scenarios. 16 deploy graphs. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

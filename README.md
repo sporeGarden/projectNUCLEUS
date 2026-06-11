@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 109 (2026-06-11)** — **guideStone Deployment Convergence.** Deployment proven across all topologies (LAN, WAN, ARM, VPS). grapheneGate 13/13 alive. 5-gate mesh live. Now converging on guideStone-grade: deterministic, reference-traceable, self-verifying, environment-agnostic, tolerance-documented. `PlatformCapabilities::detect()` shipped (CAPS-01 — positive transport capability model replaces error-based detection). HEALTH-01 response schema formalized (`HealthResponse` in `protocol.rs`). 55 → 56 validation scenarios (new: `health-standard-convergence`). primalSpring 915 tests, zero known debt, zero clippy. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 110 (2026-06-11)** — **Last Mile Health + Gate Expansion.** primalSpring dogfoods own standard: `--bind-mode`/`--port` CLI flags on `primalspring_primal` (STARTUP-PS-01), bare `"health"` method + `uptime_s` tracking (HEALTH-PS-01, HEALTH-01 compliant). Inline tolerance migration: 15 scenario values centralized to `tolerances/mod.rs` (`SCENARIO_TCP_PROBE_TIMEOUT_MS`, `HEALTH_COMPLIANCE_MIN_PCT`, `SCENARIO_DISPATCH_LATENCY_MAX_MS`). Clippy test compliance achieved (`--tests -D warnings` clean). primalSpring 916 tests, zero known debt, zero clippy (lib + test targets). **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

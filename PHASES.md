@@ -1,6 +1,7 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 69 note**: `nucleus-primals` shared registry crate (7 tests) — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
+> **Wave 119 note**: 5-node WireGuard mesh (golgi/sporeGate/pepti/eastGate/flockGate). flockGate 11/13 LIVE. primalSpring 90 scenarios, 971 tests. nucleus-primals 12 tests. `unsafe_code = "forbid"` across all crates.
+> **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
 > with DEPRECATED headers as fossil record. Use `nucleus-deploy security`,

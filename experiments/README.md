@@ -180,9 +180,9 @@ Total               584+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
-cargo fmt clean, graphs synchronized to primalSpring v0.9.30 (Wave 56), `deny.toml`
-on both crates, `secure_by_default` 12/12 deploy graphs. 460 methods registered.
-Deploy tooling `--uds-only` VPS standard (Wave 56).
+cargo fmt clean, graphs synchronized to primalSpring v0.9.32 (Wave 119), `deny.toml`
+on both crates, `secure_by_default` 12/12 deploy graphs. primalSpring: 90 scenarios,
+971 tests. Deploy tooling `--uds-only` VPS standard.
 
 ---
 

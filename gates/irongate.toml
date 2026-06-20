@@ -51,7 +51,7 @@ primals = [
     "toadstool", "barracuda", "coralreef",
     "nestgate",
     "rhizocrypt", "loamspine", "sweetgrass",
-    "squirrel", "petaltongue", "primalspring",
+    "squirrel", "petaltongue", "biomeos",
 ]
 fragment = "nest_atomic + node_atomic_compute"
 
@@ -79,8 +79,8 @@ node_id = "irongate"
 family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 
 [validation]
-date = "2026-05-27"
-rust_unit_tests = 65
+date = "2026-06-20"
+rust_unit_tests = 247
 rust_unit_tests_failed = 0
 darkforest_checks = 267
 darkforest_gate_checks = 33
@@ -93,13 +93,14 @@ provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
 
 [upstream]
-primalspring_wave = 56
-primalspring_version = "v0.9.30"
-methods_registered = 460
+primalspring_wave = 119
+primalspring_version = "v0.9.32"
+primalspring_scenarios = 90
+primalspring_tests = 971
 btsp_phase = 3
 wire_standard = "L3"
 primals_converged = "13/13"
 discovery_tiers = 5
 vps_standard = "uds-only"
 cell_graphs_consumed = true
-absorption_date = "2026-05-27"
+absorption_date = "2026-06-20"

@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 119 (2026-06-20)** — **Convergence & Final Enrollment.** flockGate NUCLEUS 11/13 LIVE (i9-13900K/62GB). Nest provenance end-to-end proven. primalSpring: **87 validation scenarios**, **963 tests** (0 failed). Deep debt: runtime-dir fallback centralized to `platform::biomeos_socket_dir()` (5 files), tolerance round 2 (method counts, WAN health, utilization, depot freshness → `tolerances/validation.rs`), `registry_all_tracks_covered` now tests all 11 tracks. New scenarios: `flockgate-tower-wan` (AtomicComposition, Tower WAN probes) and `provenance-cross-gate` (Sovereignty, cross-gate provenance pipeline). Clippy clean (lib + bin + tests). `unsafe_code = "forbid"`. NC-1 **CODE COMPLETE**.
+**Wave 119 (2026-06-20)** — **Convergence & Final Enrollment.** flockGate NUCLEUS 11/13 LIVE (i9-13900K/62GB). Nest provenance end-to-end proven. primalSpring: **90 validation scenarios**, **971 tests** (0 failed). Deep debt round 2: typed errors (`GraphFailed`/`Training` → structured `Arc<IpcError>`/`#[from]`), hardcoding cleanup (`/home/eastgate` → `$HOME`, gate debt caps centralized), redundant clone elimination, runtime-dir centralization (5 files → `platform::biomeos_socket_dir()`), tolerance round 2 (14 magic numbers → named constants). New scenarios: `flockgate-tower-wan`, `provenance-cross-gate`, `wireguard-mesh`, `multi-gate-nucleus`. All 11 tracks covered. Clippy clean (lib + bin + tests). `unsafe_code = "forbid"`. Docs fossilized. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

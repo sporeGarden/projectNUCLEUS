@@ -4,7 +4,7 @@ Living tracker of remaining gaps across three horizons. Updated as gaps
 close and new ones emerge. Each gap is local — actionable by projectNUCLEUS
 without waiting on upstream unless noted.
 
-**Last updated**: 2026-06-03 (Wave 74 — 460 methods, NC-1 CODE COMPLETE, 247 Rust tests, Forgejo CI 3 repos, 16 deploy graphs, genomeBin CAS upload, composition constants centralized)
+**Last updated**: 2026-06-20 (Wave 119 — NC-1 CODE COMPLETE, 247 Rust tests, 16 deploy graphs, primalSpring 90 scenarios / 971 tests, flockGate 11/13 LIVE, 5-node WireGuard mesh, Nest provenance end-to-end)
 **Validation baseline**: 267 PASS, 0 FAIL, 0 KNOWN_GAP (bash 5-layer) + 33 PASS Dark Forest gate. **247 Rust tests** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12), coverage: darkforest 40.77%, tunnelKeeper 52.67%
 **Rust validator**: darkforest v0.2.1 — 8 modules, `--suite observer` static surface validation
 **Dark Forest Gate**: 5-pillar structural validation PASS (`validation/dark_forest_gate_local.sh`)

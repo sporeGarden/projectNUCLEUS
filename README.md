@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 119 (2026-06-19)** — **Convergence & Final Enrollment.** flockGate NUCLEUS 11/13 LIVE (i9-13900K/62GB). Nest provenance end-to-end proven: RhizoCrypt DAG → LoamSpine ledger → SweetGrass attribution witness. primalSpring: 85 validation scenarios, 959 tests (0 failed), deep debt sweep — 18 `map().unwrap_or()` anti-patterns evolved to idiomatic `is_ok_and()`/`map_or()`, `match_same_arms` merged, Tier::Both test assertions evolved for dev-workstation tolerance. `cascade-drift` known debt tracked. Clippy clean across all targets (lib + bin + tests). `unsafe_code = "forbid"` across all crates. NC-1 **CODE COMPLETE**.
+**Wave 119 (2026-06-20)** — **Convergence & Final Enrollment.** flockGate NUCLEUS 11/13 LIVE (i9-13900K/62GB). Nest provenance end-to-end proven. primalSpring: **87 validation scenarios**, **963 tests** (0 failed). Deep debt: runtime-dir fallback centralized to `platform::biomeos_socket_dir()` (5 files), tolerance round 2 (method counts, WAN health, utilization, depot freshness → `tolerances/validation.rs`), `registry_all_tracks_covered` now tests all 11 tracks. New scenarios: `flockgate-tower-wan` (AtomicComposition, Tower WAN probes) and `provenance-cross-gate` (Sovereignty, cross-gate provenance pipeline). Clippy clean (lib + bin + tests). `unsafe_code = "forbid"`. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

@@ -4,7 +4,7 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-06-02)
+## Current State (2026-06-22)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
 **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.

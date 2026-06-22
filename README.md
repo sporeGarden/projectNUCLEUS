@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 119 (2026-06-20)** — **Convergence & Final Enrollment.** flockGate NUCLEUS 11/13 LIVE (i9-13900K/62GB). Nest provenance end-to-end proven. primalSpring: **90 validation scenarios**, **971 tests** (0 failed). Deep debt round 2: typed errors (`GraphFailed`/`Training` → structured `Arc<IpcError>`/`#[from]`), hardcoding cleanup (`/home/eastgate` → `$HOME`, gate debt caps centralized), redundant clone elimination, runtime-dir centralization (5 files → `platform::biomeos_socket_dir()`), tolerance round 2 (14 magic numbers → named constants). New scenarios: `flockgate-tower-wan`, `provenance-cross-gate`, `wireguard-mesh`, `multi-gate-nucleus`. All 11 tracks covered. Clippy clean (lib + bin + tests). `unsafe_code = "forbid"`. Docs fossilized. NC-1 **CODE COMPLETE**.
+**Wave 123 (2026-06-22)** — **Covalent Trust & Scenario Expansion.** flockGate NUCLEUS 13/13 LIVE (i9-13900K/62GB). ironGate 12/12 (i9-12900K + RTX 5070). Nest provenance end-to-end proven. primalSpring v0.9.33: **98 validation scenarios**, **1017 tests** (0 failed). Deep debt round 3: hardcoded UID-1000 socket fallbacks centralized to `platform::biomeos_socket_dir()`, east-gate bias removed from `live_mesh.rs`, redundant `.clone()` eliminated in BTSP handshake, CI portability (`genomeBin-harvest.yml`). New scenarios: `btsp-cross-gate-verify`, `metallic-bond`, `parallel-graph`. All 11 tracks covered. Clippy clean (lib + bin + tests + 93 experiments). `unsafe_code = "deny"` workspace-wide. Zero `unwrap()`/`expect()` in production lib. Docs aligned to Wave 123. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 

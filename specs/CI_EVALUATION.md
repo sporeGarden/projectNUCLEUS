@@ -1,6 +1,6 @@
 # Forgejo Actions CI Evaluation — projectNUCLEUS
 
-**Wave 72 (2026-06-03)** | Owner: ironGate | Status: ACTIVE
+**Wave 123 (2026-06-22)** | Owner: ironGate | Status: ACTIVE
 
 ## Current State
 
@@ -13,10 +13,10 @@ GitHub Actions retains only `notify-sporeprint.yml` (postprimordial shadow).
 |------|-------|-------|
 | darkforest — fmt + clippy + test | validation/darkforest | 140 |
 | tunnelKeeper — fmt + clippy + test | validation/tunnelKeeper | 48 |
-| nucleus-primals — fmt + clippy + test | deploy/nucleus-primals | 7 |
+| nucleus-primals — fmt + clippy + test | deploy/nucleus-primals | 12 |
 | nucleus-deploy — fmt + clippy + test | deploy/nucleus-deploy | 47 |
 | Shell syntax check | deploy/*.sh | ~10 scripts |
-| **Total Rust tests** | **4 crates** | **242** |
+| **Total Rust tests** | **4 crates** | **247** |
 
 Toolchain: pinned via `rust-toolchain.toml` (channel 1.96.0).
 Runner: `ubuntu-latest` (Forgejo shared runner).
@@ -124,7 +124,7 @@ Deployed workflows (Wave 74):
 
 ## Evolution Path
 
-1. **Now**: Forgejo Actions primary, 4 crates, 242 tests
+1. **Now**: Forgejo Actions primary, 4 crates, 247 tests
 2. **Next**: Provision runner on ironGate, activate primalSpring CI
 3. **Then**: Add `cargo deny` step, port sporePrint notification to webhook
 4. **Future**: Self-hosted runner for release signing + genomeBin harvest

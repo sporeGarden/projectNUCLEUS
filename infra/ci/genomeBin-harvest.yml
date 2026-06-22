@@ -25,10 +25,13 @@ on:
 jobs:
   harvest:
     runs-on: [self-hosted, linux, x86_64, rust]
-    env:
-      ECOPRIMALS_ROOT: /home/irongate/Development/ecoPrimals
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve ecoPrimals root
+        run: |
+          root="${ECOPRIMALS_ROOT:-$HOME/Development/ecoPrimals}"
+          echo "ECOPRIMALS_ROOT=$root" >> "$GITHUB_ENV"
 
       - name: Detect primal from repo
         id: detect
@@ -56,12 +59,15 @@ jobs:
           cat "$stage/"*.b3 2>/dev/null || cat "$stage/"*.sha256 2>/dev/null || echo "No checksums"
 
       - name: Upload to NestGate CAS
-        if: ${{ env.NESTGATE_SOCKET != '' }}
-        env:
-          NESTGATE_SOCKET: /run/user/1000/biomeos/nestgate.sock
         run: |
-          cd "$ECOPRIMALS_ROOT/gardens/projectNUCLEUS"
-          bash genomeBin/cas-upload.sh --target x86_64-unknown-linux-gnu
+          sock="${NESTGATE_SOCKET:-${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/biomeos/nestgate.sock}"
+          if [ -S "$sock" ]; then
+            export NESTGATE_SOCKET="$sock"
+            cd "$ECOPRIMALS_ROOT/gardens/projectNUCLEUS"
+            bash genomeBin/cas-upload.sh --target x86_64-unknown-linux-gnu
+          else
+            echo "NestGate socket not found at $sock — skipping CAS upload"
+          fi
 
       - name: Archive CAS manifest
         if: always()

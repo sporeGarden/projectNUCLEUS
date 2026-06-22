@@ -97,7 +97,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-05-31) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE, provenance trio 10/10 PASS on VPS. biomeOS v3.84 — NC-1 **CODE COMPLETE** (`biomeos-pseudospore` + emit materialization). Live column U gated on VPS deploy. serde-saphyr pure Rust YAML. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-06-22) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE on 3 gates, 5-node WireGuard mesh. primalSpring v0.9.33 — 98 scenarios, 1017 tests. biomeOS v4.31 — 8,351 tests, 88% coverage. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -251,7 +251,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
 - **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
 - **GAP-11 CLOSED**: barraCuda 18/18 methods (71 total JSON-RPC methods)
-- **Registry**: 460 methods across 13 primals (Wave 56, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12, 389 at Phase 60)
+- **Registry**: 460 methods across 13 primals (Wave 56→123, was 458 at Wave 46, 445 at Wave 20, 427 at Wave 12, 389 at Phase 60)
 - **plasmidBin sync gap found**: `git pull` updates checksums but doesn't validate/refresh local binaries. Created `sync.sh` to detect stale binaries via checksum mismatch and re-fetch. Fixed `fetch.sh --force` bug (didn't delete before re-download)
 
 **Phase 60 Revalidation (2026-05-08)**:
@@ -373,7 +373,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 56: 460 methods (v0.9.30, 56 scenarios, 797 lib tests + 16 live-tier). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v3.84 NC-1 CODE COMPLETE (`biomeos-pseudospore` shipped). `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
+- primalSpring at Wave 123: 460 methods (v0.9.33, 98 scenarios, 1017 tests). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v4.31 — 8,351 tests, 88% coverage. `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

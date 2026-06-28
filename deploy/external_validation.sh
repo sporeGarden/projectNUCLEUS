@@ -195,7 +195,7 @@ print(m.group(1) if m else '')
     fi
 else
     check "Provenance manifest exists" "fail"
-    log "       Run: cd deploy && bash provenance_pipeline.sh"
+    log "       Run: nucleus-deploy provenance"
 fi
 
 LATEST_BRAID=""

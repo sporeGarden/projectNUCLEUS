@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 119 note**: 5-node WireGuard mesh (golgi/sporeGate/pepti/eastGate/flockGate). flockGate 11/13 LIVE. primalSpring 90 scenarios, 971 tests. nucleus-primals 12 tests. `unsafe_code = "forbid"` across all crates.
+> **Wave 128 note**: Topology cutover complete — Flint H1 is edge router, sporeGate is ephemeral compute. 5 operational gates (golgi 18 svc, sporeGate 13/13, eastGate 13/13, flockGate 13/13, ironGate 12/12). primalSpring 110 scenarios, 1060 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
@@ -97,7 +97,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-06-22) — Forgejo primary (39 repos, K-Derm diderm relay), cellMembrane **Nest Atomic LIVE** (2GB, 11 services, 7 primals), Channel 3 TLS LIVE, shadow **6 PASS / 0 FAIL / 0 SKIP** (S1-S5 + knot-dns DNSSEC). 460 methods (Wave 56), **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12), coverage: darkforest 40.77%, tunnelKeeper 52.67%. 13/13 primals LIVE on 3 gates, 5-node WireGuard mesh. primalSpring v0.9.33 — 98 scenarios, 1017 tests. biomeOS v4.31 — 8,351 tests, 88% coverage. **`--uds-only` VPS standard** (Wave 56). Async-correct tunnelKeeper, wire-native JSON-RPC discovery
+**Status**: Sovereignty evolution ACTIVE (2026-06-28, Wave 128) — Forgejo primary (39 repos, K-Derm diderm relay). Topology cutover: Flint H1 edge router, sporeGate ephemeral compute. 5 operational gates (golgi 18 svc, sporeGate 13/13, eastGate 13/13, flockGate 13/13, ironGate 12/12). **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). 13/13 primals LIVE on 4 gates. primalSpring v0.9.33 — 110 scenarios, 1060 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -373,7 +373,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 123: 460 methods (v0.9.33, 98 scenarios, 1017 tests). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. biomeOS v4.31 — 8,351 tests, 88% coverage. `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
+- primalSpring at Wave 128: 460 methods (v0.9.33, 110 scenarios, 1060 lib tests, 1097 workspace tests, KNOWN_DEBT = 0). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

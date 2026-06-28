@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 123 (2026-06-22)** — **Covalent Trust & Scenario Expansion.** flockGate NUCLEUS 13/13 LIVE (i9-13900K/62GB). ironGate 12/12 (i9-12900K + RTX 5070). Nest provenance end-to-end proven. primalSpring v0.9.33: **98 validation scenarios**, **1017 tests** (0 failed). Deep debt round 3: hardcoded UID-1000 socket fallbacks centralized to `platform::biomeos_socket_dir()`, east-gate bias removed from `live_mesh.rs`, redundant `.clone()` eliminated in BTSP handshake, CI portability (`genomeBin-harvest.yml`). New scenarios: `btsp-cross-gate-verify`, `metallic-bond`, `parallel-graph`. All 11 tracks covered. Clippy clean (lib + bin + tests + 93 experiments). `unsafe_code = "deny"` workspace-wide. Zero `unwrap()`/`expect()` in production lib. Docs aligned to Wave 123. NC-1 **CODE COMPLETE**.
+**Wave 128 (2026-06-28)** — **Convergence + Debt.** Topology cutover complete: Flint H1 is edge router (plasma membrane), sporeGate is ephemeral compute. All 5 gates operational: golgi (18 svc), sporeGate (13/13), eastGate (13/13), flockGate (13/13), ironGate (12/12). primalSpring v0.9.33: **110 validation scenarios**, **1060 lib tests**, **1097 workspace tests** (0 failed). KNOWN_DEBT = 0. Deep debt: PORT_REGISTRY deprecated (TOML-only), `BtspGuardError` typed, `primals_expected` derived from TOML, 9 orphaned scenarios wired. Clippy clean (lib + bin + tests + 93 experiments). `unsafe_code = "forbid"` workspace-wide. Zero `unwrap()`/`expect()` in production lib. NC-1 **CODE COMPLETE**.
 
 ### Infrastructure
 
@@ -81,7 +81,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Zero open upstream gaps** — NestGate Session 60, all per-primal debt closed
 - BTSP Phase 3 AEAD, Wire Standard L3, 5-tier discovery hierarchy — all converged
 - Full provenance chain: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid
-- **Cell membrane architecture**: primals.eco on CDN (extracellular), lab/git.primals.eco via tunnel (membrane), cellMembrane fieldMouse on DigitalOcean VPS (external membrane), sovereign compute inside
+- **Physical topology**: INTERNET → ATT BGW320 (passthrough) → Flint H1 (edge router, plasma membrane) → CRS310 (L2 backbone, 10G/2.5G) → gates. WireGuard overlay (10.13.37.0/24) via golgi VPS. sporeGate is hot-pluggable compute — unplugging it does NOT kill the network
 - **NestGate content pipeline SHIPPED** (Session 60): 8 `content.*` methods on 4 transports. H2-05 **DONE**, H2-06–09 **UNBLOCKED**
 - **Static observer surface**: pre-rendered HTML via pappusCast, centralized dark theme, Rust-validated (darkforest `--suite observer`)
 - **`composition.deploy(graph)` WIRED**: `deploy_graph.sh` reads graph TOML, starts primals in dependency order. **Wave 56 `--uds-only`**: deploy scripts suppress all TCP port arguments for VPS standard (zero-port mode)

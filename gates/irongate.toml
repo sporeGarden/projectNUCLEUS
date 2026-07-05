@@ -93,11 +93,10 @@ provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
 
 [upstream]
-primalspring_wave = 128
+primalspring_wave = "132f"
 primalspring_version = "v0.9.33"
-primalspring_scenarios = 110
-primalspring_lib_tests = 1060
-primalspring_workspace_tests = 1097
+primalspring_scenarios = 116
+primalspring_lib_tests = 1080
 primalspring_known_debt = 0
 btsp_phase = 3
 wire_standard = "L3"

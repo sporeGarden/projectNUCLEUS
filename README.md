@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 128 (2026-06-28)** — **Convergence + Debt.** Topology cutover complete: Flint H1 is edge router (plasma membrane), sporeGate is ephemeral compute. All 5 gates operational: golgi (18 svc), sporeGate (13/13), eastGate (13/13), flockGate (13/13), ironGate (12/12). primalSpring v0.9.33: **110 validation scenarios**, **1060 lib tests**, **1097 workspace tests** (0 failed). KNOWN_DEBT = 0. Deep debt: PORT_REGISTRY deprecated (TOML-only), `BtspGuardError` typed, `primals_expected` derived from TOML, 9 orphaned scenarios wired. Clippy clean (lib + bin + tests + 93 experiments). `unsafe_code = "forbid"` workspace-wide. Zero `unwrap()`/`expect()` in production lib. NC-1 **CODE COMPLETE**.
+**Wave 132f (2026-07-05)** — **Integration Ready.** All P1 debt resolved. 3-gate LAN mesh LIVE (eastGate ↔ sporeGate ↔ ironGate). Tower HTTP gateway validated (songBird http.proxy + bearDog ACME). Bidirectional relay deployed on golgi (39/39 parity). 7 gates enrolled (+ grapheneGate mobile, strandGate pending). primalSpring v0.9.33: **116 validation scenarios**, **1080 lib tests** (0 failed). KNOWN_DEBT = 0. `s_compute_hosting_contract` validates JupyterHub E2E path. `s_beardog_startup_contract` validates CryptoProvider + BindMode::Auto. `unsafe_code = "forbid"` workspace-wide. NC-1 **CODE COMPLETE**. ironGate JupyterHub deployment is the E2E critical path blocker.
 
 ### Infrastructure
 

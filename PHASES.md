@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 128 note**: Topology cutover complete — Flint H1 is edge router, sporeGate is ephemeral compute. 5 operational gates (golgi 18 svc, sporeGate 13/13, eastGate 13/13, flockGate 13/13, ironGate 12/12). primalSpring 110 scenarios, 1060 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates.
+> **Wave 132f note**: Integration ready — 3-gate LAN mesh LIVE, Tower HTTP gateway validated, bidirectional relay on golgi (39/39 parity). 7 gates enrolled (grapheneGate mobile + strandGate pending). primalSpring 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates. ironGate JupyterHub is E2E blocker.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
@@ -97,7 +97,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Sovereignty evolution ACTIVE (2026-06-28, Wave 128) — Forgejo primary (39 repos, K-Derm diderm relay). Topology cutover: Flint H1 edge router, sporeGate ephemeral compute. 5 operational gates (golgi 18 svc, sporeGate 13/13, eastGate 13/13, flockGate 13/13, ironGate 12/12). **247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). 13/13 primals LIVE on 4 gates. primalSpring v0.9.33 — 110 scenarios, 1060 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide
+**Status**: Integration ready (2026-07-05, Wave 132f) — Forgejo primary (39 repos, bidirectional relay). 3-gate LAN mesh LIVE. Tower HTTP gateway validated. 7 gates enrolled. **247+ Rust tests PASS**. 13/13 primals LIVE on 4 gates. primalSpring v0.9.33 — 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -373,7 +373,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - NestGate shipped `content.*` transport parity: all 8 methods (`put`, `get`, `exists`, `list`, `publish`, `resolve`, `promote`, `collections`) on all 4 transports (primary, SemanticRouter, IPC, HTTP)
 - H2-05 **DONE**. H2-06 through H2-09 all **UNBLOCKED** (petalTongue `backend=nestgate`, shadow run, cutover)
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
-- primalSpring at Wave 128: 460 methods (v0.9.33, 110 scenarios, 1060 lib tests, 1097 workspace tests, KNOWN_DEBT = 0). `nucleus.ingest_spore` + `nucleus.emit_spore` registered. `--uds-only` VPS standard. Cell graph `vps_standard` tagging (6 VPS-ready, 3 desktop). 12 primordial scripts archived. `primalspring checksums` + `primalspring registry` replace shell validation
+- primalSpring at Wave 132f: 490+ methods (v0.9.33, 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0). Tower HTTP gateway + compute hosting contract validated. `jupyter.*` capability domain registered. Relay registry (cellMembrane bidirectional). `primalspring checksums` + `primalspring registry` replace shell validation
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
 - **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 

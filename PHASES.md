@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 133a note**: ENMESH + HARDEN + VALIDATE — 30/30 ecobins in pepti warehouse, grapheneGate 12/13 LIVE, E2E HTTP (lab.primals.eco → JupyterHub 5.4.5), LAN/WAN mesh operational. primalSpring 124 scenarios, 1099 tests (1097 pass + 2 ignored), KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates. Sovereignty S1-S4 all graduated on inner membrane.
+> **Wave 133e note**: COMPOSITION SUBTYPES FORMALIZED + STANDARDS REFRESHED — 6 composition subtypes defined (Full NUCLEUS/Tower/JupyterHub Host/sporePrint Host/Cold Storage/Compute Dispatch). songBird drawbridge auto-advertisement committed. 30/30 ecobins in pepti (4-5 stale, pending 134a rebuild). 5-gate songbird mesh: eastGate ↔ golgi ↔ ironGate + southGate + grapheneGate. primalSpring 125 scenarios, 1100 tests (1098 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

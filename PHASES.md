@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 132f note**: Integration ready — 3-gate LAN mesh LIVE, Tower HTTP gateway validated, bidirectional relay on golgi (39/39 parity). 7 gates enrolled (grapheneGate mobile + strandGate pending). primalSpring 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates. ironGate JupyterHub is E2E blocker.
+> **Wave 133a note**: ENMESH + HARDEN + VALIDATE — 30/30 ecobins in pepti warehouse, grapheneGate 12/13 LIVE, E2E HTTP (lab.primals.eco → JupyterHub 5.4.5), LAN/WAN mesh operational. primalSpring 124 scenarios, 1099 tests (1097 pass + 2 ignored), KNOWN_DEBT = 0. `unsafe_code = "forbid"` across all crates. Sovereignty S1-S4 all graduated on inner membrane.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

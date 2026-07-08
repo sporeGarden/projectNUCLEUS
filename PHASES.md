@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 133e note**: COMPOSITION SUBTYPES FORMALIZED + STANDARDS REFRESHED — 6 composition subtypes defined (Full NUCLEUS/Tower/JupyterHub Host/sporePrint Host/Cold Storage/Compute Dispatch). songBird drawbridge auto-advertisement committed. 30/30 ecobins in pepti (4-5 stale, pending 134a rebuild). 5-gate songbird mesh: eastGate ↔ golgi ↔ ironGate + southGate + grapheneGate. primalSpring 125 scenarios, 1100 tests (1098 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
+> **Wave 133f note**: ALL PRIMALS GREEN — 15/15 pass, 0 fail. rhizoCrypt TCP port collision fixed (ephemeral ports). barraCuda ESN wgpu race made resilient. All code debt resolved. Sovereign CI pipeline validation landed — CI-DIV-01/02/03 build metadata absorbed into ecosystem_manifest.toml. plasmid.harvest manifest-driven. primalSpring 126 scenarios, 1103 tests (1099 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

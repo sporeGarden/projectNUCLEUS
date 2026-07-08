@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 133f note**: ALL PRIMALS GREEN — 15/15 pass, 0 fail. rhizoCrypt TCP port collision fixed (ephemeral ports). barraCuda ESN wgpu race made resilient. All code debt resolved. Sovereign CI pipeline validation landed — CI-DIV-01/02/03 build metadata absorbed into ecosystem_manifest.toml. plasmid.harvest manifest-driven. primalSpring 126 scenarios, 1103 tests (1099 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
+> **Wave 133h note**: CONVERGENCE + AUTO-DISTRIBUTION LANDED. Multi-builder authority (sporeGate + eastGate). mesh.publish fan-out + mesh.subscribe auto-fetch pipeline. GPU build flags on compute primals. primalSpring 127 scenarios, 1104 tests (1100 pass + 2 ignored), KNOWN_DEBT = 0. Pipeline shape: build→sync→announce→fetch→verify→deploy — fractal at every scale. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

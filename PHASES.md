@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 134c note**: COMPOSITION PROFILES FORMALIZED. 5 fractal deployment patterns in ecosystem_manifest.toml (full, thin-relay, tower, compute, nest). Thin-relay codified — golgiBody VPS-thin. BUILD-DIV-01/02 resolved — 14/14 pass --all-targets. primalSpring 128 scenarios, 1105 tests (1101 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a pepti rebuild in progress, 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
+> **Wave 134e note**: UNIT-DIV-04 RESOLVED — DNS cutover unblocked. Composition-scoped lifecycle in cellMembrane (1be2b7f). ironGate cascade refreshed (was 5+ days stale). primalSpring 128 scenarios, 1105 tests (1101 pass + 2 ignored), plasmid + lifecycle methods registered, KNOWN_DEBT = 0. Wave plan: 134a pepti rebuild in progress, 134b (sovereignty DNS cutover — UNBLOCKED), 135+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

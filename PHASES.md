@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 134e note**: UNIT-DIV-04 RESOLVED — DNS cutover unblocked. Composition-scoped lifecycle in cellMembrane (1be2b7f). ironGate cascade refreshed (was 5+ days stale). primalSpring 128 scenarios, 1105 tests (1101 pass + 2 ignored), plasmid + lifecycle methods registered, KNOWN_DEBT = 0. Wave plan: 134a pepti rebuild in progress, 134b (sovereignty DNS cutover — UNBLOCKED), 135+ (SHOW_HN readiness).
+> **Wave 134g note**: NEAR-CONVERGED. Pepti 100% (34/34 builds, 0 failures). WAN-DISPATCH-01 transport PASS (10/10, 142ms p50). songBird P2 fix landed (82fb474). ironGate cascade resolved. Forgejo shallow relay fixed. golgi CI log fixed. DNS cutover is the last gate — unblocked, pending 7-day shadow. primalSpring 128 scenarios, 1105 tests. Wave plan: 134 nearly complete (drawbridge env config remaining), 135 (sovereignty DNS cutover), 136+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 133h note**: CONVERGENCE + AUTO-DISTRIBUTION LANDED. Multi-builder authority (sporeGate + eastGate). mesh.publish fan-out + mesh.subscribe auto-fetch pipeline. GPU build flags on compute primals. primalSpring 127 scenarios, 1104 tests (1100 pass + 2 ignored), KNOWN_DEBT = 0. Pipeline shape: build→sync→announce→fetch→verify→deploy — fractal at every scale. Wave plan: 134a (pepti rebuild + WAN-DISPATCH-01 FULL PASS), 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
+> **Wave 134c note**: COMPOSITION PROFILES FORMALIZED. 5 fractal deployment patterns in ecosystem_manifest.toml (full, thin-relay, tower, compute, nest). Thin-relay codified — golgiBody VPS-thin. BUILD-DIV-01/02 resolved — 14/14 pass --all-targets. primalSpring 128 scenarios, 1105 tests (1101 pass + 2 ignored), KNOWN_DEBT = 0. Wave plan: 134a pepti rebuild in progress, 134b (sovereignty DNS cutover), 135+ (SHOW_HN readiness).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

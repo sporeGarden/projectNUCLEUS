@@ -9,7 +9,12 @@ is tested here before and after replacement.
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
 **253 Rust tests PASS** (darkforest 146, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
-**Wave 136 — SECURITY & EXPOSURE SPRINT**: Public exposure achieved. `primals.eco` served by sovereign Caddy. 301 pages indexed. AI crawlers enabled. darkforest v3.0 ships `--scope outer` with 26 new checks across 6 modules (tls/http/depot/forge/dns/mesh). Glacial Criterion 8 added: outer membrane hardened for public exposure.
+**Wave 136a — HARDENING DELIVERED**: Public exposure achieved and outer membrane hardened. `primals.eco` served by sovereign Caddy with full security header suite (HSTS preload 2yr, X-Frame DENY, nosniff, Permissions-Policy, -Server suppressed). HTTP/3 confirmed on all public domains. darkforest v3.0 ships `--scope outer` with 26 new checks across 6 modules (tls/http/depot/forge/dns/mesh). Glacial Criterion 8: 3/5 sub-criteria met.
+
+**Exposure triage (Wave 136a)**:
+- **PATCHED**: EXP-01 (security headers), EXP-02 (404 catch-all), EXP-03 (cert auto-renewal), EXP-04 (Forgejo fail2ban)
+- **QUEUED**: EXP-05 (depot rate-limiting), EXP-06 (lab auth-gate), EXP-07 (WireGuard peer rotation), CSP-01, SIGN-01
+- **ACCEPTABLE**: EXP-08 (GitHub trailing shadow), EXP-09 (VPS provider), EXP-10 (registrar/DNSSEC), EXP-11 (AI crawlers — intentional)
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`

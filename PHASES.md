@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 136c note**: OUTER MEMBRANE EXECUTED — darkforest v3.0 TLS evolution: `rustls` + `webpki-roots` (ring backend) added to `net.rs` for real HTTPS probes. DNS resolution fixed via `ToSocketAddrs`. Live scan against `primals.eco`: **25 PASS, 0 FAIL, 0 KNOWN_GAP, 1 DARK_FOREST** (DNSSEC not enabled). TLS 1.3 negotiated, HSTS preload confirmed, all security headers present, proper 404, verb blocking (405), depot reachable with checksums, Forgejo SSH key-only, AXFR rejected, WireGuard silent drop. 149 Rust tests. Wave 136a: EXP-01/02/03/04 PATCHED. Criterion 8: 3/5 met. Sprint: 136b hardening, 136c resilience, 136d monitoring.
+> **Wave 136b note**: ALL 8 STADIAL CRITERIA CLEAR. Outer membrane sprint complete (9/14 exposures closed). darkforest v3.0 live: 25/26 PASS (stable across 136c→136b scans). DF-REPORT published (`specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`). footPrint composition target introduced — first protist. `graphs/footprint_composition.toml`: petalTongue + nestGate CAS + songBird drawbridge (OSM/FEMA/USGS/ArcGIS). Express server disappears. Cooling sprint continues. 149 Rust tests.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

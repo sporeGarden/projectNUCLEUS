@@ -9,7 +9,7 @@ is tested here before and after replacement.
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
 **256 Rust tests PASS** (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
 
-**Wave 136c — OUTER MEMBRANE EXECUTED**: darkforest v3.0 outer membrane suite run against live `primals.eco` — **25 PASS, 0 FAIL, 0 KNOWN_GAP, 1 DARK_FOREST**. TLS capability added via `rustls` + `webpki-roots` (ring crypto backend). DNS resolution for domain targets fixed. Results: TLS 1.3 negotiated, HSTS preload confirmed, all security headers present, proper 404, verb blocking (405), path traversal blocked, depot reachable with checksums, Forgejo SSH key-only, AXFR rejected, WireGuard silent drop. Only finding: ODN-02 DNSSEC not enabled. Glacial Criterion 8: 3/5 met.
+**Wave 136b — DF-REPORT PUBLISHED**: Formal execution report: `specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`. JSON artifact: `validation/reports/outer_membrane_136b.json`. Results stable across 136c→136b scans: **25 PASS, 0 FAIL, 1 DARK_FOREST** (ODN-02 DNSSEC). All 8 stadial criteria CLEAR. 9/14 exposures closed.
 
 **Wave 136a — HARDENING DELIVERED**: Public exposure achieved and outer membrane hardened. `primals.eco` served by sovereign Caddy with full security header suite (HSTS preload 2yr, X-Frame DENY, nosniff, Permissions-Policy, -Server suppressed). HTTP/3 confirmed on all public domains. darkforest v3.0 ships `--scope outer` with 26 new checks across 6 modules (tls/http/depot/forge/dns/mesh). Glacial Criterion 8: 3/5 sub-criteria met.
 
@@ -120,7 +120,7 @@ encrypts at rest (Phase 2), BingoCube eliminates credential files entirely (Phas
 ### darkforest Outer Membrane Coverage (v3.0 — Wave 136)
 
 darkforest v3.0 adds `--scope outer` with 26 checks against the public-facing membrane.
-**Live execution (Wave 136c)**: `darkforest --scope outer --target primals.eco` → **25 PASS, 0 FAIL, 1 DARK_FOREST** (ODN-02: DNSSEC not enabled). TLS 1.3 negotiated via `rustls` + `ring` crypto backend. All HTTPS checks now use real TLS handshakes (not plaintext TCP).
+**Live execution (Wave 136b)**: `darkforest --scope outer --target primals.eco` → **25 PASS, 0 FAIL, 1 DARK_FOREST** (ODN-02: DNSSEC not enabled). TLS 1.3 negotiated via `rustls` + `ring` crypto backend. All HTTPS checks now use real TLS handshakes (not plaintext TCP). Formal report: `specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`.
 
 | Module | Checks | Scope |
 |--------|--------|-------|

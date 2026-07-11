@@ -34,6 +34,17 @@ The canonical source for all 77+ graphs remains in primalSpring.
 | `strand_heavy_compute.toml` | Tower + Compute + Nest + Provenance — dual EPYC (v1.0.0) | Wave 73 |
 | `west_cold_storage.toml` | Nest Atomic — 76 TB ZFS cold archive (v1.0.0) | Wave 73 |
 
+## Application Compositions (protists)
+
+| File | Composition | Phase |
+|------|-------------|-------|
+| `sporeprint_composition.toml` | Nest Atomic + petalTongue content renderer (primals.eco) | Phase 3 |
+| `footprint_composition.toml` | Nest Atomic + petalTongue + songBird drawbridge (GIS planner) | Wave 136b |
+
+Application compositions serve a product. The primals are the backend; the
+product frontend runs in the browser. `application = true` in the fragment
+metadata distinguishes these from infrastructure compositions.
+
 ## Bonding Patterns
 
 | File | Bond Type | Use Case |

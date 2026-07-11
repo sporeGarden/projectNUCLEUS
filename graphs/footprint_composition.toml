@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: footPrint Composition — Nest Atomic + petalTongue + songBird drawbridge
+#
+# Deploys footPrint as a pure-primal GIS home improvement planner:
+# - petalTongue serves the Leaflet/Turf.js browser frontend via Axum
+# - nestGate replaces Express CRUD with content-addressed (CAS) persistence
+# - songBird drawbridge replaces Express /api/proxy — allowlisted external APIs
+# - provenance trio (rhizoCrypt + loamSpine + sweetGrass) traces all stored content
+#
+# The Express server disappears — primals absorb the entire backend.
+# Browser frontend is the product. Static assets served by petalTongue.
+#
+# External API allowlist (songBird drawbridge routing):
+#   - OpenStreetMap (OSM) tile + Nominatim
+#   - FEMA flood hazard
+#   - USGS elevation
+#   - ArcGIS geocoding
+#
+# footPrint is NOT a primal — it is a composition target (protist).
+# Source: protists/footPrint (cloned from protoKarya/footPrint)
+# Owner: flockGate
+#
+# Wave 136b: first primal composition target introduced to the ecosystem.
+
+[fragment]
+name = "footprint_composition"
+description = "footPrint GIS planner as Nest Atomic + petalTongue renderer + songBird drawbridge (pure-primal backend)"
+version = "0.1.0"
+includes = ["nest_atomic"]
+node_count = 9
+secure_by_default = true
+application = true
+
+# --- Inherited from nest_atomic (7 nodes): ---
+# beardog, songbird, skunkbat, nestgate, rhizocrypt, loamspine, sweetgrass
+
+# --- Additional nodes for footPrint: ---
+
+[[fragment.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 8
+required = true
+depends_on = ["nestgate", "songbird"]
+args = ["web", "--backend", "footprint", "--port", "8080"]
+health_method = "health.liveness"
+by_capability = "render"
+security_model = "tower_delegated"
+capabilities = ["render", "ui", "content.render", "static.serve"]
+
+# --- Deployment hints ---
+
+[deployment]
+target = "vps-direct"
+reverse_proxy = "caddy"
+domain = "live.primals.eco"
+upstream = "petaltongue:8080"
+
+[deployment.content]
+description = "footPrint browser frontend (Leaflet/Turf.js) — static assets served by petalTongue"
+source = "protists/footPrint/dist/"
+
+[deployment.drawbridge]
+description = "songBird drawbridge routes proxied API calls to external services"
+allowlist = [
+    "tile.openstreetmap.org",
+    "nominatim.openstreetmap.org",
+    "hazards.fema.gov",
+    "epqs.nationalmap.gov",
+    "geocode.arcgis.com",
+]
+
+[deployment.persistence]
+description = "nestGate CAS replaces Express project CRUD — content-addressed, rootPulse-traced"
+backend = "nestgate"
+method = "storage.store"
+provenance = true
+
+[deployment.validation]
+description = "12 visual target areas define parity (specs/PETALTONGUE_VISUAL_TARGETS.md)"
+parity_areas = 12

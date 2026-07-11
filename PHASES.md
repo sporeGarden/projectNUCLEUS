@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 136b note**: ALL 8 STADIAL CRITERIA CLEAR. Outer membrane sprint complete (9/14 exposures closed). darkforest v3.0 live: 25/26 PASS (stable across 136c→136b scans). DF-REPORT published (`specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`). footPrint composition target introduced — first protist. `graphs/footprint_composition.toml`: petalTongue + nestGate CAS + songBird drawbridge (OSM/FEMA/USGS/ArcGIS). Express server disappears. Cooling sprint continues. 149 Rust tests.
+> **Wave 136b note**: ALL 8 STADIAL CRITERIA CLEAR. DNSSEC LIVE. darkforest v3.0: **26/26 PASS** — clean sweep (ODN-02 resolved, DNSSEC enabled via CF + Porkbun DS). K-Derm reaffirmed: Cloudflare IS the outer membrane (trans layer), Caddy is inner (cis). DF-REPORT updated. footPrint composition target introduced — first protist. primalSpring v0.9.35 (1,104 tests, 132 scenarios). 12 repos evolved across 3 cascades. 149 Rust tests.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

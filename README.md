@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 136b (2026-07-11)** — **HARDENED. ALL 8 STADIAL CRITERIA CLEAR.** Outer membrane sprint complete (9/14 exposures closed). darkforest v3.0 live: 25/26 PASS against primals.eco (TLS 1.3, HSTS, security headers, depot, forge, DNS, mesh). footPrint introduced as first composition target (protist). primalSpring: **129 validation scenarios**, **1102 lib tests** (0 failed). KNOWN_DEBT = 0. DNS cutover COMPLETE — site LIVE + HARDENED. `unsafe_code = "forbid"` workspace-wide. Cooling sprint continues.
+**Wave 136b (2026-07-11)** — **HARDENED. ALL 8 STADIAL CRITERIA CLEAR. DNSSEC LIVE.** darkforest v3.0: **26/26 PASS** — clean sweep against primals.eco (TLS 1.3, HSTS, DNSSEC, security headers, depot, forge, DNS, mesh). K-Derm reaffirmed: Cloudflare IS the outer membrane (trans), Caddy is inner (cis). footPrint introduced as first composition target (protist). primalSpring v0.9.35: **132 validation scenarios**, **1,104 lib tests** (0 failed). KNOWN_DEBT = 0. 12 repos evolved across 3 cascades. `unsafe_code = "forbid"` workspace-wide.
 
 ### Infrastructure
 
@@ -89,9 +89,9 @@ Gates connect to each other through chemical bonding patterns:
 - **cellMembrane LIVE — Nest Atomic composition**: fieldMouse deployment on 157.230.3.183 (DigitalOcean nyc1, **$12/mo 2GB RAM**). **11 services, 7 primals**: Tower (BearDog :9100, SkunkBat :9140, Songbird :3478) + Nest (NestGate :9500, rhizoCrypt :9602, loamSpine :9700, sweetGrass :9850) + RustDesk :21115-17 + Caddy TLS :80/:443 + petalTongue :8080 + BearDog TLS shadow :8443. **Channel 3 TLS LIVE**: `membrane.primals.eco` ACME cert. 1.6GB RAM free. Hardened (fail2ban, UFW, tmpfiles.d). DO token encrypted (BearDog AES-256-GCM). Private ops repo: `gardens/cellMembrane`
 - **BTSP dual-auth shadow ACTIVE**: BTSPAuthenticator plugin live on JupyterHub — PAM + ionic token dual-accept
 - **Provenance pipeline validated**: Full 9-phase pipeline through trio (rhizoCrypt DAG + loamSpine spine + sweetGrass braid). Merkle root + ed25519 witness braid operational
-- **Sovereign DNS COMPLETE (H2-17/18)**: DNS cutover to sovereign nameservers complete. Site LIVE + HARDENED at primals.eco
+- **DNS + DNSSEC LIVE**: Cloudflare NS (alfie/serena.ns.cloudflare.com) with DNSSEC enabled (DS at Porkbun, keyTag 2371, alg 13). Site LIVE + HARDENED at primals.eco
 - **Continuous membrane telemetry**: `nucleus-deploy telemetry` probes both membranes (VPS + gate). `nucleus-deploy summary` produces rolling 7-day `validation/baselines/membrane_7day.toml`
-- **darkforest --scope outer**: 25 PASS, 0 FAIL, 1 DARK_FOREST against live primals.eco (OTR/OHT/ODP/OFG/ODN/OMS). Formal report: `specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`
+- **darkforest --scope outer**: **26/26 PASS** — clean sweep against live primals.eco (OTR/OHT/ODP/OFG/ODN/OMS). DNSSEC live. Formal report: `specs/DARKFOREST_OUTER_MEMBRANE_REPORT.md`
 - **darkforest --suite membrane**: 21 PASS, 0 FAIL against live cellMembrane VPS (MEM-01 through MEM-17). Password auth disabled, fail2ban active, credentials 600/root, no unexpected listeners
 - **Dark Forest Glacial Gate PASS**: `validation/dark_forest_gate_local.sh` — 33 structural checks across 5 pillars. All deploy graphs carry `secure_by_default = true`
 - **Deep debt evolution COMPLETE**: deploy.sh modularized (now `nucleus-deploy deploy`, archived in `deploy/legacy/`), darkforest pentest/crypto split into submodules, tunnelKeeper clone optimization, all workload TOMLs gate-agnostic (`$SPRINGS_ROOT`), deploy scripts use `$ECOPRIMALS_ROOT`
@@ -104,21 +104,21 @@ Gates connect to each other through chemical bonding patterns:
 - **Wave 64 Rust evolution**: All deploy scripts evolved to idiomatic Rust — `nucleus-deploy` binary with 9 subcommands: `security`, `provenance`, `deploy`, `spore`, `telemetry`, `summary`, `verify`, `provision`, `dns`. `clap` CLI, `tokio` async, zero `unwrap()` in production, `unsafe_code = "forbid"` in all Cargo.toml. Security module split into `security/` directory (6 submodules). Bash originals deprecated in place. Cloudflare artifacts fossilized to `deploy/legacy/`. **256 Rust tests PASS** (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12)
 - **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. Transport module ungated (+9 tests), pentest coverage expanded (+12 tests), health.rs async load fix. 14 deploy scripts evolved from hardcoded IPs/hostnames to `nucleus_config.sh` variables
 - **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
-- **Upstream zero gate debt**: primalSpring — 129 scenarios, 1102 tests. All 14 primals pulled to latest. Deploy graphs 16/16 `secure_by_default`. `deny.toml` enforced. `--uds-only` VPS standard shipped
+- **Upstream zero gate debt**: primalSpring v0.9.35 — 132 scenarios, 1,104 tests. All 14 primals pulled to latest. Deploy graphs 17/17 `secure_by_default`. `deny.toml` enforced. `--uds-only` VPS standard shipped
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **SHADOW LIVE** (cutover pending), S5 DNS **DEPLOYED** (NS cutover pending) (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
 
 ### Services (all persistent via systemd)
 
 | Service | URL | Port | Layer | Status |
 |---------|-----|------|-------|--------|
-| primals.eco | `primals.eco` | 443 | Outer membrane | Sovereign Caddy TLS — HSTS preload, CSP, ACME auto-renewal |
+| primals.eco | `primals.eco` | 443 | Outer membrane | Cloudflare proxy (trans) → Caddy TLS (cis) — HSTS, CSP, DNSSEC |
 | Depot | `membrane.primals.eco` | 443 | Outer membrane | Binary depot — read-only, BLAKE3 checksums |
 | Observer (static) | `lab.primals.eco` | 8866 | Membrane | Pre-rendered HTML, open/unauthenticated |
 | JupyterHub | `lab.primals.eco` (gated) | 8000 | Membrane | PAM auth, reviewer/user tiers |
 | Forgejo | `git.primals.eco` | 3000/2222 | Intracellular | **Primary git host** — 40 repos, 3 orgs. K-Derm diderm relay → GitHub |
 | pappusCast | — | — | Intracellular | Tiered auto-propagation daemon (workspace → observer) |
 | K-Derm Relay | — | outbound | Membrane | Diderm relay: gate → golgiBody-inner → peptidoglycan → golgiBody-ext → GitHub |
-| cellMembrane VPS | golgiBody | 80, 443 | Inner membrane | **Nest Atomic** (2GB): Tower + Nest (7 primals) + Caddy TLS + petalTongue. Hardened (fail2ban, UFW, rate-limiting) |
+| cellMembrane VPS | golgiBody | 80, 443 | Inner membrane | **Nest Atomic** (2GB): Tower + Nest (7 primals) + Caddy TLS. K-Derm: CF→Caddy→primals. Hardened (fail2ban, UFW, rate-limiting, DNSSEC) |
 | 13 NUCLEUS primals | localhost | 9100–9900 | Intracellular | All healthy, user services |
 
 ### Access Model
@@ -149,8 +149,8 @@ to the public observer surface on an adaptive schedule:
 
 Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
-- **Extracellular**: `primals.eco` sovereign on Caddy TLS (HSTS, CSP, ACME). CDN mirror via GitHub Pages (SURGE-01)
-- **Membrane**: `lab/git.primals.eco` via sovereign Caddy TLS on golgiBody VPS
+- **Extracellular**: `primals.eco` via K-Derm diderm — Cloudflare (outer/trans) → Caddy (inner/cis) → NUCLEUS
+- **Membrane**: `lab/git.primals.eco` via Cloudflare proxy → Caddy on golgiBody VPS
 - **External Membrane**: cellMembrane fieldMouse on DigitalOcean VPS — Channel 2 (TURN relay) for NAT traversal across gate boundaries
 - **Intracellular**: sovereign compute, primals, data — total control inside the gate
 - **Gate-portable**: `deploy/gate_switch.sh <target>` migrates compute; replicas stay in membrane pool
@@ -185,7 +185,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - **Forgejo PRIMARY**: 39 repos across 3 orgs. K-Derm diderm relay (push forgejo only → relay → GitHub via golgiBody-ext). No dual-push
 - **Content-aware routing**: `routing_config.toml` — static→VPS cache, auth/API/git→gate, large→Songbird P2P
 - **Trust model**: covalent/ionic/metallic/weak bonding maps to content access scopes in routing
-- **VPS Nest Atomic LIVE**: Tower + Nest (7 primals) + Caddy TLS on golgiBody. Hardened: fail2ban, UFW, rate-limiting, ACME auto-renewal
+- **VPS Nest Atomic LIVE**: Tower + Nest (7 primals) + Caddy TLS on golgiBody. K-Derm inner membrane: Cloudflare (outer/trans) → Caddy (cis) → primals. Hardened: fail2ban, UFW, rate-limiting, ACME, DNSSEC
 - **DO credentials encrypted**: BearDog AES-256-GCM with Argon2id on VPS
 - **40+ dependencies mapped** across 7 clusters (`specs/COMPLETE_DEPENDENCY_INVENTORY.md`)
 - **benchScale framework** operational — 5 scenarios, 3 pentest scripts
@@ -194,7 +194,7 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 
 ### sporePrint (Extracellular)
 
-- `primals.eco` served by sovereign Caddy TLS on golgiBody VPS (outer membrane). GitHub Pages as CDN mirror (SURGE-01)
+- `primals.eco` via K-Derm diderm: Cloudflare proxy (DDoS/CDN) → Caddy TLS on golgiBody (HSTS/CSP/ACME)
 - 15+ notebooks across commons/, showcase/, data/, pilot/, validation/
 - Auto-refresh CI across 26 repos; `sporeprint/` directories in all 8 springs
 - Local preview via `deploy/sporeprint_local.sh` (dev tool, not production path)
@@ -250,8 +250,8 @@ This proves the substrate works on our hardware.
 ### Phase 2: Ionic Compute Sharing (integration ready — Wave 132f)
 
 3-gate LAN mesh LIVE (eastGate ↔ sporeGate ↔ ironGate). 7 gates enrolled.
-Cell membrane architecture live: sovereign Caddy TLS on golgiBody VPS,
-`lab/git.primals.eco` via sovereign DNS, compute inside (intracellular).
+Cell membrane architecture live: K-Derm diderm (Cloudflare outer → Caddy inner),
+`lab/git.primals.eco` via Cloudflare proxy, compute inside (intracellular).
 pappusCast auto-propagation, multi-tier test suite.
 
 ### Phase 3: Self-Hosted sporePrint
@@ -323,7 +323,7 @@ public/             Managed snapshot copies for observer surface (pappusCast-man
 | **primalSpring** | syntheticChemistry | Upstream — defines composition patterns that projectNUCLEUS deploys and validates |
 | **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
-| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — sovereign Caddy TLS on golgiBody; GitHub Pages as CDN mirror |
+| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — K-Derm diderm: Cloudflare (outer) → Caddy (inner) on golgiBody |
 | **cellMembrane** | gardens | **Private** ops repo — VPS state, runbooks, credential procedures for the cellMembrane fieldMouse deployment |
 | **projectFOUNDATION** | gardens | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
 | **helixVision** | gardens | Genomics product — runs on projectNUCLEUS |

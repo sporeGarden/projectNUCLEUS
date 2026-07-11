@@ -3,16 +3,18 @@
 **Date**: 2026-07-11 | **Wave**: 136b | **Target**: primals.eco
 **Scanner**: darkforest v0.3.0 (pure Rust, rustls + webpki-roots/ring)
 **Source**: ironGate (residential, separate ISP from golgiBody VPS)
-**Duration**: 23.8s | **Checks**: 26 | **Result**: 25 PASS, 0 FAIL, 1 DARK_FOREST
+**Duration**: 13.8s | **Checks**: 26 | **Result**: 26 PASS, 0 FAIL, 0 DARK_FOREST
 
 ---
 
 ## Executive Summary
 
-The outer membrane of primals.eco passes 25 of 26 security checks when probed
-from an external vantage point. All critical and high severity checks pass. The
-single finding (ODN-02: DNSSEC) is a registrar-level infrastructure gap, not a
-code or configuration deficiency.
+The outer membrane of primals.eco passes **all 26** security checks when probed
+from an external vantage point. All critical, high, and medium severity checks
+pass. ODN-02 (DNSSEC) was resolved on 2026-07-11 when Cloudflare DNSSEC was
+enabled with DS record at Porkbun (keyTag 2371, algorithm 13 ECDSAP256SHA256).
+
+**Clean sweep: zero findings.**
 
 The scan validates that the defense-in-depth posture deployed in Wave 136a —
 security headers, Caddy hardening, fail2ban, WireGuard mesh isolation, Forgejo
@@ -63,13 +65,13 @@ external adversary's perspective.
 | OFG-03 | medium | No version leak (web) | Status 200, no version headers |
 | OFG-04 | medium | No public repo listing | Explore page does not expose repos |
 
-### outer.dns (ODN-01→03) — 2/3 PASS, 1 DARK_FOREST
+### outer.dns (ODN-01→03) — 3/3 PASS
 
-| ID | Severity | Status | Title | Evidence |
-|----|----------|--------|-------|----------|
-| ODN-01 | critical | PASS | AXFR rejected | Zone transfer refused |
-| ODN-02 | high | **DARK_FOREST** | No DNSKEY records | DNSSEC may not be enabled |
-| ODN-03 | medium | PASS | NXDOMAIN correct | No wildcard DNS |
+| ID | Severity | Title | Evidence |
+|----|----------|-------|----------|
+| ODN-01 | critical | AXFR rejected | Zone transfer refused |
+| ODN-02 | high | DNSSEC keys published | DNSKEY records present (CF DNSSEC, keyTag 2371, alg 13) |
+| ODN-03 | medium | NXDOMAIN correct | No wildcard DNS |
 
 ### outer.mesh (OMS-01→03) — 3/3 PASS
 
@@ -83,22 +85,9 @@ external adversary's perspective.
 
 ## Findings
 
-### ODN-02: DNSSEC Not Enabled (DARK_FOREST)
-
-**Severity**: High | **Category**: Crypto | **Owner**: operator (registrar-level)
-
-DNSKEY records are not present for `primals.eco`. This means DNS responses are
-not cryptographically signed, leaving the domain vulnerable to DNS spoofing in
-theory. In practice, the risk is bounded by:
-- TLS certificate pinning (ACME auto-renewal validates domain ownership)
-- HSTS preload (browsers enforce HTTPS regardless of DNS)
-- WireGuard overlay (internal mesh ignores public DNS entirely)
-
-**Remediation**: Enable DNSSEC at the registrar (Porkbun supports it). This is
-an infrastructure action, not a code change. The operator should:
-1. Generate DNSKEY via the authoritative nameserver or registrar panel
-2. Publish DS records in the parent zone
-3. Re-run `darkforest --scope outer --target primals.eco` to verify ODN-02 PASS
+**None.** All 26 checks pass. ODN-02 (DNSSEC) was the last open finding —
+resolved 2026-07-11 when Cloudflare DNSSEC was enabled with DS record at
+Porkbun (keyTag 2371, algorithm 13 ECDSAP256SHA256). Re-scan confirmed PASS.
 
 ---
 
@@ -119,19 +108,20 @@ used. This validates the same attack surface an external adversary would see.
 
 ## Comparison: Wave 136c → 136b
 
-| Metric | 136c (2026-07-10) | 136b (2026-07-11) |
-|--------|-------------------|-------------------|
-| PASS | 25 | 25 |
-| FAIL | 0 | 0 |
-| DARK_FOREST | 1 (ODN-02) | 1 (ODN-02) |
-| Duration | ~24s | 23.8s |
-| TLS cipher | TLS13_AES_128_GCM_SHA256 | TLS13_AES_128_GCM_SHA256 |
+| Metric | 136c (2026-07-10) | 136b pre-DNSSEC | 136b post-DNSSEC |
+|--------|-------------------|-----------------|------------------|
+| PASS | 25 | 25 | **26** |
+| FAIL | 0 | 0 | 0 |
+| DARK_FOREST | 1 (ODN-02) | 1 (ODN-02) | **0** |
+| Duration | ~24s | 23.8s | 13.8s |
+| TLS cipher | TLS13_AES_128_GCM_SHA256 | TLS13_AES_128_GCM_SHA256 | TLS13_AES_128_GCM_SHA256 |
 
-Results are stable across two consecutive scans from the same vantage point.
-The outer membrane posture is consistent.
+Post-DNSSEC scan achieves clean sweep. Duration improvement (23.8s→13.8s) is
+due to ODN-02 no longer timing out on DNSKEY lookup.
 
 ---
 
-## JSON Report
+## JSON Reports
 
-Machine-readable report: `validation/reports/outer_membrane_136b.json`
+- Pre-DNSSEC: `validation/reports/outer_membrane_136b.json`
+- Post-DNSSEC: `validation/reports/outer_membrane_136b_dnssec.json`

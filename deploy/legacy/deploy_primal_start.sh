@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy deploy` instead.
 # deploy_primal_start.sh — Per-primal startup logic
 #
 # Sourced by deploy.sh. Expects the following variables:

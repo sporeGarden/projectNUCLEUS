@@ -236,7 +236,7 @@ This converges with `TIER2_CEREMONY_DESIGN.md`:
 
 pappusCast already implements Tier 1: notebooks are pre-rendered as static
 HTML by the `pappuscast/` daemon and served by `observer_server.py`. The
-observer test suite (`tier_test_observer.py`) validates that observer users
+observer test suite (`darkforest --suite observer`) validates that observer users
 have no compute path.
 
 Evolution: petalTongue's static render mode replaces pappusCast. Rendered
@@ -344,9 +344,9 @@ encryption, structural blindness between tiers).
 ## References
 
 - `deploy/tier_enforcement_test.sh` — OS-level tier validation (4 tiers, 4 test users)
-- `deploy/tier_test_observer.py` — Observer tier: no compute, static only
-- `deploy/tier_test_reviewer.py` — Reviewer tier: read access, no write, no terminal
-- `deploy/tier_test_compute.py` — Compute tier: full workspace, kernel access
+- `darkforest --suite observer` — Observer tier: no compute, static only (Rust, 86 PASS)
+- `deploy/tier_test_all.sh` — All tiers: observer + reviewer + compute + hub + pappusCast
+- Legacy Python tier tests archived to `validation/archive/legacy/`
 - `deploy/jupyterhub_btsp_auth.py` — BTSP auth integration (Phase 2 bridge)
 - `deploy/pappuscast/` — Static observer rendering daemon
 - `deploy/observer_server.py` — Static HTML server for observer tier

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy provision --target <host>` instead.
 # gate_provision.sh — Provision a gate as a tunnel membrane replica
 #
 # Sets up a remote host as a cloudflared tunnel replica. The tunnel

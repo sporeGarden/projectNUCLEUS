@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy deploy` (includes health checks).
 # deploy_health_check.sh — Post-deploy health verification
 #
 # Sourced by deploy.sh. Expects the following variables:

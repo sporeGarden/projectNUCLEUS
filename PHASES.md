@@ -349,7 +349,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
 - 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
-- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 247 Rust tests (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12)
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12)
 
 **Cell Membrane Architecture (2026-05-10)**:
 - Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)

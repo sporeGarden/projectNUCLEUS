@@ -6,7 +6,7 @@ Validation experiments for sovereign NUCLEUS deployment.
 
 | ID | Name | Crate/Tool | Tests | Status |
 |----|------|-----------|-------|--------|
-| E1 | Security boundary validation | `validation/darkforest/` | 140 | PASS |
+| E1 | Security boundary validation | `validation/darkforest/` | 149 | PASS |
 | E2 | Transport sovereignty | `validation/tunnelKeeper/` | 48 | PASS |
 | E3 | Sovereignty parity | `infra/benchScale/` | 4 tracks | ACTIVE |
 | E4 | Membrane security audit | `validation/darkforest_membrane.sh` | 17 checks (21 PASS) | PASS |
@@ -20,9 +20,9 @@ Validation experiments for sovereign NUCLEUS deployment.
 JupyterHub via JSON-RPC fuzz, HTTP pentest, crypto validation, and
 observer-tier access control.
 
-**Rust crate**: `validation/darkforest/` (v0.2.1)
-**Test coverage**: 140 unit tests (Shannon entropy, hex decode, check builder,
-report roundtrip, discovery module, capability probing, HTTP parsing, net graceful failure)
+**Rust crate**: `validation/darkforest/` (v3.0)
+**Test coverage**: 149 unit tests (Shannon entropy, hex decode, check builder,
+report roundtrip, discovery module, capability probing, HTTP/HTTPS parsing, net graceful failure, TLS probes)
 
 **Results (validated May 2026)**:
 - 13/13 primals respond to JSON-RPC `health.liveness`
@@ -167,7 +167,7 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 ## Aggregate Test Summary
 
 ```
-darkforest          140 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report)
+darkforest          149 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report + 6 outer modules)
 tunnelKeeper         48 tests  (api, config, crypto, health, transport)
 nucleus-deploy       47 tests  (security, provenance, deploy, spore, telemetry, util)
 nucleus-primals      12 tests  (shared primal registry + composition constants)

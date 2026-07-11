@@ -3,7 +3,7 @@
 **Product**: projectNUCLEUS
 **Type**: Deployment and validation umbrella (not a domain science spring)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
-**Updated**: May 27, 2026 (Wave 56 absorption — 460 methods, `--uds-only` VPS standard, cell graph tagging, serde-saphyr pure Rust)
+**Updated**: July 11, 2026 (Wave 136b — 502+ methods, darkforest v3.0, 256 Rust tests, all 8 stadial criteria CLEAR)
 
 ## What projectNUCLEUS Validates
 
@@ -45,7 +45,7 @@ Gaps hand back to primalSpring → primals evolve → cycle continues
 
 ## Experiments
 
-### E1: Security Boundary Validation (darkforest v0.2.1)
+### E1: Security Boundary Validation (darkforest v3.0)
 
 Pure Rust security validator probes all 13 primals via JSON-RPC fuzz,
 HTTP pentest, crypto validation, and observer-tier access control.
@@ -110,7 +110,7 @@ TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 56). `
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| Primal Capabilities | **PASS** | 460 methods (Wave 56), 13/13 primals LIVE |
+| Primal Capabilities | **PASS** | 502+ methods (Wave 136a), 13/13 primals LIVE |
 | Security | **PASS** | BTSP 13/13, MethodGate 13/13, Dark Forest 267 checks |
 | Deployment | **PASS** | cellMembrane Nest Atomic (11 services, 7 primals), Channel 3 TLS (ACME) |
 | Composition | **ACTIVE** | Forgejo PRIMARY (39 repos, 3 orgs), K-Derm diderm relay |

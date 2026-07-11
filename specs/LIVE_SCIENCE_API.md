@@ -4,12 +4,12 @@ Tier 2 (notebook-direct) and Tier 3 (petalTongue dashboard) live science
 access. Derived from `springs/primalSpring/docs/LIVE_SCIENCE_API.md` (v1.0.0,
 May 12, 2026) — the canonical wire contract.
 
-**Current state**: Tier 2 ACTIVE — `toadstool.validate` **IMPLEMENTED** (S250),
-`toadstool.list_workloads` **WIRED** (S245+), `barracuda.precision.route` **IMPLEMENTED** (649 tests),
-`biomeos.spring_status` **IMPLEMENTED** (v3.84), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED** (Wave 56)
+**Current state**: Tier 2 ACTIVE — `toadstool.validate` **IMPLEMENTED** (S325),
+`toadstool.list_workloads` **WIRED**, `barracuda.precision.route` **IMPLEMENTED** (649 tests),
+`biomeos.spring_status` **IMPLEMENTED** (v4.31), `nucleus.ingest_spore` + `nucleus.emit_spore` **REGISTERED**
 
 **Canonical source**: `springs/primalSpring/docs/LIVE_SCIENCE_API.md`
-**Registry**: 460 methods (13 primals, 8 springs, Wave 56→123 — `nucleus.ingest_spore` + `nucleus.emit_spore` added. Typed errors, env_keys centralized, stability-tier annotated. `--uds-only` VPS standard, cell graph `vps_standard` tagging)
+**Registry**: 502+ methods (13 primals, 8 springs, Wave 136a)
 
 ---
 

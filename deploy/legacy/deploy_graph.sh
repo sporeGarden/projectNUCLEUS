@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use `nucleus-deploy deploy --graph-deploy` instead.
 # deploy_graph.sh — Graph-driven primal deployment
 #
 # Reads a NUCLEUS graph TOML and starts primals in dependency order,

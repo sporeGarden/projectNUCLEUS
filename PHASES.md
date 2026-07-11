@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 134g note**: NEAR-CONVERGED. Pepti 100% (34/34 builds, 0 failures). WAN-DISPATCH-01 transport PASS (10/10, 142ms p50). songBird P2 fix landed (82fb474). ironGate cascade resolved. Forgejo shallow relay fixed. golgi CI log fixed. DNS cutover is the last gate — unblocked, pending 7-day shadow. primalSpring 128 scenarios, 1105 tests. Wave plan: 134 nearly complete (drawbridge env config remaining), 135 (sovereignty DNS cutover), 136+ (SHOW_HN readiness).
+> **Wave 136 note**: SECURITY & EXPOSURE SPRINT. Public exposure achieved — primals.eco served by sovereign Caddy, 301 pages indexed, AI crawlers enabled. Glacial Criterion 8 added (outer membrane hardened for public exposure). darkforest v3.0 shipped — `--scope outer` flag, 6 outer modules (tls/http/depot/forge/dns/mesh), 26 new checks (OTR/OHT/ODP/OFG/ODN/OMS). 146 Rust tests (was 140). Triage matrix: 3 CRITICAL (EXP-01/02/03), 4 HIGH, 4 MEDIUM, 3 LOW exposures. Immediate actions: Caddy security headers, cert lifecycle, Forgejo SSH hardening, depot rate limiting. Failover playbook RF-01→RF-10 defined. primalSpring 128 scenarios, 1101 tests.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
@@ -276,12 +276,14 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Full validation: **265 PASS, 0 FAIL, 0 KNOWN_GAP, 1 WARN, 5 DARK_FOREST**
 - Previous KNOWN_GAP (nestgate `storage.list`) is now PASS
 
-**darkforest v2.0 — Modular Rust Security Validator (2026-05-08)**:
-- Refactored `validation/darkforest/` into 7 modules: `check.rs`, `net.rs`, `pentest.rs`, `fuzz.rs`, `crypto.rs`, `report.rs`, `main.rs`
-- 13 cryptographic strength checks (CRY-01 → CRY-13): cookie entropy/age/perms, shadow hash algo/rounds, ionic token tamper/expiry, BTSP cipher negotiation, file permission sweep
+**darkforest v3.0 — Inner + Outer Membrane Security Validator (2026-07-10)**:
+- v2.0→v3.0: Added `--scope` CLI flag (`inner`/`outer`/`full`) and `--target` for outer membrane domain
+- 6 new outer modules: `outer/tls.rs` (OTR-01→06), `outer/http.rs` (OHT-01→06), `outer/depot.rs` (ODP-01→04), `outer/forge.rs` (OFG-01→04), `outer/dns.rs` (ODN-01→03), `outer/mesh.rs` (OMS-01→03)
+- 26 outer membrane checks covering TLS surface, HTTP security headers, depot integrity, Forgejo SSH, DNS zone transfer, WireGuard mesh
+- Inner membrane retained: pentest (3 actors), fuzz (14 primals), crypto (CRY-01→13), observer (OBS-01→09), discovery
+- **146 Rust tests PASS, 0 FAIL** — outer module tests verify graceful degradation against unreachable targets
 - Structured JSON output (`--output <path>`) for auditable, machine-readable reports
-- **175 PASS, 0 FAIL, 6 DARK_FOREST** (authoritative count; supersedes `security_validation.sh` (now `nucleus-deploy security`) pipeline totals)
-- Legacy scripts (`deploy/darkforest_pentest.sh`, `deploy/darkforest_fuzz.py`) archived to `validation/archive/legacy/`
+- Usage: `darkforest validate --scope inner` (existing), `--scope outer --target primals.eco` (new), `--scope full` (both)
 
 **ABG Workspace Scaffolding (2026-05-08)**:
 - Pilot lifecycle: commons → pilot → projects → showcase, with `abg_accounts.sh create-pilot` subcommand

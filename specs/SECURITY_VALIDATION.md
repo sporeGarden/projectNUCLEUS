@@ -4,10 +4,12 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-06-22)
+## Current State (2026-07-10)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
-**247 Rust tests PASS** (darkforest 140, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**253 Rust tests PASS** (darkforest 146, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+
+**Wave 136 — SECURITY & EXPOSURE SPRINT**: Public exposure achieved. `primals.eco` served by sovereign Caddy. 301 pages indexed. AI crawlers enabled. darkforest v3.0 ships `--scope outer` with 26 new checks across 6 modules (tls/http/depot/forge/dns/mesh). Glacial Criterion 8 added: outer membrane hardened for public exposure.
 
 - **Five layers**: OS/network, primal APIs, application, ABG tier enforcement, dark forest (pentest + fuzz)
 - **MethodGate enforced**: 13/13 primals confirmed via TCP. All unauthenticated RPC calls return `-32001`
@@ -108,10 +110,22 @@ impersonate the relay server (but clients validate the public key). Mitigation
 roadmap: `share_credentials.sh` encrypts with `age` (Phase 1), BearDog Vault
 encrypts at rest (Phase 2), BingoCube eliminates credential files entirely (Phase 3).
 
-### darkforest Coverage Gap
+### darkforest Outer Membrane Coverage (v3.0 — Wave 136)
 
-darkforest v0.2.1 has **zero coverage** of the cellMembrane VPS. The validator
-runs against `--host` (localhost) and uses TCP-only networking (`net.rs`).
+darkforest v3.0 adds `--scope outer` with 26 checks against the public-facing membrane:
+
+| Module | Checks | Scope |
+|--------|--------|-------|
+| `outer/tls.rs` | OTR-01→06 | TLS reachability, HSTS, version, server header, cert validity, protocol downgrade |
+| `outer/http.rs` | OHT-01→06 | Security headers, 404 behavior, verb fuzzing, path traversal, directory listing, X-Frame-Options |
+| `outer/depot.rs` | ODP-01→04 | Depot reachability, write rejection, checksums availability, enumeration resistance |
+| `outer/forge.rs` | OFG-01→04 | SSH reachability, password auth disabled, web version leak, repo enumeration |
+| `outer/dns.rs` | ODN-01→03 | AXFR rejection, DNSSEC keys, NXDOMAIN behavior |
+| `outer/mesh.rs` | OMS-01→03 | WireGuard probe response, invalid handshake rejection, mesh surface minimality |
+
+Usage: `darkforest --scope outer --target primals.eco` or `--scope full` for inner+outer combined.
+
+### cellMembrane VPS Coverage (bash — MEM-01→MEM-17)
 
 **Proposed `membrane` suite (MEM-01 → MEM-10):**
 

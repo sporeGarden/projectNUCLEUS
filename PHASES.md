@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 136a note**: HARDENING — warming event contained. EXP-01 (security headers) LIVE on all 5 Caddy blocks — HSTS preload 2yr, X-Frame DENY, nosniff, Permissions-Policy, -Server. EXP-02 (404 catch-all) fixed — Zola 404.html, try_files removed. EXP-03 (cert lifecycle) self-resolving — ACME auto-renewal confirmed (primals.eco renewed Jul 9→Oct 7). EXP-04 (Forgejo SSH) fail2ban active — port 2222, maxretry=3, ban 1h. Glacial Criterion 8: 3/5 met (headers, 404, fail2ban). Remaining: CSP, depot rate-limiting, signing. darkforest v3.0 scope registered. HTTP/3 confirmed on all public domains. 301 pages live, SEO-aligned. primalSpring 128 scenarios, 1101 tests. 4-week cooling sprint: 136b hardening, 136c resilience, 136d monitoring.
+> **Wave 136c note**: OUTER MEMBRANE EXECUTED — darkforest v3.0 TLS evolution: `rustls` + `webpki-roots` (ring backend) added to `net.rs` for real HTTPS probes. DNS resolution fixed via `ToSocketAddrs`. Live scan against `primals.eco`: **25 PASS, 0 FAIL, 0 KNOWN_GAP, 1 DARK_FOREST** (DNSSEC not enabled). TLS 1.3 negotiated, HSTS preload confirmed, all security headers present, proper 404, verb blocking (405), depot reachable with checksums, Forgejo SSH key-only, AXFR rejected, WireGuard silent drop. 149 Rust tests. Wave 136a: EXP-01/02/03/04 PATCHED. Criterion 8: 3/5 met. Sprint: 136b hardening, 136c resilience, 136d monitoring.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
@@ -281,7 +281,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - 6 new outer modules: `outer/tls.rs` (OTR-01→06), `outer/http.rs` (OHT-01→06), `outer/depot.rs` (ODP-01→04), `outer/forge.rs` (OFG-01→04), `outer/dns.rs` (ODN-01→03), `outer/mesh.rs` (OMS-01→03)
 - 26 outer membrane checks covering TLS surface, HTTP security headers, depot integrity, Forgejo SSH, DNS zone transfer, WireGuard mesh
 - Inner membrane retained: pentest (3 actors), fuzz (14 primals), crypto (CRY-01→13), observer (OBS-01→09), discovery
-- **146 Rust tests PASS, 0 FAIL** — outer module tests verify graceful degradation against unreachable targets
+- **149 Rust tests PASS, 0 FAIL** — outer module tests verify graceful degradation against unreachable targets. `rustls` + `webpki-roots` (ring backend) for real TLS handshakes. **Live scan**: 25/26 PASS against primals.eco (TLS 1.3, all headers, depot, forge, DNS, mesh)
 - Structured JSON output (`--output <path>`) for auditable, machine-readable reports
 - Usage: `darkforest validate --scope inner` (existing), `--scope outer --target primals.eco` (new), `--scope full` (both)
 

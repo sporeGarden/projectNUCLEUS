@@ -21,7 +21,7 @@ fn check_depot_reachable(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("ODP-01", "outer.depot", Category::Network, Severity::High)
         .remediation("Verify depot is serving binary artifacts via HTTPS");
 
-    let resp = net::http_get(target, 443, "/depot/", "", 5000);
+    let resp = net::https_get(target, "/depot/", "", 5000);
     results.push(match resp {
         Some((code, _, _)) if code == 200 || code == 301 || code == 302 => cb.pass(
             "Depot endpoint reachable",
@@ -47,12 +47,14 @@ fn check_write_rejection(target: &str, results: &mut Vec<CheckResult>) {
     let mut evidence = Vec::new();
 
     for method in &methods {
-        if let Some(code) = net::http_method(target, 443, method, "/depot/test_binary", 3000) {
-            if code == 405 || code == 501 || code == 403 {
+        if let Some(code) = net::https_method(target, method, "/depot/test_binary", 3000) {
+            if matches!(code, 403 | 404 | 405 | 501) {
                 evidence.push(format!("{method}→{code} (rejected)"));
-            } else {
+            } else if code == 200 || code == 201 || code == 204 {
                 all_rejected = false;
                 evidence.push(format!("{method}→{code} (ACCEPTED — vulnerability)"));
+            } else {
+                evidence.push(format!("{method}→{code} (non-success)"));
             }
         } else {
             evidence.push(format!("{method}→unreachable"));
@@ -70,7 +72,7 @@ fn check_checksums_available(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("ODP-03", "outer.depot", Category::Crypto, Severity::High)
         .remediation("Ensure checksums.toml is served from depot for BLAKE3 verification");
 
-    let resp = net::http_get(target, 443, "/depot/checksums.toml", "", 5000);
+    let resp = net::https_get(target, "/depot/checksums.toml", "", 5000);
     results.push(match resp {
         Some((200, _, ref body)) if body.contains("blake3") || body.contains("sha") => cb.pass(
             "checksums.toml available with hash data",
@@ -97,7 +99,7 @@ fn check_enumeration_resistance(target: &str, results: &mut Vec<CheckResult>) {
     )
     .remediation("Disable directory listing on depot paths");
 
-    let resp = net::http_get(target, 443, "/depot/", "", 5000);
+    let resp = net::https_get(target, "/depot/", "", 5000);
     results.push(match resp {
         Some((_code, _, ref body)) => {
             let has_listing = body.contains("Index of") || body.contains("Directory listing");

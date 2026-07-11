@@ -120,7 +120,7 @@ fn check_web_interface(target: &str, results: &mut Vec<CheckResult>) {
     )
     .remediation("Restrict Forgejo web interface access or suppress version headers");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((code, ref headers, _)) => {
             let lower = headers.to_lowercase();
@@ -153,7 +153,7 @@ fn check_repo_enumeration(target: &str, results: &mut Vec<CheckResult>) {
     )
     .remediation("Disable public repository listing for unauthenticated users");
 
-    let resp = net::http_get(target, 443, "/explore/repos", "", 5000);
+    let resp = net::https_get(target, "/explore/repos", "", 5000);
     results.push(match resp {
         Some((200, _, ref body)) => {
             if body.contains("repository-item") || body.contains("repo-name") {

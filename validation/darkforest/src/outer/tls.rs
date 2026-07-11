@@ -18,7 +18,7 @@ fn check_tls_reachable(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OTR-01", "outer.tls", Category::Network, Severity::Critical)
         .remediation("Verify TLS endpoint is reachable and serving valid certificates");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((code, _headers, _body)) if code > 0 => cb.pass(
             "TLS endpoint reachable",
@@ -35,7 +35,7 @@ fn check_hsts_header(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OTR-02", "outer.tls", Category::Network, Severity::High)
         .remediation("Add Strict-Transport-Security header with includeSubDomains and preload");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((_code, ref headers, _)) if headers.to_lowercase().contains("strict-transport") => {
             let has_preload = headers.to_lowercase().contains("preload");
@@ -61,16 +61,27 @@ fn check_tls_version(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OTR-03", "outer.tls", Category::Crypto, Severity::High)
         .remediation("Ensure TLS 1.2+ only — disable SSLv3, TLS 1.0, TLS 1.1");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
-    results.push(match resp {
-        Some(_) => cb.pass(
-            "TLS connection succeeded (modern client)",
-            "Connection established with default TLS — implies TLS 1.2+",
-        ),
-        None => cb.known_gap(
-            "Cannot verify TLS version",
-            "TLS connection failed entirely",
-        ),
+    let info = net::tls_probe(target, 5000);
+    results.push(match info {
+        Some(ref ti) => {
+            let version_str = ti.version.as_deref().unwrap_or("unknown");
+            let cipher_str = ti.cipher.as_deref().unwrap_or("unknown");
+            let is_modern = ["1.3", "1_3", "1.2", "1_2"]
+                .iter()
+                .any(|v| version_str.contains(v));
+            if is_modern {
+                cb.pass(
+                    "TLS version is modern",
+                    &format!("Negotiated {version_str}, cipher {cipher_str}"),
+                )
+            } else {
+                cb.dark(
+                    "TLS version may be outdated",
+                    &format!("Negotiated {version_str}"),
+                )
+            }
+        }
+        None => cb.known_gap("Cannot verify TLS version", "TLS handshake failed entirely"),
     });
 }
 
@@ -78,7 +89,7 @@ fn check_server_header_suppressed(target: &str, results: &mut Vec<CheckResult>) 
     let cb = CheckBuilder::new("OTR-04", "outer.tls", Category::InfoLeak, Severity::Medium)
         .remediation("Remove Server header from responses (Caddy: header -Server)");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((_code, ref headers, _)) => {
             let has_server = headers
@@ -101,7 +112,7 @@ fn check_cert_validity(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OTR-05", "outer.tls", Category::Crypto, Severity::Critical)
         .remediation("Ensure ACME auto-renewal is operational — test before cert expiry");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((code, _, _)) if code > 0 => cb.pass(
             "TLS certificate accepted by client",

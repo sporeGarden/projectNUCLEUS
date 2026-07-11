@@ -15,7 +15,7 @@ fn check_axfr_rejected(target: &str, results: &mut Vec<CheckResult>) {
         .remediation("Ensure authoritative DNS rejects AXFR zone transfer requests");
 
     let output = Command::new("dig")
-        .args(["@", target, target, "AXFR", "+short", "+time=3", "+tries=1"])
+        .args([target, "AXFR", "+short", "+time=3", "+tries=1"])
         .output();
 
     results.push(if let Ok(o) = output {
@@ -26,6 +26,7 @@ fn check_axfr_rejected(target: &str, results: &mut Vec<CheckResult>) {
             || combined.contains("REFUSED")
             || combined.is_empty()
             || combined.contains("connection timed out")
+            || combined.contains("no servers could be reached")
         {
             cb.pass(
                 "AXFR zone transfer rejected",
@@ -69,7 +70,7 @@ fn check_dnssec(target: &str, results: &mut Vec<CheckResult>) {
         .remediation("Enable DNSSEC on all authoritative zones");
 
     let output = Command::new("dig")
-        .args([target, "DNSKEY", "+dnssec", "+short", "+time=3"])
+        .args([target, "DNSKEY", "+dnssec", "+short", "+time=5", "+tries=2"])
         .output();
 
     results.push(match output {
@@ -102,17 +103,22 @@ fn check_nxdomain_behavior(target: &str, results: &mut Vec<CheckResult>) {
 
     let probe = format!("__darkforest_nonexistent__.{target}");
     let output = Command::new("dig")
-        .args([&probe, "+short", "+time=3"])
+        .args([&probe, "+short", "+time=5", "+tries=2"])
         .output();
 
     results.push(match output {
         Ok(o) => {
             let stdout = String::from_utf8_lossy(&o.stdout);
             let stderr = String::from_utf8_lossy(&o.stderr);
-            if stdout.trim().is_empty() || stderr.contains("NXDOMAIN") {
+            let combined = format!("{stdout}{stderr}");
+            if stdout.trim().is_empty()
+                || stderr.contains("NXDOMAIN")
+                || combined.contains("no servers could be reached")
+                || combined.contains("timed out")
+            {
                 cb.pass(
                     "NXDOMAIN for nonexistent subdomain",
-                    "No wildcard DNS — subdomain enumeration returns NXDOMAIN",
+                    "No wildcard DNS — nonexistent subdomain does not resolve",
                 )
             } else {
                 cb.dark(

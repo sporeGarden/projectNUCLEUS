@@ -25,7 +25,7 @@ fn check_security_headers(target: &str, results: &mut Vec<CheckResult>) {
         "Deploy security headers: X-Content-Type-Options, Referrer-Policy, Permissions-Policy",
     );
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((_code, ref headers, _)) => {
             let lower = headers.to_lowercase();
@@ -62,7 +62,7 @@ fn check_404_behavior(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OHT-02", "outer.http", Category::Network, Severity::High)
         .remediation("Return proper 404 for missing paths — remove try_files fallback to homepage");
 
-    let resp = net::http_get(target, 443, "/__darkforest_nonexistent_path__", "", 5000);
+    let resp = net::https_get(target, "/__darkforest_nonexistent_path__", "", 5000);
     results.push(match resp {
         Some((404, _, _)) => cb.pass("Proper 404 returned", "Nonexistent path returns 404"),
         Some((200, _, _)) => cb.fail(
@@ -86,8 +86,8 @@ fn check_verb_fuzzing(target: &str, results: &mut Vec<CheckResult>) {
     let mut allowed = Vec::new();
 
     for method in &dangerous {
-        if let Some(code) = net::http_method(target, 443, method, "/", 3000) {
-            if code == 405 || code == 501 || code == 403 {
+        if let Some(code) = net::https_method(target, method, "/", 3000) {
+            if matches!(code, 403 | 405 | 501) {
                 blocked.push(format!("{method}→{code}"));
             } else {
                 allowed.push(format!("{method}→{code}"));
@@ -128,7 +128,7 @@ fn check_path_traversal(target: &str, results: &mut Vec<CheckResult>) {
     let mut evidence = Vec::new();
 
     for path in &traversal_paths {
-        if let Some((code, _, body)) = net::http_get(target, 443, path, "", 3000) {
+        if let Some((code, _, body)) = net::https_get(target, path, "", 3000) {
             if body.contains("root:") || body.contains("/bin/bash") {
                 safe = false;
                 evidence.push(format!("{path} → {code} (file contents leaked)"));
@@ -151,7 +151,7 @@ fn check_directory_listing(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OHT-05", "outer.http", Category::InfoLeak, Severity::Medium)
         .remediation("Disable directory listing in web server configuration");
 
-    let resp = net::http_get(target, 443, "/lab/", "", 5000);
+    let resp = net::https_get(target, "/lab/", "", 5000);
     results.push(match resp {
         Some((_code, _, ref body)) => {
             let listing_indicators = ["<title>Index of", "Directory listing", "Parent Directory"];
@@ -176,7 +176,7 @@ fn check_x_frame_options(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OHT-06", "outer.http", Category::Network, Severity::High)
         .remediation("Add X-Frame-Options: DENY to prevent clickjacking");
 
-    let resp = net::http_get(target, 443, "/", "", 5000);
+    let resp = net::https_get(target, "/", "", 5000);
     results.push(match resp {
         Some((_code, ref headers, _)) => {
             let lower = headers.to_lowercase();

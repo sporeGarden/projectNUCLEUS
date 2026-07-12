@@ -4,10 +4,12 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-07-11)
+## Current State (2026-07-12)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
 **256 Rust tests PASS** (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+
+**Wave 137b — NEURAL API LIVE**: SIGN-01 verified E2E (depot cryptographically signed via `sign.activate → beardog.sock → Ed25519 → signatures.toml → sign.verify PASS`). FLOCKGATE-MESH resolved (port 8080→7700, 4 overlay peers). cellMembrane systemd UMask fix permanent. 19 primals routable via Neural API on sporeGate.
 
 **Wave 136b — CLEAN SWEEP**: darkforest outer membrane **26/26 PASS**. ODN-02 resolved (DNSSEC live via Cloudflare + Porkbun DS, keyTag 2371, alg 13). K-Derm reaffirmed: Cloudflare IS the outer membrane (trans layer). DF-REPORT updated. All 8 stadial criteria CLEAR.
 

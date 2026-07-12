@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 137a (2026-07-12)** — **CONVERGED. ALL 8 STADIAL CRITERIA CLEAR.** 2,930+ tests / 0 fail across 5 suites. 14/14 primals zero-debt. 40 repos converged. darkforest v3.0: **26/26 PASS** — clean sweep against primals.eco. K-Derm 5-layer validated (Cloudflare extracellular, Caddy outer membrane, golgi periplasm, nftables plasma, NUCLEUS cytoplasm). primalSpring v0.9.36: **1,106 tests**, 136 scenarios. deploy.rs split (885L→620L + 269L process.rs). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide.
+**Wave 137b (2026-07-12)** — **CONVERGED. NEURAL API LIVE.** 3,935+ tests / 0 fail across 6 suites. 14/14 primals zero-debt. darkforest v3.0: **26/26 PASS**. K-Derm 5-layer validated. FLOCKGATE-MESH resolved (4 overlay peers). SIGN-01 verified E2E. primalSpring v0.9.36 (`644e7ad`). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. ironGate overwatch split: projectNUCLEUS = code only.
 
 ### Infrastructure
 

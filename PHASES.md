@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 137a note**: **CONVERGED. ALL 8 STADIAL CRITERIA CLEAR.** 2,930+ tests / 0 fail across 5 suites. 14/14 primals zero-debt. 40 repos converged. K-Derm 5-layer validated. deploy.rs split (885L→620L + 269L process.rs). primalSpring v0.9.35 (1,125 tests). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12).
+> **Wave 137a note**: **CONVERGED. ALL 8 STADIAL CRITERIA CLEAR.** 2,930+ tests / 0 fail across 5 suites. 14/14 primals zero-debt. 40 repos converged. K-Derm 5-layer validated. deploy.rs split (885L→620L + 269L process.rs). `cargo deny check` PASS on all 4 crates (deny.toml evolved to v0.19 format, AGPL + CDLA-Permissive-2.0 allowed). primalSpring v0.9.36 (1,106 tests, 136 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

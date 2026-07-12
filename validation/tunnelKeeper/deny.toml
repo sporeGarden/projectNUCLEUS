@@ -1,16 +1,14 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # cargo-deny configuration — tunnelKeeper
-# YAML via serde-saphyr (pure Rust, no libyaml). TLS via rustls (aws-lc-rs backend).
-# ring allowed as transitive only. libyaml eliminated Wave 55.
+# YAML via serde-saphyr (pure Rust). TLS via rustls (aws-lc-rs backend).
 
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
 yanked = "deny"
+unmaintained = "workspace"
 
 [licenses]
-unlicensed = "deny"
 allow = [
+    "AGPL-3.0-or-later",
     "MIT",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
@@ -20,8 +18,7 @@ allow = [
     "Unicode-3.0",
     "Unicode-DFS-2016",
     "Zlib",
-    "OpenSSL",
-    "Ring",
+    "CDLA-Permissive-2.0",
 ]
 
 [bans]
@@ -32,10 +29,6 @@ deny = [
     { crate = "openssl-sys", reason = "C binding — use rustls" },
     { crate = "native-tls", reason = "Platform TLS — use rustls" },
     { crate = "unsafe-libyaml", reason = "C YAML parser — use serde-saphyr (pure Rust)" },
-]
-allow = [
-    { crate = "ring", reason = "Transitive via rustls/quinn — monitored for removal" },
-    { crate = "aws-lc-sys", reason = "rustls crypto backend — C/ASM in TLS layer only" },
 ]
 
 [sources]

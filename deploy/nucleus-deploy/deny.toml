@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# cargo-deny configuration — darkforest
-# rustls (ring backend) for HTTPS probes. Zero OpenSSL/native-tls.
+# cargo-deny configuration — nucleus-deploy
+# Pure Rust deployment tool. Zero C/TLS dependencies.
 
 [advisories]
 yanked = "deny"
@@ -18,7 +18,6 @@ allow = [
     "Unicode-3.0",
     "Unicode-DFS-2016",
     "Zlib",
-    "CDLA-Permissive-2.0",
 ]
 
 [bans]

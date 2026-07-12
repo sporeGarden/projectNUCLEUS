@@ -1,6 +1,7 @@
 mod config;
 mod deploy;
 mod dns;
+mod process;
 mod provenance;
 mod provision;
 mod rpc;
@@ -12,7 +13,6 @@ mod util;
 mod verify;
 
 use std::path::PathBuf;
-use std::process;
 
 use clap::{Parser, Subcommand};
 
@@ -200,7 +200,7 @@ enum Commands {
 async fn main() {
     let cli = Cli::parse();
     let cfg = NucleusConfig::from_env();
-    process::exit(dispatch(cli.command, &cfg).await);
+    std::process::exit(dispatch(cli.command, &cfg).await);
 }
 
 async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {

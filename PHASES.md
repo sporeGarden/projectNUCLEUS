@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 136b note**: ALL 8 STADIAL CRITERIA CLEAR. DNSSEC LIVE. darkforest v3.0: **26/26 PASS** — clean sweep (ODN-02 resolved, DNSSEC enabled via CF + Porkbun DS). K-Derm reaffirmed: Cloudflare IS the outer membrane (trans layer), Caddy is inner (cis). DF-REPORT updated. footPrint composition target introduced — first protist. primalSpring v0.9.35 (1,104 tests, 132 scenarios). 12 repos evolved across 3 cascades. 149 Rust tests.
+> **Wave 137a note**: **CONVERGED. ALL 8 STADIAL CRITERIA CLEAR.** 2,930+ tests / 0 fail across 5 suites. 14/14 primals zero-debt. 40 repos converged. K-Derm 5-layer validated. deploy.rs split (885L→620L + 269L process.rs). primalSpring v0.9.35 (1,125 tests). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12).
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

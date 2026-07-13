@@ -18,6 +18,7 @@ name = "node_atomic_compute"
 description = "Node Atomic: toadStool dispatch + barraCuda tensor + coralReef shader"
 version = "2.0.0"
 coordination = "sequential"
+bond_type = "metallic"
 bonding_default = "btsp_required"
 
 [graph.metadata]

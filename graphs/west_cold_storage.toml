@@ -29,6 +29,7 @@ gate = "westgate"
 atomic = "nest_atomic"
 description = "Nest Atomic — Tower + NestGate CAS + Provenance Trio — 76 TB ZFS cold storage"
 coordination = "sequential"
+bond_type = "metallic"
 bonding_default = "btsp_required"
 
 [graph.metadata]

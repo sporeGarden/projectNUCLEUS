@@ -30,6 +30,7 @@ version = "0.1.0"
 includes = ["nest_atomic"]
 node_count = 9
 secure_by_default = true
+bond_type = "metallic"
 application = true
 
 # --- Inherited from nest_atomic (7 nodes): ---

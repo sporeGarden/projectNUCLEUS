@@ -48,6 +48,7 @@ name = "basement_hpc_covalent"
 version = "2.0.0"
 description = "Covalent Tower + partial Node (Toadstool) + NestGate + Squirrel gate for basement HPC mesh"
 coordination = "Sequential"
+bond_type = "covalent"
 bonding_policy = "btsp_required"
 
 # =============================================================================

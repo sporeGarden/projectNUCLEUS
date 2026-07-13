@@ -3,6 +3,7 @@
 id = "tower_atomic"
 version = "1.0.0"
 description = "Tower Atomic composition — beardog, songbird, skunkbat"
+bond_type = "covalent"
 
 [[nodes]]
 id = "beardog"

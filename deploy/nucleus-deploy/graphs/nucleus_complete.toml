@@ -5,6 +5,7 @@
 id = "nucleus_complete"
 version = "1.0.0"
 description = "Full NUCLEUS deployment — all 13 primals"
+bond_type = "metallic"
 
 [[nodes]]
 id = "beardog"

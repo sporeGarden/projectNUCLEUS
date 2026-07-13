@@ -35,6 +35,7 @@ name = "friend_remote_covalent"
 version = "1.0.0"
 description = "Remote covalent join for friend/family idle compute with NAT traversal"
 coordination = "Sequential"
+bond_type = "covalent"
 
 [graph.metadata]
 security_model = "btsp_enforced"

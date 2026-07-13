@@ -15,6 +15,7 @@ version = "0.1.0"
 gate_class = "portable_anchor"
 atomic = "tower_atomic"
 description = "Minimal beacon node for portable gates (GrapheneOS, iOS)"
+bond_type = "covalent"
 
 [graph.requirements]
 arch = "aarch64"

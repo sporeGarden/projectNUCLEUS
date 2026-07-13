@@ -23,6 +23,7 @@ version = "3.0.0"
 particle = "electron"
 node_count = 3
 secure_by_default = true
+bond_type = "covalent"
 
 [[fragment.nodes]]
 name = "beardog"

@@ -15,31 +15,43 @@ The canonical source for all 77+ graphs remains in primalSpring.
 - All 14 primal endpoints (13 binaries; rhizoCrypt serves :9601 + :9602) converged to BTSP Phase 3 AEAD — `security_model = "btsp"` is universal
 - Wire Standard L3: every primal's `capabilities.list` returns `protocol` + `transport`
 
+## Bond Type Taxonomy
+
+Every graph carries a `bond_type` field classifying its dominant bonding pattern:
+
+| Bond Type | Model | When Used |
+|-----------|-------|-----------|
+| `covalent` | Shared family seed, direct trust | Tower internals, same-family cross-gate, workflows |
+| `metallic` | Electron sea — tower mediates | Compositions where tower brokers compute/storage |
+| `ionic` | Metered capability lease | Cross-family sharing with contracts |
+| `hydrogen` | Directional cross-gate (WG mesh) | Same-family remote gates (future) |
+| `van_der_waals` | Weak transient | Discovery, observe-only (future) |
+
 ## Fragments (building blocks)
 
-| File | Particle | Primals |
-|------|----------|---------|
-| `tower_atomic.toml` | Electron | BearDog + Songbird + skunkBat |
-| `node_atomic.toml` | Proton | Tower + ToadStool + barraCuda + coralReef |
-| `nest_atomic.toml` | Neutron | Tower + NestGate + provenance trio |
-| `nucleus.toml` | Full atom | Tower + Node + Nest (10 domain primals; see `nucleus_complete.toml` for full 13) |
+| File | Particle | Bond | Primals |
+|------|----------|------|---------|
+| `tower_atomic.toml` | Electron | covalent | BearDog + Songbird + skunkBat |
+| `node_atomic.toml` | Proton | metallic | Tower + ToadStool + barraCuda + coralReef |
+| `nest_atomic.toml` | Neutron | metallic | Tower + NestGate + provenance trio |
+| `nucleus.toml` | Full atom | metallic | Tower + Node + Nest (10 domain primals; see `nucleus_complete.toml` for full 13) |
 
 ## Deployment Graphs
 
-| File | Composition | Phase |
-|------|-------------|-------|
-| `node_atomic_compute.toml` | biomeOS + Node Atomic (v2.0.0) | Phase 1 |
-| `nucleus_complete.toml` | Full NUCLEUS with bonding policy (v2.0.0) | Phase 4 |
-| `graphene_portable.toml` | Tower Atomic for `portable_anchor` gates (v0.1.0) | Wave 69 |
-| `strand_heavy_compute.toml` | Tower + Compute + Nest + Provenance — dual EPYC (v1.0.0) | Wave 73 |
-| `west_cold_storage.toml` | Nest Atomic — 76 TB ZFS cold archive (v1.0.0) | Wave 73 |
+| File | Bond | Composition | Phase |
+|------|------|-------------|-------|
+| `node_atomic_compute.toml` | metallic | biomeOS + Node Atomic (v2.0.0) | Phase 1 |
+| `nucleus_complete.toml` | metallic | Full NUCLEUS with bonding policy (v2.0.0) | Phase 4 |
+| `graphene_portable.toml` | covalent | Tower Atomic for `portable_anchor` gates (v0.1.0) | Wave 69 |
+| `strand_heavy_compute.toml` | metallic | Tower + Compute + Nest + Provenance — dual EPYC (v1.0.0) | Wave 73 |
+| `west_cold_storage.toml` | metallic | Nest Atomic — 76 TB ZFS cold archive (v1.0.0) | Wave 73 |
 
 ## Application Compositions (protists)
 
-| File | Composition | Phase |
-|------|-------------|-------|
-| `sporeprint_composition.toml` | Nest Atomic + petalTongue content renderer (primals.eco) | Phase 3 |
-| `footprint_composition.toml` | Nest Atomic + petalTongue + songBird drawbridge (GIS planner) | Wave 136b |
+| File | Bond | Composition | Phase |
+|------|------|-------------|-------|
+| `sporeprint_composition.toml` | metallic | Nest Atomic + petalTongue content renderer (primals.eco) | Phase 3 |
+| `footprint_composition.toml` | metallic | Nest Atomic + petalTongue + songBird drawbridge (GIS planner) | Wave 136b |
 
 Application compositions serve a product. The primals are the backend; the
 product frontend runs in the browser. `application = true` in the fragment

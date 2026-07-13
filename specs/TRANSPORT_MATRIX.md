@@ -127,11 +127,68 @@ curl -sf -X POST http://localhost:$PORT/ \
 3. Deploy graph `tcp_fallback_port` field
 4. Default port table (this document)
 
+## Spore Validation Columns (U/V/W)
+
+Columns U, V, W extend the primalSpring NUCLEUS Validation Matrix
+(`specs/NUCLEUS_VALIDATION_MATRIX.md`) with spore lifecycle operations.
+These define which primals participate when pseudoSpores flow through
+the NUCLEUS substrate.
+
+### Column Definitions
+
+| Column | Operation | What to Validate | Signal Graph |
+|--------|-----------|-----------------|--------------|
+| **U: Spore Ingest** | `biomeos nucleus ingest <dir>` | 6-step sequential: validate envelope → store → DAG session → ledger entry → braid → sign receipt | `nest_ingest_spore.toml` |
+| **V: Spore Emit** | `biomeos nucleus emit` | Retrieve content → assemble envelope → sign | — |
+| **W: Domain Profile** | `litho emit-pseudospore --spring X --domain-profile Y` | Spring's `domain_profile.toml` produces valid pseudoSpore with BLAKE3 manifest | — |
+
+### Per-Primal Spore Participation
+
+| Primal | U: Ingest | V: Emit | W: Profile |
+|--------|-----------|---------|------------|
+| BearDog | `crypto.sign` (receipt) | `crypto.sign` (envelope) | — |
+| Songbird | — | — | — |
+| skunkBat | — | — | — |
+| Squirrel | — | — | — |
+| ToadStool | — | — | — |
+| NestGate | `storage.store` (content-addressed) | `storage.retrieve` (content) | — |
+| rhizoCrypt | `dag.session.create` + `dag.event.append` | — | — |
+| loamSpine | `entry.append` (permanent ledger) | — | — |
+| coralReef | — | — | — |
+| barraCuda | — | — | — |
+| sweetGrass | `braid.create` (attribution) | — | — |
+| biomeOS | orchestrate (6-step signal) | orchestrate (emit flow) | select profile |
+| petalTongue | — | — | — |
+
+### Provenance Model
+
+Three-era spore provenance:
+
+1. **Era 1 (ad-hoc)**: Hand-authored `scope.toml`, blind copy (v1.0–v1.6.0)
+2. **Era 2 (pipeline-derived)**: Metadata extracted + cross-checked (v1.6.1)
+3. **Era 3 (NUCLEUS nest deploy)**: Provenance trio signs via `nest_ingest_spore`
+   signal (v2.0+) — content-addressed storage, DAG anchoring, permanent ledger,
+   semantic attribution braid, Ed25519 receipt
+
+Gate criterion: "Any spring can emit a pseudoSpore; any NUCLEUS can ingest it."
+
+### projectNUCLEUS Integration
+
+`nucleus-deploy spore` exercises the emit path (column V). The `spore/trio.rs`
+module captures provenance via rhizoCrypt → loamSpine → sweetGrass. Column U
+(ingest) is driven by `biomeos nucleus ingest` which consumes the signal graph.
+
+Column W (domain profile) is spring-specific — not directly exercised by
+projectNUCLEUS tools, but validated structurally by primalSpring scenarios
+(`s_nest_atomic` Phase 4, `exp115_nest_ingest_pseudospore`).
+
 ## References
 
 - wateringHole: `PRIMAL_IPC_PROTOCOL.md` (JSON-RPC contract)
 - wateringHole: `UNIVERSAL_IPC_STANDARD_V3.md` (transport selection)
 - wateringHole: `BTSP_PROTOCOL_STANDARD.md` (Phase 3 AEAD)
+- wateringHole: `SPORE_OWNERSHIP_MATRIX.md` (domain/envelope/gateway split)
 - primalSpring: `Phase 59 convergence` (port canonical table)
+- primalSpring: `specs/NUCLEUS_VALIDATION_MATRIX.md` (columns A-X)
 - wateringHole handoff: `PROVENANCE_TRIO_OPERATIONAL_HANDOFF_MAY2026.md`
 - wateringHole handoff: `NESTGATE_STORAGE_PATTERNS_HANDOFF_MAY2026.md`

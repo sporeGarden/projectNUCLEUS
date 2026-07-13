@@ -35,6 +35,7 @@ name = "nucleus_complete"
 description = "Full NUCLEUS: biomeOS + Tower + Core Services + Provenance Trio + primalSpring"
 version = "2.0.0"
 coordination = "sequential"
+bond_type = "metallic"
 bonding_default = "btsp_required"
 
 [graph.metadata]

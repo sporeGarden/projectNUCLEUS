@@ -20,6 +20,7 @@ version = "1.0.0"
 includes = ["nest_atomic"]
 node_count = 9
 secure_by_default = true
+bond_type = "metallic"
 
 # --- Inherited from nest_atomic (7 nodes): ---
 # beardog, songbird, skunkbat, nestgate, rhizocrypt, loamspine, sweetgrass

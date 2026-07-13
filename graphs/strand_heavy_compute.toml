@@ -28,6 +28,7 @@ gate = "strandgate"
 atomic = "heavy_node_atomic"
 description = "Tower + Compute Trio + Provenance Trio + NestGate — dual EPYC heavy compute"
 coordination = "sequential"
+bond_type = "metallic"
 bonding_default = "btsp_required"
 
 [graph.metadata]

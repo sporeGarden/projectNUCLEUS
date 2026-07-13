@@ -31,6 +31,7 @@ particle = "proton"
 node_count = 6
 includes = ["tower_atomic"]
 secure_by_default = true
+bond_type = "metallic"
 
 [[fragment.nodes]]
 name = "beardog"

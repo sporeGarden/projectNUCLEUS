@@ -17,6 +17,7 @@ name = "ionic_capability_share"
 description = "Cross-organization capability sharing (metered) — two family seeds, ionic contract boundary"
 version = "2.0.0"
 coordination = "parallel"
+bond_type = "ionic"
 bonding_policy = "btsp_required"
 
 [graph.metadata]

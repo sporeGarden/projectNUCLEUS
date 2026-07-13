@@ -26,6 +26,7 @@ particle = "neutron"
 node_count = 7
 includes = ["tower_atomic", "provenance_trio"]
 secure_by_default = true
+bond_type = "metallic"
 
 [[fragment.nodes]]
 name = "beardog"

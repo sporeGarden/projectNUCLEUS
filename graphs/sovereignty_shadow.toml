@@ -21,6 +21,7 @@ name = "sovereignty_shadow"
 description = "5-track + DNS shadow run: TLS + NAT + content + auth + DoT parity proofs"
 version = "1.0.0"
 shadow = true
+bond_type = "covalent"
 secure_by_default = true
 
 [graph.metadata]

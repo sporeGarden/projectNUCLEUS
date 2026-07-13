@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 137b note**: **CONVERGED. NEURAL API LIVE.** 3,935+ tests / 0 fail across 6 suites (cellMembrane 1,024 added). FLOCKGATE-MESH resolved. SIGN-01 E2E verified. ironGate overwatch split: projectNUCLEUS = code only. primalSpring v0.9.36 (`891287e`, 138 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4.
+> **Wave 137b note**: **CONVERGED. NEURAL API LIVE.** 3,960+ tests / 0 fail across 6 suites (cellMembrane 1,024 added). FLOCKGATE-MESH resolved. SIGN-01 E2E verified. ironGate overwatch split: projectNUCLEUS = code only. primalSpring v0.9.36 (`445826b`, 141 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

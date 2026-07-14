@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 137b (2026-07-13)** — **CONVERGED. PUBLIC.** `live.primals.eco` LIVE — petalTongue TOPO-VIS dashboard over TLS/HTTP2. 3-gate mesh operational (eastGate + sporeGate + golgi). `require-signed` depot trust active. darkforest v3.0: **26/26 PASS**. primalSpring v0.9.36 (`818cf11`, 144 scenarios, 1,190 tests). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. NUCLEUS-MATRIX U/V/W + `bond_type` on 19 graphs.
+**Wave 138b (2026-07-14)** — **PUBLIC + SOVEREIGN.** `live.primals.eco` LIVE. 3-gate WG mesh. `require-signed` depot trust. SoloKey CTAPHID proven. FORGEJO-PERMS permanently fixed. darkforest v3.0: **26/26 PASS**. primalSpring v0.9.36 (`5ba12f2`, 147 scenarios, 1,133 tests). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. 3 items remain (HIDRAW-REPORT-ID, NAPI-LIFECYCLE, SOCKET-DIR-UNIFY).
 
 ### Infrastructure
 

@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 138b note**: **PUBLIC + SOVEREIGN.** `live.primals.eco` LIVE. 3-gate mesh. `require-signed` depot trust. SoloKey CTAPHID proven, HIDRAW fix pending. FORGEJO-PERMS permanently fixed. wateringHole distilled (83 active docs). primalSpring v0.9.36 (`5ba12f2`, 147 scenarios, 1,133 tests). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. NUCLEUS-MATRIX U/V/W + `bond_type` on 19 graphs.
+> **Wave 139a note**: **PUBLIC + SOVEREIGN. ZERO DEBT.** All Wave 138 items resolved. Identity anchoring deployed (ORCID, Keyoxide, JSON-LD). First FIDO2 credential minted. 16/16 repos converged (tree hash verified). 3 live public surfaces. primalSpring v0.9.36 (`bfbe302`, 131 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. NUCLEUS-MATRIX U/V/W + `bond_type` on 19 graphs.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

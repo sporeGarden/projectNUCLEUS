@@ -104,7 +104,7 @@ Gates connect to each other through chemical bonding patterns:
 - **Wave 64 Rust evolution**: All deploy scripts evolved to idiomatic Rust — `nucleus-deploy` binary with 9 subcommands: `security`, `provenance`, `deploy`, `spore`, `telemetry`, `summary`, `verify`, `provision`, `dns`. `clap` CLI, `tokio` async, zero `unwrap()` in production, `unsafe_code = "forbid"` in all Cargo.toml. Security module split into `security/` directory (6 submodules). Bash originals deprecated in place. Cloudflare artifacts fossilized to `deploy/legacy/`. **256 Rust tests PASS** (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12)
 - **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. Transport module ungated (+9 tests), pentest coverage expanded (+12 tests), health.rs async load fix. 14 deploy scripts evolved from hardcoded IPs/hostnames to `nucleus_config.sh` variables
 - **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
-- **Upstream zero gate debt**: primalSpring v0.9.36 — 1,106 tests, 136 scenarios. All 14 primals pulled to latest. Deploy graphs 17/17 `secure_by_default`. `deny.toml` enforced. `--uds-only` VPS standard shipped
+- **Upstream zero gate debt**: primalSpring v0.9.36 — 1,194 tests, 162 scenarios. All 14 primals pulled to latest. Deploy graphs 19/19 `secure_by_default`. `deny.toml` enforced. `--uds-only` VPS standard shipped
 - **Wave 38 sovereignty shadow FULL PASS**: `graphs/sovereignty_shadow.toml` — 5-track parity proof + DNS. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**. S1 TLS **LIVE** (13ms vs 163ms CF), S2 NAT **LIVE** (100% reachable), S3 content **LIVE** (TTFB 68ms vs 111ms GH), S4 auth **SHADOW LIVE** (cutover pending), S5 DNS **DEPLOYED** (NS cutover pending) (knot-dns DNSSEC). **Nest Atomic** deployed: NestGate v2.1.0, rhizoCrypt v0.14.0, loamSpine v0.9.16, sweetGrass v0.7.34 — provenance trio 10/10 PASS. 11 services, 7 primals on VPS
 
 ### Services (all persistent via systemd)
@@ -247,7 +247,7 @@ See [deploy/](deploy/) for full deployment instructions.
 235+ wetSpring science checks passing. Full provenance chain operational.
 This proves the substrate works on our hardware.
 
-### Phase 2: Ionic Compute Sharing (integration ready — Wave 132f)
+### Phase 2: Ionic Compute Sharing (integration ready)
 
 3-gate LAN mesh LIVE (eastGate ↔ sporeGate ↔ ironGate). 7 gates enrolled.
 Cell membrane architecture live: K-Derm diderm (Cloudflare outer → Caddy inner),
@@ -284,7 +284,7 @@ deploy/             Deployment tooling, test suites, pappusCast daemon
   pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
   observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
   legacy/           Fossilized scripts: bash deploy pipeline, cloudflare configs, cloudflared provisioning
-graphs/             17 deploy graph TOMLs — curated from primalSpring + gate-specific + application compositions
+graphs/             19 deploy graph TOMLs — curated from primalSpring + gate-specific + application compositions
   tower_agent.toml  Agent composition: Tower + biomeOS neural-api + Squirrel (agentic AI)
 workloads/          Workload catalog (TOML specs for toadStool)
   wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)

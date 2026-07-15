@@ -3,8 +3,8 @@
 Curated subset of primalSpring/graphs/ for projectNUCLEUS deployment.
 The canonical source for all 77+ graphs remains in primalSpring.
 
-**Dark Forest compliance (2026-06-02):**
-- All 16/16 graphs carry `secure_by_default = true` (fragments + deploy + workflow) (DF-4 requirement)
+**Dark Forest compliance (2026-07-15):**
+- All 19/19 graphs carry `secure_by_default = true` (fragments + deploy + workflow + compositions) (DF-4 requirement)
 - No non-Songbird nodes advertise `http` or `tls` capabilities (DF-3)
 - All nodes declare `security_model = "btsp"` or `"tower_delegated"` (DF-4)
 - UDS-only default transport, TCP fallback opt-in via `PRIMALSPRING_TCP_TIER5` (DF-2)
@@ -82,7 +82,7 @@ metadata distinguishes these from infrastructure compositions.
 
 | File | Signal | Steps | Status |
 |------|--------|-------|--------|
-| `nest_ingest_spore.toml` (biomeOS canonical) | `nucleus.ingest_spore` | validate → store → DAG → ledger → braid → sign | NC-1 CODE COMPLETE — biomeOS v3.84 `biomeos-pseudospore` shipped |
+| `nest_ingest_spore.toml` (biomeOS canonical) | `nucleus.ingest_spore` | validate → store → DAG → ledger → braid → sign | NC-1 CODE COMPLETE — biomeOS v4.31 `biomeos-pseudospore` shipped |
 
 The `nest_ingest_spore` signal graph originates from `primals/biomeOS/graphs/signals/` (also copied in primalSpring).
 It composes existing primal capabilities — no new capabilities required. Six sequential nodes:

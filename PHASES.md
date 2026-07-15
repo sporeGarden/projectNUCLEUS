@@ -97,7 +97,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Integration ready (2026-07-05, Wave 132f) — Forgejo primary (39 repos, bidirectional relay). 3-gate LAN mesh LIVE. Tower HTTP gateway validated. 7 gates enrolled. **247+ Rust tests PASS**. 13/13 primals LIVE on 4 gates. primalSpring v0.9.33 — 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide
+**Status**: Integration ready — Forgejo primary (42 repos, K-Derm diderm relay). 8 gates enrolled (northGate NEW). **256 Rust tests PASS**. 13/13 primals LIVE. primalSpring v0.9.36 — 162 scenarios, 1,194 tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide. 45 signed ecobins across 4 architectures
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)

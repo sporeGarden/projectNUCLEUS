@@ -204,7 +204,7 @@ projectNUCLEUS is the ironGate sovereign deployment validator. NC-2 (multi-gate 
 
 | ID | Gap | Owner | Status | Blocks |
 |----|-----|-------|--------|--------|
-| NC-1 | postPrimordial spore gateway (`biomeos nucleus ingest/emit`) | biomeOS + lithoSpore | **CODE COMPLETE** — biomeOS v3.84 shipped `biomeos-pseudospore` + emit materialization. NC-1.3 COMPLETE. NC-1.4 RESOLVED. Live column U gated on VPS deploy (P0) + 2 spring column U passes. | Stadial entry; columns U/V/W |
+| NC-1 | postPrimordial spore gateway (`biomeos nucleus ingest/emit`) | biomeOS + lithoSpore | **CODE COMPLETE** — biomeOS v4.31 shipped `biomeos-pseudospore` + emit materialization. NC-1.3 COMPLETE. NC-1.4 RESOLVED. Live column U gated on VPS deploy (P0) + 2 spring column U passes. | Stadial entry; columns U/V/W |
 | NC-2.1 | southGate 13/13 health | Songbird + wetSpring | **IN PROGRESS** — 7/13 responding. Wave 54 redeploy fixes ready. Songbird mesh seed bug identified. | NC-2 multi-gate mesh |
 | NC-2.3 | Cross-gate capability call via cellMembrane relay | projectNUCLEUS + cellMembrane | **OPEN** — ironGate VPS TURN LIVE, mesh not yet bidirectional | NC-2 stadial |
 | NC-3.1 | cellMembrane Nest Atomic docs sync | cellMembrane | **DONE** — VPS_STATE.md/GLACIAL_SHIFT synced to Nest Atomic (deployed May 22) | Unblocks NC-3.2 |
@@ -570,7 +570,7 @@ Horizon 3 (primal-only):          ███░░░░░░░  H3-04 Forgejo 
 Horizon 4 (transactions):         ██░░░░░░░░  READY — playbook + benchScale topologies wired. H4-11/12/13 ready to run.
 Shadow (Wave 38→59):              ████████░░  S1-S3 LIVE, S4 SHADOW LIVE, S5 DEPLOYED. Orchestrator: **6 PASS, 0 FAIL, 0 SKIP**.
 Niche climate (Wave 59):          ████░░░░░░  NC-1 CODE COMPLETE (live gated on VPS v3.84). NC-2 IN PROGRESS. NC-3 CODE CONSUMED. NC-4 ADVANCING.
-Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt. 460 methods (Wave 56).
+Upstream (waiting):               ██████████  ZERO OPEN — 13/13 primals, 8/8 springs at zero debt. 502+ methods (Wave 136a).
 Interstadial exit:                █████████▌  EXIT GATE CLEARED — 9.5/10. Stadial entry: NC-1 + NC-2 + NC-4.
 Dark Forest Glacial Gate:         ██████████  PASS — 33/33 checks, 5/5 pillars, all graphs hardened
 ```

@@ -203,7 +203,7 @@ on both crates, `secure_by_default` 12/12 deploy graphs. primalSpring: 98 scenar
 
 | Goal | NC | Gate Criteria | Status |
 |------|-----|---------------|--------|
-| `biomeos nucleus ingest` on ironGate VPS | NC-1 | hotSpring pseudoSpore v1.6.1 → NUCLEUS column U | **CODE COMPLETE** — biomeOS v3.84 shipped. Live column U gated on VPS deploy |
+| `biomeos nucleus ingest` on ironGate VPS | NC-1 | hotSpring pseudoSpore v1.6.1 → NUCLEUS column U | **CODE COMPLETE** — biomeOS v4.31 shipped. Live column U gated on VPS deploy |
 | southGate 13/13 health | NC-2.1 | Songbird mesh seed fix, bidirectional SONGBIRD_PEERS | 7/13 responding |
 | Cross-gate capability call via cellMembrane | NC-2.3 | ironGate ↔ eastGate ↔ southGate mesh | OPEN |
 | knot-dns NS cutover to primary | NC-3.3 | Registrar NS delegation → sovereignty DNS (S5) | knot-dns DEPLOYED; NS cutover pending registrar |

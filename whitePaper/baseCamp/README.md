@@ -3,7 +3,7 @@
 **Product**: projectNUCLEUS
 **Type**: Deployment and validation umbrella (not a domain science spring)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
-**Updated**: July 11, 2026 (Wave 136b — 502+ methods, darkforest v3.0, 256 Rust tests, all 8 stadial criteria CLEAR)
+**Updated**: July 15, 2026 (Wave 140a — 502+ methods, darkforest v3.0, 256 Rust tests, all 8 stadial criteria CLEAR, 45 signed ecobins)
 
 ## What projectNUCLEUS Validates
 

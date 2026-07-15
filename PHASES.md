@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 139a note**: **PUBLIC + SOVEREIGN. ZERO DEBT.** All Wave 138 items resolved. Identity anchoring deployed (ORCID, Keyoxide, JSON-LD). First FIDO2 credential minted. 16/16 repos converged (tree hash verified). 3 live public surfaces. primalSpring v0.9.36 (`bfbe302`, 131 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. NUCLEUS-MATRIX U/V/W + `bond_type` on 19 graphs.
+> **Wave 140a note**: **TANGIBLES PIVOT.** Cross-Platform Parity AAR absorbed (45 binaries, 4 architectures). OS Atheism Phase 1 shipped. Content-Addressed Convergence formalized. Manifest v3.0: 42 repos + 2 protists. primalSpring v0.9.36 (`6a1d6c6`, 162 scenarios, 1,194 tests). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. Depot: 45 signed ecobins, 4 architectures.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

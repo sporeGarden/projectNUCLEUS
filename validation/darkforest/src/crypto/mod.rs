@@ -44,7 +44,7 @@ pub fn shannon_entropy(data: &[u8]) -> f64 {
     }
     let mut freq = [0u64; 256];
     for &b in data {
-        freq[b as usize] += 1;
+        freq[usize::from(b)] += 1;
     }
     let len = data.len() as f64;
     let mut entropy = 0.0f64;

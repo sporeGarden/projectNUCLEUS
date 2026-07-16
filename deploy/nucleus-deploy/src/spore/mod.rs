@@ -158,7 +158,7 @@ fn resolve_litho(cfg: &NucleusConfig, args: &SporeArgs) -> Result<PathBuf, Spore
         }
     }
 
-    let candidates = [
+    let candidates = vec![
         cfg.plasmidbin_dir.join("primals/litho"),
         cfg.ecoprimals_root
             .join("gardens/lithoSpore/target/release/litho"),
@@ -166,9 +166,15 @@ fn resolve_litho(cfg: &NucleusConfig, args: &SporeArgs) -> Result<PathBuf, Spore
             .join(".local/bin/litho"),
     ];
 
-    for c in &candidates {
+    let searched = candidates
+        .iter()
+        .map(|c| c.display().to_string())
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    for c in candidates {
         if c.exists() {
-            return Ok(c.clone());
+            return Ok(c);
         }
     }
 
@@ -183,11 +189,6 @@ fn resolve_litho(cfg: &NucleusConfig, args: &SporeArgs) -> Result<PathBuf, Spore
         }
     }
 
-    let searched = candidates
-        .iter()
-        .map(|c| c.display().to_string())
-        .collect::<Vec<_>>()
-        .join(", ");
     Err(SporeError::LithoNotFound { searched })
 }
 
@@ -199,15 +200,21 @@ fn resolve_toadstool(cfg: &NucleusConfig) -> Result<PathBuf, SporeError> {
         }
     }
 
-    let candidates = [
+    let candidates = vec![
         cfg.plasmidbin_dir.join("primals/toadstool"),
         PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "/tmp".into()))
             .join(".local/bin/toadstool"),
     ];
 
-    for c in &candidates {
+    let searched = candidates
+        .iter()
+        .map(|c| c.display().to_string())
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    for c in candidates {
         if c.exists() {
-            return Ok(c.clone());
+            return Ok(c);
         }
     }
 
@@ -224,11 +231,6 @@ fn resolve_toadstool(cfg: &NucleusConfig) -> Result<PathBuf, SporeError> {
         }
     }
 
-    let searched = candidates
-        .iter()
-        .map(|c| c.display().to_string())
-        .collect::<Vec<_>>()
-        .join(", ");
     Err(SporeError::ToadstoolNotFound { searched })
 }
 
@@ -464,8 +466,8 @@ const SPRING_MAP: &[(&str, &str)] = &[
 ];
 
 fn infer_spring(metadata: &WorkloadMetadata, toml_path: &Path) -> String {
-    if let Some(ref s) = metadata.spring {
-        return s.clone();
+    if let Some(s) = &metadata.spring {
+        return s.to_owned();
     }
 
     if let Some(parent) = toml_path.parent() {

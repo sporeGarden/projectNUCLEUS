@@ -479,8 +479,7 @@ async fn execute_with_provenance(
         .output()
         .await;
 
-    #[allow(clippy::cast_possible_truncation)]
-    let elapsed_ms = start.elapsed().as_millis() as u64;
+    let elapsed_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
     if let Ok(o) = result {
         let stdout = String::from_utf8_lossy(&o.stdout);

@@ -94,13 +94,13 @@ fn main() {
     }
 
     let effective_suite = if run_outer && !run_inner {
-        "outer".to_string()
+        "outer"
     } else {
-        cli.suite.clone()
+        &cli.suite
     };
 
     let duration_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
-    let rpt = report::Report::build(results, host, &effective_suite, &start_ts, duration_ms);
+    let rpt = report::Report::build(results, host, effective_suite, &start_ts, duration_ms);
 
     report::print_summary(&rpt);
 

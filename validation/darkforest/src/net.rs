@@ -7,16 +7,18 @@ use std::time::Duration;
 use rustls::pki_types::ServerName;
 use rustls::{ClientConfig, ClientConnection, StreamOwned};
 
-static TLS_CONFIG: LazyLock<Arc<ClientConfig>> = LazyLock::new(|| {
+static TLS_CONFIG: LazyLock<Option<Arc<ClientConfig>>> = LazyLock::new(|| {
     let root_store: rustls::RootCertStore =
         webpki_roots::TLS_SERVER_ROOTS.iter().cloned().collect();
-    Arc::new(
+    let builder =
         ClientConfig::builder_with_provider(Arc::new(rustls::crypto::ring::default_provider()))
-            .with_safe_default_protocol_versions()
-            .expect("TLS protocol versions")
+            .with_protocol_versions(&[&rustls::version::TLS13, &rustls::version::TLS12])
+            .ok()?;
+    Some(Arc::new(
+        builder
             .with_root_certificates(root_store)
             .with_no_client_auth(),
-    )
+    ))
 });
 
 fn resolve_addr(host: &str, port: u16) -> Option<SocketAddr> {
@@ -158,7 +160,8 @@ fn tls_stream(
     timeout_ms: u64,
 ) -> Option<StreamOwned<ClientConnection, TcpStream>> {
     let server_name = ServerName::try_from(host.to_string()).ok()?;
-    let conn = ClientConnection::new(TLS_CONFIG.clone(), server_name).ok()?;
+    let config = TLS_CONFIG.as_ref()?.clone();
+    let conn = ClientConnection::new(config, server_name).ok()?;
     let timeout = Duration::from_millis(timeout_ms);
     let addr = resolve_addr(host, port)?;
     let sock = TcpStream::connect_timeout(&addr, timeout).ok()?;

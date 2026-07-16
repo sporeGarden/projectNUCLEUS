@@ -65,7 +65,7 @@ impl Report {
     }
 }
 
-#[allow(clippy::struct_excessive_bools)]
+#[expect(clippy::struct_excessive_bools, reason = "status flags for each probe")]
 struct PrimalStatus {
     nestgate: bool,
     rhizocrypt: bool,

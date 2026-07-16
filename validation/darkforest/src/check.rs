@@ -131,13 +131,11 @@ pub fn iso_now() -> String {
     let seconds = time_of_day % 60;
 
     // Days since 1970-01-01 to Y-M-D (civil_from_days algorithm)
-    #[allow(clippy::cast_possible_wrap)]
-    let z = days as i64 + 719_468;
+    let z = i64::try_from(days).unwrap_or(i64::MAX) + 719_468;
     let era = z.div_euclid(146_097);
-    let doe = z.rem_euclid(146_097) as u64;
+    let doe = u64::try_from(z.rem_euclid(146_097)).unwrap_or(0);
     let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
-    #[allow(clippy::cast_possible_wrap)]
-    let y = (yoe as i64) + era * 400;
+    let y = i64::try_from(yoe).unwrap_or(0) + era * 400;
     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
     let mp = (5 * doy + 2) / 153;
     let d = doy - (153 * mp + 2) / 5 + 1;

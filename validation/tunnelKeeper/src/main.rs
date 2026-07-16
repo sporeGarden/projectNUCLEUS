@@ -117,6 +117,10 @@ enum CredsAction {
 
 #[tokio::main]
 async fn main() {
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .ok();
+
     let cli = Cli::parse();
 
     let result = match cli.command {

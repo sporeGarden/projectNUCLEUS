@@ -18,6 +18,30 @@ pub enum DeployError {
 
     #[error("plasmidBin not found at {0}")]
     PlasmidBinMissing(PathBuf),
+
+    #[error("JSON-RPC over UDS: {0}")]
+    JsonRpc(#[from] JsonRpcError),
+}
+
+#[derive(Debug, Error)]
+pub enum JsonRpcError {
+    #[error("connect: {0}")]
+    Connect(std::io::Error),
+
+    #[error("serialize: {0}")]
+    Serialize(serde_json::Error),
+
+    #[error("write: {0}")]
+    Write(std::io::Error),
+
+    #[error("shutdown: {0}")]
+    Shutdown(std::io::Error),
+
+    #[error("read: {0}")]
+    Read(std::io::Error),
+
+    #[error("response not valid UTF-8: {0}")]
+    Utf8(std::string::FromUtf8Error),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
@@ -149,16 +173,11 @@ async fn graph_deploy_via_biomeos(
     }
 
     eprintln!("=== Phase 1: Probe biomeOS ===");
-    let probe = jsonrpc_uds(&neural_sock, "health.liveness", serde_json::json!({})).await;
-
-    match &probe {
+    match jsonrpc_uds(&neural_sock, "health.liveness", serde_json::json!({})).await {
         Ok(resp) => eprintln!("  biomeOS alive: {resp}"),
         Err(e) => {
             eprintln!("  biomeOS unreachable: {e}");
-            return Err(DeployError::Io(std::io::Error::new(
-                std::io::ErrorKind::ConnectionRefused,
-                format!("biomeOS unreachable: {e}"),
-            )));
+            return Err(e.into());
         }
     }
 
@@ -177,13 +196,11 @@ async fn graph_deploy_via_biomeos(
         "gate": gate_name,
         "primals": primals,
     });
-    if let Some(content) = &graph_content {
-        params["graph_content"] = serde_json::Value::String(content.clone());
+    if let Some(content) = graph_content {
+        params["graph_content"] = serde_json::Value::String(content);
     }
-    let deploy_result = jsonrpc_uds(&neural_sock, "composition.deploy", params).await;
-
-    match &deploy_result {
-        Ok(resp) if resp.contains("\"error\"") => {
+    match jsonrpc_uds(&neural_sock, "composition.deploy", params).await {
+        Ok(ref resp) if resp.contains("\"error\"") => {
             eprintln!("  composition.deploy returned error: {resp}");
             eprintln!();
             if resp.contains("capability token") || resp.contains("Permission denied") {
@@ -209,7 +226,7 @@ async fn graph_deploy_via_biomeos(
         Ok(resp) => {
             eprintln!("  composition.deploy result: {resp}");
 
-            let execution_id = serde_json::from_str::<serde_json::Value>(resp)
+            let execution_id = serde_json::from_str::<serde_json::Value>(&resp)
                 .ok()
                 .and_then(|v| v["result"]["execution_id"].as_str().map(String::from));
 
@@ -219,8 +236,7 @@ async fn graph_deploy_via_biomeos(
                 || serde_json::json!({ "graph_id": graph_id }),
                 |eid| serde_json::json!({ "graph_id": graph_id, "execution_id": eid }),
             );
-            let status = jsonrpc_uds(&neural_sock, "graph.status", status_params).await;
-            match &status {
+            match jsonrpc_uds(&neural_sock, "graph.status", status_params).await {
                 Ok(s) => eprintln!("  graph.status: {s}"),
                 Err(e) => eprintln!("  graph.status unavailable: {e}"),
             }
@@ -229,9 +245,7 @@ async fn graph_deploy_via_biomeos(
             eprintln!("  composition.deploy failed: {e}");
             eprintln!("  Falling back to direct process launch...");
             eprintln!();
-            return Err(DeployError::Io(std::io::Error::other(format!(
-                "composition.deploy failed: {e}"
-            ))));
+            return Err(e.into());
         }
     }
 
@@ -247,13 +261,13 @@ async fn jsonrpc_uds(
     sock_path: &Path,
     method: &str,
     params: serde_json::Value,
-) -> Result<String, String> {
+) -> Result<String, JsonRpcError> {
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
     use tokio::net::UnixStream;
 
     let mut stream = UnixStream::connect(sock_path)
         .await
-        .map_err(|e| format!("connect: {e}"))?;
+        .map_err(JsonRpcError::Connect)?;
 
     let request = serde_json::json!({
         "jsonrpc": "2.0",
@@ -261,24 +275,21 @@ async fn jsonrpc_uds(
         "params": params,
         "id": 1
     });
-    let payload = serde_json::to_vec(&request).map_err(|e| format!("serialize: {e}"))?;
+    let payload = serde_json::to_vec(&request).map_err(JsonRpcError::Serialize)?;
 
     stream
         .write_all(&payload)
         .await
-        .map_err(|e| format!("write: {e}"))?;
-    stream
-        .shutdown()
-        .await
-        .map_err(|e| format!("shutdown: {e}"))?;
+        .map_err(JsonRpcError::Write)?;
+    stream.shutdown().await.map_err(JsonRpcError::Shutdown)?;
 
     let mut buf = Vec::new();
     stream
         .read_to_end(&mut buf)
         .await
-        .map_err(|e| format!("read: {e}"))?;
+        .map_err(JsonRpcError::Read)?;
 
-    String::from_utf8(buf).map_err(|e| format!("utf8: {e}"))
+    String::from_utf8(buf).map_err(JsonRpcError::Utf8)
 }
 
 // ── Stop ─────────────────────────────────────────────────────────────────

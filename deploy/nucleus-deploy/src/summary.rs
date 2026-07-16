@@ -86,7 +86,10 @@ struct TelemetryRow {
     extra: String,
 }
 
-#[allow(clippy::struct_excessive_bools)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "metrics flags for each service"
+)]
 struct Metrics {
     caddy_uptime: f64,
     turn_uptime: f64,
@@ -175,7 +178,7 @@ fn compute_metrics(rows: &[TelemetryRow]) -> Metrics {
         .iter()
         .filter(|r| r.probe_name.starts_with("primal_") && r.status == "ok")
         .count();
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "count-to-f64 for percentage")]
     let primal_health = if primal_total > 0 {
         (primal_ok as f64 / primal_total as f64) * 100.0
     } else {
@@ -187,7 +190,7 @@ fn compute_metrics(rows: &[TelemetryRow]) -> Metrics {
 
     let (btsp_total, pam_total) = count_auth(rows);
     let auth_total = btsp_total + pam_total;
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "count-to-f64 for percentage")]
     let btsp_auth_pct = if auth_total > 0 {
         (btsp_total as f64 / auth_total as f64) * 100.0
     } else {
@@ -216,7 +219,7 @@ fn compute_metrics(rows: &[TelemetryRow]) -> Metrics {
     }
 }
 
-#[allow(clippy::cast_precision_loss)]
+#[expect(clippy::cast_precision_loss, reason = "count-to-f64 for percentage")]
 fn uptime_pct(rows: &[TelemetryRow], probe: &str) -> f64 {
     let total = rows.iter().filter(|r| r.probe_name == probe).count();
     let ok = rows
@@ -243,12 +246,13 @@ fn percentile(rows: &[TelemetryRow], probe: &str, pct: f64) -> f64 {
 
     latencies.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
 
-    #[allow(
+    #[expect(
+        clippy::cast_precision_loss,
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,
-        clippy::cast_precision_loss
+        reason = "percentile index: bounded [0, len], truncation is intentional"
     )]
-    let idx = pct.mul_add(latencies.len() as f64, 0.5) as usize;
+    let idx = pct.mul_add(latencies.len() as f64, 0.5).max(0.0) as usize;
     let idx = idx.clamp(1, latencies.len()) - 1;
     latencies[idx]
 }

@@ -4,10 +4,12 @@ How projectNUCLEUS validates security posture below, at, and above the
 primal layer. Every tunnel evolution step (from `TUNNEL_EVOLUTION.md`)
 is tested here before and after replacement.
 
-## Current State (2026-07-15)
+## Current State (2026-07-16)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — `nucleus-deploy security` (gate-local)
-**256 Rust tests PASS** (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+**245 Rust tests PASS** (darkforest 149, tunnelKeeper 49, nucleus-deploy 47). Coverage: darkforest 40.77%, tunnelKeeper 52.67% (llvm-cov). **Shadow 6/0/0**. **Membrane 21 PASS**.
+
+**Wave 142b — SILICON ATHEISM PHASE 2**: Deep debt sweep complete. `aws-lc-sys` C dependency eliminated from tunnelKeeper (pure ring backend). `JsonRpcError` typed enum replaces `Result<_, String>` in `nucleus-deploy`. `as` casts → `try_from`/`usize::from`. `#[allow]` → `#[expect]` with reasons. primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). `cargo deny check` PASS 4/4.
 
 **Wave 137b — NEURAL API LIVE**: SIGN-01 verified E2E (depot cryptographically signed via `sign.activate → beardog.sock → Ed25519 → signatures.toml → sign.verify PASS`). FLOCKGATE-MESH resolved (port 8080→7700, 4 overlay peers). cellMembrane systemd UMask fix permanent. 19 primals routable via Neural API on sporeGate.
 

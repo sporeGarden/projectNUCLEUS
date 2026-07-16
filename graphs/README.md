@@ -89,7 +89,7 @@ It composes existing primal capabilities — no new capabilities required. Six s
 NestGate `storage.exists` + `content.put` → rhizoCrypt `dag.session.create` → loamSpine `entry.append` →
 sweetGrass `braid.create` → BearDog `crypto.sign`. Output: `receipts/nucleus_ingest.toml`.
 
-projectNUCLEUS ironGate is a deployment target — when biomeOS v3.77+ gateway completes (NC-1),
+projectNUCLEUS ironGate is a deployment target — when biomeOS v4.31+ gateway completes (NC-1),
 run `biomeos nucleus ingest <pseudoSpore-dir>` on ironGate VPS to close NUCLEUS_VALIDATION_MATRIX column U.
 
 ## Source

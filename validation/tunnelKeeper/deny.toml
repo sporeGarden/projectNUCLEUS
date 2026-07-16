@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # cargo-deny configuration — tunnelKeeper
-# YAML via serde-saphyr (pure Rust). TLS via rustls (aws-lc-rs backend).
+# YAML via serde-saphyr (pure Rust). TLS via rustls (ring backend, pure Rust).
 
 [advisories]
 yanked = "deny"

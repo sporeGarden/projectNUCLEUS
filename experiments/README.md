@@ -7,7 +7,7 @@ Validation experiments for sovereign NUCLEUS deployment.
 | ID | Name | Crate/Tool | Tests | Status |
 |----|------|-----------|-------|--------|
 | E1 | Security boundary validation | `validation/darkforest/` | 149 | PASS |
-| E2 | Transport sovereignty | `validation/tunnelKeeper/` | 48 | PASS |
+| E2 | Transport sovereignty | `validation/tunnelKeeper/` | 49 | PASS |
 | E3 | Sovereignty parity | `infra/benchScale/` | 4 tracks | ACTIVE |
 | E4 | Membrane security audit | `validation/darkforest_membrane.sh` | 17 checks (21 PASS) | PASS |
 | E5 | lithoSpore integration | `gardens/lithoSpore/` | 117 | PASS |
@@ -44,13 +44,13 @@ report roundtrip, discovery module, capability probing, HTTP/HTTPS parsing, net 
 while preparing Songbird sovereign replacement.
 
 **Rust crate**: `validation/tunnelKeeper/` (v0.2.0)
-**Test coverage**: 48 unit tests (YAML config roundtrip, ChaCha20 encrypt/decrypt,
+**Test coverage**: 49 unit tests (YAML config roundtrip, ChaCha20 encrypt/decrypt,
 health evaluation, JSON serialization)
 
 **Results**:
 - Health probes: process, connectivity, DNS, config, replicas
 - Credential encryption: ChaCha20-Poly1305 at rest (BearDog pattern)
-- reqwest upgraded 0.12→0.13 (ring eliminated, aws-lc-rs provider)
+- reqwest 0.13 with pure Rust TLS (ring backend, aws-lc-sys eliminated)
 - Zero clippy warnings (pedantic + nursery)
 
 **Evolution roadmap**: v0.2 (current) → v0.3 (SongbirdTransport replaces
@@ -168,21 +168,21 @@ graceful degradation per `wateringHole/DEGRADATION_BEHAVIOR_STANDARD.md`.
 
 ```
 darkforest          149 tests  (check, crypto, discovery, fuzz, net, observer, pentest, report + 6 outer modules)
-tunnelKeeper         48 tests  (api, config, crypto, health, transport)
+tunnelKeeper         49 tests  (api, config, crypto, health, transport)
 nucleus-deploy       47 tests  (security, provenance, deploy, spore, telemetry, util)
-nucleus-primals      12 tests  (shared primal registry + composition constants)
+nucleus-primals       0 tests  (shared primal registry + composition constants — no test harness)
 lithoSpore          117 tests  (7 modules, cross-tier parity)
 darkforest_membrane  21 checks (VPS security audit, Nest Atomic)
 benchScale            5 tracks (shadow parity, 25+ reports)
 5-layer security    267 checks (pentest, fuzz, crypto, observer, gate)
 ───────────────────────────────────────────────────────────────────
-Total               584+ validations, 0 failures
+Total               575+ validations, 0 failures
 ```
 
 All crates: `#![forbid(unsafe_code)]`, zero clippy warnings (pedantic+nursery),
-cargo fmt clean, graphs synchronized to primalSpring v0.9.33 (Wave 123), `deny.toml`
-on both crates, `secure_by_default` 12/12 deploy graphs. primalSpring: 98 scenarios,
-1017 tests. Deploy tooling `--uds-only` VPS standard.
+cargo fmt clean, graphs synchronized to primalSpring v0.9.39 (Wave 142b), `deny.toml`
+on all 4 crates, `secure_by_default` 19/19 deploy graphs. primalSpring: 167 scenarios.
+Deploy tooling `--uds-only` VPS standard. `aws-lc-sys` C dependency eliminated (pure ring backend).
 
 ---
 

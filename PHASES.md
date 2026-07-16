@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 142b note**: **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures. Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference). primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. 55 depot binaries, re-harvest → 56.
+> **Wave 142b note**: **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures. Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference). primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). 245 Rust tests (darkforest 149, tunnelKeeper 49, nucleus-deploy 47). `cargo deny check` PASS 4/4. 55 depot binaries, re-harvest → 56.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place
@@ -97,7 +97,7 @@ All security gaps from the Phase 2a pen test have been resolved upstream (primal
 
 ## Phase 2: Ionic Compute Sharing
 
-**Status**: Integration ready — Forgejo primary (42 repos, K-Derm diderm relay). 8 gates enrolled (northGate NEW). **256 Rust tests PASS**. 13/13 primals LIVE. primalSpring v0.9.36 — 162 scenarios, 1,194 tests, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide. 45 signed ecobins across 4 architectures
+**Status**: Integration ready — Forgejo primary (42 repos, K-Derm diderm relay). 8 gates enrolled (northGate NEW). **245 Rust tests PASS**. 13/13 primals LIVE. primalSpring v0.9.39 — 167 scenarios, KNOWN_DEBT = 0. `unsafe_code = "forbid"` workspace-wide. 45 signed ecobins across 4 architectures
 **System**: active gate + NUC intake
 **Bonding**: Ionic (metered, scoped access)
 **New Primals**: songBird cross-gate routing, BTSP Phase 3 AEAD (all 13 primals converged)
@@ -246,7 +246,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - Pulled primalSpring v0.9.25 (`d56d2ad`), all 15 primals at HEAD, plasmidBin `v2026.05.08`, wateringHole
 - **JH-0 ADOPTED**: 13/13 primals ship MethodGate with `auth.check`/`auth.mode`/`auth.peer_info`. 9/13 respond on TCP. Permissive mode active (log + allow)
 - **JH-1 RESOLVED**: BearDog `identity.create` → `auth.issue_ionic` → `auth.verify_ionic`. Ed25519-signed ionic tokens with scope, expiry, JTI
-- **JH-2 RESOLVED**: biomeOS v3.48 resource envelope enforcement (`timeout_ms`, `cpu`, `mem`). ToadStool S232 enforces all dispatch paths
+- **JH-2 RESOLVED**: biomeOS v4.31 resource envelope enforcement (`timeout_ms`, `cpu`, `mem`). ToadStool S232 enforces all dispatch paths
 - **JH-3 RESOLVED**: biomeOS `composition.reload` — hot-swap single primal without full restart
 - **JH-4 RESOLVED**: BearDog `auth.issue_session` — purpose-based presets
 - **JH-5 Phase 2 COMPLETE**: skunkBat `security.audit_log` — 1024-event ring buffer, 7 event kinds, cursor-based polling
@@ -349,7 +349,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - `pappusCast.py`: broad `except Exception` blocks narrowed to `subprocess.SubprocessError`, `json.JSONDecodeError`, `OSError`, `urllib.error.URLError`
 - 7 deploy scripts wired to source `nucleus_config.sh` (sporeprint_local, sporeprint_verify, sporeprint_dns, rotate_cookie_secret, gate_switch, tier_enforcement_test, external_validation)
 - 96 "ironGate" display references scrubbed across 23 docs → gate-anonymous terms
-- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12)
+- Zero TODO/FIXME/HACK remaining, zero clippy warnings. 245 Rust tests (darkforest 149, tunnelKeeper 49, nucleus-deploy 47)
 
 **Cell Membrane Architecture (2026-05-10)**:
 - Architectural inversion: `primals.eco` DNS permanently set to GitHub Pages A records (extracellular layer)

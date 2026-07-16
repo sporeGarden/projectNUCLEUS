@@ -1,6 +1,6 @@
 # Phase Architecture — projectNUCLEUS
 
-> **Wave 140a note**: **TANGIBLES PIVOT.** Cross-Platform Parity AAR absorbed (45 binaries, 4 architectures). OS Atheism Phase 1 shipped. Content-Addressed Convergence formalized. Manifest v3.0: 42 repos + 2 protists. primalSpring v0.9.36 (`6a1d6c6`, 162 scenarios, 1,194 tests). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. Depot: 45 signed ecobins, 4 architectures.
+> **Wave 142b note**: **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures. Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference). primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). 256 Rust tests (darkforest 149, tunnelKeeper 48, nucleus-deploy 47, nucleus-primals 12). `cargo deny check` PASS 4/4. 55 depot binaries, re-harvest → 56.
 > **Wave 69 note**: `nucleus-primals` shared registry crate — single source of truth for slug/env/port mappings used by `nucleus-deploy`.
 > **Wave 67 note**: All bash deploy scripts referenced below have been evolved
 > to Rust via `nucleus-deploy` (9 subcommands). Bash originals remain in place

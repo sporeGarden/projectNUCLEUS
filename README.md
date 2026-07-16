@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 140a (2026-07-15)** — **TANGIBLES PIVOT.** Cross-Platform Parity AAR absorbed (45 binaries, 4 architectures). OS Atheism Phase 1 shipped. Content-Addressed Convergence pattern formalized. Manifest v3.0: 42 repos including 2 protists. darkforest v3.0: **26/26 PASS**. primalSpring v0.9.36 (`6a1d6c6`, 162 scenarios, 1,194 tests). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. Depot: 45 signed ecobins across 4 architectures.
+**Wave 142b (2026-07-16)** — **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures (56 binaries). Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference, `TransportEndpoint` trait). darkforest v3.0: **26/26 PASS**. primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. 55 depot binaries, re-harvest pending 56.
 
 ### Infrastructure
 

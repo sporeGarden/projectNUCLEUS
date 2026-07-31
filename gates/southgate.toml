@@ -1,0 +1,81 @@
+# Gate: southGate — Full NUCLEUS Deployment (house2)
+#
+# 5800X3D (best single-thread gaming chip) + RTX 4060 + 128GB + 4.5TB NVMe.
+# Second-house full NUCLEUS deployment. Enrolled Wave 155n.
+# Created 2026-07-31.
+
+[gate]
+name = "southgate"
+role = "Full NUCLEUS deployment — house2"
+location = "Sovereign cluster — WAN (house2)"
+bonding = "covalent"
+secure_by_default = true
+
+[hardware]
+cpu = "AMD Ryzen 7 5800X3D"
+cores = 8
+threads = 16
+gpu_display = "NVIDIA GeForce RTX 4060"
+gpu_arch = "Ada Lovelace AD107"
+gpu_vram_gb = 8
+ram_gb = 128
+ram_type = "DDR4"
+storage_tb = 4.5
+storage_type = "NVMe (1TB boot + 4TB work)"
+os = "Pop!_OS 22.04 LTS"
+
+[network]
+lan_speed = "1G"
+wan_speed = "TBD"
+interface = "ethernet"
+
+[membrane]
+role = "intracellular"
+bonding_to_vps = "covalent (SSH key)"
+vps_ip = "157.230.3.183"
+wg_ip = "10.13.37.9"
+
+[composition]
+atomic = "nucleus"
+primals = [
+    "beardog", "songbird", "skunkbat",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "biomeos", "squirrel", "petaltongue",
+]
+fragment = "full_nucleus"
+
+[ports]
+beardog = 9100
+songbird = 9200
+skunkbat = 9140
+toadstool = 9400
+barracuda = 9740
+coralreef = 9730
+nestgate = 9300
+rhizocrypt = 9310
+loamspine = 9320
+sweetgrass = 9330
+biomeos = 9900
+squirrel = 9500
+petaltongue = 9800
+
+[identity]
+family_name = "southgate-sovereign"
+node_id = "southgate"
+family_seed_path = "~/.config/biomeos/family/.beacon.seed"
+
+[storage]
+boot_drive = "/dev/nvme0n1 (1TB Samsung 990 EVO Plus)"
+work_drive = "/dev/nvme1n1 (4TB Samsung 990 EVO Plus)"
+work_mount = "/mnt/4tb-work"
+
+[science]
+primary_domains = ["hotSpring", "neuralSpring"]
+capabilities = ["3D V-Cache (gaming/single-thread)", "RTX 4060 8GB", "128GB RAM", "4TB NVMe workspace"]
+workloads = [
+    "Full NUCLEUS mesh node",
+    "Node Atomic compute (RTX 4060)",
+    "NestGate CAS on 4TB NVMe",
+    "petalTongue rendering",
+]

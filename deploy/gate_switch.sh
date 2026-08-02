@@ -14,7 +14,7 @@
 #   - SSH key access to target gate
 #   - cloudflared installed on target gate (gate_provision.sh)
 #   - ABG_SHARED available on target (via NestGate rsync or local mount)
-#   - nucleus-deploy (or deploy/legacy/deploy.sh) present on target gate
+#   - nucleus-deploy present on target gate
 #
 # Usage:
 #   gate_switch.sh <target-gate-hostname> [--dry-run]
@@ -84,9 +84,9 @@ log "  SSH connectivity: OK"
 
 REMOTE_NUCLEUS="Development/ecoPrimals/gardens/projectNUCLEUS"
 REMOTE_ND=$(ssh "$TARGET" "which nucleus-deploy 2>/dev/null" || true)
-REMOTE_DEPLOY=$(ssh "$TARGET" "ls ~/${REMOTE_NUCLEUS}/deploy/legacy/deploy.sh 2>/dev/null" || true)
-if [[ -z "$REMOTE_ND" ]] && [[ -z "$REMOTE_DEPLOY" ]]; then
-    warn "  nucleus-deploy / deploy.sh not found on $TARGET — services must be set up manually"
+if [[ -z "$REMOTE_ND" ]]; then
+    err "nucleus-deploy binary not found on $TARGET. Install from depot or build: cd deploy/nucleus-deploy && cargo build --release"
+    exit 1
 fi
 
 REMOTE_CF=$(ssh "$TARGET" "which cloudflared 2>/dev/null" || true)
@@ -139,16 +139,8 @@ log "  Workspace sync: done"
 
 log "Phase 5: Deploying services on $TARGET"
 
-if [[ -n "$REMOTE_ND" ]]; then
-    run_or_print ssh "$TARGET" "nucleus-deploy deploy"
-    log "  Services deployed via nucleus-deploy"
-elif [[ -n "$REMOTE_DEPLOY" ]]; then
-    run_or_print ssh "$TARGET" "cd ~/${REMOTE_NUCLEUS}/deploy/legacy && bash deploy.sh"
-    log "  Services deployed via legacy/deploy.sh"
-else
-    warn "  Manual service startup required on $TARGET"
-    warn "  Start: jupyterhub, observer-static, pappusCast"
-fi
+run_or_print ssh "$TARGET" "nucleus-deploy deploy"
+log "  Services deployed via nucleus-deploy"
 
 # ── Phase 6: Ensure target gate has full tunnel config ────────────────────
 

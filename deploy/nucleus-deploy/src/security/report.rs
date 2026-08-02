@@ -1,5 +1,3 @@
-use chrono::Local;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Verdict {
     Pass,
@@ -28,7 +26,7 @@ impl SecurityReport {
     }
 
     pub fn log(&mut self, msg: &str) {
-        let line = format!("[{}] {msg}", Local::now().format("%H:%M:%S"));
+        let line = format!("[{}] {msg}", crate::util::time_stamp());
         eprintln!("{line}");
         self.log_lines.push(line);
     }

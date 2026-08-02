@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import (
-    PUBLIC_ROOT, JUPYTER_BIN, VOILA_USER,
+    PUBLIC_ROOT, JUPYTER_BIN, OBSERVER_USER,
     STATIC_HTML_DIR, THEME_CSS, CHANGELOG_FILE, STATE_DIR, log,
 )
 from .state import PublishState, scan_workspace
@@ -16,9 +16,9 @@ from .state import PublishState, scan_workspace
 
 def _nbconvert_cmd() -> list[str]:
     """Return the nbconvert command prefix, using sudo only when needed."""
-    if getpass.getuser() == VOILA_USER:
+    if getpass.getuser() == OBSERVER_USER:
         return [f"{JUPYTER_BIN}/jupyter"]
-    return ["sudo", "-u", VOILA_USER, f"{JUPYTER_BIN}/jupyter"]
+    return ["sudo", "-u", OBSERVER_USER, f"{JUPYTER_BIN}/jupyter"]
 
 
 def export_static_html(rel_path: str) -> tuple[bool, str]:

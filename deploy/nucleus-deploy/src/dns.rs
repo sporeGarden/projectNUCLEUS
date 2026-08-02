@@ -1,4 +1,3 @@
-use chrono::Local;
 use thiserror::Error;
 use tokio::process::Command;
 
@@ -57,7 +56,7 @@ pub async fn run(cfg: &NucleusConfig, args: &DnsArgs) -> Result<(), DnsError> {
 }
 
 fn generate_zone(vps_ip: &str) -> String {
-    let serial = Local::now().format("%Y%m%d%H");
+    let serial = crate::util::utc_serial();
     let a_records: String = GHPAGES_IPS
         .iter()
         .map(|ip| format!("@ IN A {ip}"))

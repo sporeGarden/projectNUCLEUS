@@ -12,7 +12,7 @@ STATE_FILE = STATE_DIR / "last_publish.json"
 CHANGELOG_FILE = STATE_DIR / "changelog.jsonl"
 LOG_DIR = Path(__file__).resolve().parent.parent / "tier_test_results"
 
-VOILA_USER = "voila"
+OBSERVER_USER = "observer"
 HUB_API = f"http://127.0.0.1:{JUPYTERHUB_PORT}/hub/api"
 
 WATCHED_DIRS = ["commons", "showcase", "data", "pilot", "validation"]

@@ -344,9 +344,11 @@ mod tests {
 
     #[test]
     fn evaluate_cookie_secret_content_accepts_high_entropy_hex() {
-        let secret = (0..32u32)
-            .map(|i| format!("{:02x}", (i.wrapping_mul(37).wrapping_add(13)) & 0xFF))
-            .collect::<String>();
+        let secret = (0..32u32).fold(String::new(), |mut s, i| {
+            use std::fmt::Write as _;
+            let _ = write!(s, "{:02x}", (i.wrapping_mul(37).wrapping_add(13)) & 0xFF);
+            s
+        });
         let result = evaluate_cookie_secret_content(&secret);
         assert!(result.is_ok());
         let (ent, byte_len) = result.unwrap();
@@ -359,9 +361,11 @@ mod tests {
         let dir = std::env::temp_dir().join("darkforest_test_cookie_secret");
         let _ = fs::create_dir_all(&dir);
         let path = dir.join("jupyterhub_cookie_secret");
-        let secret = (0..32u32)
-            .map(|i| format!("{:02x}", (i.wrapping_mul(53).wrapping_add(7)) & 0xFF))
-            .collect::<String>();
+        let secret = (0..32u32).fold(String::new(), |mut s, i| {
+            use std::fmt::Write as _;
+            let _ = write!(s, "{:02x}", (i.wrapping_mul(53).wrapping_add(7)) & 0xFF);
+            s
+        });
         fs::write(&path, &secret).expect("write secret");
 
         let content = fs::read_to_string(&path).expect("read secret");

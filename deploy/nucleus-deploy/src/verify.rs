@@ -1,4 +1,3 @@
-use chrono::Utc;
 use serde_json::Value;
 use std::path::Path;
 use thiserror::Error;
@@ -83,7 +82,7 @@ pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyE
 
     let results_dir = cfg.project_root.join(format!(
         "validation/membrane-provenance-{}",
-        Utc::now().format("%Y%m%d-%H%M%S")
+        crate::util::utc_compact()
     ));
     fs::create_dir_all(&results_dir).await?;
 
@@ -374,7 +373,7 @@ async fn check_turn(user: &str, ip: &str, report: &mut Report) {
 }
 
 async fn test_dag_session(user: &str, ip: &str, port: u16, report: &mut Report) -> String {
-    let session_name = format!("membrane-verify-{}", Utc::now().format("%Y%m%d-%H%M%S"));
+    let session_name = format!("membrane-verify-{}", crate::util::utc_compact());
     let payload = format!(
         r#"{{"jsonrpc":"2.0","method":"dag.session.create","params":{{"name":"{session_name}"}},"id":10}}"#
     );
@@ -406,7 +405,7 @@ async fn test_dag_session(user: &str, ip: &str, port: u16, report: &mut Report) 
 
     let event_payload = format!(
         r#"{{"jsonrpc":"2.0","method":"dag.event.append","params":{{"session_id":"{session_id}","event_type":{{"DataCreate":{{}}}},"data":{{"type":"membrane_verify","timestamp":"{}"}}}},"id":11}}"#,
-        Utc::now().to_rfc3339()
+        crate::util::utc_timestamp()
     );
     let event_resp = rpc_remote(user, ip, port, &event_payload)
         .await
@@ -449,7 +448,7 @@ async fn test_spine(user: &str, ip: &str, port: u16, report: &mut Report) {
 }
 
 async fn test_braid(user: &str, ip: &str, port: u16, report: &mut Report) {
-    let verify_hash = format!("{:064x}", Utc::now().timestamp());
+    let verify_hash = format!("{:064x}", crate::util::utc_timestamp_secs());
     let payload = format!(
         r#"{{"jsonrpc":"2.0","method":"braid.create","params":{{"data_hash":"{verify_hash}","name":"membrane-verify","mime_type":"application/x-membrane-verify","description":"Post-deploy trio verification","size":1}},"id":30}}"#
     );
@@ -517,7 +516,7 @@ async fn write_report(
 
 PASS: {pass}  FAIL: {fail}  SKIP: {skip}  WARN: {warn}
 ",
-        date = Utc::now().to_rfc3339(),
+        date = crate::util::utc_timestamp(),
         ng = status_str(ps.nestgate),
         rc = status_str(ps.rhizocrypt),
         ls = status_str(ps.loamspine),

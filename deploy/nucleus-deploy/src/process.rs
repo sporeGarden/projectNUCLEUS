@@ -2,7 +2,7 @@ use std::path::Path;
 
 use tokio::fs;
 use tokio::process::Command;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 use crate::config::NucleusConfig;
 
@@ -23,18 +23,13 @@ pub async fn start_primal(ctx: &PrimalContext<'_>, name: &str) {
         return;
     }
 
-    let port_for = |port: u16| -> u16 {
-        if ctx.uds_only {
-            0
-        } else {
-            port
-        }
-    };
+    let port_for = |port: u16| -> u16 { if ctx.uds_only { 0 } else { port } };
 
     let mut cmd = Command::new(&bin);
     configure_primal_cmd(&mut cmd, ctx, name, port_for);
 
-    let log_path = format!("/tmp/{name}.log");
+    let log_dir = std::env::var("NUCLEUS_LOG_DIR").unwrap_or_else(|_| "/tmp".into());
+    let log_path = format!("{log_dir}/{name}.log");
     let log_file = std::fs::File::create(&log_path).ok();
 
     if let Some(f) = log_file {
@@ -183,6 +178,25 @@ fn configure_primal_cmd(
     }
 }
 
+pub(crate) async fn find_pid_by_pattern(pattern: &str) -> Option<String> {
+    let mut entries = fs::read_dir("/proc").await.ok()?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
+        let name = entry.file_name();
+        let name_str = name.to_string_lossy();
+        if !name_str.chars().all(|c| c.is_ascii_digit()) {
+            continue;
+        }
+        let cmdline_path = entry.path().join("cmdline");
+        if let Ok(data) = fs::read(&cmdline_path).await {
+            let cmdline = String::from_utf8_lossy(&data).replace('\0', " ");
+            if cmdline.contains(pattern) {
+                return Some(name_str.to_string());
+            }
+        }
+    }
+    None
+}
+
 pub async fn verify_primals(
     cfg: &NucleusConfig,
     primals: &[&str],
@@ -193,16 +207,7 @@ pub async fn verify_primals(
 
     for &p in primals {
         let pattern = format!("{}/primals/{p}", cfg.plasmidbin_dir.display());
-        let output = Command::new("pgrep").args(["-f", &pattern]).output().await;
-
-        let pid = output.ok().filter(|o| o.status.success()).map(|o| {
-            String::from_utf8_lossy(&o.stdout)
-                .lines()
-                .next()
-                .unwrap_or("")
-                .trim()
-                .to_string()
-        });
+        let pid = find_pid_by_pattern(&pattern).await;
 
         match pid {
             Some(pid) if !pid.is_empty() => {
@@ -257,13 +262,13 @@ async fn has_socket_for(dir: &Path, primal: &str) -> bool {
 }
 
 pub async fn hostname() -> String {
-    Command::new("hostname")
-        .arg("-s")
-        .output()
-        .await
-        .ok()
-        .map_or_else(
-            || "unknown".into(),
-            |o| String::from_utf8_lossy(&o.stdout).trim().to_string(),
-        )
+    // Try /etc/hostname first (most Linux systems)
+    if let Ok(name) = tokio::fs::read_to_string("/etc/hostname").await {
+        let trimmed = name.trim().to_string();
+        if !trimmed.is_empty() {
+            return trimmed;
+        }
+    }
+    // Fallback: HOSTNAME env var
+    std::env::var("HOSTNAME").unwrap_or_else(|_| "unknown".into())
 }

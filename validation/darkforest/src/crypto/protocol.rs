@@ -193,8 +193,10 @@ mod tests {
 
     #[test]
     fn protocol_constants_are_sane() {
-        assert!(RPC_TIMEOUT_MS >= 1000);
-        assert!(BTSP_PROBE_TIMEOUT_MS >= 1000);
+        const {
+            assert!(RPC_TIMEOUT_MS >= 1000);
+            assert!(BTSP_PROBE_TIMEOUT_MS >= 1000);
+        }
     }
 
     #[test]
@@ -219,8 +221,7 @@ mod tests {
         let expired = "eyJhbGciOiJFZERTQSIsInR5cCI6ImlvbmljIiwidmVyIjoxfQ.\
                        eyJpc3MiOiJ0ZXN0Iiwic3ViIjoiZXhwaXJlZCIsInNjb3BlIjpbIioiXSwiaWF0IjoxNzE1MDAwMDAwLCJleHAiOjE3MTUwMDAwMDEsImp0aSI6ImRlYWRiZWVmMDAwMDAwMDEifQ.\
                        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        let parts: Vec<&str> = expired.split('.').collect();
-        assert_eq!(parts.len(), 3);
+        assert_eq!(expired.split('.').count(), 3);
     }
 
     #[test]

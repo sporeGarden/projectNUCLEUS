@@ -171,7 +171,7 @@ pub fn hub_port() -> u16 {
     std::env::var("JUPYTERHUB_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(8000)
+        .unwrap_or(nucleus_primals::JUPYTERHUB_DEFAULT_PORT)
 }
 
 pub fn compute_user() -> String {
@@ -256,22 +256,8 @@ mod tests {
     fn load_primals_includes_all_nucleus_primals() {
         let primals = load_primals();
         let names: Vec<&str> = primals.iter().map(|p| p.name.as_str()).collect();
-        for expected in [
-            "beardog",
-            "songbird",
-            "skunkbat",
-            "toadstool",
-            "barracuda",
-            "coralreef",
-            "nestgate",
-            "rhizocrypt",
-            "loamspine",
-            "sweetgrass",
-            "biomeos",
-            "petaltongue",
-            "squirrel",
-        ] {
-            assert!(names.contains(&expected), "missing primal: {expected}");
+        for expected in nucleus_primals::COMP_FULL {
+            assert!(names.contains(expected), "missing primal: {expected}");
         }
     }
 

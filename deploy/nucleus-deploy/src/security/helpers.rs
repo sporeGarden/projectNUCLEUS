@@ -66,11 +66,7 @@ pub async fn http_status_code(url: &str) -> Option<String> {
         .ok()?;
 
     let code = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if code == "000" {
-        None
-    } else {
-        Some(code)
-    }
+    if code == "000" { None } else { Some(code) }
 }
 
 pub async fn notify_skunkbat(report: &mut SecurityReport, host: &str, port: u16) {

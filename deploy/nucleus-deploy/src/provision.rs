@@ -254,7 +254,8 @@ fn print_summary(args: &ProvisionArgs, hostname: &str, mode_str: &str) {
 
 fn observer_service(home: &str, bind: &str) -> String {
     let user = std::env::var("USER").unwrap_or_else(|_| "nobody".into());
-    let port = std::env::var("OBSERVER_PORT").unwrap_or_else(|_| "8866".into());
+    let port = std::env::var("OBSERVER_PORT")
+        .unwrap_or_else(|_| nucleus_primals::OBSERVER_DEFAULT_PORT.to_string());
     format!(
         r"[Unit]
 Description=observer-static — gate static surface

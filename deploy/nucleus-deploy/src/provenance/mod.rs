@@ -1,7 +1,6 @@
 mod manifest;
 
-use chrono::Local;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
@@ -66,10 +65,9 @@ pub async fn run(cfg: &NucleusConfig, args: &ProvenanceArgs) -> Result<(), Prove
         .unwrap_or_else(|| cfg.project_root.join("workloads/wetspring"));
 
     let results_dir = args.results_dir.clone().unwrap_or_else(|| {
-        cfg.project_root.join("validation").join(format!(
-            "provenance-run-{}",
-            Local::now().format("%Y%m%d-%H%M%S")
-        ))
+        cfg.project_root
+            .join("validation")
+            .join(format!("provenance-run-{}", crate::util::utc_compact()))
     });
 
     fs::create_dir_all(&results_dir)
@@ -87,7 +85,7 @@ pub async fn run(cfg: &NucleusConfig, args: &ProvenanceArgs) -> Result<(), Prove
     phase_health_checks(cfg, host).await?;
 
     // Phase 2: Create DAG session
-    let session_name = format!("abg-pipeline-{}", Local::now().format("%Y%m%d-%H%M%S"));
+    let session_name = format!("abg-pipeline-{}", crate::util::utc_compact());
     let session_id =
         phase_create_dag_session(host, cfg.port_for("rhizocrypt"), &session_name).await?;
 
@@ -374,7 +372,7 @@ async fn register_artifact(
     }
 
     let Some(hash) = blake3_hash(filepath).await else {
-        log(&format!("  [SKIP] {artifact_key} — b3sum failed"));
+        log(&format!("  [SKIP] {artifact_key} — blake3 hash failed"));
         return;
     };
 

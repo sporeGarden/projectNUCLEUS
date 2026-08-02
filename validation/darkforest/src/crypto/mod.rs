@@ -9,7 +9,7 @@ pub fn gate_home() -> PathBuf {
     PathBuf::from(
         std::env::var("GATE_HOME")
             .or_else(|_| std::env::var("HOME"))
-            .unwrap_or_else(|_| "/home/nobody".to_string()),
+            .unwrap_or_else(|_| "/tmp/darkforest".to_string()),
     )
 }
 
@@ -38,6 +38,7 @@ pub struct CryptoConfig {
     pub cloudflared_dir: PathBuf,
 }
 
+#[expect(clippy::cast_precision_loss, reason = "entropy ratio over byte counts")]
 pub fn shannon_entropy(data: &[u8]) -> f64 {
     if data.is_empty() {
         return 0.0;

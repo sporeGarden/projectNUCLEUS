@@ -20,4 +20,4 @@ JUPYTER_BIN = os.environ.get("JUPYTER_BIN", str(GATE_HOME / "miniforge3" / "envs
 
 JUPYTERHUB_PORT = int(os.environ.get("JUPYTERHUB_PORT", "8000"))
 HUB_URL = os.environ.get("LAB_URL", "https://lab.primals.eco")
-VOILA_PORT = int(os.environ.get("VOILA_PORT", "8866"))
+OBSERVER_PORT = int(os.environ.get("OBSERVER_PORT", "8866"))

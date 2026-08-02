@@ -32,7 +32,7 @@ interface = "ethernet"
 [membrane]
 role = "intracellular"
 bonding_to_vps = "covalent (SSH key)"
-vps_ip = "157.230.3.183"
+# vps_ip: read from MEMBRANE_VPS_IP env (SSOT: deploy/nucleus_config.sh)
 wg_ip = "10.13.37.9"
 
 [composition]
@@ -49,16 +49,16 @@ fragment = "full_nucleus"
 beardog = 9100
 songbird = 9200
 skunkbat = 9140
+squirrel = 9300
 toadstool = 9400
-barracuda = 9740
+nestgate = 9500
+rhizocrypt = 9601
+loamspine = 9700
 coralreef = 9730
-nestgate = 9300
-rhizocrypt = 9310
-loamspine = 9320
-sweetgrass = 9330
-biomeos = 9900
-squirrel = 9500
-petaltongue = 9800
+barracuda = 9740
+biomeos = 9800
+sweetgrass = 9850
+petaltongue = 9900
 
 [identity]
 family_name = "southgate-sovereign"

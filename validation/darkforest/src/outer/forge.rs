@@ -22,7 +22,7 @@ fn forge_port() -> u16 {
     std::env::var("DARKFOREST_FORGE_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(2222)
+        .unwrap_or(nucleus_primals::FORGEJO_SSH_DEFAULT_PORT)
 }
 
 fn check_ssh_reachable(target: &str, port: u16, results: &mut Vec<CheckResult>) {

@@ -4,7 +4,6 @@
 # nucleus-deploy reads this to determine what to start on each gate.
 #
 # Add a gate: create a gates/<name>.toml and add an entry here.
-# All 8 gates in the ironGate sovereign cluster are listed.
 
 [manifest]
 version = "0.3.0"
@@ -23,13 +22,11 @@ graph = "../graphs/nucleus_complete.toml"
 
 [[gates]]
 name = "biomegate"
-atomic = "heavy_node"
+atomic = "gpu_crankshaft"
 config = "../gates/biomegate.toml"
-status = "offline"
-offline_since = "2026-06-02"
-offline_reason = "recovery — no deployments during biomeGate recovery (Wave 71)"
+status = "active"
 primals = 6
-composition = "heavy_node_atomic + hbm2_bench"
+composition = "gpu_crankshaft — 3 VFIO GPUs (RTX 5060 + Titan V + K80×2)"
 graph = "../graphs/node_atomic.toml"
 
 [[gates]]
@@ -45,7 +42,8 @@ graph = "../graphs/strand_heavy_compute.toml"
 name = "flockgate"
 atomic = "node_atomic"
 config = "../gates/flockgate.toml"
-status = "active"
+status = "offline"
+offline_reason = "dead CMOS / RustDesk lockout"
 primals = 6
 composition = "node_atomic_compute"
 graph = "../graphs/node_atomic.toml"
@@ -77,6 +75,15 @@ primals = 3
 composition = "tower_atomic (portable_anchor)"
 graph = "../graphs/graphene_portable.toml"
 gate_class = "portable_anchor"
+
+[[gates]]
+name = "southgate"
+atomic = "nucleus"
+config = "../gates/southgate.toml"
+status = "active"
+primals = 13
+composition = "full_nucleus (validation — no WireGuard)"
+graph = "../graphs/nucleus_complete.toml"
 
 [[gates]]
 name = "nuc-intake"

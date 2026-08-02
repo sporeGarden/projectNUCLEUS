@@ -1,4 +1,3 @@
-use chrono::Utc;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
@@ -36,7 +35,7 @@ pub async fn run(cfg: &NucleusConfig, args: &TelemetryArgs) -> Result<(), Teleme
         .unwrap_or_else(|| cfg.project_root.join("validation/baselines/daily"));
     fs::create_dir_all(&telemetry_dir).await?;
 
-    let today = Utc::now().format("%Y-%m-%d").to_string();
+    let today = crate::util::utc_date();
     let csv_path = telemetry_dir.join(format!("membrane_telemetry_{today}.csv"));
 
     if !csv_path.exists() {
@@ -83,7 +82,7 @@ async fn emit(
     code: u16,
     extra: &str,
 ) {
-    let ts = Utc::now().format("%Y-%m-%dT%H:%M:%SZ");
+    let ts = crate::util::utc_timestamp();
     let line = format!("{ts},{probe},{target},{latency_ms},{status},{code},{extra}\n");
     let _ = fs::OpenOptions::new()
         .append(true)
@@ -186,7 +185,7 @@ async fn probe_external(cfg: &NucleusConfig, csv_path: &Path) {
     let vps_http: u16 = std::env::var("MEMBRANE_HTTP_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(80);
+        .unwrap_or(nucleus_primals::MEMBRANE_HTTP_DEFAULT_PORT);
 
     probe_http(
         csv_path,
@@ -198,14 +197,14 @@ async fn probe_external(cfg: &NucleusConfig, csv_path: &Path) {
     let rustdesk_port: u16 = std::env::var("RUSTDESK_HBBS_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(21116);
+        .unwrap_or(nucleus_primals::RUSTDESK_HBBS_DEFAULT_PORT);
     probe_tcp(csv_path, "rustdesk_hbbs", &vps_ip, rustdesk_port).await;
 
     let btsp_host = std::env::var("BTSP_SHADOW_HOST").unwrap_or_else(|_| "127.0.0.1".into());
     let btsp_port: u16 = std::env::var("BTSP_SHADOW_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(8443);
+        .unwrap_or(nucleus_primals::BTSP_SHADOW_DEFAULT_PORT);
 
     let btsp_reachable = tokio::time::timeout(
         std::time::Duration::from_secs(2),
@@ -290,7 +289,7 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
     let vps_http: u16 = std::env::var("MEMBRANE_HTTP_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(80);
+        .unwrap_or(nucleus_primals::MEMBRANE_HTTP_DEFAULT_PORT);
 
     let vps_url = format!("http://{vps_ip}:{vps_http}/");
     let vps_check = Command::new("curl")

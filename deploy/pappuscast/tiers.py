@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from .config import VOILA_USER, JUPYTER_BIN, log
+from .config import OBSERVER_USER, JUPYTER_BIN, log
 
 
 _KERNEL_CACHE: Optional[set] = None
@@ -19,7 +19,7 @@ def _voila_kernels() -> set:
         return _KERNEL_CACHE
     try:
         result = subprocess.run(
-            ["sudo", "-u", VOILA_USER, f"{JUPYTER_BIN}/jupyter",
+            ["sudo", "-u", OBSERVER_USER, f"{JUPYTER_BIN}/jupyter",
              "kernelspec", "list", "--json"],
             capture_output=True, text=True, timeout=15,
         )
@@ -67,7 +67,7 @@ def validate_medium(abs_path: Path) -> tuple[bool, str]:
 
     try:
         result = subprocess.run(
-            ["sudo", "-u", VOILA_USER, f"{JUPYTER_BIN}/jupyter", "nbconvert",
+            ["sudo", "-u", OBSERVER_USER, f"{JUPYTER_BIN}/jupyter", "nbconvert",
              "--execute", "--to", "notebook", "--stdout",
              "--ExecutePreprocessor.timeout=120", str(abs_path)],
             capture_output=True, text=True, timeout=150,

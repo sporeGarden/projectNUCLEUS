@@ -1,7 +1,7 @@
 """Static observer server — serves pre-rendered notebook HTML from pappusCast.
 
-Replaces the Voila dynamic rendering + redirect proxy with a zero-compute
-static file server. All notebooks are pre-rendered by pappusCast (Medium
+Replaces the former dynamic rendering + redirect proxy with a zero-compute
+static observer. All notebooks are pre-rendered by pappusCast (Medium
 and Heavy tiers) and served as plain HTML.
 
 Binds 127.0.0.1:8866 — same port the Cloudflare tunnel expects.
@@ -17,11 +17,11 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from nucleus_paths import PUBLIC_ROOT, VOILA_PORT
+from nucleus_paths import PUBLIC_ROOT, OBSERVER_PORT
 
 STATIC_DIR = PUBLIC_ROOT / ".pappusCast" / "html_export"
 BIND = "127.0.0.1"
-PORT = VOILA_PORT
+PORT = OBSERVER_PORT
 
 
 class ObserverHandler(SimpleHTTPRequestHandler):

@@ -72,7 +72,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 142b (2026-07-16)** — **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures (56 binaries). Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference, `TransportEndpoint` trait). darkforest v3.0: **26/26 PASS**. primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. 55 depot binaries, re-harvest pending 56.
+**Wave 142b (2026-07-16)** — **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures (56 binaries). Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference, `TransportEndpoint` trait). darkforest v3.0: **26/26 PASS**. primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). Root workspace `Cargo.toml` unifies 4 crates (edition 2024). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. **265 Rust tests** (1 ignored). 55 depot binaries, re-harvest pending 56.
 
 ### Infrastructure
 
@@ -98,10 +98,10 @@ Gates connect to each other through chemical bonding patterns:
 - **lithoSpore 7/7 modules PASS Tier 2** (75/75 checks, 117 tests): Rust validation for fitness, mutations, alleles, citrate, biobricks, breseq, anderson. Cross-tier parity 7/7 MATCH (Python ↔ Rust). Tier 3 wired (trio JSON-RPC, graceful degradation)
 - **Provenance trio graph capabilities reconciled**: GAP-36 canonical names (`dag.*`, `spine.*`, `braid.*`) aligned across `nucleus_complete.toml`, `rootpulse_commit.toml`, and `provenance_pipeline.sh` (now `nucleus-deploy provenance`, archived in `deploy/legacy/`)
 - **BTSP dual-auth plugin BUILT** (H2-01): `deploy/jupyterhub_btsp_auth.py` — BTSPAuthenticator with PAM fallback, auth logging, pre_spawn_hook. `deploy/deploy_btsp_auth_shadow.sh` for shadow run management
-- **`biomeos.spring_status` IMPLEMENTED** (v4.31): Binary discovery + workload counts. Registry at **502+ methods** (Wave 136a). NC-1 **CODE COMPLETE** — `biomeos-pseudospore` + emit materialization shipped. Live column U gated on VPS deploy
+- **`biomeos.spring_status` IMPLEMENTED** (v4.56): Binary discovery + workload counts. Registry at **502+ methods** (Wave 136a). NC-1 **CODE COMPLETE** — `biomeos-pseudospore` + emit materialization shipped. Live column U gated on VPS deploy
 - **API methods RESOLVED**: `nestgate.artifact_query`, `rhizocrypt.dag_summary` covered by existing shipped methods
 - **Wave 56 deployment standard**: `deploy.sh --uds-only` (now `nucleus-deploy deploy --uds-only`, archived in `deploy/legacy/`) suppresses TCP ports across all 13 primals (VPS standard). `deploy_graph.sh` + `deploy_primal_start.sh` + `deploy_health_check.sh` all UDS-aware. Socket-based health checks in UDS-only mode. `primalspring checksums` + `primalspring registry` replace shell validation scripts
-- **Wave 64 Rust evolution**: All deploy scripts evolved to idiomatic Rust — `nucleus-deploy` binary with 9 subcommands: `security`, `provenance`, `deploy`, `spore`, `telemetry`, `summary`, `verify`, `provision`, `dns`. `clap` CLI, `tokio` async, zero `unwrap()` in production, `unsafe_code = "forbid"` in all Cargo.toml. Security module split into `security/` directory (6 submodules). Bash originals deprecated in place. Cloudflare artifacts fossilized to `deploy/legacy/`. **245 Rust tests PASS** (darkforest 149, tunnelKeeper 49, nucleus-deploy 47)
+- **Wave 64 Rust evolution**: All deploy scripts evolved to idiomatic Rust — `nucleus-deploy` binary with 9 subcommands: `security`, `provenance`, `deploy`, `spore`, `telemetry`, `summary`, `verify`, `provision`, `dns`. `clap` CLI, `tokio` async, zero `unwrap()` in production, `unsafe_code = "forbid"` in all Cargo.toml. Security module split into `security/` directory (6 submodules). Bash originals deprecated in place. Cloudflare artifacts fossilized to `deploy/legacy/`. **265 Rust tests PASS** (darkforest 149, tunnelKeeper 48+1 ignored, nucleus-deploy 49, nucleus-primals 19)
 - **Wave 58 deep debt**: Blocking I/O evolved to `tokio::task::spawn_blocking` (health.rs). Discovery transport evolved from HTTP POST to newline-delimited JSON-RPC (matching primal wire format). Silent JSON serialization bugs fixed (`unwrap_or_default` → error propagation). `chrono` dependency removed (pure `std::time`). Deploy script hardcoded ports wired to `nucleus_config.sh` variables. Transport module ungated (+9 tests), pentest coverage expanded (+12 tests), health.rs async load fix. 14 deploy scripts evolved from hardcoded IPs/hostnames to `nucleus_config.sh` variables
 - **Wave 55 deep debt**: `yaml_serde` (libyaml C) → `serde-saphyr` (pure Rust, panic-free). `net.rs` refactored with shared HTTP helpers. Zero clippy pedantic+nursery warnings. `deny.toml` bans `unsafe-libyaml`. darkforest zero C deps
 - **Upstream zero gate debt**: primalSpring v0.9.39 — 167 scenarios. All 14 primals pulled to latest. Deploy graphs 19/19 `secure_by_default`. `deny.toml` enforced. `--uds-only` VPS standard shipped
@@ -168,13 +168,13 @@ Infrastructure follows a cell membrane model. See `specs/GATE_PORTABILITY.md`.
 - JupyterHub security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Server suppressed)
 - **MethodGate (JH-0) ENFORCED**: 13/13 primals ship MethodGate. All confirmed enforced via TCP. Unauthenticated calls return `-32001 PERMISSION_DENIED`
 - **Ionic tokens (JH-1) LIVE**: BearDog Ed25519-signed scoped tokens with expiry and JTI
-- **Resource envelopes (JH-2)**: biomeOS v4.31 + ToadStool S232 enforce limits on all dispatch paths
+- **Resource envelopes (JH-2)**: biomeOS v4.56 + ToadStool S232 enforce limits on all dispatch paths
 - **Composition reload (JH-3)**: biomeOS `composition.reload` — hot-swap single primal without full restart
 - **Session UX (JH-4)**: `auth.issue_session` — purpose-based presets
 - **Audit log (JH-5)**: skunkBat ring buffer, 7 event kinds, cursor-based polling
 - **All primal ports bound `127.0.0.1`** — 13 primals + auxiliary ports (Phase 60 PG-55 default)
 - **darkforest v3.0**: modular Rust security validator — 14 source modules (8 inner + 6 outer). Inner: check, net, pentest, fuzz, crypto, observer, report, main. Outer: tls, http, depot, forge, dns, mesh. `--scope inner|outer|full`, `--suite observer` for static surface validation (86 PASS). **149 unit tests**. `rustls` + `webpki-roots` (ring backend) for HTTPS probes. Env-var-driven config, JSON report output. Zero C deps
-- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Dual-transport: `CloudflareTunnelTransport` (v0.1) + `SongbirdTransport` (v0.2 sovereign TCP probe). Error-propagating API client, gate-agnostic credential paths. Async-correct: blocking health checks on `spawn_blocking`, `tokio::fs` for credential reads. Pure Rust TLS (ring backend, aws-lc-sys eliminated). **49 unit tests**, `unsafe_code = "forbid"`. 6.5 MB release binary
+- **tunnelKeeper v0.2.0**: Rust crate for tunnel health/management (`validation/tunnelKeeper/`). Dual-transport: `CloudflareTunnelTransport` (v0.1) + `SongbirdTransport` (v0.2 sovereign TCP probe). Error-propagating API client, gate-agnostic credential paths. Async-correct: blocking health checks on `spawn_blocking`, `tokio::fs` for credential reads. Pure Rust TLS (ring backend, aws-lc-sys eliminated). **48 unit tests (+1 ignored)**, `unsafe_code = "forbid"`. 6.5 MB release binary
 - **Multi-tier test suite**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 - **DNS exfil closed**, **supply chain locked**, **crontab restricted**, **version disclosure suppressed**
 
@@ -270,7 +270,10 @@ See [PHASES.md](PHASES.md) for detailed phase architecture.
 
 ## Repo Structure
 
+Root workspace `Cargo.toml` unifies 4 Rust crates (edition 2024, `unsafe_code = "forbid"` workspace-wide):
+
 ```
+Cargo.toml          Root workspace — darkforest, tunnelKeeper, nucleus-deploy, nucleus-primals
 specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
 gates/              Gate inventory and hardware configs
 genomeBin/          Binary packaging manifest + harvest script (14 primals)

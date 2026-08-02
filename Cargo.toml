@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[workspace]
+members = [
+    "deploy/nucleus-deploy",
+    "deploy/nucleus-primals",
+    "validation/darkforest",
+    "validation/tunnelKeeper",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "AGPL-3.0-or-later"
+rust-version = "1.85"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+
+[profile.release]
+strip = true
+lto = true

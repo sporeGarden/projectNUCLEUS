@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import (
-    ABG_SHARED, PUBLIC_ROOT, JUPYTER_BIN, VOILA_USER,
+    ABG_SHARED, PUBLIC_ROOT, JUPYTER_BIN, OBSERVER_USER,
     QUARANTINE_DIR, HUB_API, STATE_DIR,
     BASE_MINUTES, MAX_MINUTES, log,
 )
@@ -43,7 +43,7 @@ def publish_file(rel_path: str, state: PublishState, tier: str) -> bool:
 
     if dst.suffix == ".ipynb":
         subprocess.run(
-            ["sudo", "-u", VOILA_USER, f"{JUPYTER_BIN}/jupyter",
+            ["sudo", "-u", OBSERVER_USER, f"{JUPYTER_BIN}/jupyter",
              "trust", str(dst)],
             capture_output=True, timeout=15,
         )

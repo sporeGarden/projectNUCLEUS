@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
 use tokio::process::Command;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 use crate::config::NucleusConfig;
 use crate::process;
@@ -302,7 +302,10 @@ async fn stop_all(cfg: &NucleusConfig) -> Result<(), DeployError> {
         while let Ok(Some(entry)) = entries.next_entry().await {
             let name = entry.file_name().to_string_lossy().to_string();
             let pattern = format!("{}/primals/{name}", cfg.plasmidbin_dir.display());
-            let _ = Command::new("pkill").args(["-f", &pattern]).output().await;
+            // Find and stop processes matching this pattern
+            if let Some(pid) = process::find_pid_by_pattern(&pattern).await {
+                let _ = Command::new("kill").arg(&pid).output().await;
+            }
         }
     }
 
@@ -328,19 +331,9 @@ async fn status_all(cfg: &NucleusConfig) -> Result<(), DeployError> {
 
         for name in &names {
             let pattern = format!("{}/primals/{name}", cfg.plasmidbin_dir.display());
-            let output = Command::new("pgrep").args(["-f", &pattern]).output().await;
-
-            if let Ok(o) = output {
-                if o.status.success() {
-                    let pid = String::from_utf8_lossy(&o.stdout)
-                        .lines()
-                        .next()
-                        .unwrap_or("")
-                        .trim()
-                        .to_string();
-                    eprintln!("  {name}: PID {pid} — RUNNING");
-                    running_count += 1;
-                }
+            if let Some(pid) = process::find_pid_by_pattern(&pattern).await {
+                eprintln!("  {name}: PID {pid} — RUNNING");
+                running_count += 1;
             }
         }
     }
@@ -404,7 +397,9 @@ async fn start_composition(
     eprintln!("=== Phase 2: Clean slate ===");
     for p in &primals {
         let pattern = format!("{}/primals/{p}", cfg.plasmidbin_dir.display());
-        let _ = Command::new("pkill").args(["-f", &pattern]).output().await;
+        if let Some(pid) = process::find_pid_by_pattern(&pattern).await {
+            let _ = Command::new("kill").arg(&pid).output().await;
+        }
     }
     sleep(Duration::from_secs(1)).await;
     eprintln!("  Previous instances stopped.");
@@ -485,7 +480,18 @@ fn readiness_check(cfg: &NucleusConfig, primals: &[&str], graph_file: &Path) -> 
         }
     }
 
-    if primals.contains(&"beardog") {
+    let has_btsp_origin = primals.iter().any(|slug| {
+        nucleus_primals::lookup(slug).is_some_and(|def| !def.btsp_required)
+    });
+    let needs_btsp = primals.iter().any(|slug| {
+        nucleus_primals::lookup(slug).is_some_and(|def| def.btsp_required)
+    });
+    if needs_btsp && !has_btsp_origin {
+        eprintln!("  [BondingInconsistent] Composition includes BTSP consumers but no BTSP origin");
+        issues += 1;
+    }
+
+    if has_btsp_origin {
         let family_dir = dirs_family();
         let has_seed = std::env::var("BEARDOG_FAMILY_SEED").is_ok()
             || family_dir.join(".beacon.seed").exists();
@@ -493,11 +499,6 @@ fn readiness_check(cfg: &NucleusConfig, primals: &[&str], graph_file: &Path) -> 
             eprintln!("  [EnvMissing] BEARDOG_FAMILY_SEED not set and no .beacon.seed found");
             issues += 1;
         }
-    }
-
-    if !primals.contains(&"beardog") {
-        eprintln!("  [BondingInconsistent] BTSP required but beardog not in composition");
-        issues += 1;
     }
 
     issues

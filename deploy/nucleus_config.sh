@@ -96,7 +96,7 @@ RUSTDESK_RELAY_SERVER="${RUSTDESK_RELAY_SERVER:-${MEMBRANE_VPS_IP}}"
 PLASMIDBIN_RELEASE_URL="${PLASMIDBIN_RELEASE_URL:-https://github.com/ecoPrimals/plasmidBin/releases/download}"
 
 # --- MitoBeacon (family identity) ---
-FAMILY_ID="${FAMILY_ID:-e8b62b6e}"
+FAMILY_ID="${FAMILY_ID:-9b32f3a8}"
 FAMILY_SEED_PATH="${FAMILY_SEED_PATH:-$GATE_HOME/.config/biomeos/family/.beacon.seed}"
 
 # --- Channel 3: TLS Surface ---

@@ -13,13 +13,13 @@ fn observer_port() -> u16 {
     std::env::var("VOILA_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(8866)
+        .unwrap_or(nucleus_primals::OBSERVER_DEFAULT_PORT)
 }
 
 fn html_dir() -> PathBuf {
     let gate = std::env::var("GATE_HOME")
         .or_else(|_| std::env::var("HOME"))
-        .unwrap_or_else(|_| "/home/nobody".into());
+        .unwrap_or_else(|_| "/tmp/darkforest".into());
     let abg = std::env::var("ABG_SHARED").unwrap_or_else(|_| format!("{gate}/shared/abg"));
     PathBuf::from(abg).join("public/.pappusCast/html_export")
 }
@@ -523,6 +523,8 @@ mod tests {
     #[test]
     fn observer_port_defaults_to_8866() {
         let port = observer_port();
-        assert!(port == 8866 || std::env::var("VOILA_PORT").is_ok());
+        assert!(
+            port == nucleus_primals::OBSERVER_DEFAULT_PORT || std::env::var("VOILA_PORT").is_ok()
+        );
     }
 }

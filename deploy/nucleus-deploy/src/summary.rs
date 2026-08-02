@@ -1,4 +1,3 @@
-use chrono::Utc;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 use tokio::fs;
@@ -111,11 +110,9 @@ async fn load_telemetry(dir: &Path, days: u32) -> (Vec<TelemetryRow>, u32) {
     let mut file_count = 0u32;
 
     for i in 0..days {
-        let date = Utc::now()
-            .checked_sub_signed(chrono::Duration::days(i64::from(i)))
-            .map(|d| d.format("%Y-%m-%d").to_string());
-
-        let Some(date_str) = date else { continue };
+        let Some(date_str) = crate::util::utc_date_days_ago(i) else {
+            continue;
+        };
         let csv_path = dir.join(format!("membrane_telemetry_{date_str}.csv"));
 
         if !csv_path.exists() {
@@ -293,7 +290,7 @@ fn format_toml(
     window_days: u32,
     cutover_days: u32,
 ) -> String {
-    let now = Utc::now().format("%Y-%m-%dT%H:%M:%SZ");
+    let now = crate::util::utc_timestamp();
     format!(
         r#"# Membrane 7-Day Summary — Continuous Sovereignty Telemetry
 # Generated: {now}
@@ -416,7 +413,7 @@ mod tests {
             })
             .collect();
         let p50 = percentile(&rows, "p", 0.50);
-        assert!(p50 >= 49.0 && p50 <= 51.0);
+        assert!((49.0..=51.0).contains(&p50));
     }
 
     #[test]

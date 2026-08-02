@@ -1,9 +1,9 @@
 [package]
 name = "darkforest"
 version = "0.3.0"
-edition = "2024"
+edition.workspace = true
+license.workspace = true
 description = "Dark Forest — auditable security validator for NUCLEUS inner and outer membrane"
-license = "AGPL-3.0-or-later"
 
 [[bin]]
 name = "darkforest"
@@ -26,7 +26,3 @@ nursery = { level = "warn", priority = -1 }
 module_name_repetitions = "allow"
 too_many_lines = "allow"
 cast_precision_loss = "allow"
-
-[profile.release]
-strip = true
-lto = true

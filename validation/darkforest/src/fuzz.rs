@@ -36,6 +36,10 @@ pub fn run_hub(host: &str, results: &mut Vec<CheckResult>) {
     fuzz_jupyterhub(host, hub, results);
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "sequential fuzz probes for one primal"
+)]
 fn fuzz_primal(
     name: &str,
     port: u16,
@@ -215,7 +219,8 @@ fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut
             std::thread::sleep(Duration::from_millis(50));
         }
         if !times.is_empty() {
-            let mean = times.iter().sum::<f64>() / times.len() as f64;
+            let count = u32::try_from(times.len()).unwrap_or(u32::MAX);
+            let mean = times.iter().sum::<f64>() / f64::from(count);
             timings.push((method, mean));
         }
     }
@@ -259,6 +264,7 @@ fn timing_analysis(name: &str, port: u16, host: &str, rounds: u32, results: &mut
     }
 }
 
+#[expect(clippy::too_many_lines, reason = "sequential JupyterHub fuzz probes")]
 fn fuzz_jupyterhub(host: &str, hub_port: u16, results: &mut Vec<CheckResult>) {
     let suite = "fuzz.hub";
 
@@ -458,19 +464,22 @@ mod tests {
 
     #[test]
     fn fuzz_constants_are_sane() {
-        assert!(FUZZ_PAYLOAD_TIMEOUT_MS >= 1000);
-        assert!(FUZZ_TIMING_TIMEOUT_MS >= FUZZ_PAYLOAD_TIMEOUT_MS);
-        assert!(HUB_FUZZ_TIMEOUT_MS >= 1000);
+        const {
+            assert!(FUZZ_PAYLOAD_TIMEOUT_MS >= 1000);
+            assert!(FUZZ_TIMING_TIMEOUT_MS >= FUZZ_PAYLOAD_TIMEOUT_MS);
+            assert!(HUB_FUZZ_TIMEOUT_MS >= 1000);
+        }
     }
 
     #[test]
     fn batch_100_payload_is_valid_json() {
+        use std::fmt::Write as _;
+
         let mut s = String::from("[");
         for i in 0..100 {
             if i > 0 {
                 s.push(',');
             }
-            use std::fmt::Write as _;
             let _ = write!(
                 s,
                 r#"{{"jsonrpc":"2.0","method":"health.liveness","id":{i}}}"#

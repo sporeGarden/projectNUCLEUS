@@ -7,8 +7,6 @@ mod report;
 
 use std::fmt;
 use std::path::PathBuf;
-
-use chrono::Local;
 use thiserror::Error;
 use tokio::fs;
 
@@ -60,7 +58,7 @@ pub async fn run(cfg: &NucleusConfig, args: &SecurityArgs) -> Result<bool, Secur
     let results_dir = args.results_dir.clone().unwrap_or_else(|| {
         cfg.project_root
             .join("validation")
-            .join(format!("security-{}", Local::now().format("%Y%m%d-%H%M%S")))
+            .join(format!("security-{}", crate::util::utc_compact()))
     });
 
     fs::create_dir_all(&results_dir)
@@ -141,7 +139,7 @@ async fn write_report(
         | FAIL | {} |\n\
         | WARN | {} |\n\
         | INFO | {} |\n",
-        Local::now().to_rfc3339(),
+        crate::util::utc_timestamp(),
         report.count(Verdict::Pass),
         report.count(Verdict::Fail),
         report.count(Verdict::Warn),

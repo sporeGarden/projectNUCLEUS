@@ -12,7 +12,7 @@ Self-pollination (auto-validation within workspace) and cross-pollination
 Three validation tiers run at different cadences:
 
   Light  (on-change):  JSON valid, kernel available, title present
-  Medium (periodic):   Light + execute as voila user, check for cell errors
+  Medium (periodic):   Light + execute as observer user, check for cell errors
   Heavy  (~6h):        Medium + diff, changelog, full regression
 
 Temporal lag scales with active JupyterHub users to avoid overloading during

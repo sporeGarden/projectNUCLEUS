@@ -52,7 +52,7 @@ pub trait TunnelTransport {
     ) -> Pin<Box<dyn Future<Output = Result<TransportHealth, TransportError>> + Send + '_>>;
 }
 
-#[expect(
+#[allow(
     dead_code,
     reason = "Planned transport evolution: error surface for Songbird/BearDog transport backends"
 )]
@@ -184,7 +184,7 @@ impl Default for SongbirdTransport {
         let port = std::env::var("SONGBIRD_FEDERATION_PORT")
             .ok()
             .and_then(|v| v.parse().ok())
-            .unwrap_or(7700);
+            .unwrap_or(nucleus_primals::SONGBIRD_FEDERATION_DEFAULT_PORT);
         Self {
             federation_port: port,
         }

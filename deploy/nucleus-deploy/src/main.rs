@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 mod config;
 mod deploy;
 mod dns;
@@ -203,7 +205,11 @@ async fn main() {
     std::process::exit(dispatch(cli.command, &cfg).await);
 }
 
-async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
+#[expect(
+    clippy::too_many_lines,
+    reason = "match dispatch over 9 CLI subcommands"
+)]
+async fn dispatch(cmd: Commands, cfg: &NucleusConfig) -> i32 {
     match cmd {
         Commands::Security {
             layer,
@@ -294,15 +300,6 @@ async fn dispatch_original(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                 }
             }
         }
-        _ => {
-            eprintln!("ERROR: command routed to wrong dispatch function");
-            1
-        }
-    }
-}
-
-async fn dispatch_extended(cmd: Commands, cfg: &NucleusConfig) -> i32 {
-    match cmd {
         Commands::Telemetry {
             mode,
             telemetry_dir,
@@ -386,19 +383,5 @@ async fn dispatch_extended(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                 }
             }
         }
-        _ => {
-            eprintln!("ERROR: command routed to wrong dispatch function");
-            1
-        }
-    }
-}
-
-async fn dispatch(cmd: Commands, cfg: &NucleusConfig) -> i32 {
-    match cmd {
-        Commands::Security { .. }
-        | Commands::Provenance { .. }
-        | Commands::Deploy { .. }
-        | Commands::Spore { .. } => dispatch_original(cmd, cfg).await,
-        _ => dispatch_extended(cmd, cfg).await,
     }
 }

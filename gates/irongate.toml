@@ -39,7 +39,7 @@ nuc_p2p = "10.99.0.0/30 (USB-C to NUC M6)"
 role = "intracellular"
 bonding_to_vps = "covalent (SSH key)"
 # SSOT: MEMBRANE_VPS_IP in deploy/nucleus_config.sh
-vps_ip = "157.230.3.183"
+# vps_ip: read from MEMBRANE_VPS_IP env (SSOT: deploy/nucleus_config.sh)
 tls_surface = "membrane.primals.eco"
 telemetry = "nucleus-deploy telemetry (15-min cron)"
 membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
@@ -79,8 +79,8 @@ node_id = "irongate"
 family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 
 [validation]
-date = "2026-06-28"
-rust_unit_tests = 247
+date = "2026-08-02"
+rust_unit_tests = 960
 rust_unit_tests_failed = 0
 darkforest_checks = 267
 darkforest_gate_checks = 33
@@ -93,9 +93,9 @@ provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
 
 [upstream]
-primalspring_wave = "132f"
-primalspring_version = "v0.9.33"
-primalspring_scenarios = 116
+primalspring_wave = "155n"
+primalspring_version = "v0.9.39"
+primalspring_scenarios = 167
 primalspring_lib_tests = 1080
 primalspring_known_debt = 0
 btsp_phase = 3
@@ -104,4 +104,4 @@ primals_converged = "13/13"
 discovery_tiers = 5
 vps_standard = "uds-only"
 cell_graphs_consumed = true
-absorption_date = "2026-06-28"
+absorption_date = "2026-08-02"

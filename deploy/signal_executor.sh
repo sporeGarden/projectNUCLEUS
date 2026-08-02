@@ -20,7 +20,7 @@
 #   bash signal_executor.sh --shadow                   # validate graph via shadow deploy
 #
 # Prerequisites:
-#   - Agent composition running (deploy.sh --composition agent --graph-deploy)
+#   - Agent composition running (nucleus-deploy deploy --composition agent --graph-deploy)
 #   - squirrel on SQUIRREL_PORT (default 9300)
 #   - biomeOS neural-api on BIOMEOS_PORT (default 9800)
 #   - signal_tools.toml accessible to squirrel
@@ -218,7 +218,7 @@ PLAN_RESULT=$(rpc_call "$SQUIRREL_URL" "ai.query" "$PLAN_PARAMS")
 
 if [[ -z "$PLAN_RESULT" ]]; then
     echo "ERROR: No response from squirrel at $SQUIRREL_URL"
-    echo "  Is the agent composition running? (deploy.sh --composition agent --graph-deploy)"
+    echo "  Is the agent composition running? (nucleus-deploy deploy --composition agent --graph-deploy)" >&2
     exit 1
 fi
 

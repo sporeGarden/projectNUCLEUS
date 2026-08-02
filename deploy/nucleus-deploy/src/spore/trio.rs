@@ -1,8 +1,7 @@
 //! Provenance trio integration for spore workloads
 //! (`rhizoCrypt` → `NestGate` → `sweetGrass`).
 
-use chrono::Local;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::path::Path;
 use tokio::fs;
 
@@ -33,10 +32,7 @@ pub(super) async fn capture_provenance(
 
     log("   Capturing provenance chain...");
 
-    let session_name = format!(
-        "spore-{workload_name}-{}",
-        Local::now().format("%Y%m%d-%H%M%S")
-    );
+    let session_name = format!("spore-{workload_name}-{}", crate::util::utc_compact());
 
     let session_req =
         rpc::jsonrpc_request_with_params("dag.session.create", &json!({"name": &session_name}), 1);
@@ -150,7 +146,7 @@ pub(super) async fn inject_provenance(
         "braid_id": braid_id.unwrap_or("pending"),
         "dag_session_id": session_id,
         "pipeline": "nucleus-deploy spore",
-        "timestamp": Local::now().to_rfc3339(),
+        "timestamp": crate::util::utc_timestamp(),
         "computation": {
             "executor": "toadStool",
             "provenance": "rhizoCrypt → loamSpine → sweetGrass"

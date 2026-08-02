@@ -31,7 +31,7 @@ mesh_role = "beacon"
 [membrane]
 role = "extracellular"
 bonding_to_vps = "ionic (NAT traversal via Songbird)"
-vps_ip = "157.230.3.183"
+# vps_ip: read from MEMBRANE_VPS_IP env (SSOT: deploy/nucleus_config.sh)
 
 [composition]
 atomic = "tower_atomic"

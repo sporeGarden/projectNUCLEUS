@@ -66,7 +66,7 @@ struct WorkloadMetadata {
 #[derive(Debug, Deserialize)]
 struct WorkloadExecution {
     #[serde(rename = "type")]
-    #[expect(dead_code, reason = "deserialized from workload TOML; used in tests")]
+    #[allow(dead_code, reason = "deserialized from workload TOML; used in tests")]
     exec_type: String,
     command: Option<String>,
     working_dir: Option<String>,

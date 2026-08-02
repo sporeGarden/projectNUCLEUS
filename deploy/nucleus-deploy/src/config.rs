@@ -74,7 +74,10 @@ impl NucleusConfig {
             bind_address: env_or("NUCLEUS_BIND_ADDRESS", "127.0.0.1"),
             vps_ip: env_or("MEMBRANE_VPS_IP", ""),
             vps_user: env_or("MEMBRANE_VPS_USER", "root"),
-            jupyterhub_port: env_or_u16("JUPYTERHUB_PORT", 8000),
+            jupyterhub_port: env_or_u16(
+                "JUPYTERHUB_PORT",
+                nucleus_primals::JUPYTERHUB_DEFAULT_PORT,
+            ),
 
             ports,
         }

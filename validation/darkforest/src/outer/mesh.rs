@@ -18,7 +18,7 @@ fn wireguard_port() -> u16 {
     std::env::var("DARKFOREST_WG_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(51820)
+        .unwrap_or(nucleus_primals::WIREGUARD_DEFAULT_PORT)
 }
 
 fn check_wg_port_probe(target: &str, port: u16, results: &mut Vec<CheckResult>) {
@@ -90,9 +90,10 @@ fn check_mesh_surface_minimal(target: &str, results: &mut Vec<CheckResult>) {
     let cb = CheckBuilder::new("OMS-03", "outer.mesh", Category::Network, Severity::Low)
         .remediation("Songbird mesh should not expose internal topology to external probes");
 
+    let federation_port = nucleus_primals::SONGBIRD_FEDERATION_DEFAULT_PORT;
     let resp = net::send_jsonrpc_newline(
         target,
-        7700,
+        federation_port,
         r#"{"jsonrpc":"2.0","method":"discovery.peers","id":1}"#,
         2000,
     );
@@ -112,7 +113,7 @@ fn check_mesh_surface_minimal(target: &str, results: &mut Vec<CheckResult>) {
         ),
         None => cb.pass(
             "Songbird federation port not externally reachable",
-            &format!("{target}:7700 unreachable (expected for outer membrane)"),
+            &format!("{target}:{federation_port} unreachable (expected for outer membrane)"),
         ),
     });
 }

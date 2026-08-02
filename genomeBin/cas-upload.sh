@@ -4,7 +4,7 @@
 # genomeBin CAS upload — push staged binaries to NestGate CAS
 #
 # Reads the stage/ directory (output of harvest.sh) and uploads each
-# binary to NestGate via JSON-RPC `storage.store_blob`. Content is
+# binary to NestGate via JSON-RPC `content.put`. Content is
 # addressed by BLAKE3 hash. Generates a cas-manifest.toml for
 # sporePrint compatibility and cross-gate replication.
 #
@@ -25,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 STAGE_DIR="$SCRIPT_DIR/stage"
 TARGET="${TARGET:-x86_64-unknown-linux-gnu}"
 DRY_RUN=false
-FAMILY_ID="${FAMILY_ID:-irongate-sovereign}"
+FAMILY_ID="${FAMILY_ID:-$(cat ~/.config/biomeos/family/family_id 2>/dev/null || echo '9b32f3a8')}"
 NAMESPACE="genomeBin"
 
 # NestGate socket resolution (same chain as primals)
@@ -123,7 +123,7 @@ for binary in "$OUTDIR"/*; do
         blob_b64=$(base64 -w0 "$binary")
 
         payload=$(cat <<JSONRPC
-{"jsonrpc":"2.0","method":"storage.store_blob","params":{"key":"$cas_key","blob":"$blob_b64","family_id":"$FAMILY_ID","namespace":"$NAMESPACE"},"id":1}
+{"jsonrpc":"2.0","method":"content.put","params":{"key":"$cas_key","blob":"$blob_b64","family_id":"$FAMILY_ID","namespace":"$NAMESPACE"},"id":1}
 JSONRPC
 )
         response=$(echo "$payload" | socat - UNIX-CONNECT:"$NESTGATE_SOCKET" 2>&1) || true

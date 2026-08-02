@@ -1,10 +1,9 @@
 //! Phase 9: Write the provenance manifest document.
 
-use chrono::Local;
 use std::path::Path;
 use tokio::fs;
 
-use super::{log, ProvenanceError, ProvenanceState};
+use super::{ProvenanceError, ProvenanceState, log};
 
 pub(super) async fn phase_write_manifest(
     results_dir: &Path,
@@ -71,7 +70,7 @@ pub(super) async fn phase_write_manifest(
         3. Query loamSpine for spine `{spine_id}` to see the full audit trail\n\
         4. Query sweetGrass for braid `{braid_id}` to verify the ed25519 witness\n\
         5. Braid witness signature: `{braid_witness}`\n",
-        date = Local::now().to_rfc3339(),
+        date = crate::util::utc_timestamp(),
         session_id = state.session_id,
         spine_id = state.spine_id,
         event_count = state.event_idx,

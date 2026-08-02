@@ -1,5 +1,3 @@
-use tokio::process::Command;
-
 use super::helpers::http_status_code;
 use super::report::SecurityReport;
 use crate::config::NucleusConfig;
@@ -27,16 +25,10 @@ async fn jupyterhub_headers(report: &mut SecurityReport, host: &str, cfg: &Nucle
     report.log("── 3a: JupyterHub Security Headers ──");
 
     let url = format!("http://{host}:{}/hub/login", cfg.jupyterhub_port);
-    let output = Command::new("curl")
-        .args(["-sf", "-D", "-", &url, "-o", "/dev/null", "--max-time", "5"])
-        .output()
-        .await;
-
-    let Ok(o) = output else {
+    let Some(headers) = crate::http::response_headers(&url, 5).await else {
         report.warn("Could not reach JupyterHub");
         return;
     };
-    let headers = String::from_utf8_lossy(&o.stdout).to_string();
 
     for header in &[
         "X-Frame-Options",
@@ -144,47 +136,19 @@ async fn tunnel_security(report: &mut SecurityReport, url: &str) {
     report.log("");
     report.log("── 3d: Tunnel Security ──");
 
-    let tls_output = Command::new("curl")
-        .args(["-sf", "-v", &format!("{url}/hub/api/")])
-        .output()
-        .await;
+    let (_, tls_info) = crate::http::get_tls_info(&format!("{url}/hub/api/"), 5).await;
 
-    if let Ok(o) = tls_output {
-        let stderr = String::from_utf8_lossy(&o.stderr);
-        let tls_lines: Vec<&str> = stderr
-            .lines()
-            .filter(|l| l.to_lowercase().contains("ssl") || l.to_lowercase().contains("tls"))
-            .collect();
-
-        if tls_lines
-            .iter()
-            .any(|l| l.contains("TLSv1.3") || l.contains("TLSv1.2"))
-        {
-            report.pass(format!(
-                "Tunnel uses modern TLS: {}",
-                tls_lines.first().unwrap_or(&"")
-            ));
-        } else if !tls_lines.is_empty() {
-            report.warn(format!("Tunnel TLS: {}", tls_lines.first().unwrap_or(&"")));
+    if let Some(info) = tls_info {
+        if info.contains("HTTP/2") || info.contains("TLS 1.2") || info.contains("TLS 1.3") {
+            report.pass(format!("Tunnel uses modern TLS: {info}"));
+        } else {
+            report.warn(format!("Tunnel TLS: {info}"));
         }
     }
 
-    let hsts_output = Command::new("curl")
-        .args([
-            "-sf",
-            "-D",
-            "-",
-            &format!("{url}/hub/api/"),
-            "-o",
-            "/dev/null",
-            "--max-time",
-            "5",
-        ])
-        .output()
-        .await;
+    let hsts_headers = crate::http::response_headers(&format!("{url}/hub/api/"), 5).await;
 
-    if let Ok(o) = hsts_output {
-        let headers = String::from_utf8_lossy(&o.stdout);
+    if let Some(headers) = hsts_headers {
         if headers.to_lowercase().contains("strict-transport-security") {
             report.pass("Tunnel sends HSTS header");
         } else {

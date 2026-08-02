@@ -178,7 +178,7 @@ fn configure_primal_cmd(
     }
 }
 
-pub(crate) async fn find_pid_by_pattern(pattern: &str) -> Option<String> {
+pub async fn find_pid_by_pattern(pattern: &str) -> Option<String> {
     let mut entries = fs::read_dir("/proc").await.ok()?;
     while let Ok(Some(entry)) = entries.next_entry().await {
         let name = entry.file_name();

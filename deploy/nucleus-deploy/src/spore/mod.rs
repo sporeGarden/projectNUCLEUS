@@ -8,6 +8,14 @@ use tokio::process::Command;
 
 use crate::config::NucleusConfig;
 
+fn resolve_in_path(name: &str) -> Option<std::path::PathBuf> {
+    std::env::var_os("PATH")?
+        .to_str()?
+        .split(':')
+        .map(|dir| std::path::PathBuf::from(dir).join(name))
+        .find(|p| p.exists())
+}
+
 #[derive(Debug, Error)]
 pub enum SporeError {
     #[error("I/O error: {0}")]
@@ -178,15 +186,8 @@ fn resolve_litho(cfg: &NucleusConfig, args: &SporeArgs) -> Result<PathBuf, Spore
         }
     }
 
-    let which = std::process::Command::new("which").arg("litho").output();
-
-    if let Ok(o) = which {
-        if o.status.success() {
-            let path = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            if !path.is_empty() {
-                return Ok(PathBuf::from(path));
-            }
-        }
+    if let Some(path) = resolve_in_path("litho") {
+        return Ok(path);
     }
 
     Err(SporeError::LithoNotFound { searched })
@@ -218,17 +219,8 @@ fn resolve_toadstool(cfg: &NucleusConfig) -> Result<PathBuf, SporeError> {
         }
     }
 
-    let which = std::process::Command::new("which")
-        .arg("toadstool")
-        .output();
-
-    if let Ok(o) = which {
-        if o.status.success() {
-            let path = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            if !path.is_empty() {
-                return Ok(PathBuf::from(path));
-            }
-        }
+    if let Some(path) = resolve_in_path("toadstool") {
+        return Ok(path);
     }
 
     Err(SporeError::ToadstoolNotFound { searched })

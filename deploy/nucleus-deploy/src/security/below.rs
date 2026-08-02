@@ -1,6 +1,6 @@
+use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 
-use tokio::fs;
 use tokio::process::Command;
 
 use super::report::SecurityReport;
@@ -13,7 +13,7 @@ pub async fn layer_below(report: &mut SecurityReport, host: &str, cfg: &NucleusC
     port_exposure(report, host, cfg).await;
     unnecessary_services(report).await;
     firewall_check(report).await;
-    sensitive_permissions(report).await;
+    sensitive_permissions(report);
 }
 
 async fn port_exposure(report: &mut SecurityReport, host: &str, cfg: &NucleusConfig) {
@@ -136,7 +136,7 @@ async fn firewall_check(report: &mut SecurityReport) {
     }
 }
 
-async fn sensitive_permissions(report: &mut SecurityReport) {
+fn sensitive_permissions(report: &mut SecurityReport) {
     report.log("");
     report.log("── 1d: Sensitive File Permissions ──");
 
@@ -152,22 +152,15 @@ async fn sensitive_permissions(report: &mut SecurityReport) {
         if !p.exists() {
             continue;
         }
-        let Ok(meta) = fs::metadata(p).await else {
+        let Ok(metadata) = std::fs::metadata(p) else {
             continue;
         };
-        let mode = meta.permissions();
-        let readonly = mode.readonly();
-        let perms_output = Command::new("stat").args(["-c", "%a", path]).output().await;
-
-        if let Ok(o) = perms_output {
-            let perms = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            match perms.as_str() {
-                "600" | "700" => report.pass(format!("{path}: mode {perms} (restricted)")),
-                "644" | "755" => report.warn(format!("{path}: mode {perms} (world-readable)")),
-                _ => report.info(format!("{path}: mode {perms}")),
-            }
-        } else if readonly {
-            report.info(format!("{path}: readonly"));
+        let mode = metadata.mode() & 0o777;
+        let perms = format!("{mode:o}");
+        match perms.as_str() {
+            "600" | "700" => report.pass(format!("{path}: mode {perms} (restricted)")),
+            "644" | "755" => report.warn(format!("{path}: mode {perms} (world-readable)")),
+            _ => report.info(format!("{path}: mode {perms}")),
         }
     }
 }

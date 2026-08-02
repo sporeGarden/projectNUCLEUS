@@ -1,9 +1,9 @@
 use crate::api;
 use crate::config::{ConfigError, TunnelConfig};
+use crate::transport::TunnelTransport;
 use serde::Serialize;
 use std::net::TcpStream;
 use std::path::Path;
-use std::process::Command;
 use std::time::{Duration, Instant};
 
 #[derive(Debug, Serialize)]
@@ -62,15 +62,16 @@ pub async fn run(
     let config = TunnelConfig::load_async(config_path).await?;
 
     let cfg_for_blocking = config.clone();
-    let (process, connectivity, dns, config_health) = tokio::task::spawn_blocking(move || {
+    let (process, connectivity, config_health) = tokio::task::spawn_blocking(move || {
         let process = check_process();
         let connectivity = check_connectivity(&cfg_for_blocking);
-        let dns = check_dns(&cfg_for_blocking);
         let config_health = check_config(&cfg_for_blocking);
-        (process, connectivity, dns, config_health)
+        (process, connectivity, config_health)
     })
     .await
     .map_err(|e| ConfigError::Other(format!("health check task failed: {e}")))?;
+
+    let dns = check_dns(&config).await;
 
     let replicas = check_replicas(api_token, &config).await;
 
@@ -113,6 +114,35 @@ pub async fn run(
         println!("{json_str}");
     } else {
         print_report(&report);
+
+        // Shadow-run: transport evolution status
+        println!("├─ Transport Evolution");
+
+        let cf_transport = crate::transport::CloudflareTunnelTransport::default();
+        if let Ok(h) = cf_transport.health().await {
+            let status = if h.healthy { "running" } else { "stopped" };
+            println!(
+                "│   Cloudflare: {} (latency: {}ms)",
+                status,
+                h.latency_ms.unwrap_or(0)
+            );
+        }
+
+        let sb_transport = crate::transport::SongbirdTransport::default();
+        match sb_transport.health().await {
+            Ok(h) => {
+                let status = if h.healthy { "running" } else { "stopped" };
+                println!(
+                    "│   Songbird:   {} (latency: {}ms)",
+                    status,
+                    h.latency_ms.unwrap_or(0)
+                );
+            }
+            Err(_) => println!("│   Songbird:   not running"),
+        }
+
+        println!("│   BearDog:    planned (v0.3)");
+        println!("└──────────────────────────────────────────────");
     }
 
     Ok(())
@@ -178,41 +208,18 @@ async fn try_cf_api_check(token: &str, config: &TunnelConfig) -> Option<api::Tun
 }
 
 fn check_process() -> ProcessHealth {
-    let output = Command::new("pgrep")
-        .args(["-f", "cloudflared.*tunnel"])
-        .output();
-
-    match output {
-        Ok(o) if o.status.success() => {
-            let stdout = String::from_utf8_lossy(&o.stdout);
-            let pid = stdout
-                .lines()
-                .next()
-                .and_then(|l| l.trim().parse::<u32>().ok());
-
-            let uptime = pid.and_then(|p| {
-                let stat = Command::new("ps")
-                    .args(["-o", "etimes=", "-p", &p.to_string()])
-                    .output()
-                    .ok()?;
-                String::from_utf8_lossy(&stat.stdout)
-                    .trim()
-                    .parse::<u64>()
-                    .ok()
-            });
-
-            ProcessHealth {
-                running: true,
-                pid,
-                uptime_seconds: uptime,
-            }
-        }
-        _ => ProcessHealth {
+    crate::proc::find_pid_by_pattern("cloudflared tunnel").map_or(
+        ProcessHealth {
             running: false,
             pid: None,
             uptime_seconds: None,
         },
-    }
+        |pid| ProcessHealth {
+            running: true,
+            pid: Some(pid),
+            uptime_seconds: crate::proc::process_uptime_secs(pid),
+        },
+    )
 }
 
 fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
@@ -254,7 +261,7 @@ fn check_connectivity(config: &TunnelConfig) -> ConnectivityHealth {
     }
 }
 
-fn check_dns(config: &TunnelConfig) -> DnsHealth {
+async fn check_dns(config: &TunnelConfig) -> DnsHealth {
     let fallback_host;
     let hostname = if let Some(h) = config.ingress.iter().find_map(|r| r.hostname.as_deref()) {
         h
@@ -267,30 +274,14 @@ fn check_dns(config: &TunnelConfig) -> DnsHealth {
         &fallback_host
     };
 
-    // Try getent (most portable), then host, then dig
-    let resolvers: Vec<(&str, Vec<&str>)> = vec![
-        ("getent", vec!["hosts", hostname]),
-        ("host", vec!["-t", "A", hostname]),
-        ("dig", vec!["+short", hostname]),
-    ];
-
-    for (cmd, args) in &resolvers {
-        if let Ok(output) = Command::new(cmd).args(args).output()
-            && output.status.success()
-        {
-            let result = String::from_utf8_lossy(&output.stdout);
-            let ip = result
-                .split_whitespace()
-                .find(|w| w.contains('.') || w.contains(':'))
-                .map(String::from);
-            if ip.is_some() {
-                return DnsHealth {
-                    resolves: true,
-                    hostname: hostname.to_string(),
-                    resolved_ip: ip,
-                };
-            }
-        }
+    if let Ok(mut addrs) = tokio::net::lookup_host(format!("{hostname}:443")).await
+        && let Some(addr) = addrs.next()
+    {
+        return DnsHealth {
+            resolves: true,
+            hostname: hostname.to_string(),
+            resolved_ip: Some(addr.ip().to_string()),
+        };
     }
 
     DnsHealth {
@@ -383,7 +374,6 @@ fn print_report(report: &HealthReport) {
     } else {
         println!("│   (no API token — replica check skipped)");
     }
-    println!("└──────────────────────────────────────────────");
 }
 
 #[cfg(test)]
@@ -471,8 +461,8 @@ mod tests {
         assert_eq!(hostname, "lab.test.eco");
     }
 
-    #[test]
-    fn dns_resolves_localhost() {
+    #[tokio::test]
+    async fn dns_resolves_localhost() {
         let config = TunnelConfig {
             tunnel: "t".to_string(),
             credentials_file: String::new(),
@@ -489,16 +479,16 @@ mod tests {
                 },
             ],
         };
-        let dns = check_dns(&config);
+        let dns = check_dns(&config).await;
         assert_eq!(dns.hostname, "localhost");
         assert!(dns.resolves, "localhost should resolve");
     }
 
-    #[test]
+    #[tokio::test]
     #[ignore = "slow: attempts real DNS resolution of non-existent domain (65s)"]
-    fn dns_health_returns_a_result_slow() {
+    async fn dns_health_returns_a_result_slow() {
         let config = test_config();
-        let dns = check_dns(&config);
+        let dns = check_dns(&config).await;
         assert_eq!(dns.hostname, "lab.test.eco");
     }
 

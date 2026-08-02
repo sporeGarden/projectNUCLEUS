@@ -226,6 +226,16 @@ async fn rpc_remote_http(user: &str, ip: &str, port: u16, payload: &str) -> Opti
     ssh_cmd(user, ip, &cmd).await.filter(|s| !s.is_empty())
 }
 
+fn nest_probe_proto(slug: &str) -> &'static str {
+    if slug == "nestgate" {
+        "http"
+    } else if nucleus_primals::uses_http_framing(slug) {
+        "http-rpc"
+    } else {
+        "rpc"
+    }
+}
+
 async fn check_all_nest_primals(
     user: &str,
     ip: &str,
@@ -237,7 +247,7 @@ async fn check_all_nest_primals(
         ip,
         "NestGate",
         cfg.port_for("nestgate"),
-        "http",
+        nest_probe_proto("nestgate"),
         report,
         "TRIO-01",
     )
@@ -247,7 +257,7 @@ async fn check_all_nest_primals(
         ip,
         "rhizoCrypt",
         cfg.port_for("rhizocrypt-rpc"),
-        "rpc",
+        nest_probe_proto("rhizocrypt"),
         report,
         "TRIO-02",
     )
@@ -257,7 +267,7 @@ async fn check_all_nest_primals(
         ip,
         "loamSpine",
         cfg.port_for("loamspine"),
-        "http-rpc",
+        nest_probe_proto("loamspine"),
         report,
         "TRIO-03",
     )
@@ -267,7 +277,7 @@ async fn check_all_nest_primals(
         ip,
         "sweetGrass",
         cfg.port_for("sweetgrass"),
-        "rpc",
+        nest_probe_proto("sweetgrass"),
         report,
         "TRIO-04",
     )

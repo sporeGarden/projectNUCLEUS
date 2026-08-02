@@ -3,6 +3,7 @@
 mod config;
 mod deploy;
 mod dns;
+mod http;
 mod process;
 mod provenance;
 mod provision;

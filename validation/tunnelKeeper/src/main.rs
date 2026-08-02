@@ -4,6 +4,11 @@ mod api;
 mod config;
 mod crypto;
 mod health;
+mod proc;
+#[expect(
+    dead_code,
+    reason = "transport evolution scaffolding: health() wired, establish()/lifecycle pending v0.2"
+)]
 mod transport;
 
 use clap::{Parser, Subcommand};

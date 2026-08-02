@@ -50,23 +50,7 @@ pub async fn run_external_test(
 }
 
 pub async fn http_status_code(url: &str) -> Option<String> {
-    let output = Command::new("curl")
-        .args([
-            "-s",
-            "-o",
-            "/dev/null",
-            "-w",
-            "%{http_code}",
-            url,
-            "--max-time",
-            "5",
-        ])
-        .output()
-        .await
-        .ok()?;
-
-    let code = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if code == "000" { None } else { Some(code) }
+    crate::http::status_code(url, 5).await
 }
 
 pub async fn notify_skunkbat(report: &mut SecurityReport, host: &str, port: u16) {

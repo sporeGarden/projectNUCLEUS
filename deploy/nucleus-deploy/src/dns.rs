@@ -3,6 +3,22 @@ use tokio::process::Command;
 
 use crate::config::NucleusConfig;
 
+async fn resolve_a_record(nameserver: &str, domain: &str) -> Option<String> {
+    use hickory_resolver::TokioResolver;
+    use hickory_resolver::config::{NameServerConfig, ResolverConfig};
+    use hickory_resolver::name_server::TokioConnectionProvider;
+    use hickory_resolver::proto::xfer::Protocol;
+    use std::net::SocketAddr;
+
+    let ns_addr: SocketAddr = format!("{nameserver}:53").parse().ok()?;
+    let ns = NameServerConfig::new(ns_addr, Protocol::Udp);
+    let config = ResolverConfig::from_parts(None, vec![], vec![ns]);
+    let resolver =
+        TokioResolver::builder_with_config(config, TokioConnectionProvider::default()).build();
+    let response = resolver.lookup_ip(domain).await.ok()?;
+    response.iter().next().map(|ip| ip.to_string())
+}
+
 #[derive(Debug, Error)]
 pub enum DnsError {
     #[error("I/O error: {0}")]
@@ -362,12 +378,7 @@ async fn do_test(vps_user: &str, vps_ip: &str) -> Result<(), DnsError> {
         .unwrap_or_default();
 
         let result = if result.is_empty() {
-            Command::new("dig")
-                .args(["+short", &format!("@{vps_ip}"), domain, "A"])
-                .output()
-                .await
-                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-                .unwrap_or_default()
+            resolve_a_record(vps_ip, domain).await.unwrap_or_default()
         } else {
             result
         };

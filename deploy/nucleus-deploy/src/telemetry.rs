@@ -102,37 +102,22 @@ async fn emit(
 
 async fn probe_http(csv_path: &Path, probe_name: &str, url: &str) {
     let start = std::time::Instant::now();
-    let output = Command::new("curl")
-        .args([
-            "-sS",
-            "-o",
-            "/dev/null",
-            "-w",
-            "%{http_code}",
-            "--max-time",
-            "10",
-            url,
-        ])
-        .output()
-        .await;
+    let result = crate::http::status_code(url, 10).await;
 
     let elapsed_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
-    let (status, code) = match output {
-        Ok(o) => {
-            let code_str = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            let code: u16 = code_str.parse().unwrap_or(0);
-            let status = if code == 0 {
-                "unreachable"
-            } else if code >= 400 {
-                "error"
-            } else {
-                "ok"
-            };
-            (status, code)
-        }
-        Err(_) => ("unreachable", 0),
-    };
+    let (status, code) =
+        result
+            .and_then(|s| s.parse::<u16>().ok())
+            .map_or(("unreachable", 0), |code| {
+                if code == 0 {
+                    ("unreachable", 0)
+                } else if code >= 400 {
+                    ("error", code)
+                } else {
+                    ("ok", code)
+                }
+            });
 
     emit(csv_path, probe_name, url, elapsed_ms, status, code, "").await;
 }
@@ -273,16 +258,13 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
     let lab_url = std::env::var("LAB_URL").unwrap_or_else(|_| "https://lab.primals.eco".into());
     probe_http(csv_path, "lab_endpoint", &format!("{lab_url}/hub/login")).await;
 
-    let primals: &[(&str, u16)] = &[
-        ("beardog", cfg.port_for("beardog")),
-        ("songbird", cfg.port_for("songbird")),
-        ("nestgate", cfg.port_for("nestgate")),
-        ("skunkbat", cfg.port_for("skunkbat")),
-        ("biomeos", cfg.port_for("biomeos")),
-    ];
+    let primals: Vec<(&str, u16)> = nucleus_primals::deployable_slugs()
+        .into_iter()
+        .map(|slug| (slug, cfg.port_for(slug)))
+        .collect();
 
-    for &(name, port) in primals {
-        probe_rpc_primal(csv_path, &format!("primal_{name}"), host, port).await;
+    for (name, port) in &primals {
+        probe_rpc_primal(csv_path, &format!("primal_{name}"), host, *port).await;
     }
 
     let vps_ip = cfg.vps_ip.clone();
@@ -292,12 +274,9 @@ async fn probe_internal(cfg: &NucleusConfig, host: &str, csv_path: &Path) {
         .unwrap_or(nucleus_primals::MEMBRANE_HTTP_DEFAULT_PORT);
 
     let vps_url = format!("http://{vps_ip}:{vps_http}/");
-    let vps_check = Command::new("curl")
-        .args(["-sf", "--max-time", "5", &vps_url])
-        .output()
-        .await;
+    let vps_reachable = crate::http::get(&vps_url, 5).await.is_some();
 
-    if matches!(vps_check, Ok(ref o) if o.status.success()) {
+    if vps_reachable {
         probe_http(csv_path, "content_vps_ttfb", &vps_url).await;
         let content_url =
             std::env::var("CONTENT_BASE_URL").unwrap_or_else(|_| "https://primals.eco".into());

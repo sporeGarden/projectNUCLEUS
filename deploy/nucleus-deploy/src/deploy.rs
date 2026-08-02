@@ -480,12 +480,12 @@ fn readiness_check(cfg: &NucleusConfig, primals: &[&str], graph_file: &Path) -> 
         }
     }
 
-    let has_btsp_origin = primals.iter().any(|slug| {
-        nucleus_primals::lookup(slug).is_some_and(|def| !def.btsp_required)
-    });
-    let needs_btsp = primals.iter().any(|slug| {
-        nucleus_primals::lookup(slug).is_some_and(|def| def.btsp_required)
-    });
+    let has_btsp_origin = primals
+        .iter()
+        .any(|slug| nucleus_primals::lookup(slug).is_some_and(|def| !def.btsp_required));
+    let needs_btsp = primals
+        .iter()
+        .any(|slug| nucleus_primals::lookup(slug).is_some_and(|def| def.btsp_required));
     if needs_btsp && !has_btsp_origin {
         eprintln!("  [BondingInconsistent] Composition includes BTSP consumers but no BTSP origin");
         issues += 1;

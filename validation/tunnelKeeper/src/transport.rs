@@ -5,6 +5,7 @@
 //! v0.3: `BearDogAuthTransport` — full primal auth via beardog-auth
 //!
 //! Cloudflare remains primary until Songbird/BearDog reach parity.
+//! `health()` is wired into CLI; `establish()` pending v0.2 lifecycle.
 
 use serde::Serialize;
 use std::future::Future;
@@ -35,10 +36,6 @@ pub struct TransportHealth {
 /// The dual-architecture pattern: external service (Cloudflare) is primary,
 /// primal implementation (Songbird/BearDog) runs as shadow, until parity
 /// metrics confirm the primal path is equivalent or better.
-#[expect(
-    dead_code,
-    reason = "Planned transport evolution: common interface for Cloudflare, Songbird, and BearDog backends"
-)]
 pub trait TunnelTransport {
     fn name(&self) -> &str;
 
@@ -52,10 +49,6 @@ pub trait TunnelTransport {
     ) -> Pin<Box<dyn Future<Output = Result<TransportHealth, TransportError>> + Send + '_>>;
 }
 
-#[allow(
-    dead_code,
-    reason = "Planned transport evolution: error surface for Songbird/BearDog transport backends"
-)]
 #[derive(Debug, thiserror::Error)]
 pub enum TransportError {
     #[error("transport unavailable: {0}")]
@@ -82,13 +75,6 @@ impl Default for CloudflareTunnelTransport {
 
 impl CloudflareTunnelTransport {
     #[must_use]
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "Planned transport evolution: constructor for custom cloudflared binary path"
-        )
-    )]
     pub fn new(bin_path: &str) -> Self {
         Self {
             cloudflared_bin: bin_path.to_string(),
@@ -106,10 +92,7 @@ impl CloudflareTunnelTransport {
     }
 
     fn is_running_blocking() -> bool {
-        std::process::Command::new("pgrep")
-            .args(["-f", "cloudflared.*tunnel"])
-            .output()
-            .is_ok_and(|o| o.status.success())
+        crate::proc::find_pid_by_pattern("cloudflared tunnel").is_some()
     }
 }
 
@@ -193,13 +176,6 @@ impl Default for SongbirdTransport {
 
 impl SongbirdTransport {
     #[must_use]
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "Public constructor for downstream use and test-time configuration"
-        )
-    )]
     pub const fn with_port(port: u16) -> Self {
         Self {
             federation_port: port,
@@ -207,10 +183,7 @@ impl SongbirdTransport {
     }
 
     fn is_running_blocking() -> bool {
-        std::process::Command::new("pgrep")
-            .args(["-f", "songbird"])
-            .output()
-            .is_ok_and(|o| o.status.success())
+        crate::proc::find_pid_by_pattern("songbird").is_some()
     }
 }
 

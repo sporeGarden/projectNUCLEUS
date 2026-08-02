@@ -198,11 +198,9 @@ async fn phase_health_checks(cfg: &NucleusConfig, host: &str) -> Result<(), Prov
 async fn check_primal_health(host: &str, name: &str, port: u16) -> bool {
     if name == "Songbird" {
         let url = format!("http://{host}:{port}/health");
-        let output = Command::new("curl")
-            .args(["-sf", "--max-time", "3", &url])
-            .output()
-            .await;
-        return matches!(output, Ok(o) if String::from_utf8_lossy(&o.stdout).trim() == "OK");
+        return crate::http::get(&url, 3)
+            .await
+            .is_some_and(|body| body.trim() == "OK");
     }
 
     let probe_port = if name == "rhizoCrypt" { port + 1 } else { port };
@@ -210,22 +208,9 @@ async fn check_primal_health(host: &str, name: &str, port: u16) -> bool {
     if name == "loamSpine" {
         let url = format!("http://{host}:{port}");
         let payload = r#"{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}"#;
-        let output = Command::new("curl")
-            .args([
-                "-sf",
-                "--max-time",
-                "3",
-                &url,
-                "-X",
-                "POST",
-                "-H",
-                "Content-Type: application/json",
-                "-d",
-                payload,
-            ])
-            .output()
-            .await;
-        return matches!(output, Ok(o) if String::from_utf8_lossy(&o.stdout).contains("\"result\""));
+        return crate::http::post_json(&url, payload, 3)
+            .await
+            .is_some_and(|body| body.contains("\"result\""));
     }
 
     rpc::check_liveness(host, probe_port).await
@@ -281,22 +266,9 @@ async fn phase_create_spine(
     .to_string();
 
     let url = format!("http://{host}:{loamspine_port}");
-    let output = Command::new("curl")
-        .args([
-            "-sf",
-            &url,
-            "-X",
-            "POST",
-            "-H",
-            "Content-Type: application/json",
-            "-d",
-            &payload,
-        ])
-        .output()
+    let body = crate::http::post_json(&url, &payload, 5)
         .await
-        .map_err(|e| ProvenanceError::SpineCreationFailed(e.to_string()))?;
-
-    let body = String::from_utf8_lossy(&output.stdout);
+        .ok_or_else(|| ProvenanceError::SpineCreationFailed("HTTP request failed".into()))?;
     let parsed: Value = serde_json::from_str(body.trim())
         .map_err(|e| ProvenanceError::SpineCreationFailed(e.to_string()))?;
 
@@ -307,7 +279,7 @@ async fn phase_create_spine(
                 .map(String::from)
                 .or_else(|| serde_json::to_string(v).ok())
         })
-        .ok_or_else(|| ProvenanceError::SpineCreationFailed(body.to_string()))?;
+        .ok_or_else(|| ProvenanceError::SpineCreationFailed(body.clone()))?;
 
     log(&format!("  [OK] Spine: {spine_id}"));
     Ok(spine_id)
@@ -615,22 +587,9 @@ async fn phase_loamspine_commit(
     .to_string();
 
     let url = format!("http://{host}:{loamspine_port}");
-    let output = Command::new("curl")
-        .args([
-            "-sf",
-            &url,
-            "-X",
-            "POST",
-            "-H",
-            "Content-Type: application/json",
-            "-d",
-            &payload,
-        ])
-        .output()
-        .await;
+    let response = crate::http::post_json(&url, &payload, 5).await;
 
-    if let Ok(o) = output {
-        let body = String::from_utf8_lossy(&o.stdout);
+    if let Some(body) = response {
         if let Ok(parsed) = serde_json::from_str::<Value>(body.trim()) {
             let index = parsed
                 .pointer("/result/index")

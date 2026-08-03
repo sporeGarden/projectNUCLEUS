@@ -19,19 +19,21 @@
 #
 # footPrint is NOT a primal — it is a composition target (protist).
 # Source: protists/footPrint (cloned from protoKarya/footPrint)
-# Owner: flockGate
+# Owner: ironGate (downstream host — reassigned from flockGate Wave 155p)
 #
 # Wave 136b: first primal composition target introduced to the ecosystem.
+# Wave 155p: reassigned to ironGate as primary downstream hosting gate.
 
 [fragment]
 name = "footprint_composition"
 description = "footPrint GIS planner as Nest Atomic + petalTongue renderer + songBird drawbridge (pure-primal backend)"
-version = "0.1.0"
+version = "2.0.0"
 includes = ["nest_atomic"]
 node_count = 9
 secure_by_default = true
 bond_type = "metallic"
 application = true
+assigned_gate = "ironGate"
 
 # --- Inherited from nest_atomic (7 nodes): ---
 # beardog, songbird, skunkbat, nestgate, rhizocrypt, loamspine, sweetgrass
@@ -53,9 +55,9 @@ capabilities = ["render", "ui", "content.render", "static.serve"]
 # --- Deployment hints ---
 
 [deployment]
-target = "vps-direct"
+target = "ironGate"
 reverse_proxy = "caddy"
-domain = "live.primals.eco"
+domain = "footprint.primals.eco"
 upstream = "petaltongue:8080"
 
 [deployment.content]

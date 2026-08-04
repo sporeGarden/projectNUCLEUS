@@ -1,12 +1,13 @@
 # Gate: westGate — Sovereign Scientific Data NAS
 #
-# 63.7 TB ZFS raidz1 pool (5×14 TB OOS14000G) + 2 TB SSD cache + 1.8 TB NVMe boot.
-# Data estate: 154 datasets, 3.65 TB allocated, 60 TB free.
+# 50.7 TB ZFS raidz1 pool (5×14 TB OOS14000G) + 2 TB SSD cache + 1.8 TB NVMe boot.
+# Data estate: 153 datasets, 3.21 TB used, 47.5 TB free.
 # Provenance trio LIVE: nestGate CAS + rhizoCrypt DAG + loamSpine + sweetGrass + bearDog.
-# Full NUCLEUS tower: 25 primal sockets in membrane, neural API routing.
+# NUCLEUS tower: 14/14 HEALTHY (13 primals + biomeOS neural-api), v4.57.
 # Ryzen 7 5700X (8C/16T), 64 GB DDR4, RTX 3070 (8 GB).
 # Role: sovereign data root for 4 science springs — grab once, serve forever.
-# Updated 2026-08-04.
+# Phase 4 UNBLOCKED: nucleus attach available, GPS data converted.
+# Updated 2026-08-04 PM.
 
 [gate]
 name = "westgate"
@@ -26,8 +27,8 @@ ram_gb = 64
 ram_type = "DDR4"
 storage_pool_tb = 63.7
 storage_pool_layout = "raidz1 (5× OOS14000G 14 TB)"
-storage_pool_used_tb = 3.65
-storage_pool_free_tb = 60.0
+storage_pool_used_tb = 3.21
+storage_pool_free_tb = 47.5
 storage_cache = "CT2000BX500SSD1 (2 TB SSD, ZFS L2ARC)"
 storage_boot = "NVMe 1.8 TB (Pop!_OS root)"
 zfs_pool_name = "nestgate"
@@ -68,7 +69,7 @@ toadstool = { socket = "toadstool-westgate-tower-155f.sock", role = "Compute dis
 squirrel = { socket = "squirrel-westgate-tower-155f.sock", role = "Agent dispatch (G18)" }
 petaltongue = { socket = "petaltongue-westgate-tower-155f.sock", role = "Visualization / UI render" }
 songbird = { socket = "songbird-westgate-tower-155f.sock", role = "Mesh transport" }
-neural_api = { socket = "neural-api-westgate-tower-155f.sock", role = "biomeOS capability routing", version = "4.56.0", pending = "v4.57 (nucleus attach)" }
+neural_api = { socket = "neural-api-westgate-tower-155f.sock", role = "biomeOS capability routing", version = "4.57.0" }
 btsp = { socket = "btsp-westgate-tower-155f.sock", role = "Trust protocol" }
 
 [identity]
@@ -80,13 +81,15 @@ family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 [science]
 primary_domains = ["tideGlass", "wetSpring", "groundSpring", "airSpring"]
 capabilities = [
-    "63.7 TB ZFS raidz1 (5×14 TB, 60 TB free)",
-    "Content-addressed blob storage (nestGate CAS, 3.65 TB indexed)",
+    "50.7 TB ZFS raidz1 (5×14 TB, 47.5 TB free)",
+    "Content-addressed blob storage (nestGate CAS, 135 GB pool)",
     "Full provenance trio LIVE (canonical pipeline: 43/s sustained)",
-    "154 datasets across 17+ scientific domains",
+    "153 datasets across 17+ scientific domains",
     "ZFS snapshots (instant dataset versioning)",
     "SSD L2ARC cache for hot dataset reads",
-    "Neural API routing for spring consumers",
+    "Neural API routing for spring consumers (v4.57)",
+    "nucleus attach available (cell boot UNBLOCKED)",
+    "GPS data converted (11 JSON, 103 MB CAS-ingested)",
 ]
 workloads = [
     "tideGlass: GPS drug repurposing (519 GB LINCS + ChEMBL + TCGA + PDB + AlphaFold)",
@@ -98,12 +101,15 @@ workloads = [
 ]
 
 [science.data_estate]
-datasets = 154
-total_allocated_tb = 3.65
+datasets = 153
+total_used_tb = 3.21
+cas_pool_gb = 135
 domains = 17
 provenance_pipeline = "canonical (CAS + batch DAG, session-level spine commit)"
 provenance_rate = "43/s sustained"
 convergence_tool = "convergence_check.py"
+convergence_status = "0 CONVERGED, 5 CAS-ONLY, 89 PARTIAL, 32 PRIMORDIAL, 21 EMPTY"
+gps_data = "CONVERTED (11 JSON, 103 MB CAS-ingested)"
 
 [science.cell_graphs]
 tideglass = "gardens/tideGlass/graphs/cells/tideglass_cell.toml"

@@ -1,65 +1,75 @@
-# Gate: westGate — Cold Storage Archive
+# Gate: westGate — Sovereign Scientific Data NAS
 #
-# 76 TB ZFS pool — the cold storage archive for the entire mesh.
-# NestGate manages content-addressed blob storage with ZFS snapshots
-# (100 snapshots in 0.17s). DDR3 + i7-4771: reliable and big, not fast.
-# 10G NIC installed for high-bandwidth blob replication.
-# Created 2026-05-15.
+# 63.7 TB ZFS raidz1 pool (5×14 TB OOS14000G) + 2 TB SSD cache + 1.8 TB NVMe boot.
+# Data estate: 154 datasets, 3.65 TB allocated, 60 TB free.
+# Provenance trio LIVE: nestGate CAS + rhizoCrypt DAG + loamSpine + sweetGrass + bearDog.
+# Full NUCLEUS tower: 25 primal sockets in membrane, neural API routing.
+# Ryzen 7 5700X (8C/16T), 64 GB DDR4, RTX 3070 (8 GB).
+# Role: sovereign data root for 4 science springs — grab once, serve forever.
+# Updated 2026-08-04.
 
 [gate]
 name = "westgate"
-role = "Cold storage, NAS, caching layer"
+role = "Data NAS — sovereign scientific data root"
 location = "Sovereign cluster — LAN"
 bonding = "covalent"
 secure_by_default = true
 
 [hardware]
-cpu = "Intel i7-4771"
-cores = 4
-threads = 8
-gpu_display = "NVIDIA RTX 2070 Super"
-gpu_arch = "Turing SM75"
+cpu = "AMD Ryzen 7 5700X"
+cores = 8
+threads = 16
+gpu_display = "NVIDIA GeForce RTX 3070"
+gpu_arch = "Ampere GA104"
 gpu_vram_gb = 8
-ram_gb = 32
-ram_type = "DDR3"
-storage_hdd_tb = 76.0
-storage_nvme_tb = 2.0
-storage_type = "ZFS pool (HDD) + NVMe cache"
-zfs_snapshots = true
-os = "Pop!_OS"
+ram_gb = 64
+ram_type = "DDR4"
+storage_pool_tb = 63.7
+storage_pool_layout = "raidz1 (5× OOS14000G 14 TB)"
+storage_pool_used_tb = 3.65
+storage_pool_free_tb = 60.0
+storage_cache = "CT2000BX500SSD1 (2 TB SSD, ZFS L2ARC)"
+storage_boot = "NVMe 1.8 TB (Pop!_OS root)"
+zfs_pool_name = "nestgate"
+zfs_health = "ONLINE, 0 errors"
+os = "Pop!_OS 22.04 LTS"
 
 [network]
-lan_speed = "1G (10G pending cable)"
-wan_speed = "1G"
-interface = "Cat6a ethernet"
-ten_g_nic = true
-ten_g_ready = true
-ten_g_switch_port = true
+lan_speed = "1G"
+wan_speed = "1G fiber"
+interface = "enp4s0 (1G, UP)"
 
 [membrane]
 role = "intracellular"
 bonding_to_vps = "covalent (SSH key)"
-# SSOT: MEMBRANE_VPS_IP in deploy/nucleus_config.sh
-# vps_ip: read from MEMBRANE_VPS_IP env (SSOT: deploy/nucleus_config.sh)
-membrane_model = "gen4/architecture/SOVEREIGN_HPC_EVOLUTION.md"
+socket_dir = "/run/user/1000/membrane"
+socket_count = 25
 
 [composition]
-atomic = "nest_atomic"
+atomic = "nest_atomic + full_tower"
 primals = [
-    "beardog", "songbird", "skunkbat",
+    "beardog", "songbird",
     "nestgate",
     "rhizocrypt", "loamspine", "sweetgrass",
+    "barracuda", "coralreef", "toadstool",
+    "squirrel", "petaltongue",
 ]
-fragment = "nest_atomic (ZFS cold storage)"
+fragment = "Full tower with provenance trio + compute + render + agent dispatch"
 
-[ports]
-beardog = 9100
-songbird = 9200
-skunkbat = 9140
-nestgate = 9500
-rhizocrypt = 9601
-loamspine = 9700
-sweetgrass = 9850
+[composition.services]
+nestgate = { socket = "nestgate-westgate-tower-155f.sock", role = "CAS content-addressed storage" }
+rhizocrypt = { socket = "rhizocrypt-westgate-tower-155f.sock", role = "Ephemeral DAG (provenance trio)" }
+loamspine = { socket = "loamspine-westgate-tower-155f.sock", role = "Permanent ledger (provenance trio)" }
+sweetgrass = { socket = "sweetgrass-westgate-tower-155f.sock", role = "Attribution braids (provenance trio)" }
+beardog = { socket = "beardog-westgate-tower-155f.sock", role = "Ed25519 crypto (provenance trio)" }
+barracuda = { socket = "barracuda-westgate-tower-155f.sock", role = "GPU math primitives" }
+coralreef = { socket = "coralreef-westgate-tower-155f.sock", role = "Shader compilation" }
+toadstool = { socket = "toadstool-westgate-tower-155f.sock", role = "Compute dispatch" }
+squirrel = { socket = "squirrel-westgate-tower-155f.sock", role = "Agent dispatch (G18)" }
+petaltongue = { socket = "petaltongue-westgate-tower-155f.sock", role = "Visualization / UI render" }
+songbird = { socket = "songbird-westgate-tower-155f.sock", role = "Mesh transport" }
+neural_api = { socket = "neural-api-westgate-tower-155f.sock", role = "biomeOS capability routing" }
+btsp = { socket = "btsp-westgate-tower-155f.sock", role = "Trust protocol" }
 
 [identity]
 family_name = "irongate-sovereign"
@@ -68,21 +78,38 @@ node_id = "westgate"
 family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 
 [science]
-primary_domains = ["wetSpring", "groundSpring"]
+primary_domains = ["tideGlass", "wetSpring", "groundSpring", "airSpring"]
 capabilities = [
-    "76 TB ZFS cold storage (NCBI FASTQs, genome databases)",
-    "Content-addressed blob storage (NestGate)",
-    "ZFS snapshots (100 in 0.17s — instant dataset versioning)",
-    "10G NIC for high-bandwidth blob replication (pending cable)",
-    "NVMe cache tier for hot datasets",
+    "63.7 TB ZFS raidz1 (5×14 TB, 60 TB free)",
+    "Content-addressed blob storage (nestGate CAS, 3.65 TB indexed)",
+    "Full provenance trio LIVE (canonical pipeline: 43/s sustained)",
+    "154 datasets across 17+ scientific domains",
+    "ZFS snapshots (instant dataset versioning)",
+    "SSD L2ARC cache for hot dataset reads",
+    "Neural API routing for spring consumers",
 ]
 workloads = [
-    "NCBI FASTQ storage and retrieval (5+ GB files)",
-    "Genome database hosting (RefSeq, UniProt, KEGG)",
-    "LTEE dataset archival (lithoSpore modules)",
-    "NestGate content-addressed replication (cross-gate)",
-    "provenance artifact storage (sweetGrass braids)",
-    "sporePrint content source-of-truth",
+    "tideGlass: GPS drug repurposing (519 GB LINCS + ChEMBL + TCGA + PDB + AlphaFold)",
+    "wetSpring: sovereign metagenomics (267 GB SRA FASTQ, Pfam, InterPro)",
+    "airSpring: precision agriculture (NOAA + USDA + EPA, 3.6 GB shared env data)",
+    "groundSpring: measurement science (NOAA + IRIS shared env data)",
+    "AlphaFold bulk download: 190K/246M done, 56/s, trailer braiding at 43/s",
+    "Cross-gate data serving via songBird mesh (Phase 5)",
 ]
-thermal_zone = "basement (passive, low TDP)"
-thermal_preference = "always-on (low power draw, 65W CPU + idle GPU)"
+
+[science.data_estate]
+datasets = 154
+total_allocated_tb = 3.65
+domains = 17
+provenance_pipeline = "canonical (CAS + batch DAG, session-level spine commit)"
+provenance_rate = "43/s sustained"
+convergence_tool = "convergence_check.py"
+
+[science.deploy_graphs]
+tideglass = "gardens/tideGlass/graphs/cells/tideglass_cell.toml"
+airspring = "primals/biomeOS/graphs/airspring_deploy.toml"
+groundspring = "primals/biomeOS/graphs/groundspring_deploy.toml"
+wetspring = "primals/biomeOS/graphs/wetspring_deploy.toml"
+
+thermal_zone = "basement (passive cooling)"
+thermal_preference = "always-on (65W TDP CPU, idle GPU)"

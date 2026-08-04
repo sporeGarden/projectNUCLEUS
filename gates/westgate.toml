@@ -68,7 +68,7 @@ toadstool = { socket = "toadstool-westgate-tower-155f.sock", role = "Compute dis
 squirrel = { socket = "squirrel-westgate-tower-155f.sock", role = "Agent dispatch (G18)" }
 petaltongue = { socket = "petaltongue-westgate-tower-155f.sock", role = "Visualization / UI render" }
 songbird = { socket = "songbird-westgate-tower-155f.sock", role = "Mesh transport" }
-neural_api = { socket = "neural-api-westgate-tower-155f.sock", role = "biomeOS capability routing" }
+neural_api = { socket = "neural-api-westgate-tower-155f.sock", role = "biomeOS capability routing", version = "4.56.0", pending = "v4.57 (nucleus attach)" }
 btsp = { socket = "btsp-westgate-tower-155f.sock", role = "Trust protocol" }
 
 [identity]
@@ -105,11 +105,17 @@ provenance_pipeline = "canonical (CAS + batch DAG, session-level spine commit)"
 provenance_rate = "43/s sustained"
 convergence_tool = "convergence_check.py"
 
-[science.deploy_graphs]
+[science.cell_graphs]
 tideglass = "gardens/tideGlass/graphs/cells/tideglass_cell.toml"
-airspring = "primals/biomeOS/graphs/airspring_deploy.toml"
-groundspring = "primals/biomeOS/graphs/groundspring_deploy.toml"
-wetspring = "primals/biomeOS/graphs/wetspring_deploy.toml"
+airspring = "springs/primalSpring/graphs/cells/airspring_cell.toml"
+groundspring = "springs/primalSpring/graphs/cells/groundspring_cell.toml"
+wetspring = "springs/primalSpring/graphs/cells/wetspring_cell.toml"
+
+[network.lan]
+ip = "192.168.4.149/22"
+interface = "enp4s0"
+tower_atomic_ready = true
+wireguard_active = false
 
 thermal_zone = "basement (passive cooling)"
 thermal_preference = "always-on (65W TDP CPU, idle GPU)"

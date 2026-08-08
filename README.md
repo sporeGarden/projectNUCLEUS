@@ -1,8 +1,7 @@
 # projectNUCLEUS
 
-The deployable NUCLEUS infrastructure product. Stand up a sovereign compute
-node, host sites, dispatch workloads, and progressively eliminate every
-external dependency.
+Gate deployment, security validation, and cross-bonding test ground for the
+NUCLEUS atomic composition on real hardware.
 
 **Organization**: gardens (products built on ecoPrimals)
 **Generation**: gen4 — composition and deployment
@@ -10,27 +9,31 @@ external dependency.
 
 ## What This Is
 
-projectNUCLEUS is the deployable NUCLEUS infrastructure — the compute layer
-that takes primal binaries from plasmidBin, composition graphs from
-primalSpring, and standards from wateringHole, and assembles them into a
-running gate on real hardware.
+projectNUCLEUS is the **deployment and validation product** for the ecoPrimals
+NUCLEUS composition. It takes primal binaries from plasmidBin, composition
+graphs from primalSpring, and standards from wateringHole, and deploys them
+onto gate hardware — then validates that the deployed composition is secure,
+correct, and sovereign.
 
 ```
-primalSpring (upstream patterns)
-       ↓ deploy graphs, validation, standards
-projectNUCLEUS on active gate (deploys + validates patterns)
-       ↓ real workloads, real users
-ABG collaborators (ionic compute sharing = pattern validation under load)
-       ↓ geological record
-foundation (the soil: validated lineage, gap handbacks, bonding models)
+primalSpring (composition patterns, scenarios)
+       ↓ deploy graphs + validation contracts
+plasmidBin (binary depot)
+       ↓ genomeBins
+projectNUCLEUS (deploys + validates on gate hardware)
+       ↓ validated gates
+cellMembrane (fleet ops, cascade, membrane)
 ```
 
-**The core loop**: primalSpring defines composition patterns upstream.
-projectNUCLEUS deploys those patterns on the active gate. ABG workloads
-validate them under real external load. Gaps flow back upstream via handoff
-docs. Validated patterns and geological records settle into foundation.
-Every successful ABG workload is proof that primalSpring's deploy graphs,
-BTSP, discovery hierarchy, and provenance pipeline work in production.
+**Refined scope (Wave 157a)**: projectNUCLEUS focuses on three concerns:
+
+1. **Gate deployment** — `nucleus-deploy` CLI (deploy, provision, verify, DNS)
+2. **Security validation** — `darkforest` adversarial auditor, membrane pen tests
+3. **Tunnel sovereignty** — `tunnelKeeper` (Cloudflare → Songbird transition)
+
+Historical residue from the atomics evolution phase (workload dispatch specs,
+architectural models, observer pipelines, legacy bash scripts) has been marked
+for handoff to upstream owners. See **Handoff Status** below.
 
 ## NUCLEUS Atomics
 
@@ -72,7 +75,7 @@ Gates connect to each other through chemical bonding patterns:
 
 ## Current State
 
-**Wave 142b (2026-07-16)** — **SILICON ATHEISM PHASE 2.** Phase 1 complete: 14/14 primals compile for all 4 depot architectures (56 binaries). Phase 2 active: abstraction over gating (petalTongue `petal-tongue-platform` reference, `TransportEndpoint` trait). darkforest v3.0: **26/26 PASS**. primalSpring v0.9.39 (`8df6b3f`, 167 scenarios). Root workspace `Cargo.toml` unifies 4 crates (edition 2024). `cargo deny check` PASS on all 4 crates. `unsafe_code = "forbid"` workspace-wide. **265 Rust tests** (1 ignored). 55 depot binaries, re-harvest pending 56.
+**Wave 157a (2026-08-08)** — **ROLE REFINEMENT.** Scope narrowed to deployment + validation + tunnel sovereignty. Historical atomics-era residue (workload TOMLs, architectural models, pappusCast observer, legacy bash) marked for handoff. 5 normative specs pending wateringHole migration. Pure Rust deep debt sweep COMPLETE (all subprocess calls → native Rust, registry-driven telemetry/verification). Root workspace `Cargo.toml` unifies 4 crates (edition 2024). `unsafe_code = "forbid"` workspace-wide. **265 Rust tests** (1 ignored). 3/6 NUCLEUS gates redeployed (sporeGate, blueGate, southGate — 13/13 ALIVE). ironGate pending.
 
 ### Infrastructure
 
@@ -132,18 +135,11 @@ Reviewer and user tiers are gated by BTSP dual-auth (PAM + ionic token).
 | **Reviewer** | BTSP + PAM | Read + run notebooks (showcase) | JupyterHub (showcase-only view) |
 | **User** | BTSP + PAM | Read + write + run, shared workspace | JupyterHub (full workspace) |
 
-### Auto-Propagation (pappusCast)
+### Auto-Propagation (pappusCast) — DEPRECATED
 
-`pappusCast` daemon auto-propagates validated content from the shared workspace
-to the public observer surface on an adaptive schedule:
-
-- **Light** (on-change): JSON valid, kernel available, title present
-- **Medium** (periodic): Light + execute as voila user, check for cell errors
-- **Heavy** (~6 hours): Medium + diff, changelog, full regression
-- **Adaptive rate limiting**: publish interval scales with active JupyterHub users
-- **Snapshot architecture**: public/ holds managed copies, not live symlinks
-- **Evolution path**: Python (now) → Rust binary → pappusCast primal. Static observer = primary surface since 2026-05-10
-- **Static HTML observer**: Medium + Heavy tiers render all public notebooks to `.pappusCast/html_export/` — served directly as the observer surface (replaces dynamic Voila). `pappusCast.py export` for manual regeneration
+`pappusCast` is vestigial. The static observer surface is now served by
+sporePrint and the observer pipeline is absorbed by biomeOS composition.
+See `deploy/pappuscast/DEPRECATED.md` for migration path.
 
 ### Gate Portability (Cell Membrane)
 
@@ -274,60 +270,78 @@ Root workspace `Cargo.toml` unifies 4 Rust crates (edition 2024, `unsafe_code = 
 
 ```
 Cargo.toml          Root workspace — darkforest, tunnelKeeper, nucleus-deploy, nucleus-primals
-specs/              Local specs: execution model, composition, security, tunnel evolution, dependency inventory
+specs/              NUCLEUS operational specs (15 active, 5 pending wateringHole migration — see specs/AUDIT.md)
 gates/              Gate inventory and hardware configs
 genomeBin/          Binary packaging manifest + harvest script (14 primals)
-deploy/             Deployment tooling, test suites, pappusCast daemon
+graphs/             19 deploy graph TOMLs — curated from primalSpring + gate-specific + application compositions
+deploy/             Deployment tooling (CORE)
   nucleus-deploy/   Rust binary: 9 subcommands (security, provenance, deploy, spore, telemetry, summary, verify, provision, dns)
   nucleus-primals/  Shared primal registry crate — slug/env/port/composition mappings (12 tests)
-  nucleus_config.sh Gate-agnostic config (all paths, ports, env vars — single source of truth)
-  forgejo_mirror.sh Forgejo org/repo creation + relay push for all repos
-  gate_watchdog.sh  Membrane health monitor (lab/git endpoints, logs for skunkBat)
+  nucleus_config.sh Gate-agnostic config (converging with nucleus-primals registry)
+  forgejo_mirror.sh Forgejo org/repo creation + relay push
+  gate_watchdog.sh  Membrane health monitor
   gate_switch.sh    Migrate compute services between gates
-  pappusCast.py     Tiered auto-propagation daemon (workspace → observer surface)
-  observer_server.py Static HTTP server for pre-rendered observer HTML (port 8866)
-  legacy/           Fossilized scripts: bash deploy pipeline, cloudflare configs, cloudflared provisioning
-graphs/             19 deploy graph TOMLs — curated from primalSpring + gate-specific + application compositions
-  tower_agent.toml  Agent composition: Tower + biomeOS neural-api + Squirrel (agentic AI)
-workloads/          Workload catalog (TOML specs for toadStool)
-  wetspring/        Validated wetSpring science workloads (8 Rust + 2 Python + 1 deferred)
-  templates/        Templates for new workloads
-validation/         Composition validation, security pen tests, upstream gap handbacks
-  dark_forest_gate_local.sh  Dark Forest Glacial Gate 5-pillar structural validation (33 checks)
-  darkforest_membrane.sh     cellMembrane VPS remote audit (MEM-01 through MEM-13)
+  pappuscast/       DEPRECATED — see pappuscast/DEPRECATED.md
+  observer_server.py DEPRECATED — vestigial static HTTP server
+  legacy/           FOSSILIZED — see legacy/FOSSILIZED.md
+validation/         Security validation (CORE)
   darkforest/       Pure Rust security validator (v3.0 — inner + outer membrane, 14 modules, 149 tests)
-  tunnelKeeper/     Rust crate for tunnel health (Cloudflare v0.1 + Songbird v0.2)
-  baselines/        Tunnel metrics + unified membrane telemetry (cron CSVs + membrane_7day.toml)
-  archive/          Timestamped provenance runs, prior security scans, legacy scripts
+  tunnelKeeper/     Rust crate for tunnel health (Cloudflare v0.1 + Songbird v0.2, TRANSITIONAL)
+  baselines/        Tunnel metrics + membrane telemetry
+  archive/          Timestamped provenance runs, prior security scans
 infra/              Infrastructure tooling
   ci/               Forgejo CI: runner provisioning, workflow templates, activation runbook
-  benchScale/       Load generation and pen testing framework for sovereignty validation
-docs/               Architecture primers and external-facing docs
+  benchScale/       Sovereignty parity framework
+docs/               NUCLEUS primer (architectural models pending wateringHole migration — see docs/HANDOFF.md)
+workloads/          PENDING HANDOFF to spring repos — see workloads/HANDOFF.md
+whitePaper/         PENDING HANDOFF to primalSpring — see whitePaper/HANDOFF.md
+notebooks/          PENDING HANDOFF to primalSpring — see notebooks/HANDOFF.md
 ```
 
-ABG shared workspace (`$ABG_SHARED`):
+## Handoff Status (Wave 157a)
 
-```
-commons/            Group scratch — quick experiments, onboarding notebooks
-pilot/              Structured experiments (hypothesis, decision criteria, timeline)
-projects/           Formal project spaces (notebooks, data, results)
-data/               Shared datasets (NCBI, reference genomes, calibration)
-templates/          Starter notebooks, workload TOMLs, welcome notebooks
-showcase/           Polished work + Voila dashboards
-validation/         Surfaced darkforest JSON reports
-public/             Managed snapshot copies for observer surface (pappusCast-managed)
-  .pappusCast/      Daemon state, changelog, quarantine
-```
+projectNUCLEUS grew during the atomics evolution phase (gen3→gen4, ~May 2026)
+and accumulated responsibilities that now belong elsewhere:
+
+| Component | Status | Target Owner | Tracking |
+|-----------|--------|--------------|----------|
+| `workloads/` (43 TOMLs) | PENDING HANDOFF | Spring repos / primalSpring | `workloads/HANDOFF.md` |
+| `docs/BONDING_MODELS.md` | PENDING HANDOFF | wateringHole foundations | `docs/HANDOFF.md` |
+| `docs/FAMILY_HPC_MODEL.md` | PENDING HANDOFF | wateringHole foundations | `docs/HANDOFF.md` |
+| `whitePaper/baseCamp/` | PENDING HANDOFF | primalSpring docs | `whitePaper/HANDOFF.md` |
+| `notebooks/` template | PENDING HANDOFF | primalSpring notebooks | `notebooks/HANDOFF.md` |
+| `deploy/pappuscast/` | DEPRECATED | sporePrint / biomeOS | `deploy/pappuscast/DEPRECATED.md` |
+| `deploy/observer_server.py` | DEPRECATED | sporePrint | `deploy/pappuscast/DEPRECATED.md` |
+| `deploy/legacy/` (16 scripts) | FOSSILIZED | fossilRecord | `deploy/legacy/FOSSILIZED.md` |
+| 5 normative specs | PENDING MIGRATION | wateringHole specs | `specs/AUDIT.md` |
+| 2 snapshot specs | FOSSILIZE | validation/archive | `specs/AUDIT.md` |
+| `nucleus-primals` registry | TRANSITIONAL | Converge with primalSpring | In-place evolution |
+| `tunnelKeeper` | TRANSITIONAL | Archive after H2-16 cutover | `specs/TUNNEL_EVOLUTION.md` |
+
+## Core Components (refined scope)
+
+| Component | Role | Status |
+|-----------|------|--------|
+| **nucleus-deploy** | Gate ops CLI: deploy, security, provenance, telemetry, DNS, provision, verify, spore | **CORE** |
+| **darkforest** | Adversarial security validator (inner + outer membrane, 149 tests) | **CORE** |
+| **tunnelKeeper** | CF tunnel management + Songbird shadow metrics | **TRANSITIONAL** |
+| **nucleus-primals** | Compiled slug/port/framing registry | **TRANSITIONAL** |
+| **gates/*.toml** | Gate hardware + composition manifests | **CORE** |
+| **graphs/** | Deploy graph TOMLs (curated from primalSpring) | **CORE** |
+| **specs/** (15 operational) | NUCLEUS validation results, baselines, evolution tracking | **CORE** |
+| **infra/ci/** | Forgejo CI for this repo | **CORE** |
+| **infra/benchScale/** | Sovereignty parity framework | **CORE** |
+| **genomeBin/** | Binary packaging manifest | **CORE** |
 
 ## Relationship to Other Repos
 
 | Repo | Org | Relationship |
 |------|-----|-------------|
-| **primalSpring** | syntheticChemistry | Upstream — defines composition patterns that projectNUCLEUS deploys and validates |
-| **plasmidBin** | ecoPrimals/infra | Binary depot — projectNUCLEUS fetches primal binaries from here |
-| **wateringHole** | ecoPrimals/infra | Standards and guidance — projectNUCLEUS follows these |
-| **sporePrint** | ecoPrimals/infra | The website ([primals.eco](https://primals.eco)) — K-Derm diderm: Cloudflare (outer) → Caddy (inner) on golgiBody |
-| **cellMembrane** | gardens | **Private** ops repo — VPS state, runbooks, credential procedures for the cellMembrane fieldMouse deployment |
-| **projectFOUNDATION** | gardens | The soil — validated scientific lineage, gap handbacks, bonding models, domain threads |
-| **helixVision** | gardens | Genomics product — runs on projectNUCLEUS |
-| **esotericWebb** | gardens | Creative product — runs on projectNUCLEUS |
+| **primalSpring** | syntheticChemistry | Upstream — composition patterns, scenarios, workload standards |
+| **plasmidBin** | ecoPrimals/infra | Binary depot — genomeBins fetched by nucleus-deploy |
+| **wateringHole** | ecoPrimals/infra | Standards — 5 normative specs pending migration upstream |
+| **cellMembrane** | gardens | Fleet ops — validated gates handed off for cascade pipeline |
+| **sporePrint** | ecoPrimals/infra | Website — absorbing observer surface from deprecated pappusCast |
+| **projectFOUNDATION** | gardens | Knowledge foundation — validated lineage, domain threads |
+| **helixVision** | gardens | Genomics product — runs on NUCLEUS substrate |
+| **esotericWebb** | gardens | Creative product — runs on NUCLEUS substrate |

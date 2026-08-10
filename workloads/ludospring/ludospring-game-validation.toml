@@ -4,6 +4,7 @@
 # V67: --format json for Tier 2 toadstool.validate integration
 
 [metadata]
+spring = "ludoSpring"
 name = "ludospring-game-validation"
 description = "Game math validation — procedural gen, raycasting, engagement metrics, Python parity"
 version = "0.2.0"

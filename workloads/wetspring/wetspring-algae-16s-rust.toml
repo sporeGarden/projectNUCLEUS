@@ -2,6 +2,7 @@
 # Covers AlgaeParc 16S community profiling
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-algae-16s-rust"
 description = "Algae pond 16S community validation (Wageningen/AlgaeParc datasets)"
 version = "0.1.0"

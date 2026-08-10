@@ -2,6 +2,7 @@
 # 100 stations, 80 years, FAO-56 + yield integration
 
 [metadata]
+spring = "airSpring"
 name = "airspring-atlas-pipeline"
 description = "Michigan Crop Water Atlas — 100 stations, 80 years, FAO-56 + yield integration"
 version = "0.1.0"

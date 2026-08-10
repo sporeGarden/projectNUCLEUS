@@ -20,6 +20,7 @@ thiserror = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "time", "process", "fs"] }
 toml = "0.8"
 nucleus-primals = { path = "../nucleus-primals" }
+serde_yaml = "0.9"
 blake3 = "1.8.5"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
 hickory-resolver = { version = "0.25", default-features = false, features = ["tokio"] }

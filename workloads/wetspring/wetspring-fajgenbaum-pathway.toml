@@ -6,6 +6,7 @@
 # Self-contained — uses published pathway activation scores from JCI 2019 Fig 3.
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-fajgenbaum-pathway"
 description = "Fajgenbaum JCI 2019 pathway scoring — drug repurposing via published proteomic data"
 version = "0.1.0"

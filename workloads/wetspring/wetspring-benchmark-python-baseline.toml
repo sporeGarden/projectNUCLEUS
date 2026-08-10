@@ -2,6 +2,7 @@
 # Generates performance comparison data across multiple domains
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-benchmark-python-baseline"
 description = "Python performance baseline for cross-domain Rust speedup comparison"
 version = "0.1.0"

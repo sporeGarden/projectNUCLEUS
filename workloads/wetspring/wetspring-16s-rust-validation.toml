@@ -2,6 +2,7 @@
 # Validates the Rust 16S pipeline against Python baseline results
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-16s-rust-validation"
 description = "Rust 16S pipeline validation (FASTQ QC, derep, taxonomy, UniFrac) — parity check vs Python baseline"
 version = "0.1.0"

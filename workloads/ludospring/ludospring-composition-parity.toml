@@ -4,6 +4,7 @@
 # V67: --format json for Tier 2 toadstool.validate integration
 
 [metadata]
+spring = "ludoSpring"
 name = "ludospring-composition-parity"
 description = "Composition parity suite — 141 checks covering IPC dispatch, provenance, game math"
 version = "0.2.0"

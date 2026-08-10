@@ -2,6 +2,7 @@
 # Complete validation via UniBin — all scenarios, Tier 2 ingestion ready
 
 [metadata]
+spring = "airSpring"
 name = "airspring-full-suite"
 description = "Complete airSpring validation — all scenarios with structured JSON output for Tier 2 ingestion"
 version = "0.1.0"

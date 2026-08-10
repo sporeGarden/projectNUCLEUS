@@ -79,7 +79,7 @@ node_id = "irongate"
 family_seed_path = "~/.config/biomeos/family/.beacon.seed"
 
 [validation]
-date = "2026-08-02"
+date = "2026-08-10"
 rust_unit_tests = 960
 rust_unit_tests_failed = 0
 darkforest_checks = 267
@@ -91,17 +91,32 @@ provenance_trio_pass = 10
 workloads_dispatched = 10
 provenance_events = 24
 provenance_braid = "urn:braid:292ebbcf8f02561aaa6c67b532ebbefc14c32192cf3dfb733ce81e45fba50f9e"
+binary_generation = "157e"
+primals_alive = "12/13"
+biome_yaml_checks = 29
+biome_yaml_pass = true
 
 [upstream]
-primalspring_wave = "155n"
+primalspring_wave = "157g"
 primalspring_version = "v0.9.39"
-primalspring_scenarios = 167
+primalspring_scenarios = 197
 primalspring_lib_tests = 1080
 primalspring_known_debt = 0
 btsp_phase = 3
 wire_standard = "L3"
-primals_converged = "13/13"
+primals_converged = "12/13"
 discovery_tiers = 5
 vps_standard = "uds-only"
 cell_graphs_consumed = true
-absorption_date = "2026-08-02"
+absorption_date = "2026-08-10"
+
+[gossip]
+tcp_7800_reachable = ["10.13.37.2", "10.13.37.5", "10.13.37.10"]
+tcp_7800_unreachable = ["10.13.37.1", "10.13.37.11"]
+swarmvine_peers_set = true
+mesh_relay_pending = true
+
+[enmesh]
+toadstool_status = "depot binary exits after startup (primal team issue)"
+biome_yaml = "gates/biome-irongate.yaml"
+workload_dispatch_tomls = 43

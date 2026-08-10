@@ -2,6 +2,7 @@
 # Shannon, Simpson, Bray-Curtis, beta diversity — vs R/Python baselines
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-diversity-rust-validation"
 description = "Diversity indices (Shannon, Simpson, Bray-Curtis, beta) parity check vs R baselines"
 version = "0.1.0"

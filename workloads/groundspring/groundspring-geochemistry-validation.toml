@@ -3,6 +3,7 @@
 # 16 measurement.* JSON-RPC methods, 110 barraCuda delegations
 
 [metadata]
+spring = "groundSpring"
 name = "groundspring-geochemistry-validation"
 description = "Geochemistry validation — inverse problems, soil models, sensor calibration, 395/395 experiment PASS"
 version = "0.1.0"

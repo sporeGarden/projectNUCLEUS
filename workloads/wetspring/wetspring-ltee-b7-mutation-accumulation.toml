@@ -8,6 +8,7 @@
 # Tier 3: lithoSpore module 6 integration
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-ltee-b7-mutation-accumulation"
 description = "LTEE B7 Tenaillon 2016: 264-genome mutation accumulation pipeline (Exp380)"
 version = "0.1.0"

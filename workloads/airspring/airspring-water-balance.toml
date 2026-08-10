@@ -2,6 +2,7 @@
 # Daily soil water balance, dual crop coefficient, Stewart yield response
 
 [metadata]
+spring = "airSpring"
 name = "airspring-water-balance"
 description = "FAO-56 daily soil water balance, dual crop coefficient, and Stewart yield response"
 version = "0.1.0"

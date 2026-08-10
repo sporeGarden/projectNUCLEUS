@@ -4,6 +4,7 @@
 # Falls back to synthetic communities when offline or without NCBI API key.
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-real-ncbi-pipeline"
 description = "Real NCBI 16S through sovereign diversity + Anderson spectral pipeline (Exp184)"
 version = "0.1.0"

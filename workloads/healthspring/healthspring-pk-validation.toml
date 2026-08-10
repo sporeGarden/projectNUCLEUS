@@ -3,6 +3,7 @@
 # healthSpring UniBin `validate` subcommand is the canonical entry point
 
 [metadata]
+spring = "healthSpring"
 name = "healthspring-pk-validation"
 description = "Pharmacokinetic model validation — Hill, PBPK, population Monte Carlo, Michaelis-Menten"
 version = "0.1.0"

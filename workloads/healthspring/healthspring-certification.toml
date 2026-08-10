@@ -3,6 +3,7 @@
 # Pre-deployment gate: if certification fails, primal should not deploy
 
 [metadata]
+spring = "healthSpring"
 name = "healthspring-certification"
 description = "guideStone certification — 57/57 Tier 1-3 checks, BLAKE3 manifest, composition parity"
 version = "0.1.0"

@@ -3,6 +3,7 @@
 # airSpring UniBin `validate` subcommand is the canonical entry point
 
 [metadata]
+spring = "airSpring"
 name = "airspring-et0-validation"
 description = "FAO-56 reference evapotranspiration — 75/75 Python-Rust cross-validated checks"
 version = "0.1.0"

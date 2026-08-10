@@ -4,6 +4,7 @@ mod config;
 mod deploy;
 mod dns;
 mod http;
+mod manifest;
 mod process;
 mod provenance;
 mod provision;
@@ -154,7 +155,7 @@ enum Commands {
         output: Option<PathBuf>,
     },
 
-    /// Verify remote provenance trio (`NestGate`, `rhizoCrypt`, `loamSpine`, `sweetGrass`)
+    /// Verify remote provenance trio or audit local composition surface
     Verify {
         /// Skip SSH (offline mode)
         #[arg(long)]
@@ -163,6 +164,14 @@ enum Commands {
         /// Override VPS IP
         #[arg(long)]
         vps_ip: Option<String>,
+
+        /// Audit local primal RPC surfaces (vertebrate self-check)
+        #[arg(long)]
+        audit_rpc: bool,
+
+        /// Validate a biome.yaml manifest against the primal registry
+        #[arg(long)]
+        manifest: Option<PathBuf>,
     },
 
     /// Provision a gate — sovereign mesh (SSH + plasmidBin + Songbird)
@@ -335,8 +344,18 @@ async fn dispatch(cmd: Commands, cfg: &NucleusConfig) -> i32 {
                 }
             }
         }
-        Commands::Verify { skip_ssh, vps_ip } => {
-            let args = VerifyArgs { skip_ssh, vps_ip };
+        Commands::Verify {
+            skip_ssh,
+            vps_ip,
+            audit_rpc,
+            manifest: manifest_path,
+        } => {
+            let args = VerifyArgs {
+                skip_ssh,
+                vps_ip,
+                audit_rpc,
+                manifest: manifest_path,
+            };
             match verify::run(cfg, &args).await {
                 Ok(true) => 0,
                 Ok(false) => 1,

@@ -2,6 +2,7 @@
 # Full 16S pipeline bootstrap validation against published Galaxy workflow
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-exp001-python-baseline"
 description = "Exp001 Galaxy/QIIME2 bootstrap validation — ground truth 16S pipeline"
 version = "0.1.0"

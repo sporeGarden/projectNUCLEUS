@@ -3,6 +3,7 @@
 # Validates Tier 1 Rust vs Python parity for real-time biosignal pipeline
 
 [metadata]
+spring = "healthSpring"
 name = "healthspring-biosignal-validation"
 description = "Biosignal validation — Pan-Tompkins QRS, HRV metrics, PPG SpO2, EDA stress, arrhythmia classification"
 version = "0.1.0"

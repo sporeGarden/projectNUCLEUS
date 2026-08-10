@@ -6,6 +6,7 @@
 # Self-contained — uses synthetic test vectors, no external data needed.
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-r-industry-parity"
 description = "R vegan/DADA2/phyloseq gold-standard parity validation"
 version = "0.1.0"

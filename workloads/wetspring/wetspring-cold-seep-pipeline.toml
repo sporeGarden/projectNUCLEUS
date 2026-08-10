@@ -3,6 +3,7 @@
 # Part of the 170 cold seep metagenome / 299K QS gene body of work.
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-cold-seep-pipeline"
 description = "Cold seep metagenomics pipeline — QS gene catalog and diversity analysis"
 version = "0.1.0"

@@ -18,6 +18,8 @@ pub enum VerifyError {
 pub struct VerifyArgs {
     pub skip_ssh: bool,
     pub vps_ip: Option<String>,
+    pub audit_rpc: bool,
+    pub manifest: Option<std::path::PathBuf>,
 }
 
 struct Report {
@@ -77,6 +79,16 @@ fn log(msg: &str) {
 }
 
 pub async fn run(cfg: &NucleusConfig, args: &VerifyArgs) -> Result<bool, VerifyError> {
+    if let Some(path) = &args.manifest {
+        return crate::manifest::validate(path)
+            .await
+            .map_err(VerifyError::Io);
+    }
+
+    if args.audit_rpc {
+        return run_rpc_audit(cfg).await;
+    }
+
     let vps_ip = args.vps_ip.clone().unwrap_or_else(|| cfg.vps_ip.clone());
     let vps_user = cfg.vps_user.clone();
 
@@ -545,6 +557,182 @@ PASS: {pass}  FAIL: {fail}  SKIP: {skip}  WARN: {warn}
     Ok(())
 }
 
+// ── Local RPC surface audit (vertebrate self-check) ──
+
+async fn run_rpc_audit(cfg: &NucleusConfig) -> Result<bool, VerifyError> {
+    log("═══════════════════════════════════════════════════════════");
+    log("  Vertebrate Self-Audit — Local RPC Surface");
+    log("═══════════════════════════════════════════════════════════");
+    log("");
+
+    let host = "127.0.0.1";
+    let mut report = Report::new();
+
+    for slug in nucleus_primals::deployable_slugs() {
+        let Some(def) = nucleus_primals::lookup(slug) else {
+            continue;
+        };
+        let port = cfg.port_for(slug);
+        log(&format!("── {slug} (:{port}) ──"));
+        audit_single_primal(host, port, slug, def, &mut report).await;
+        log("");
+    }
+
+    log("═══════════════════════════════════════════════════════════");
+    log("  RPC Surface Audit — Results");
+    log(&format!(
+        "  PASS: {}  FAIL: {}  SKIP: {}  WARN: {}",
+        report.pass, report.fail, report.skip, report.warn
+    ));
+    log("═══════════════════════════════════════════════════════════");
+
+    Ok(report.fail == 0)
+}
+
+async fn audit_single_primal(
+    host: &str,
+    port: u16,
+    slug: &str,
+    def: &nucleus_primals::PrimalDef,
+    report: &mut Report,
+) {
+    let tag_upper = slug.to_uppercase();
+
+    let probe_req = r#"{"jsonrpc":"2.0","method":"health.liveness","id":1}"#;
+    let health = crate::rpc::probe_rpc(host, port, probe_req).await;
+
+    if health.is_none() {
+        report.skip(
+            &format!("{tag_upper}-LIVE"),
+            &format!("{slug} not responding on :{port}"),
+        );
+        return;
+    }
+    report.pass(
+        &format!("{tag_upper}-LIVE"),
+        &format!("{slug} alive on :{port}"),
+    );
+
+    audit_unknown_method(host, port, slug, &tag_upper, report).await;
+
+    if def.btsp_required {
+        audit_btsp_gating(host, port, slug, report).await;
+    }
+}
+
+/// Send a nonexistent method and verify the primal returns -32601 (method not found)
+/// rather than falling back to a health response (the P0-A bearDog stub pattern).
+async fn audit_unknown_method(
+    host: &str,
+    port: u16,
+    slug: &str,
+    tag_upper: &str,
+    report: &mut Report,
+) {
+    let probe = r#"{"jsonrpc":"2.0","method":"__nonexistent_xyz__","id":99}"#;
+    let response = crate::rpc::probe_rpc(host, port, probe).await;
+
+    let Some(body) = response else {
+        report.warn(
+            &format!("{tag_upper}-UNK"),
+            &format!("{slug} dropped unknown method (no response)"),
+        );
+        return;
+    };
+
+    if let Ok(v) = serde_json::from_str::<Value>(&body) {
+        if is_health_stub_response(&v) {
+            report.fail(
+                &format!("{tag_upper}-UNK"),
+                &format!("{slug} returns health for unknown method (P0-A stub pattern)"),
+            );
+        } else if v.pointer("/error/code").and_then(Value::as_i64) == Some(-32601) {
+            report.pass(
+                &format!("{tag_upper}-UNK"),
+                &format!("{slug} correctly returns -32601 for unknown method"),
+            );
+        } else {
+            let trunc = &body[..body.len().min(80)];
+            report.warn(
+                &format!("{tag_upper}-UNK"),
+                &format!("{slug} unexpected response for unknown method: {trunc}"),
+            );
+        }
+    } else {
+        let trunc = &body[..body.len().min(80)];
+        report.warn(
+            &format!("{tag_upper}-UNK"),
+            &format!("{slug} non-JSON response: {trunc}"),
+        );
+    }
+}
+
+/// Detect the P0-A health-only stub pattern: the primal returns a health
+/// response for any method input, including unknown ones.
+fn is_health_stub_response(v: &Value) -> bool {
+    v.get("result").is_some_and(|result| {
+        result.get("primal").is_some()
+            && result.get("status").is_some()
+            && result.get("version").is_some()
+    })
+}
+
+/// Verify that a BTSP-gated primal rejects unauthenticated calls with -32001.
+async fn audit_btsp_gating(host: &str, port: u16, slug: &str, report: &mut Report) {
+    let method = match slug {
+        "toadstool" => "compute.dispatch",
+        "nestgate" => "content.put",
+        "biomeos" => "capability.call",
+        "songbird" => "mesh.status",
+        "skunkbat" => "anomaly.scan",
+        "squirrel" => "ml.predict",
+        "barracuda" => "tensor.matmul",
+        "coralreef" => "shader.compile",
+        "rhizocrypt" => "dag.session.create",
+        "loamspine" => "spine.create",
+        "sweetgrass" => "braid.create",
+        "petaltongue" => "render.frame",
+        _ => return,
+    };
+
+    let probe = format!(r#"{{"jsonrpc":"2.0","method":"{method}","params":{{}},"id":50}}"#);
+    let response = crate::rpc::probe_rpc(host, port, &probe).await;
+
+    let tag = format!("{}-BTSP", slug.to_uppercase());
+    let Some(body) = response else {
+        report.warn(
+            &tag,
+            &format!("{slug} dropped BTSP-gated call (no response)"),
+        );
+        return;
+    };
+
+    if let Ok(v) = serde_json::from_str::<Value>(&body) {
+        let error_code = v.pointer("/error/code").and_then(Value::as_i64);
+        match error_code {
+            Some(-32001) => {
+                report.pass(
+                    &tag,
+                    &format!("{slug} correctly rejects unauthenticated {method}"),
+                );
+            }
+            Some(-32601) => {
+                report.warn(
+                    &tag,
+                    &format!("{slug} method {method} not found (-32601, may not be implemented)"),
+                );
+            }
+            _ => {
+                let trunc = &body[..body.len().min(80)];
+                report.warn(
+                    &tag,
+                    &format!("{slug} unexpected response for BTSP-gated {method}: {trunc}"),
+                );
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -561,5 +749,26 @@ mod tests {
         assert_eq!(r.skip, 1);
         assert_eq!(r.warn, 1);
         assert_eq!(r.lines.len(), 4);
+    }
+
+    #[test]
+    fn health_stub_detection() {
+        let stub: Value = serde_json::json!({
+            "jsonrpc": "2.0",
+            "result": {
+                "primal": "beardog",
+                "status": "alive",
+                "version": "0.9.0"
+            },
+            "id": 99
+        });
+        assert!(is_health_stub_response(&stub));
+
+        let proper: Value = serde_json::json!({
+            "jsonrpc": "2.0",
+            "error": { "code": -32601, "message": "Method not found" },
+            "id": 99
+        });
+        assert!(!is_health_stub_response(&proper));
     }
 }

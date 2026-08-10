@@ -3,6 +3,7 @@
 # 1,450 workspace tests, zero clippy, pedantic + nursery lint level
 
 [metadata]
+spring = "neuralSpring"
 name = "neuralspring-ml-validation"
 description = "ML surrogate validation — Anderson spectral, Evoformer, ESN, mixed GPU dispatch"
 version = "0.1.0"

@@ -3,6 +3,7 @@
 # 13 certification tests across bare/discovery/parity/nucleus modules
 
 [metadata]
+spring = "neuralSpring"
 name = "neuralspring-certification"
 description = "Certification organelle — CHECKSUMS integrity, layer validation, BLAKE3 provenance"
 version = "0.1.0"

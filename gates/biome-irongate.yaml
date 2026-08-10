@@ -1,0 +1,185 @@
+# biome.yaml — ironGate NUCLEUS composition manifest
+# Canonical schema: toadstool-core manifest.rs (v1)
+# Validates with: nucleus-deploy verify --manifest gates/biome-irongate.yaml
+
+api_version: v1
+kind: Biome
+
+metadata:
+  name: irongate
+  version: "157g"
+  description: "ironGate NUCLEUS — downstream host, esotericWebb, composition validation"
+  team: ecoPrimals
+  environment: production
+  tags: [gpu, downstream, validation, esotericwebb]
+  labels:
+    gate: ironGate
+    role: downstream-host
+  annotations:
+    ecoPrimals.io/wave: "157g"
+    ecoPrimals.io/hardware: "i9-14900K + RTX 5070"
+
+primals:
+  beardog:
+    version: "0.9.0"
+    capabilities: [crypto.sign_ed25519, crypto.verify_ed25519, trust.bootstrap]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/beardog
+
+  songbird:
+    version: "0.9.0"
+    capabilities: [mesh.status, mesh.peers, transport.relay]
+    dependencies: [beardog]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/songbird
+    gossip_events: [mesh.peer.joined, mesh.peer.left]
+
+  skunkbat:
+    version: "0.9.0"
+    capabilities: [anomaly.scan, protocol.audit]
+    dependencies: [beardog, songbird]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/skunkbat
+
+  biomeos:
+    version: "4.56"
+    capabilities: [capability.call, capability.resolve, composition.status]
+    dependencies: [beardog, songbird]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/biomeos
+
+  squirrel:
+    version: "0.9.0"
+    capabilities: [ml.predict, agent.orchestrate]
+    dependencies: [beardog, songbird, biomeos]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/squirrel
+
+  toadstool:
+    version: "0.2.0"
+    capabilities: [compute.dispatch, silicon.discover, workload.execute]
+    dependencies: [beardog]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/toadstool
+    gossip_events: [workload.completed, hardware.gpu.added]
+
+  barracuda:
+    version: "0.9.0"
+    capabilities: [tensor.matmul, tensor.transpose]
+    dependencies: [toadstool]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/barracuda
+
+  coralreef:
+    version: "0.9.0"
+    capabilities: [shader.compile, shader.compile.wgsl]
+    dependencies: [toadstool]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/coralreef
+
+  nestgate:
+    version: "0.5.0"
+    capabilities: [content.put, content.get, content.stat]
+    dependencies: [beardog]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/nestgate
+
+  rhizocrypt:
+    version: "0.9.0"
+    capabilities: [dag.session.create, dag.event.append]
+    dependencies: [beardog, nestgate]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/rhizocrypt
+    gossip_events: [dag.session.created, dag.event.appended, dag.session.sealed]
+
+  loamspine:
+    version: "0.9.0"
+    capabilities: [spine.create, spine.commit, spine.list]
+    dependencies: [beardog, rhizocrypt]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/loamspine
+    gossip_events: [cas.have, braid.head, spine.sealed, anchor.published]
+
+  sweetgrass:
+    version: "0.9.0"
+    capabilities: [braid.create, braid.verify]
+    dependencies: [beardog, loamspine]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/sweetgrass
+
+  petaltongue:
+    version: "0.9.0"
+    capabilities: [render.frame, render.scene]
+    dependencies: [beardog, songbird]
+    source:
+      type: Native
+      path: /opt/ecoPrimals/primals/petaltongue
+
+compositions:
+  - name: tower-atomic
+    kind: Tower
+    members: [beardog, songbird, skunkbat]
+    dependencies:
+      songbird: [beardog]
+      skunkbat: [beardog, songbird]
+    auto_start: true
+    priority: 0
+    readiness:
+      require_healthy: [beardog, songbird]
+      timeout_secs: 60
+
+  - name: nest-atomic
+    kind: Nest
+    members: [beardog, songbird, skunkbat, nestgate, rhizocrypt, loamspine, sweetgrass]
+    dependencies:
+      songbird: [beardog]
+      skunkbat: [beardog]
+      nestgate: [beardog]
+      rhizocrypt: [beardog, nestgate]
+      loamspine: [beardog, rhizocrypt]
+      sweetgrass: [beardog, loamspine]
+    priority: 5
+    readiness:
+      require_healthy: [beardog, songbird, nestgate]
+      timeout_secs: 120
+
+  - name: node-atomic
+    kind: Node
+    members: [beardog, songbird, skunkbat, toadstool, barracuda, coralreef]
+    dependencies:
+      songbird: [beardog]
+      skunkbat: [beardog]
+      toadstool: [beardog]
+      barracuda: [toadstool]
+      coralreef: [toadstool]
+    priority: 10
+    readiness:
+      require_healthy: [beardog, toadstool]
+      timeout_secs: 120
+
+resources:
+  cpu_limit: 24.0
+  memory_limit: "96Gi"
+  gpu_limit: 1
+
+security:
+  isolation_level: process
+  trust_level: high
+  crypto_required: true
+
+federation:
+  enabled: true
+  peers: [sporeGate, blueGate, westGate, southGate, strandGate]
+  replication: eventual

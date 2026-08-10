@@ -3,6 +3,7 @@
 # Validates diversity indices and ecological modeling against Python baselines
 
 [metadata]
+spring = "healthSpring"
 name = "healthspring-microbiome-validation"
 description = "Microbiome validation — Shannon/Simpson diversity, Anderson gut lattice, colonization resistance, SCFA, quorum sensing"
 version = "0.1.0"

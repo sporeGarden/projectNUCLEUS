@@ -2,6 +2,7 @@
 # Immunological modeling (IC50, IL-31, PK) — Paper 12 Anderson lineage
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-gonzales-cpu-parity"
 description = "Gonzales CPU parity — PK/dose-response immunological modeling against Python baselines"
 version = "0.1.0"

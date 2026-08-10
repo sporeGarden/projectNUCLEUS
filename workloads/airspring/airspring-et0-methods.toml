@@ -2,6 +2,7 @@
 # 8 methods: PM, Priestley-Taylor, Thornthwaite, Hargreaves, Makkink, Turc, Hamon, Blaney-Criddle
 
 [metadata]
+spring = "airSpring"
 name = "airspring-et0-methods"
 description = "8 ET₀ methods validated against peer-reviewed benchmarks and cross-compared"
 version = "0.1.0"

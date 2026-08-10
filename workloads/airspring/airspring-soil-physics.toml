@@ -2,6 +2,7 @@
 # Richards equation, Green-Ampt infiltration, SCS curve number, Saxton-Rawls pedotransfer
 
 [metadata]
+spring = "airSpring"
 name = "airspring-soil-physics"
 description = "Richards equation, Green-Ampt infiltration, SCS curve number, Saxton-Rawls pedotransfer"
 version = "0.1.0"

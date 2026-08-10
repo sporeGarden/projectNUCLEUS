@@ -146,6 +146,14 @@ pub async fn check_liveness(host: &str, port: u16) -> bool {
     matches!(send_jsonrpc(host, port, &req).await, Ok(r) if r.has_result())
 }
 
+/// Send a JSON-RPC probe, returning raw response body or `None` if unreachable.
+pub async fn probe_rpc(host: &str, port: u16, payload: &str) -> Option<String> {
+    send_jsonrpc(host, port, payload)
+        .await
+        .ok()
+        .map(|r| r.raw.trim().to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

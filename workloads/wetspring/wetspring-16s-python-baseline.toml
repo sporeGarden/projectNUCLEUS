@@ -3,6 +3,7 @@
 # Requires: numpy, scipy (available in bioinfo conda env)
 
 [metadata]
+spring = "wetSpring"
 name = "wetspring-16s-python-baseline"
 description = "16S Python baseline on PRJNA488170/PRJNA382322 public data — ground truth for Rust comparison"
 version = "0.1.0"

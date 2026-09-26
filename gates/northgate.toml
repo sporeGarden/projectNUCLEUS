@@ -24,7 +24,7 @@ ram_gb = 96
 ram_type = "DDR5"
 storage_tb = 5.0
 storage_type = "NVMe"
-os = "Pop!_OS"
+os = "Windows 11"
 
 [network]
 lan_speed = "1G (10G pending cable)"

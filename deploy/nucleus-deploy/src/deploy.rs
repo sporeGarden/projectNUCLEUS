@@ -24,6 +24,7 @@ pub enum DeployError {
 }
 
 #[derive(Debug, Error)]
+#[allow(dead_code, reason = "all variants used on unix; only Connect used on non-unix fallback")]
 pub enum JsonRpcError {
     #[error("connect: {0}")]
     Connect(std::io::Error),
@@ -257,6 +258,7 @@ async fn graph_deploy_via_biomeos(
     Ok(())
 }
 
+#[cfg(unix)]
 async fn jsonrpc_uds(
     sock_path: &Path,
     method: &str,
@@ -290,6 +292,18 @@ async fn jsonrpc_uds(
         .map_err(JsonRpcError::Read)?;
 
     String::from_utf8(buf).map_err(JsonRpcError::Utf8)
+}
+
+#[cfg(not(unix))]
+async fn jsonrpc_uds(
+    _sock_path: &Path,
+    _method: &str,
+    _params: serde_json::Value,
+) -> Result<String, JsonRpcError> {
+    Err(JsonRpcError::Connect(std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "UDS transport not available on this platform — use TCP fallback",
+    )))
 }
 
 // ── Stop ─────────────────────────────────────────────────────────────────

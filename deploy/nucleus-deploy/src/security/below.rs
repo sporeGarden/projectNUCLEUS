@@ -1,6 +1,3 @@
-use std::os::unix::fs::MetadataExt;
-use std::path::Path;
-
 use tokio::process::Command;
 
 use super::report::SecurityReport;
@@ -136,7 +133,11 @@ async fn firewall_check(report: &mut SecurityReport) {
     }
 }
 
+#[cfg(unix)]
 fn sensitive_permissions(report: &mut SecurityReport) {
+    use std::os::unix::fs::MetadataExt;
+    use std::path::Path;
+
     report.log("");
     report.log("── 1d: Sensitive File Permissions ──");
 
@@ -163,4 +164,11 @@ fn sensitive_permissions(report: &mut SecurityReport) {
             _ => report.info(format!("{path}: mode {perms}")),
         }
     }
+}
+
+#[cfg(not(unix))]
+fn sensitive_permissions(report: &mut SecurityReport) {
+    report.log("");
+    report.log("── 1d: Sensitive File Permissions ──");
+    report.info("POSIX permission checks not available on this platform");
 }

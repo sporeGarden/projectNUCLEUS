@@ -257,7 +257,7 @@ Full federation: local write → backbone replication → remote read → integr
 | # | Use Case | What It Proves |
 |---|----------|---------------|
 | 1 | **Save file sync** — play Elden Ring on southGate (gaming PC), continue on northGate (office). Saves sync automatically over 10G backbone within seconds. | Sovereign Steam Cloud equivalent without Valve dependency |
-| 2 | **VPS off-site backup** — saves replicate to cellMembrane VPS (157.230.3.183) overnight. If house burns down, saves survive. | Disaster recovery without cloud vendor lock-in |
+| 2 | **VPS off-site backup** — saves replicate to cellMembrane VPS ([RELAY_PUBLIC]) overnight. If house burns down, saves survive. | Disaster recovery without cloud vendor lock-in |
 | 3 | **Multi-household sharing** — flockGate (remote family) accesses shared saves via Songbird relay. Ionic bonding (metered trust) controls what's shared. | Cross-WAN federation with trust boundaries |
 
 ### Science Cases

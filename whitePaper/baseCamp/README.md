@@ -117,7 +117,7 @@ TCP fallback available per Tier 5 discovery. 460 registered methods (Wave 56). `
 | Shadow Parity | **PASS** | **6/0/0** — S1 TLS, S2 NAT, S3 content LIVE; S4 auth SHADOW LIVE; S5 DNS DEPLOYED (NS cutover pending) |
 | Sovereign DNS | **DEPLOYED** | knot-dns v3.2.6, DNSSEC on VPS. NS cutover (H2-18) pending registrar |
 
-## cellMembrane Interface (VPS 157.230.3.183)
+## cellMembrane Interface (VPS [RELAY_PUBLIC])
 
 The cellMembrane is the first deployment of NUCLEUS primals on external
 substrate — a $12/mo DigitalOcean droplet running **Nest Atomic composition**

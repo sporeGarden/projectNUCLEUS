@@ -3,7 +3,7 @@
 
 [metadata]
 mode = "relay_probe"
-turn_server = "157.230.3.183:3478"
+turn_server = "[RELAY_PUBLIC]:3478"
 samples = 5
 generated_at = "2026-05-19T15:04:57Z"
 

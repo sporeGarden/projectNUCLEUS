@@ -3,7 +3,7 @@
 
 [metadata]
 cf_url = "https://primals.eco/index.html"
-songbird_url = "http://157.230.3.183:80/index.html"
+songbird_url = "http://[RELAY_PUBLIC]:80/index.html"
 samples = 10
 generated_at = "2026-05-15T19:45:18Z"
 

@@ -1,6 +1,6 @@
 # Membrane Provenance Verification — 2026-05-22T14:25:10Z
 
-**VPS**: 157.230.3.183
+**VPS**: [RELAY_PUBLIC]
 **Composition**: Tower + Nest Atomic (pending:    )
 
 ## Health

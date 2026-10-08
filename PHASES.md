@@ -377,7 +377,7 @@ Cloudflare tunnel established, hardened, and baselines capturing:
 - All per-primal debt closed: toadStool env expansion (contract), squirrel `RemoteComputeProvider`, barraCuda crypto delegation to bearDog IPC, loamSpine method aliases, skunkBat JH-5 Phase 3 forwarding, petalTongue SPA+CORS
 - primalSpring at Wave 132f: 490+ methods (v0.9.33, 116 scenarios, 1080 lib tests, KNOWN_DEBT = 0). Tower HTTP gateway + compute hosting contract validated. `jupyter.*` capability domain registered. Relay registry (cellMembrane bidirectional). `primalspring checksums` + `primalspring registry` replace shell validation
 - L1 CLEAN: 13/13 structural + semantic, zero critical gaps. Stadial-ready on Pillar 1.
-- **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on 157.230.3.183), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
+- **Shadow runs executing**: BearDog TLS LIVE on :8443, BTSP dual-auth plugin BUILT, cellMembrane LIVE (Songbird TURN :3478 on [RELAY_PUBLIC]), `composition.deploy.shadow` wired, provenance trio graph capabilities reconciled (GAP-36 canonical)
 
 ### ABG Tiered Access Model
 
@@ -496,7 +496,7 @@ Curated in projectNUCLEUS/graphs/ (canonical source: primalSpring/graphs/):
 
 ## Phase 3: Self-Hosted sporePrint
 
-**Status**: Upstream gaps ALL SHIPPED. Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced. BearDog TLS shadow LIVE on :8443 (**3ms RPC** vs 120ms Cloudflare). cellMembrane LIVE (Songbird TURN relay :3478 on 157.230.3.183). **`membrane.primals.eco` TLS LIVE** — ACME cert (Let's Encrypt E8), serving real sporePrint content. HTTP parity: VPS 68ms vs GitHub Pages 89ms (**PASS**).
+**Status**: Upstream gaps ALL SHIPPED. Cell membrane architecture enables incremental sovereignty — extracellular (CDN) remains as reliable fallback while membrane channels are progressively replaced. BearDog TLS shadow LIVE on :8443 (**3ms RPC** vs 120ms Cloudflare). cellMembrane LIVE (Songbird TURN relay :3478 on [RELAY_PUBLIC]). **`membrane.primals.eco` TLS LIVE** — ACME cert (Let's Encrypt E8), serving real sporePrint content. HTTP parity: VPS 68ms vs GitHub Pages 89ms (**PASS**).
 **Bonding**: Covalent core + public weak endpoint
 **New Primals**: petalTongue (UI), BTSP Phase 3
 

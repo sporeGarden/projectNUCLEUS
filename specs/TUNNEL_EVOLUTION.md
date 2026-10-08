@@ -58,7 +58,7 @@ traffic separation is structural, not policy-based.
 | Membrane channels | **lab.primals.eco, git.primals.eco → tunnel** | Membrane |
 | Tunnel replicas | Named tunnel `nucleus-lab` with multi-gate replicas | Membrane |
 | Membrane watchdog | `gate_watchdog.sh` — logs state transitions every 30s | Membrane |
-| **cellMembrane VPS** | **157.230.3.183, Songbird TURN :3478 + RustDesk :21116-17, DigitalOcean nyc1** | **External Membrane** |
+| **cellMembrane VPS** | **[RELAY_PUBLIC], Songbird TURN :3478 + RustDesk :21116-17, DigitalOcean nyc1** | **External Membrane** |
 | **BearDog TLS shadow** | **:8443 alongside Cloudflare :443 (shadow run active)** | Membrane |
 | JupyterHub | System service on primary gate:8000, PAM auth | Intracellular |
 | Primal composition | **13 primals** on primary gate, systemd user service | Intracellular |
@@ -319,7 +319,7 @@ public services. BearDog rate limiting + Dark Forest pattern sufficient.
 **Goal**: Remove `cloudflared` binary dependency — direct browser path to the active gate.
 
 **Status (2026-05-14)**: **cellMembrane LIVE** — Channel 2 (Songbird TURN relay)
-operational on 157.230.3.183:3478. VPS hardened (fail2ban, UFW 22+3478 only, exim4
+operational on [RELAY_PUBLIC]:3478. VPS hardened (fail2ban, UFW 22+3478 only, exim4
 purged, SSH key-only). Ownership transferred from primalSpring to ironGate/projectNUCLEUS.
 NAT shadow run ready — TURN credentials wired into `nucleus_config.sh`.
 
@@ -332,7 +332,7 @@ Browser → primals.eco (DNS-only, A record to public IP)
 
 **What was built** (primalSpring → ironGate handoff):
 1. ~~**Self-hosted STUN/TURN relay**~~ — **DONE**. cellMembrane fieldMouse on
-   DigitalOcean VPS (157.230.3.183, Debian 12, nyc1, ~$12/mo 2GB). Songbird TURN
+   DigitalOcean VPS ([RELAY_PUBLIC], Debian 12, nyc1, ~$12/mo 2GB). Songbird TURN
    relay on UDP :3478 with credential-authenticated access.
    - Deployed via `plasmidBin/deploy_membrane.sh` (pull model — binaries
      fetched from GitHub Releases on VPS, not SCP'd)
@@ -393,7 +393,7 @@ Browser → sovereign DNS resolution
 
 1. **Self-hosted authoritative DNS** — run a lightweight authoritative DNS
    server (e.g., `knot-dns` or a custom primal) on the **cellMembrane VPS**
-   (157.230.3.183 — already deployed with stable IP).
+   ([RELAY_PUBLIC] — already deployed with stable IP).
    Transfer `primals.eco` nameserver records from Cloudflare to self-hosted.
    This is Channel 1 (Signal) in the membrane channel architecture.
    - Pro: Complete control, VPS already owned and hardened

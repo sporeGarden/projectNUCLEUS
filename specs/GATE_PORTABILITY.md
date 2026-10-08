@@ -50,7 +50,7 @@ If every gate is offline, `primals.eco` still serves. The membrane channels
 no sovereign compute to access.
 
 **External membrane (May 14→27, 2026 — Nest Atomic):** The cellMembrane fieldMouse VPS
-(157.230.3.183, DigitalOcean nyc1) runs **Nest Atomic** (11 services, 7 primals).
+([RELAY_PUBLIC], DigitalOcean nyc1) runs **Nest Atomic** (11 services, 7 primals).
 Three membrane channels operational (Signal/DNS, Relay/NAT, Surface/TLS).
 Unlike the gate, the VPS substrate provider has theoretical root
 access — Dark Forest principle applies (everything encrypted at rest, provider

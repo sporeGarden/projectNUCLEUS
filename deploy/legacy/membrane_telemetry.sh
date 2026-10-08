@@ -99,7 +99,7 @@ echo "[$(date -u +%H:%M:%S)] membrane_telemetry — mode=$MODE"
 if [[ "$MODE" == "external" || "$MODE" == "all" ]]; then
     echo "  Probing external membrane (VPS)..."
 
-    VPS_IP="${MEMBRANE_VPS_IP:-157.230.3.183}"
+    VPS_IP="${MEMBRANE_VPS_IP:-[RELAY_PUBLIC]}"
     VPS_HTTP="${MEMBRANE_HTTP_PORT:-80}"
 
     # Caddy health endpoint
@@ -164,7 +164,7 @@ if [[ "$MODE" == "internal" || "$MODE" == "all" ]]; then
     done
 
     # Content parity: VPS cache vs GitHub Pages
-    VPS_IP="${MEMBRANE_VPS_IP:-157.230.3.183}"
+    VPS_IP="${MEMBRANE_VPS_IP:-[RELAY_PUBLIC]}"
     VPS_HTTP="${MEMBRANE_HTTP_PORT:-80}"
     if curl -sf --max-time 5 "http://${VPS_IP}:${VPS_HTTP}/" >/dev/null 2>&1; then
         # Capture TTFB for VPS

@@ -2,14 +2,14 @@
 # deploy_songbird_relay.sh — Deploy Songbird TURN relay to VPS (H2-14)
 #
 # SUPERSEDED by plasmidBin/deploy_membrane.sh for the cellMembrane fieldMouse.
-# The cellMembrane is LIVE on 157.230.3.183 (DigitalOcean nyc1, ~$12/mo 2GB Tower).
+# The cellMembrane is LIVE on [RELAY_PUBLIC] (DigitalOcean nyc1, ~$12/mo 2GB Tower).
 # Use deploy_membrane.sh for operational management of the VPS.
 #
 # This script remains as a standalone relay deployer for non-cellMembrane VPS
 # targets (e.g. additional relay nodes, friend gates).
 #
 # cellMembrane operations:
-#   cd ../../infra/plasmidBin && ./deploy_membrane.sh status root@157.230.3.183
+#   cd ../../infra/plasmidBin && ./deploy_membrane.sh status root@[RELAY_PUBLIC]
 #
 # Standalone usage:
 #   bash deploy_songbird_relay.sh --host <vps-ip> [--user root] [--port 3478]

@@ -13,7 +13,7 @@
 # Prerequisites:
 #   - NestGate running with content.put shipped (Session 60)
 #   - BearDog TLS on :8443 (Wave 100 rustls + rate limiter)
-#   - cellMembrane TURN relay LIVE on 157.230.3.183:3478 (or custom SONGBIRD_TURN_SERVER)
+#   - cellMembrane TURN relay LIVE on [RELAY_PUBLIC]:3478 (or custom SONGBIRD_TURN_SERVER)
 #   - cloudflared tunnel still active for comparison
 set -euo pipefail
 

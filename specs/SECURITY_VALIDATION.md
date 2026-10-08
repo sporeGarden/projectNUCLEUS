@@ -27,7 +27,7 @@ is tested here before and after replacement.
 - **All 14 primal ports on 127.0.0.1** (Phase 60 PG-55 default). **Wave 56 `--uds-only` VPS standard** — TCP ports suppressed in VPS deployments
 - **Ionic tokens live**: Ed25519-signed, scope-checked, expiry-verified
 - **UFW active**, hidepid=2, iptables outbound DROP for ABG UIDs, DNS exfil closed
-- **cellMembrane LIVE — Nest Atomic**: fieldMouse VPS on 157.230.3.183 (11 services, 7 primals). Layer 6 below
+- **cellMembrane LIVE — Nest Atomic**: fieldMouse VPS on [RELAY_PUBLIC] (11 services, 7 primals). Layer 6 below
 - **BearDog TLS shadow LIVE**: :8443 alongside Cloudflare :443. Shadow orchestrator 6 PASS
 - **Sovereign DNS LIVE**: knot-dns DNSSEC on VPS (H2-17). NS cutover pending
 - **Deep debt resolved**: config centralization complete (Wave 56). All ports from `nucleus_config.sh`. darkforest pentest uses `discovery::port_for()` env cascade. `#![forbid(unsafe_code)]` on both crates
@@ -55,7 +55,7 @@ trusted hardware). External substrate requires its own threat model.
 
 | Component | Value | Risk Profile |
 |-----------|-------|-------------|
-| VPS | `membrane-relay`, 157.230.3.183, Debian 12 x64, DigitalOcean nyc1 | Provider has hypervisor access |
+| VPS | `membrane-relay`, [RELAY_PUBLIC], Debian 12 x64, DigitalOcean nyc1 | Provider has hypervisor access |
 | Channel 2 | Songbird TURN relay, UDP :3478 | Public relay endpoint |
 | Channel 2b | RustDesk sovereign relay (hbbs :21116, hbbr :21117) | Remote desktop relay |
 | SSH | Key-only, ed25519, fail2ban active, multi-gate managed | Management surface |
@@ -92,7 +92,7 @@ Verified via SSH from ironGate. Two sweeps: initial (relay-only) and post-RustDe
 | hbbr-membrane active | **PASS** | `systemctl is-active hbbr-membrane` → `active` (PID 6188) |
 | fail2ban sshd jail | **PASS** | 13 failed attempts caught, 0 banned (working correctly) |
 | Firewall posture | **PASS** | UFW: 22/tcp + 3478/tcp+udp + 21115-21117/tcp + 21116/udp, default deny |
-| TURN relay (UDP) | **PASS** | `nc -z -u 157.230.3.183 3478` → reachable |
+| TURN relay (UDP) | **PASS** | `nc -z -u [RELAY_PUBLIC] 3478` → reachable |
 | RustDesk ID server | **PASS** | hbbs listening on :21115, :21116, :21118 |
 | RustDesk relay server | **PASS** | hbbr listening on :21117, :21119 |
 | journald persistence | **PASS** | `/var/log/journal/` exists |

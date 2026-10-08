@@ -25,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/nucleus_config.sh" 2>/dev/null || true
 
-VPS_IP="${MEMBRANE_VPS_IP:-157.230.3.183}"
+VPS_IP="${MEMBRANE_VPS_IP:-[RELAY_PUBLIC]}"
 VPS_USER="${MEMBRANE_VPS_USER:-root}"
 ZONE_DOMAIN="primals.eco"
 DRY_RUN=false

@@ -117,7 +117,7 @@ Run 6   (May 22): 6 PASS, 0 FAIL, 0 SKIP — FULL PASS (all 5 tracks + DNS)
 ## E4: Membrane Security Audit (darkforest_membrane)
 
 **Methodology**: Remote VPS audit via SSH probing 13 security controls.
-Validates cellMembrane (157.230.3.183) against adversarial configuration.
+Validates cellMembrane ([RELAY_PUBLIC]) against adversarial configuration.
 
 **Script**: `validation/darkforest_membrane.sh`
 **Result (May 22, 2026)**: **21 PASS, 0 FAIL, 1 SKIP** (SKIP: b3sum not on VPS)
@@ -239,7 +239,7 @@ Deploy tooling `--uds-only` VPS standard. `aws-lc-sys` C dependency eliminated (
 
 ---
 
-## VPS Services (cellMembrane: 157.230.3.183) — Nest Atomic (May 22)
+## VPS Services (cellMembrane: [RELAY_PUBLIC]) — Nest Atomic (May 22)
 
 | Service | Port | systemd Unit | Status |
 |---------|------|-------------|--------|

@@ -72,7 +72,7 @@ pub fn run_membrane_suite(target: &MembraneTarget) -> Vec<ProbeResult> {
 }
 ```
 
-**Success criteria**: darkforest `--membrane --host 157.230.3.183` runs all
+**Success criteria**: darkforest `--membrane --host [RELAY_PUBLIC]` runs all
 probes and generates report. Zero unexpected open ports. All unauthorized RPC
 calls return `-32001`. TLS rejects invalid certs. TURN rejects unauthenticated
 relay requests.

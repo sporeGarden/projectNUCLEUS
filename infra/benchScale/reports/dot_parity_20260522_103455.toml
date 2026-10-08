@@ -18,7 +18,7 @@ domain = "ncbi.nlm.nih.gov", avg_ms = 3, success = "10/10"
 dnssec_status = "dot_active"
 
 [sovereign]
-resolver = "157.230.3.183"
+resolver = "[RELAY_PUBLIC]"
 
 [[sovereign.results]]
 domain = "primals.eco", avg_ms = 46, success = "10/10"
